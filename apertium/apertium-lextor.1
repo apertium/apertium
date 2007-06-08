@@ -1,0 +1,132 @@
+.TH apertium-lextor 1 2006-12-12 "" ""
+.SH NAME
+apertium-lextor \- This application is part of
+(
+.B apertium
+)
+.PP
+This tool is part of the apertium machine translation
+architecture: \fBhttp://apertium.sf.net\fR.
+.SH SYNOPSIS
+.B apertium-lextor
+.B \-\-trainwrd\fR stopwords words n left right corpus model
+[
+.B \-\-weightexp\fR w
+]
+[
+.B \-\-debug\fR
+]
+.PP
+.B apertium\-lextor
+.B \-\-trainlch\fR stopwords lexchoices n left right corpus wordmodel dic bildic model
+[
+.B \-\-weightexp\fR w
+]
+[
+.B \-\-debug\fR
+]
+.PP
+.B apertium\-lextor
+.B \-\-lextor\fR model dic left right
+[
+.B \-\-debug\fR
+]
+[
+.B \-\-weightexp\fR w
+]
+.PP
+.SH DESCRIPTION
+.BR apertium\-lextor 
+is the application responsible of training and usage of the \fIlexical
+selector module\fR.
+.SH OPTIONS
+.PP
+.B \-\-trainwrd | \-t\fR
+.br
+Train word co-occurrences model. It needs the following required parameters:
+.TP
+.I stopwords\fR file containing a list of stop words. Stop words are ignored.
+.TP
+.I words\fR file containing a list of words. For each word a co-occurrence model is built.
+.TP
+.I n\fR number of words per co\-occurrence model (for each model, the \fIn\fR most frequent words).
+.TP
+.I left\fR left\-side context to take into account (number of words).
+.TP
+.I right\fR right\-side context to take into account (number of words).
+.TP
+.I corpus\fR file containing the training corpus.
+.TP
+.I model\fR output file on which the co\-occurrence models are saved.
+.PP
+.B \-\-trainlch | \-r\fR
+.br
+Train lexical choices co\-occurrence models using a target language
+co\-occurrence model and a bilingual dictionary. It needs the
+following required parameters:
+.TP
+.I stopwords\fR file containing a list of stop words. Stop words are ignored.
+.TP
+.I lexchoices\fR file containing a list of lexical choices. For each lexical choice a co\-occurrence model is built.
+.TP
+.I n\fR number of words per co\-occurrence model (for each model, the n most frequent words).
+.TP
+.I left\fR left\-side context to take into account (number of words).
+.TP
+.I right\fR right\-side context to take into account (number of words).
+.TP
+.I corpus\fR file containing the training corpus.
+.TP 
+.I wordmodel\fR target\-language word co\-occurrence model (previously trained by means of the \fB\-\-trainwrd\fR option).
+.TP
+.I dic\fR the lexical-selection dictionary (binary format).
+.TP
+.I bildic\fR the bilingual dictionary (binary format).
+.TP
+.I model\fR output file on which the co\-occurrence models are saved.
+.PP
+.PP
+.B \-\-lextor | \-l
+.br
+Perform the lexical selection on the input stream. It needs the
+following required parameters:
+.TP
+.I model\fR  file containing the model to be used for the lexical selection.
+.TP
+.I dic\fR lexical\-selection dictionary (binary format).
+.TP
+.I left\fR left\-side context to take into account (number of words).
+.TP
+.I right\fR right\-side context to take into account (number of words).
+.PP
+.B \-\-weightexp w
+.br 
+Specify a weight value to change the influence of surrounding words
+while training or performing the lexical selection. The parameter
+\fIw\fR must be a positive value.
+.PP
+.B \-\-debug | \-d
+.br 
+Show debug information while working.
+.PP
+.B \-\-help | \-h
+.br
+Shows this help.
+.PP
+.B \-\-version | \-v
+.br
+Shows license information.
+.PP
+.SH SEE ALSO
+.I apertium\-gen\-lextorbil\fR(1),
+.I apertium\-preprocess\-corpus\-lextor\fR(1),
+.I apertium\-gen\-stopwords\-lextor\fR(1),
+.I apertium\-gen\-wlist\-lextor\fR(1),
+.I apertium\-gen\-wlist\-lextor\-translation\fR(1),
+.I apertium\-lextor\-eval\fR(1),
+.I apertium\-lextor\-mono\fR(1).
+.SH BUGS
+Lots of...lurking in the dark and waiting for you!
+.SH AUTHOR
+(c) 2005,2006 Universitat d'Alacant / Universidad de Alicante. All rights
+reserved.

@@ -1,0 +1,46 @@
+.TH apertium-transfer 1 2006-03-08 "" ""
+.SH NAME
+apertium-transfer \- This application is part of (
+.B apertium
+)
+.PP
+This tool is part of the apertium open-source machine translation
+toolbox: \fBhttp://www.apertium.org\fR.
+.SH SYNOPSIS
+.B apertium-transfer
+trules preproc biltrans [input [output]]
+.SH DESCRIPTION
+.BR apertium-transfer 
+is the program that performs the transfer from input language
+into output language. Normally this program will not be used independently, but in combination with other programs:
+see apertium-translator \fR(1).
+.PP
+.RE
+.SH FILES
+These are the five files that can be used with this command:
+.PP
+.B trules
+Transfer rules file
+.PP
+.B preproc    
+Result of preprocess trules file
+.PP
+.B biltrans   
+Bilingual letter transducer file
+.PP
+.B infile
+Input file (stdin by default).
+.PP
+.B outfile
+Output file (stdout by default).
+.PP
+.SH SEE ALSO
+.I apertium-translator\fR(1),
+.I apertium \fR(1).
+.SH BUGS
+Lots of...lurking in the dark and waiting for you!
+.SH AUTHOR
+Copyright (c) 2005, 2006 Universitat d'Alacant / Universidad de Alicante.
+This is free software.  You may redistribute copies of it under the terms
+of the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.
+

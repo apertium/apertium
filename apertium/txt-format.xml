@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<format name="txt">
+  <options>
+    <largeblocks size="8192"/>
+    <input encoding="ISO-8859-1"/>
+    <output encoding="ISO-8859-1"/>
+    <tag-name regexp=""/>
+    <escape-chars regexp='[][\\/@&lt;&gt;^]'/>
+    <space-chars regexp='[ \n\t\r$*]'/>
+    <case-sensitive value="no"/>
+  </options>
+
+  <rules>
+    <format-rule type="empty" eos="yes" priority="1">
+      <tag regexp='(("\n\n")|("\r\n\r\n"))+'/>
+    </format-rule>
+  </rules>
+</format>

@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<format name="html">
+  <options>
+    <largeblocks size="8192"/>
+    <input encoding="ISO-8859-1"/>
+    <output encoding="ISO-8859-1"/>
+    <tag-name regexp="[a-zA-Z]+"/>
+    <escape-chars regexp='[][^@\\/]'/>
+    <space-chars regexp='[ \n\t\r$*&lt;&gt;]'/>
+    <case-sensitive value="no"/>
+  </options>
+
+  <rules>
+    <format-rule type="comment" eos="no" priority="1">
+      <begin regexp='"&lt;!--"'/>
+      <end regexp='"--&gt;"'/>
+    </format-rule>
+
+    <format-rule type="comment" eos="no" priority="2">
+      <begin regexp='"&lt;script"(" "[^&gt;]*)?"&gt;"'/>
+      <end regexp='"&lt;/script"(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+    <format-rule type="comment" eos="no" priority="2">
+      <begin regexp='"&lt;style"(" "[^&gt;]*)?"&gt;"'/>
+      <end regexp='"&lt;/style"(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+    <format-rule type="open" eos="yes" priority="3">
+      <tag regexp='"&lt;br"(" "[^&gt;]*)?"&gt;"|"&lt;hr"(" "[^&gt;]*)?"&gt;"|"&lt;p"(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+    <format-rule type="open" eos="yes" priority="3"> 
+      <tag regexp='"&lt;li"(" "[^&gt;]*)?"&gt;"|"&lt;ul"(" "[^&gt;]*)?"&gt;"|"&lt;ol"(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+    <format-rule type="open" eos="yes" priority="3"> 
+      <tag regexp='"&lt;tr"(" "[^&gt;]*)?"&gt;"|"&lt;td"(" "[^&gt;]*)?"&gt;"|"&lt;th"(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+    <format-rule type="close" eos="yes" priority="3">
+      <tag regexp='"&lt;/br"(" "[^&gt;]*)?"&gt;"|"&lt;/hr"(" "[^&gt;]*)?"&gt;"|"&lt;/p"(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+    <format-rule type="close" eos="yes" priority="3"> 
+      <tag regexp='"&lt;/li"(" "[^&gt;]*)?"&gt;"|"&lt;/ul"(" "[^&gt;]*)?"&gt;"|"&lt;/ol"(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+    <format-rule type="close" eos="yes" priority="3"> 
+      <tag regexp='"&lt;/tr"(" "[^&gt;]*)?"&gt;"|"&lt;/td"(" "[^&gt;]*)?"&gt;"|"&lt;/th"(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+<!-- Faltan algunas etiquetas de final de frase. -->
+
+    <format-rule type="open" eos="yes" priority="3"> 
+      <tag regexp='"&lt;title"(" "[^&gt;]*)?"&gt;"|"&lt;div"(" "[^&gt;]*)?"&gt;"|"&lt;option"(" "[^&gt;]*)?"&gt;"|"&lt;h"[1-6](" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+    <format-rule type="close" eos="yes" priority="3"> 
+      <tag regexp='"&lt;/title"(" "[^&gt;]*)?"&gt;"|"&lt;/div"(" "[^&gt;]*)?"&gt;"|"&lt;/option"(" "[^&gt;]*)?"&gt;"|"&lt;/h"[1-6](" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+<!-- La etiqueta DOCTYPE no la reconoce -->
+
+    <format-rule type="empty" eos="no" priority="4">
+      <tag regexp='"&lt;"("img"|"link")(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+    <format-rule type="empty" eos="no" priority="5">
+      <tag regexp='("&lt;!"|"&lt;?")[a-zA-Z][^&gt;]*"&gt;"'/>
+    </format-rule>
+
+<!-- End (Cambios hechos por Gorka L.)-->
+
+    <format-rule type="open" eos="no" priority="5">
+      <tag regexp='"&lt;"[a-zA-Z][^&gt;]*"&gt;"'/>
+    </format-rule>
+    
+    <format-rule type="close" eos="no" priority="5">
+      <tag regexp='"&lt;/"[a-zA-Z][^&gt;]*"&gt;"'/>
+    </format-rule>
+    
+    <replacement-rule regexp='"&amp;"([a-zA-Z]+|"#x"[0-9a-fA-F]{1,4}|"#"[0-9]{1,8});'>
+      <replace source="&amp;Agrave;" target="À" prefer="yes"/>
+      <replace source="&amp;#192;" target="À"/>
+      <replace source="&amp;#xC0;" target="À"/>
+      <replace source="&amp;#xc0;" target="À"/>
+      <replace source="&amp;Aacute;" target="Á" prefer="yes"/>
+      <replace source="&amp;#193;" target="Á"/>
+      <replace source="&amp;#xC1;" target="Á"/>
+      <replace source="&amp;#xc1;" target="Á"/>
+      <replace source="&amp;Acirc;" target="Â" prefer="yes"/>
+      <replace source="&amp;#194;" target="Â"/>
+      <replace source="&amp;#xC2;" target="Â"/>
+      <replace source="&amp;#xc2;" target="Â"/>
+      <replace source="&amp;Atilde;" target="Ã" prefer="yes"/>
+      <replace source="&amp;#195;" target="Ã"/>
+      <replace source="&amp;#xC3;" target="Ã"/>
+      <replace source="&amp;#xc3;" target="Ã"/>
+      <replace source="&amp;Auml;" target="Ä" prefer="yes"/>
+      <replace source="&amp;#196;" target="Ä"/>
+      <replace source="&amp;#xC4;" target="Ä"/>
+      <replace source="&amp;#xc4;" target="Ä"/>
+      <replace source="&amp;Aring;" target="Å" prefer="yes"/>
+      <replace source="&amp;#197;" target="Å"/>
+      <replace source="&amp;#xC5;" target="Å"/>
+      <replace source="&amp;#xc5;" target="Å"/>
+      <replace source="&amp;AElig;" target="Æ" prefer="yes"/>
+      <replace source="&amp;#198;" target="Æ"/>
+      <replace source="&amp;#xC6;" target="Æ"/>
+      <replace source="&amp;#xc6;" target="Æ"/>
+      <replace source="&amp;Ccedil;" target="Ç" prefer="yes"/>
+      <replace source="&amp;#199;" target="Ç"/>
+      <replace source="&amp;#xC7;" target="Ç"/>
+      <replace source="&amp;#xc7;" target="Ç"/>
+      <replace source="&amp;Egrave;" target="È" prefer="yes"/>
+      <replace source="&amp;#200;" target="È"/>
+      <replace source="&amp;#xC8;" target="È"/>
+      <replace source="&amp;#xc8;" target="È"/>
+      <replace source="&amp;Eacute;" target="É" prefer="yes"/>
+      <replace source="&amp;#201;" target="É"/>
+      <replace source="&amp;#xC9;" target="É"/>
+      <replace source="&amp;#xc9;" target="É"/>
+      <replace source="&amp;Ecirc;" target="Ê" prefer="yes"/>
+      <replace source="&amp;#202;" target="Ê"/>
+      <replace source="&amp;#xCA;" target="Ê"/>
+      <replace source="&amp;#xca;" target="Ê"/>
+      <replace source="&amp;Euml;" target="Ë" prefer="yes"/>
+      <replace source="&amp;#203;" target="Ë"/>
+      <replace source="&amp;#xCB;" target="Ë"/>
+      <replace source="&amp;#xcb;" target="Ë"/>
+      <replace source="&amp;Igrave;" target="Ì" prefer="yes"/>
+      <replace source="&amp;#204;" target="Ì"/>
+      <replace source="&amp;#xCC;" target="Ì"/>
+      <replace source="&amp;#xcc;" target="Ì"/>
+      <replace source="&amp;Iacute;" target="Í" prefer="yes"/>
+      <replace source="&amp;#205;" target="Í"/>
+      <replace source="&amp;#xCD;" target="Í"/>
+      <replace source="&amp;#xcd;" target="Í"/>
+      <replace source="&amp;Icirc;" target="Î" prefer="yes"/>
+      <replace source="&amp;#206;" target="Î"/>
+      <replace source="&amp;#xCE;" target="Î"/>
+      <replace source="&amp;#xce;" target="Î"/>
+      <replace source="&amp;Iuml;" target="Ï" prefer="yes"/>
+      <replace source="&amp;#207;" target="Ï"/>
+      <replace source="&amp;#xCF;" target="Ï"/>
+      <replace source="&amp;#xcf;" target="Ï"/>
+      <replace source="&amp;ETH;" target="Ð" prefer="yes"/>
+      <replace source="&amp;#208;" target="Ð"/>
+      <replace source="&amp;#xD0;" target="Ð"/>
+      <replace source="&amp;#xd0;" target="Ð"/>
+      <replace source="&amp;Ntilde;" target="Ñ" prefer="yes"/>
+      <replace source="&amp;#209;" target="Ñ"/>
+      <replace source="&amp;#xD1;" target="Ñ"/>
+      <replace source="&amp;#xd1;" target="Ñ"/>
+      <replace source="&amp;Ograve;" target="Ò" prefer="yes"/>
+      <replace source="&amp;#210;" target="Ò"/>
+      <replace source="&amp;#xD2;" target="Ò"/>
+      <replace source="&amp;#xd2;" target="Ò"/>
+      <replace source="&amp;Oacute;" target="Ó" prefer="yes"/>
+      <replace source="&amp;#211;" target="Ó"/>
+      <replace source="&amp;#xD3;" target="Ó"/>
+      <replace source="&amp;#xd3;" target="Ó"/>
+      <replace source="&amp;Ocirc;" target="Ô" prefer="yes"/>
+      <replace source="&amp;#212;" target="Ô"/>
+      <replace source="&amp;#xD4;" target="Ô"/>
+      <replace source="&amp;#xd4;" target="Ô"/>
+      <replace source="&amp;Otilde;" target="Õ" prefer="yes"/>
+      <replace source="&amp;#213;" target="Õ"/>
+      <replace source="&amp;#xD5;" target="Õ"/>
+      <replace source="&amp;#xd5;" target="Õ"/>
+      <replace source="&amp;Ouml;" target="Ö" prefer="yes"/>
+      <replace source="&amp;#214;" target="Ö"/>
+      <replace source="&amp;#xD6;" target="Ö"/>
+      <replace source="&amp;#xd6;" target="Ö"/>
+      <replace source="&amp;Oslash;" target="Ø" prefer="yes"/>
+      <replace source="&amp;#216;" target="Ø"/>
+      <replace source="&amp;#xD8;" target="Ø"/>
+      <replace source="&amp;#xd8;" target="Ø"/>
+      <replace source="&amp;Ugrave;" target="Ù" prefer="yes"/>
+      <replace source="&amp;#217;" target="Ù"/>
+      <replace source="&amp;#xD9;" target="Ù"/>
+      <replace source="&amp;#xd9;" target="Ù"/>
+      <replace source="&amp;Uacute;" target="Ú" prefer="yes"/>
+      <replace source="&amp;#218;" target="Ú"/>
+      <replace source="&amp;#xDA;" target="Ú"/>
+      <replace source="&amp;#xda;" target="Ú"/>
+      <replace source="&amp;Ucirc;" target="Û" prefer="yes"/>
+      <replace source="&amp;#219;" target="Û"/>
+      <replace source="&amp;#xDB;" target="Û"/>
+      <replace source="&amp;#xdb;" target="Û"/>
+      <replace source="&amp;Uuml;" target="Ü" prefer="yes"/>
+      <replace source="&amp;#220;" target="Ü"/>
+      <replace source="&amp;#xDC;" target="Ü"/>
+      <replace source="&amp;#xdc;" target="Ü"/>
+      <replace source="&amp;Yacute;" target="Ý" prefer="yes"/>
+      <replace source="&amp;#221;" target="Ý"/>
+      <replace source="&amp;#xDD;" target="Ý"/>
+      <replace source="&amp;#xdd;" target="Ý"/>
+      <replace source="&amp;THORN;" target="Þ" prefer="yes"/>
+      <replace source="&amp;#222;" target="Þ"/>
+      <replace source="&amp;#xDE;" target="Þ"/>
+      <replace source="&amp;#xde;" target="Þ"/>
+      <replace source="&amp;szlig;" target="ß" prefer="yes"/>
+      <replace source="&amp;#223;" target="ß"/>
+      <replace source="&amp;#xDF;" target="ß"/>
+      <replace source="&amp;#xdf;" target="ß"/>
+      <replace source="&amp;agrave;" target="à" prefer="yes"/>
+      <replace source="&amp;#224;" target="à"/>
+      <replace source="&amp;#xE0;" target="à"/>
+      <replace source="&amp;#xe0;" target="à"/>
+      <replace source="&amp;aacute;" target="á" prefer="yes"/>
+      <replace source="&amp;#225;" target="á"/>
+      <replace source="&amp;#xE1;" target="á"/>
+      <replace source="&amp;#xe1;" target="á"/>
+      <replace source="&amp;acirc;" target="â" prefer="yes"/>
+      <replace source="&amp;#226;" target="â"/>
+      <replace source="&amp;#xE2;" target="â"/>
+      <replace source="&amp;#xe2;" target="â"/>
+      <replace source="&amp;atilde;" target="ã" prefer="yes"/>
+      <replace source="&amp;#227;" target="ã"/>
+      <replace source="&amp;#xE3;" target="ã"/>
+      <replace source="&amp;#xe3;" target="ã"/>
+      <replace source="&amp;auml;" target="ä" prefer="yes"/>
+      <replace source="&amp;#228;" target="ä"/>
+      <replace source="&amp;#xE4;" target="ä"/>
+      <replace source="&amp;#xe4;" target="ä"/>
+      <replace source="&amp;aring;" target="å" prefer="yes"/>
+      <replace source="&amp;#229;" target="å"/>
+      <replace source="&amp;#xE5;" target="å"/>
+      <replace source="&amp;#xe5;" target="å"/>
+      <replace source="&amp;aelig;" target="æ" prefer="yes"/>
+      <replace source="&amp;#230;" target="æ"/>
+      <replace source="&amp;#xE6;" target="æ"/>
+      <replace source="&amp;#xe6;" target="æ"/>
+      <replace source="&amp;ccedil;" target="ç" prefer="yes"/>
+      <replace source="&amp;#231;" target="ç"/>
+      <replace source="&amp;#xE7;" target="ç"/>
+      <replace source="&amp;#xe7;" target="ç"/>
+      <replace source="&amp;egrave;" target="è" prefer="yes"/>
+      <replace source="&amp;#232;" target="è"/>
+      <replace source="&amp;#xE8;" target="è"/>
+      <replace source="&amp;#xe8;" target="è"/>
+      <replace source="&amp;eacute;" target="é" prefer="yes"/>
+      <replace source="&amp;#233;" target="é"/>
+      <replace source="&amp;#xE9;" target="é"/>
+      <replace source="&amp;#xe9;" target="é"/>
+      <replace source="&amp;ecirc;" target="ê" prefer="yes"/>
+      <replace source="&amp;#234;" target="ê"/>
+      <replace source="&amp;#xEA;" target="ê"/>
+      <replace source="&amp;#xea;" target="ê"/>
+      <replace source="&amp;euml;" target="ë" prefer="yes"/>
+      <replace source="&amp;#235;" target="ë"/>
+      <replace source="&amp;#xEB;" target="ë"/>
+      <replace source="&amp;#xeb;" target="ë"/>
+      <replace source="&amp;igrave;" target="ì" prefer="yes"/>
+      <replace source="&amp;#236;" target="ì"/>
+      <replace source="&amp;#xEC;" target="ì"/>
+      <replace source="&amp;#xec;" target="ì"/>
+      <replace source="&amp;iacute;" target="í" prefer="yes"/>
+      <replace source="&amp;#237;" target="í"/>
+      <replace source="&amp;#xED;" target="í"/>
+      <replace source="&amp;#xed;" target="í"/>
+      <replace source="&amp;icirc;" target="î" prefer="yes"/>
+      <replace source="&amp;#238;" target="î"/>
+      <replace source="&amp;#xEE;" target="î"/>
+      <replace source="&amp;#xee;" target="î"/>
+      <replace source="&amp;iuml;" target="ï" prefer="yes"/>
+      <replace source="&amp;#239;" target="ï"/>
+      <replace source="&amp;#xEF;" target="ï"/>
+      <replace source="&amp;#xef;" target="ï"/>
+      <replace source="&amp;eth;" target="ð" prefer="yes"/>
+      <replace source="&amp;#240;" target="ð"/>
+      <replace source="&amp;#xF0;" target="ð"/>
+      <replace source="&amp;#xf0;" target="ð"/>
+      <replace source="&amp;ntilde;" target="ñ" prefer="yes"/>
+      <replace source="&amp;#241;" target="ñ"/>
+      <replace source="&amp;#xF1;" target="ñ"/>
+      <replace source="&amp;#xf1;" target="ñ"/>
+      <replace source="&amp;ograve;" target="ò" prefer="yes"/>
+      <replace source="&amp;#242;" target="ò"/>
+      <replace source="&amp;#xF2;" target="ò"/>
+      <replace source="&amp;#xf2;" target="ò"/>
+      <replace source="&amp;oacute;" target="ó" prefer="yes"/>
+      <replace source="&amp;#243;" target="ó"/>
+      <replace source="&amp;#xF3;" target="ó"/>
+      <replace source="&amp;#xf3;" target="ó"/>
+      <replace source="&amp;ocirc;" target="ô" prefer="yes"/>
+      <replace source="&amp;#244;" target="ô"/>
+      <replace source="&amp;#xF4;" target="ô"/>
+      <replace source="&amp;#xf4;" target="ô"/>
+      <replace source="&amp;otilde;" target="õ" prefer="yes"/>
+      <replace source="&amp;#245;" target="õ"/>
+      <replace source="&amp;#xF5;" target="õ"/>
+      <replace source="&amp;#xf5;" target="õ"/>
+      <replace source="&amp;ouml;" target="ö" prefer="yes"/>
+      <replace source="&amp;#246;" target="ö"/>
+      <replace source="&amp;#xF6;" target="ö"/>
+      <replace source="&amp;#xf6;" target="ö"/>
+      <replace source="&amp;oslash;" target="ø" prefer="yes"/>
+      <replace source="&amp;#248;" target="ø"/>
+      <replace source="&amp;#xF8;" target="ø"/>
+      <replace source="&amp;#xf8;" target="ø"/>
+      <replace source="&amp;ugrave;" target="ù" prefer="yes"/>
+      <replace source="&amp;#249;" target="ù"/>
+      <replace source="&amp;#xF9;" target="ù"/>
+      <replace source="&amp;#xf9;" target="ù"/>
+      <replace source="&amp;uacute;" target="ú" prefer="yes"/>
+      <replace source="&amp;#250;" target="ú"/>
+      <replace source="&amp;#xFA;" target="ú"/>
+      <replace source="&amp;#xfa;" target="ú"/>
+      <replace source="&amp;ucirc;" target="û" prefer="yes"/>
+      <replace source="&amp;#251;" target="û"/>
+      <replace source="&amp;#xFB;" target="û"/>
+      <replace source="&amp;#xfb;" target="û"/>
+      <replace source="&amp;uuml;" target="ü" prefer="yes"/>
+      <replace source="&amp;#252;" target="ü"/>
+      <replace source="&amp;#xFC;" target="ü"/>
+      <replace source="&amp;#xfc;" target="ü"/>
+      <replace source="&amp;yacute;" target="ý" prefer="yes"/>
+      <replace source="&amp;#253;" target="ý"/>
+      <replace source="&amp;#xFD;" target="ý"/>
+      <replace source="&amp;#xfd;" target="ý"/>
+      <replace source="&amp;thorn;" target="þ" prefer="yes"/>
+      <replace source="&amp;#254;" target="þ"/>
+      <replace source="&amp;#xFE;" target="þ"/>
+      <replace source="&amp;#xfe;" target="þ"/>
+      <replace source="&amp;yuml;" target="ÿ" prefer="yes"/>
+      <replace source="&amp;#255;" target="ÿ"/>
+      <replace source="&amp;#xFF;" target="ÿ"/>
+      <replace source="&amp;#xff;" target="ÿ"/>
+      <replace source="&amp;rsquo;" target="'"/>
+<!--      <replace source="&amp;apos;" target="'"/>
+      <replace source="&amp;quot;" target="\&quot;"/> -->
+    </replacement-rule>  
+  </rules>
+
+</format>

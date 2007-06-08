@@ -1,0 +1,56 @@
+.TH apertium-gen-wlist-lextor-translation 1 2006-12-12 "" ""
+.SH NAME
+apertium-gen-wlist-lextor-translation \- This application is part of
+(
+.B apertium
+)
+.PP
+This tool is part of the apertium machine translation
+architecture: \fBhttp://apertium.sf.net\fR.
+.SH SYNOPSIS
+.B apertium\-gen\-wlist\-lextor\-translation
+.B \-\-mono|\-m\fR dic.bin 
+.B \-\-bil|\-b\fR bildic.bin 
+.B \-\-wlist|\-w\fR wlistfile
+.PP
+.SH DESCRIPTION
+.BR apertium\-gen\-wlist\-lextor\-translation 
+is the application responsible of generating all the possible
+translations of polysemous words.
+.SH OPTIONS
+.TP
+.B \-\-mono|\-m\fR dic.bin
+.TP
+ Specifies the monolingual lexical selection dictionary to use (see apertium\-gen\-lextormono).
+.TP
+.B \-\-bil|\-b\fR bildic.bin
+.TP
+Specifies the bilingual lexical selection ditionary to use (see apertium\-gen\-lextorbil).
+.TP 
+.B \-\-wlist|-w\fR wlistfile
+.TP
+Specifies the list of words to translate (see apertium\-gen\-wlist\-lextor).
+.TP 
+.B \-\-help|\-h\fR
+.TP
+Shows a brief usage help.
+.TP 
+.B \-\-version|\-v\fR
+.TP
+Shows the version string of this tool and it's license.
+.SH FILES
+This tool uses no files apart from the ones associated to each option.
+.PP
+.SH SEE ALSO
+.I apertium\-gen\-lextorbil\fR(1),
+.I apertium\-preprocess\-corpus\-lextor\fR(1),
+.I apertium\-gen\-stopwords\-lextor\fR(1),
+.I apertium\-gen\-wlist\-lextor\fR(1),
+.I apertium\-gen\-lextormono\fR(1),
+.I apertium\-lextor\-eval\fR(1),
+.I apertium\-lextor\fR(1).
+.SH BUGS
+Lots of...lurking in the dark and waiting for you!
+.SH AUTHOR
+(c) 2005,2006 Universitat d'Alacant / Universidad de Alicante. All rights
+reserved.

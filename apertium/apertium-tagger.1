@@ -1,0 +1,92 @@
+.TH apertium-tagger 1 2006-08-30 "" ""
+.SH NAME
+apertium-tagger \- This application is part of  (
+.B apertium
+)
+.PP
+This tool is part of the apertium open-source machine translation
+architecture: \fBhttp://www.apertium.org\fR.
+.SH SYNOPSIS
+.B apertium-tagger \-\-train|\-t 
+{n} DIC CRP TSX PROB [\-\-debug|\-d]\fR 
+.PP
+.B apertium-tagger \-\-supervised|\-s 
+{n} DIC CRP TSX PROB HTAG UNTAG [\-\-debug|\-d]\fR 
+.PP
+.B apertium-tagger \-\-retrain|\-r 
+{n} CRP PROB [\-\-debug|\-d] \fR
+.PP
+.B apertium-tagger \-\-tagger|\-g 
+PROB [\-\-debug|\-d] [INPUT [OUTPUT]] \fR
+.PP
+.SH DESCRIPTION
+.BR apertium-tagger 
+is the application responsible of the apertium part-of-speech tagger
+training or tagging, depending on the calling options.  This command
+only reads from the standard input if the option \fB\-\-tagger\fR or
+\fB\-g\fR is used.
+.SH OPTIONS
+.TP
+.B \-t {n}, \-\-train {n}
+Initializes parameters through the Kupiec's method (unsupervised),
+then performs \fBn\fR iterations of the Baum-Welch training algorithm
+(unsupervised).
+.TP
+.B \-s {n}, \-\-supervised {n}
+Initializes parameters against a hand-tagged text (supervised) through
+the maximum likelihood estimate method, then performs \fBn\fR
+iterations of the Baum-Welch training algorithm (unsupervised)
+.TP
+.B \-r {n}, \-\-retrain {n}
+Retrains the model with \fBn\fR additional Baum-Welch iterations
+(unsupervised).
+.TP
+.B \-g, \-\-tagger
+Tags input text by means of Viterbi algorithm.
+.TP
+.B \-d, \-\-debug
+Print error (if any) or debug messages while operating.
+.TP
+.B \-h, \-\-help
+Display a help message.
+.SH FILES
+These are the kinds of files used with each option:
+.PP
+.B DIC
+Full expanded dictionary file
+.PP
+.B CRP
+Training text corpus file
+.PP
+.B TSX
+Tagger specification file, in XML format
+.PP
+.B PROB 
+Tagger data file, built in the training and used while tagging
+.PP
+.B  HTAG        
+Hand-tagged text corpus
+.PP
+.B UNTAG       
+Untagged text corpus, morphological analysis of HTAG corpus to use
+both jointly with -s option
+.PP
+.B INPUT       
+Input file, stdin by default
+.PP
+.B OUTPUT      
+Output file, stdout by default
+.PP
+.SH SEE ALSO
+.I lt-proc\fR(1),
+.I lt-comp\fR(1),
+.I lt-expand\fR(1),
+.I apertium-translator\fR(1),
+.I apertium\fR(1).
+.SH BUGS
+Lots of...lurking in the dark and waiting for you!
+.SH AUTHOR
+Copyright (c) 2005, 2006 Universitat d'Alacant / Universidad de Alicante.
+This is free software.  You may redistribute copies of it under the terms
+of the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.
+

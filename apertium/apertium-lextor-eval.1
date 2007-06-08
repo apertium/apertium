@@ -1,0 +1,62 @@
+.TH apertium-lextor-eval 1 2006-12-12 "" ""
+.SH NAME
+apertium-lextor-eval \- This application is part of
+(
+.B apertium
+)
+.PP
+This tool is part of the apertium machine translation
+architecture: \fBhttp://apertium.sf.net\fR.
+.SH SYNOPSIS
+.B apertium\-lextor\-eval
+.B \-\-reference\fR reftext 
+.B \-\-parameters\fR | \fB\-p\fR model dic left right
+.PP
+.SH DESCRIPTION
+.BR apertium\-lextor\-eval 
+is the application used to evaluate the performance of lexical
+selection models that have been previously estimated with
+\fBapertium\-lextor\fR(1). To achieve this purpose a manually
+disambiguated corpus is used. This corpus is read from the standard
+input and must be in the intermediate format used by apertium.
+.SH OPTIONS
+.TP
+.B \-\-reference | \-r\fR
+.br
+Specifies the reference corpus used for evaluation (one word per line
+with the correct translation sense for those words with more than
+one).
+.TP
+.B \-\-parameters | \-p\fR
+.br
+It allows to specify the following required parameters:
+.TP
+.I model\fR the file containing the model to be used for the lexical selection.
+.TP
+.I dic\fR  the lexical\-selection dictionary in binary format.
+.TP
+.I left\fR left\-side context to take into account (number of words).
+.TP
+.I right\fR right\-side context to take into account (number of words).
+.PP
+.B \-\-help | \-h
+.br
+Shows this help.
+.PP
+.B \-\-version | \-v
+.br
+Shows license information.
+.PP
+.SH SEE ALSO
+.I apertium\-gen\-lextorbil\fR(1),
+.I apertium\-preprocess\-corpus\-lextor\fR(1),
+.I apertium\-gen\-stopwords\-lextor\fR(1),
+.I apertium\-gen\-wlist\-lextor\fR(1),
+.I apertium\-gen\-wlist\-lextor\-translation\fR(1),
+.I apertium\-lextor\-mono\fR(1),
+.I apertium\-lextor\fR(1).
+.SH BUGS
+Lots of...lurking in the dark and waiting for you!
+.SH AUTHOR
+(c) 2005,2006 Universitat d'Alacant / Universidad de Alicante. All rights
+reserved.

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- 
+  DTD for the modes.xml file     
+-->    
+
+<!ELEMENT modes (mode+)>
+
+<!ELEMENT mode (pipeline)>
+<!ATTLIST mode name ID #REQUIRED>
+
+<!ELEMENT pipeline (program+)>
+
+<!ELEMENT program (file*)>
+<!ATTLIST program name CDATA #REQUIRED>
+
+<!ELEMENT file EMPTY>
+<!ATTLIST file name CDATA #REQUIRED>

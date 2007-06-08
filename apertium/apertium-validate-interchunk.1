@@ -1,0 +1,34 @@
+.TH apertium\-validate\-interchunk 1 2006\-03\-11 "" ""
+.SH NAME
+apertium\-validate\-interchunk \- This application is part of 
+(
+.B apertium
+)
+.PP
+This tool is part of the apertium open\-source machine translation toolbox: \fBhttp://www.apertium.org\fR.
+.SH SYNOPSIS
+.B apertium\-validate\-interchunk 
+<input_file>
+.SH DESCRIPTION
+This is an intermediate tool from Apertium level 2 engine. You should
+never have to use it independently.
+.PP
+It is a script that validates a set of structural interchunk rules
+against the apertium structural interchunk rules DTD using the
+\fBxmllint\fR utility.
+.SH OPTIONS
+It has no options.
+.SH FILES
+.B input_file
+A \fIinterchunk.xml\fR file
+.PP
+.B modes.dtd
+The DTD used to validate the input file.
+.PP
+.SH BUGS
+Lots of them...lurking in the dark and waiting for you!
+.SH AUTHOR
+Copyright (c) 2005-2007 Universitat d'Alacant / Universidad de Alicante.
+This is free software.  You may redistribute copies of it under the terms
+of the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.
+

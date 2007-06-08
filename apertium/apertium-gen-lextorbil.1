@@ -1,0 +1,48 @@
+.TH apertium-gen-lextorbil 1 2006-12-11 "" ""
+.SH NAME
+apertium-gen-lextorbil \- This application is part of
+(
+.B apertium
+)
+.PP
+This tool is part of the apertium machine translation
+architecture: \fBhttp://apertium.sf.net\fR.
+.SH SYNOPSIS
+.B apertium\-gen\-lextorbil
+.I lr\fR\ |
+.I rl\fR
+input_file output_file
+.PP
+.SH DESCRIPTION
+.BR apertium\-gen\-lextorbil 
+is the application responsible of generating the bilingual dictionary
+used by the transfer module when apertium\-lextor is being used to
+perform lexical selection.
+.SH OPTIONS
+.TP
+.B lr\fR The bilingual dictionary to generate is for left to right translation.
+.PP
+.B rl\fR The bilingual dictionary to generate is for right to left translation.
+.SH FILES
+These are the kinds of files used with this tool:
+.PP
+.B input_file
+A bilingual dictionary.
+.PP
+.B output_file
+A bilingual dictionary in which each word has \fIonly\fR one
+translation equivalent.
+.PP
+.SH SEE ALSO
+.I apertium\-gen\-lextormono\fR(1),
+.I apertium\-preprocess\-corpus\-lextor\fR(1),
+.I apertium\-gen\-stopwords\-lextor\fR(1),
+.I apertium\-gen\-wlist\-lextor\fR(1),
+.I apertium\-gen\-wlist\-lextor\-translation\fR(1),
+.I apertium\-lextor\fR(1),
+.I apertium\-lextor\-eval\fR(1).
+.SH BUGS
+Lots of...lurking in the dark and waiting for you!
+.SH AUTHOR
+(c) 2005,2006 Universitat d'Alacant / Universidad de Alicante. All rights
+reserved.

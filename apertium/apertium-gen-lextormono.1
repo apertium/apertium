@@ -1,0 +1,48 @@
+.TH apertium-gen-lextormono 1 2006-12-11 "" ""
+.SH NAME
+apertium-gen-lextormono \- This application is part of
+(
+.B apertium
+)
+.PP
+This tool is part of the apertium machine translation
+architecture: \fBhttp://apertium.sf.net\fR.
+.SH SYNOPSIS
+.B apertium\-gen\-lextormono
+.I lr\fR\ |
+.I rl\fR
+input_file output_file
+.PP
+.SH DESCRIPTION
+.BR apertium\-gen\-lextormono 
+is the application responsible of generating the monolingual
+dictionary used by the lexical selection module to know about the
+translation sense marks of each source language word.
+.SH OPTIONS
+.TP
+.B lr\fR The monolingual dictionary to generate is for left to right translation.
+.PP
+.B rl\fR The monolingual dictionary to generate is for right to left translation.
+.SH FILES
+These are the kinds of files used with this tool:
+.PP
+.B input_file
+A bilingual dictionary.
+.PP
+.B output_file
+A monolingual dictionary that for each word gives it's trasnlation
+sense marks.
+.PP
+.SH SEE ALSO
+.I apertium\-gen\-lextorbil\fR(1),
+.I apertium\-preprocess\-corpus\-lextor\fR(1),
+.I apertium\-gen\-stopwords\-lextor\fR(1),
+.I apertium\-gen\-wlist\-lextor\fR(1),
+.I apertium\-gen\-wlist\-lextor\-translation\fR(1),
+.I apertium\-lextor\-eval\fR(1),
+.I apertium\-lextor\fR(1).
+.SH BUGS
+Lots of...lurking in the dark and waiting for you!
+.SH AUTHOR
+(c) 2005,2006 Universitat d'Alacant / Universidad de Alicante. All rights
+reserved.

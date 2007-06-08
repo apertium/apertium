@@ -1,0 +1,110 @@
+<!--
+      DTD for the format of dictionaries
+-->
+<!ELEMENT dictionary (alphabet?, sdefs?,
+		      pardefs?, section+)>
+	<!-- root element-->
+
+<!ELEMENT alphabet (#PCDATA)>
+	<!-- alphabetic character list -->
+	
+<!ELEMENT sdefs (sdef+)>
+	<!-- symbol definition section -->
+	
+<!ELEMENT sdef EMPTY>
+	<!-- symbol definition -->
+<!ATTLIST sdef
+	n ID #REQUIRED
+>
+	<!-- n: symbol (tag) name -->
+<!ATTLIST sdef
+	c CDATA  #IMPLIED
+>
+	<!-- c: symbol (tag) comment -->
+	
+<!ELEMENT pardefs (pardef+)>
+	<!-- paradigm definition section -->
+	
+<!ELEMENT pardef (e+)>
+	<!-- paradigm definition -->
+<!ATTLIST pardef
+	n CDATA #REQUIRED
+>
+	<!-- n: paradigm name -->
+	
+<!ELEMENT section (e+)>
+	<!-- dictionary section -->
+<!ATTLIST section
+	id ID #REQUIRED
+	type (standard|inconditional|postblank) #REQUIRED
+	
+>
+	<!-- id: dictionary section identifier -->
+	<!-- type: dictionary section type -->
+	
+<!ELEMENT e (i | p | par | re)+>
+	<!-- entry -->
+<!ATTLIST e
+	r (LR|RL) #IMPLIED
+	lm CDATA #IMPLIED
+	a CDATA #IMPLIED
+	c CDATA #IMPLIED
+	i CDATA #IMPLIED
+	slr CDATA #IMPLIED
+	srl CDATA #IMPLIED
+>
+	<!-- r: restriction LR: left-to-right,
+			    RL: right-to-left -->
+	<!-- lm: lemma -->
+	<!-- a: author -->
+	<!-- c: comment -->
+	<!-- i: ignore ('yes') means ignore, otherwise it is not ignored) -->
+	<!-- slr: translation sense when translating from left to right -->
+	<!-- srl: translation sense when translating from right to left --> 
+<!ELEMENT par EMPTY>
+	<!-- reference to paradigm -->
+<!ATTLIST par
+	n CDATA #REQUIRED
+	
+>
+	<!-- n: paradigm name -->
+	
+<!ELEMENT i (#PCDATA | b | s | g | j | a)*>
+	<!-- identity -->
+	
+<!ELEMENT re (#PCDATA)>
+	<!-- regular expression identification -->
+	
+<!ELEMENT p (l, r)>
+	<!-- pair of strings -->
+	
+<!ELEMENT l (#PCDATA | a | b | g | j | s)*>
+	<!-- left part of p -->
+	
+<!ELEMENT r (#PCDATA | a | b | g | j | s)*>
+	<!-- right part of p -->
+	
+<!ELEMENT a EMPTY>
+	<!-- post-generator wake-up mark -->
+	
+<!ELEMENT b EMPTY>
+	<!-- blank chars block mark -->
+	
+<!ELEMENT g (#PCDATA | a | b | j | s)*>
+	<!-- mark special groups in lemmas -->
+<!ATTLIST g
+	i CDATA #IMPLIED
+>
+	<!-- i is used to co-index groups in the left with those -->
+	<!-- on the right of a pair -->
+	
+<!ELEMENT j EMPTY>
+	<!-- join lexical forms -->
+	
+<!ELEMENT s EMPTY>
+	<!-- reference to symbol (tag) -->
+<!ATTLIST s
+	n IDREF #REQUIRED
+	
+>
+	<!-- n: symbol (tag) name -->

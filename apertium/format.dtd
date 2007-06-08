@@ -1,0 +1,126 @@
+<!--
+      DTD for the format specification files
+      Sergio Ortiz  2005.05.13
+-->
+
+
+<!ELEMENT format (options,rules)> 
+<!ATTLIST format name CDATA #REQUIRED> 
+<!--
+      'format' is the root element containing the whole format specification
+      file.  The attribute 'name' specifies the name of the format
+-->
+
+<!ELEMENT options (largeblocks,input,output, tag-name, escape-chars,space-chars,case-sensitive)>
+<!--
+      General options of the format 
+-->
+		
+<!ELEMENT largeblocks EMPTY>
+<!ATTLIST largeblocks size CDATA #REQUIRED>
+<!-- 
+      The attribute size is used to define the maximal size in bytes of
+      inline format blocks
+-->
+		
+<!ELEMENT input EMPTY>
+<!ATTLIST input zip-path CDATA #IMPLIED>
+<!ATTLIST input encoding CDATA #REQUIRED>
+<!--  
+      Reserved for future extensions
+-->
+		
+<!ELEMENT output EMPTY>
+<!ATTLIST output zip-path CDATA #IMPLIED>
+<!ATTLIST output encoding CDATA #REQUIRED>
+<!--
+      Reserved for future extensions
+-->
+
+<!ELEMENT tag-name EMPTY>
+<!ATTLIST tag-name regexp CDATA #REQUIRED>
+<!--
+      The attribute regexp defines (whith a _flex_ regular expression) how 
+      take a tag name from a whole tag. '\'
+-->
+
+<!ELEMENT escape-chars EMPTY>
+<!ATTLIST escape-chars regexp CDATA #REQUIRED>
+<!--
+      The attribute regexp defines (whith a _flex_ regular expression) the
+      set of characters to be escaped with preceding a backslash '\'
+-->
+
+<!ELEMENT space-chars EMPTY>
+<!ATTLIST space-chars regexp CDATA #REQUIRED>
+<!--
+      Define the space characters (in regexp) with a _flex_ regular 
+      expression
+-->
+
+<!ELEMENT case-sensitive EMPTY>
+<!ATTLIST case-sensitive value (yes|no) #REQUIRED>
+<!--
+      The attribute 'value' is set to 'yes' if the case is relevant in the 
+      specification of the format.  Otherwise is set to 'no'
+-->
+
+		
+<!ELEMENT rules (format-rule|replacement-rule)+>
+<!--
+      Group the rules of processing format and the rules of substitute 
+      expressions by characters that are part of the text
+-->
+
+<!ELEMENT format-rule (tag|(begin,end))>
+<!ATTLIST format-rule type (comment|empty|open|close) #IMPLIED>
+<!ATTLIST format-rule eos (yes|no) #IMPLIED>
+<!ATTLIST format-rule priority CDATA #REQUIRED>
+<!--
+      Format rule parent element.  It may include a 'tag' element or
+      a couple of elements 'begin', 'end'.  In the first case, this element is 
+      considered to be part of the format.  In the second case, the begin and 
+      the end element are considered to enclosing format.  The attribute
+      'eos' (end of sentence) is set to 'yes' if that rule defines a dot in
+      the text being processed (is no by default).  The attribute 'priority' 
+      marks the order of precedence of the rule
+-->
+      
+<!ELEMENT tag EMPTY>
+<!ATTLIST tag regexp CDATA #REQUIRED>
+<!--
+      Define an element that is part of the format by the pattern specified
+      as a value for the regexp attribute
+-->
+
+<!ELEMENT begin EMPTY>
+<!ATTLIST begin regexp CDATA #REQUIRED>
+<!--
+      The attribute 'regexp' is the regular expression that detects the
+      begining delimiter of a block of format
+-->
+
+<!ELEMENT end EMPTY>
+<!ATTLIST end regexp CDATA #REQUIRED>
+<!--
+      The attribute 'regexp' is the regular expression that detects the
+      ending delimiter of a block of format
+-->
+
+<!ELEMENT replacement-rule (replace+)>
+<!ATTLIST replacement-rule regexp CDATA #REQUIRED>
+<!-- 
+      Root element for a replacement rule.  The attribute 'regexp' is the
+      general expression to detect the elements to replace
+-->
+
+<!ELEMENT replace EMPTY>
+<!ATTLIST replace source CDATA #REQUIRED>
+<!ATTLIST replace target CDATA #REQUIRED>
+<!ATTLIST replace prefer (yes|no) #IMPLIED>
+<!--  
+      Replacement rule.  The 'source' is a string of one or more characters.
+      The 'target' MUST be a single character.  The 'prefer' attribute, when 
+      set to 'yes' defines the preferred reverse translation of the 
+      replacement.
+-->

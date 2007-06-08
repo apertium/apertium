@@ -1,0 +1,53 @@
+.TH apertium\-interchunk 1 2007-03-11 "" ""
+.SH NAME
+apertium\-interchunk \- This application is part of
+(
+.B apertium
+)
+.PP
+This tool is part of the apertium machine translation
+architecture: \fBhttp://apertium.sf.net\fR.
+.SH SYNOPSIS
+.B apertium\-interchunk
+lt-apertium-interchunk trules preproc [input [output]]
+.SH DESCRIPTION
+This is an intermediate tool from Apertium level 2 engine. You should
+never have to use it independently.
+.PP
+It is the second transfer module of the Apertium level 2 transfer model after
+\fIapertium-transfer\fR and before \fIapertium-postchunk\fR.
+.PP
+It takes care of interchunk processing operations such as chunk
+reordering, changes in the morphosyntactical features of chunks
+according to the information in neighboring chunks, or generating new
+chunks.
+.SH OPTIONS
+It has no options.
+.SH FILES
+These are the kinds of files that can be used with this command:
+.PP
+.B trules
+A rules file with extension \fI.t2x\fR.
+.PP
+.B preproc
+A file with extension \fI.t2x.bin\fR that holds the result of
+preprocessing the \fItrules\fR file with
+\fIapertium-preprocess-transfer\fR.
+.PP
+.B input, output
+Represent the input and output files. By default they are the standard
+input and standard output.
+.SH SEE ALSO
+.I apertium\-gen\-modes\fR(1),
+.I apertium\-postchunk\fR(1),
+.I apertium\-transfer\fR(1),
+.I apertium\-validate\-interchunk\fR(1),
+.I apertium\-validate\-modes\fR(1),
+.I apertium\-validate\-postchunk\fR(1).
+.SH BUGS
+Lots of them...lurking in the dark and waiting for you!
+.SH AUTHOR
+(c) 2005-2007 Universitat d'Alacant / Universidad de
+Alicante. All rights reserved. This is free software.  You may
+redistribute copies of it under the terms of the GNU General Public
+License <http://www.gnu.org/licenses/gpl.html>.

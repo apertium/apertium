@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- 
+    Draft of DTD for the structural transfer rule files 
+     
+    Sergio Ortiz, Gema Ramírez-Sánchez, Mireia Ginestí, Mikel L. Forcada, 
+    2005.07.29. 
+-->    
+
+<!ENTITY % condition "(and|or|not|equal|begins-with|ends-with|contains-substring|in)">
+<!ENTITY % container "(var|clip)">
+<!ENTITY % sentence "(let|out|choose|modify-case|call-macro|append)">
+<!ENTITY % value "(b|clip|lit|lit-tag|var|get-case-from|case-of|concat)">
+<!ENTITY % stringvalue "(clip|lit|var|get-case-from|case-of)">
+
+<!ELEMENT postchunk (section-def-cats, section-def-attrs, section-def-vars, section-def-lists?, section-def-macros?, section-rules)>
+<!-- 
+     'postchunk' is the root element containing the whole structural
+     postchunk rule file.  
+-->
+
+<!ELEMENT section-def-cats (def-cat+)>
+<!-- 
+     The 'def-cats' section defines the categories used to build the
+patterns used in rules
+ -->
+
+<!ELEMENT def-cat (cat-item+)>
+<!ATTLIST def-cat  n ID #REQUIRED>
+<!-- 
+     Each 'def-cat' defines one category in terms of a list of
+     category items and has a unique name 'n', which is mandatory
+-->
+
+<!ELEMENT cat-item EMPTY>
+<!ATTLIST cat-item name CDATA #REQUIRED> 
+<!-- 
+     In addition, a required attribute, "name", is used to specify 
+     wich chunk name is detected by this cat-item
+-->
+ 
+<!ELEMENT section-def-attrs (def-attr+)>
+
+<!-- 
+     The 'def-attrs' section defines the attributes that will be
+     identified in matched lexical forms 
+-->
+
+<!ELEMENT def-attr (attr-item+)>
+<!ATTLIST def-attr n ID #REQUIRED>
+<!-- 
+     Each def-attr defines one attribute in terms of a list of
+     attribute items and has a mandatory unique name n 
+-->
+
+<!ELEMENT attr-item EMPTY>
+<!ATTLIST attr-item tags CDATA #IMPLIED>
+<!-- 
+     Each 'attr-item' specifies a subsequence of the tags in
+     that lexical form (attribute 'tags')
+-->
+
+<!ELEMENT section-def-vars (def-var+)>
+<!-- 
+     The 'def-vars' section defines the global variables
+     that will be used to transfer information between rules
+-->
+
+<!ELEMENT def-var EMPTY>
+<!ATTLIST def-var n ID #REQUIRED>
+<!-- 
+     The definition of a global variable has a mandatory unique name 'n' that
+     will be used to refer to it.
+-->
+
+<!ELEMENT section-def-lists (def-list)+>
+<!--
+     Element 'section-def-lists' encloses a set of list definitions
+-->
+
+<!ELEMENT def-list (list-item+)>
+<!ATTLIST def-list n ID #REQUIRED>
+<!--
+     The 'def-list' element defines a named list to search with the 'in' 
+     element.  Attribute 'n' sets the name of the list
+-->
+
+<!ELEMENT list-item EMPTY>
+<!ATTLIST list-item v CDATA #REQUIRED>
+<!--
+     Attribute 'v' of 'list-item' element contains the value to be added to 
+     the list being defined     
+-->
+
+<!ELEMENT section-def-macros (def-macro)+>
+<!-- 
+
+     The 'def-macros' section defines macros containing portions of
+     code frequently used in the action part of rules
+
+-->
+
+<!ELEMENT def-macro (%sentence;)+>
+<!ATTLIST def-macro n ID #REQUIRED>
+<!ATTLIST def-macro npar CDATA #REQUIRED>
+<!-- 
+     Macro definition:
+     
+     A macro has a mandatory name (the value of 'n'), a number of parameters
+     (the value of 'npar') and a body containing arguments and statements.  
+-->
+
+<!ELEMENT section-rules (rule+)>
+<!-- 
+     The rules section contains a sequence of one or more rules
+-->
+
+<!ELEMENT rule (pattern, action)>
+<!ATTLIST rule comment CDATA #IMPLIED>
+<!-- 
+      Each rule has a pattern and an action 
+      * Attribute 'comment' allows to include a comment with the rule
+-->
+
+<!ELEMENT pattern (pattern-item+)>
+<!-- 
+The pattern is specified in terms of pattern items, each one
+representing a lexical form in the matched pattern 
+-->
+
+<!ELEMENT pattern-item EMPTY>
+<!ATTLIST pattern-item n IDREF #REQUIRED>
+<!-- 
+       Each attribute to be activated is referred to by its name in the def-cats section 
+-->
+
+<!ELEMENT action (%sentence;)*>
+<!-- 
+       Encloses the procedural part of a rule
+-->
+
+<!ELEMENT choose (when+,otherwise?)>
+<!-- 
+     The choose statement is a selection statement (similar to a case
+     statement) composed of one or more tested cases and an optional
+     otherwise 
+-->
+
+<!ELEMENT when (test,(%sentence;)*)>
+<!-- 
+     Each tested case is a block of zero or more statements 
+-->
+
+<!ELEMENT otherwise (%sentence;)+>
+<!-- 
+     The otherwise case is also a block of one or more statements 
+-->
+
+<!ELEMENT test (%condition;)+>
+<!-- 
+     The test in a tested case may be a conjunction, a disjunction, or
+     a negation of simpler tests, as well as a simple equality test
+-->
+
+<!ELEMENT and ((%condition;),(%condition;)+)>
+<!--  
+     Each conjuntion test contains two or more simpler tests 
+-->
+
+<!ELEMENT or ((%condition;),(%condition;)+)>
+<!-- 
+     Each disjunction test contains two or more simpler tests 
+-->
+
+<!ELEMENT not (%condition;)>
+<!-- 
+     The negation of a simpler test is a test itself 
+-->
+
+<!ELEMENT equal (%value;,%value;)> 
+<!ATTLIST equal caseless (no|yes) #IMPLIED>
+<!-- 
+      The simplest test is an equality test. The right part and the
+      left part of the equality may both be a clip (see below), a
+      literal string ('lit'), a literal tag ('lit-tag') or the value of 
+      a variable ('var') defined in the def-vars section.  When the attribute
+      'caseless' is set to 'yes', the comparison is made without attending
+      to the case.
+-->
+
+<!ELEMENT begins-with (%value;,%value;)> 
+<!ATTLIST begins-with caseless (no|yes) #IMPLIED>
+<!-- 
+      Tests if the left part contains the right part at the beginning.
+      Both parts of the test may both be a clip (see below), a
+      literal string ('lit'), a literal tag ('lit-tag') or the value of 
+      a variable ('var') defined in the def-vars section.  When the attribute
+      'caseless' is set to 'yes', the comparison is made without attending
+      to the case.
+-->
+
+<!ELEMENT ends-with (%value;,%value;)> 
+<!ATTLIST ends-with caseless (no|yes) #IMPLIED>
+<!-- 
+      Tests if the left part contains the right part at the end.
+      Both parts of the test may both be a clip (see below), a
+      literal string ('lit'), a literal tag ('lit-tag') or the value of 
+      a variable ('var') defined in the def-vars section.  When the attribute
+      'caseless' is set to 'yes', the comparison is made without attending
+      to the case.
+-->
+
+<!ELEMENT contains-substring (%value;,%value;)> 
+<!ATTLIST contains-substring caseless (no|yes) #IMPLIED>
+<!-- 
+      Tests if the left part contains the right part.
+      Both parts of the test may both be a clip (see below), a
+      literal string ('lit'), a literal tag ('lit-tag') or the value of 
+      a variable ('var') defined in the def-vars section.  When the attribute
+      'caseless' is set to 'yes', the comparison is made without attending
+      to the case.
+-->
+
+
+
+
+<!ELEMENT in (%value;, list)>
+<!ATTLIST in caseless (no|yes) #IMPLIED>
+<!--
+    'in' performs a search of a value in a list.  If 'caseless' is set to yes,
+    this search is performed without attending to the case
+-->
+
+<!ELEMENT list EMPTY>
+<!ATTLIST list n IDREF #REQUIRED>
+<!--
+    'list' refers, with the name in attribute 'n', a list defined before in
+    the 'section-def-list' section
+-->
+
+<!ELEMENT let (%container;, %value;)>
+<!-- 
+      An assignment statement ('let') assigns the value of a clip (see
+      below), a literal string ('lit'), a literal tag('lit-tag') or the 
+      value of a global variable ('var') to either a global variable ('var') 
+      or a clip
+-->
+
+<!ELEMENT append (%value;)+>
+<!ATTLIST append n IDREF #REQUIRED>
+<!-- 
+      This instruction appends the value of a clip (see
+      below), a literal string ('lit'), a literal tag('lit-tag') or the 
+      value of a global variable ('var') to either a global variable ('var') 
+      or a clip, identified by the "n" attribute
+-->
+
+
+<!ELEMENT out (b|lu|mlu)+>
+<!-- 
+      'out' is an output statement; it may output blanks or chunks
+-->
+
+<!ELEMENT modify-case (%container;, %stringvalue;)>
+<!--
+      The first argument of 'modify-case' copy the case of the second 
+      argument.
+--> 
+
+<!ELEMENT call-macro (with-param)*>
+<!ATTLIST call-macro n IDREF #REQUIRED>
+<!-- 
+      A macro may be called anywhere by name with one or more
+      arguments
+-->
+
+<!ELEMENT with-param EMPTY>
+<!ATTLIST with-param pos CDATA #REQUIRED>
+<!-- 
+      The attribute pos in each argument is used to refer to a lexical
+      form in the current rule. For example, if a 2-parameter macro
+      has been defined to perform noun-adjective agreement operations,
+      it may be used with arguments 1 and 2 in a noun-adjective rule,
+      with arguments 2, 3 and 1 in a determiner-noun-adjective rule, with
+      arguments 1 and 3 in a noun-adverb-adjective rule, and with
+      arguments 2 and 1 in an adjective-noun rule 
+-->
+
+<!ELEMENT clip EMPTY>
+<!ATTLIST clip pos CDATA #REQUIRED
+               part CDATA #REQUIRED>
+<!-- 
+      A 'clip' is a substring of a source-language or target-language
+      lexical form, extracted according to an attribute:
+
+      * 'pos' is an index (1, 2, 3...) used to select a lexical form
+         inside the rule;
+   
+      * the value of 'part' is the name of an attribute defined in
+        def-attrs, but may take also the values 'lem' (referring to
+        the lemma of the lexical form), 'lemh' (lemma head), 'lemq'
+        (lemma queue) and 'whole' (referring to the whole lexical form).
+
+-->
+
+<!ELEMENT lit EMPTY>
+<!ATTLIST lit v CDATA #REQUIRED>
+<!-- 
+      A literal string value: the value of the literal is the value of
+      the 'v' attribute
+-->
+
+<!ELEMENT lit-tag EMPTY>
+<!ATTLIST lit-tag v CDATA #REQUIRED>
+<!-- 
+      A literal string value: the value of the literal is the value of
+      the 'v' attribute
+-->
+
+
+<!ELEMENT var EMPTY>
+<!ATTLIST var n IDREF #REQUIRED>
+<!-- 
+     Each 'var' is a variable identifier: the attribute n is the name
+     of the variable. When it is in an 'out', a 'test', or the right
+     part of a 'let', it represents the value of the variable; when in
+     the left part of a 'let' it represents the reference of the
+     variable. 
+-->
+
+<!ELEMENT get-case-from (clip|lit|var)> 
+<!ATTLIST get-case-from pos CDATA #REQUIRED>
+<!-- Atención, falta modificar todos los comentarios donde intervenga
+get-case-from -->
+
+<!ELEMENT case-of EMPTY>
+<!ATTLIST case-of pos CDATA #REQUIRED
+               part CDATA #REQUIRED>
+<!--
+      A 'case-of' is a value representing the case of a "clip".  This value 
+      will be "aa" (all lowercase), "Aa" (first uppercase) and "AA",
+      (all uppercase).
+
+      * 'pos' is an index (1, 2, 3...) used to select a lexical form
+         inside the rule;
+   
+      * the value of 'part' is the name of an attribute defined in
+        def-attrs, but may take also the values 'lem' (referring to
+        the lemma of the lexical form), 'lemh' (lemma head), 'lemq'
+        (lemma queue) and 'whole' (referring to the whole lexical form).
+-->
+
+
+<!ELEMENT concat (%value;)+>
+<!-- Concatenates a sequence of values -->
+
+<!ELEMENT mlu (lu+)>
+<!-- Encloses a multiword -->
+
+<!ELEMENT lu (%value;)+>
+<!-- Encloses a word inside an 'out' element. -->
+
+<!ELEMENT b EMPTY>
+<!ATTLIST b pos CDATA #IMPLIED>
+<!-- 
+     'b' is a [super]blanks item, indexed by pos; for example, a 'b'
+     with pos="2" refers to the [super]blanks (including format data
+     encapsulated by the de-formatter) between lexical form 2 and
+     lexical form 3. Managing [super]blanks explicitly allows for the
+     correct placement of format when the result of structural
+     transfer has more or less lexical items than the original or has
+     been reordered in some way.  If attribute "pos" is not specified, then
+     a single blank (ASCII 32) is generated.
+-->

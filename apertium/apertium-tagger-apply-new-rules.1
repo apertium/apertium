@@ -1,0 +1,40 @@
+.TH apertium-tagger-apply-new-rules 1 2007-03-24 "" ""
+.SH NAME
+apertium-tagger-apply-new-rules \- This application is part of (
+.B apertium 
+)
+.PP
+This tool is part of the apertium open-source machine translation
+toolbox: \fBhttp://www.apertium.org\fR.
+.SH SYNOPSIS
+.B apertium-tagger-apply-new-rules 
+--filein [ <input file> ] --fileout [ <output file> ] --tsxfile [ <rule file> ]
+
+.PP
+.SH DESCRIPTION
+.BR apertium-tagger-apply-new-rules
+is used to forbid and enforce rules which are applied to the given HMM parameters.
+
+Note that the TSX file provided with --tsxfile *must* be equal, in terms of label definitions, to the one used when training the HMM parameters that are to be modified.
+
+.SH OPTIONS
+.TP
+.B \-i, \-\-filein
+Specify the file with the HMM parameter to process
+.TP
+.B \-o, \-\-fileout
+To specify the file to which the HMM will be written
+.TP
+.B \-x, \-\-tsxfile 
+File containing the rules to apply
+.PP
+.SH SEE ALSO
+.I apertium-tagger\fR(1),
+.I apertium\fR(1).
+.SH BUGS
+Lots of...lurking in the dark and waiting for you!
+.SH AUTHOR
+Copyright (c) 2005 -- 2007, Universitat d'Alacant / Universidad de Alicante.
+This is free software.  You may redistribute copies of it under the terms
+of the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.
+
