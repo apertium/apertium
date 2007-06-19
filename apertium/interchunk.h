@@ -55,6 +55,7 @@ private:
   xmlNode *root_element;
   InterchunkWord **word;
   string **blank;
+  int lword, lblank;
   Buffer<TransferToken> input_buffer;
   vector<wstring *> tmpword;
   vector<wstring *> tmpblank;
@@ -108,6 +109,7 @@ private:
   void applyWord(wstring const &word_str);
   void applyRule();
   TransferToken & readToken(FILE *in);
+  bool checkIndex(xmlNode *element, int index, int limit);  
 public:
   Interchunk();
   ~Interchunk();
