@@ -104,7 +104,10 @@ then
 fi
 
 $APERTIUM_PATH/apertium-des$FORMATADOR $FICHERO | \
-$DATOS/modes/$PREFIJO $OPTION | \
+if [ ! -x $DATOS/modes/$PREFIJO ]
+then sh $DATOS/modes/$PREFIJO $OPTION
+else $DATOS/modes/$PREFIJO $OPTION
+fi | \
 if [ x$SALIDA = x ]
 then $APERTIUM_PATH/apertium-re$FORMATADOR 
 else
