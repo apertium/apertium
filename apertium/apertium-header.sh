@@ -97,12 +97,6 @@ then
         REF=$FORMATADOR
 fi
 
-
-if [ ! -x $DATOS/modes/$PREFIJO ]
-then 
-  DATOS = "sh $DATOS"; 
-fi
-
 $APERTIUM_PATH/apertium-des$FORMATADOR $FICHERO | \
 if [ ! -x $DATOS/modes/$PREFIJO ]
 then sh $DATOS/modes/$PREFIJO $OPTION
