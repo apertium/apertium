@@ -23,6 +23,7 @@
 #include <apertium/tagger_data.h>
 #include <apertium/ttag.h>
 #include <lttoolbox/pattern_list.h>
+#include <lttoolbox/ltstr.h>
 
 #include <libxml/xmlreader.h>
 #include <map>
@@ -38,7 +39,7 @@ private:
   xmlTextReaderPtr reader;  
   set<TTag> *open_class;
   vector<TForbidRule> *forbid_rules;
-  map<wstring, TTag> *tag_index;
+  map<wstring, TTag, Ltstr> *tag_index;
   vector<wstring> *array_tags;
   vector<TEnforceAfterRule> *enforce_rules;
   vector<wstring> *prefer_rules;

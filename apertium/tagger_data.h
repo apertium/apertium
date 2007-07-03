@@ -23,6 +23,7 @@
 #include <apertium/ttag.h>
 #include <apertium/collection.h>
 #include <lttoolbox/pattern_list.h>
+#include <lttoolbox/ltstr.h>
 
 #include <map>
 #include <set>
@@ -36,7 +37,7 @@ class TaggerData
 private:
   set<TTag> open_class;
   vector<TForbidRule> forbid_rules;
-  map<wstring, TTag> tag_index;
+  map<wstring, TTag, Ltstr> tag_index;
   vector<wstring> array_tags;
   vector<TEnforceAfterRule> enforce_rules;
   vector<wstring> prefer_rules;
@@ -62,8 +63,8 @@ public:
   vector<TForbidRule> & getForbidRules();
   void setForbidRules(vector<TForbidRule> &fr);
   
-  map<wstring, TTag> & getTagIndex();
-  void setTagIndex(map<wstring, TTag> const &ti);
+  map<wstring, TTag, Ltstr> & getTagIndex();
+  void setTagIndex(map<wstring, TTag, Ltstr> const &ti);
   
   vector<wstring> & getArrayTags();
   void setArrayTags(vector<wstring> const &at);

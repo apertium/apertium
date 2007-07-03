@@ -119,14 +119,14 @@ TaggerData::setForbidRules(vector<TForbidRule> &fr)
   forbid_rules = fr;
 }  
 
-map<wstring, TTag> &
+map<wstring, TTag, Ltstr> &
 TaggerData::getTagIndex()
 {
   return tag_index;
 }
 
 void
-TaggerData::setTagIndex(map<wstring, TTag> const &ti)
+TaggerData::setTagIndex(map<wstring, TTag, Ltstr> const &ti)
 {
   tag_index = ti;
 }
@@ -409,7 +409,7 @@ TaggerData::write(FILE *out)
 
   // tag_index
   Compression::multibyte_write(tag_index.size(), out);
-  for(map<wstring, int>::iterator it = tag_index.begin(), limit = tag_index.end();
+  for(map<wstring, int, Ltstr>::iterator it = tag_index.begin(), limit = tag_index.end();
       it != limit; it++)
   {
     Compression::wstring_write(it->first, out);

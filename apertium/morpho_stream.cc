@@ -46,7 +46,7 @@ MorphoStream::MorphoStream(FILE *ftxt, bool d, TaggerData *t)
   ca_kmas = constants.getConstant(L"kMAS");
   ca_kunknown = constants.getConstant(L"kUNKNOWN");
   
-  map<wstring, int> &tag_index = td->getTagIndex();
+  map<wstring, int, Ltstr> &tag_index = td->getTagIndex();
   ca_tag_keof = tag_index[L"TAG_kEOF"];  
   ca_tag_kundef = tag_index[L"TAG_kUNDEF"]; 
 }
