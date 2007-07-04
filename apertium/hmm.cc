@@ -31,6 +31,8 @@
 #include <vector>
 #include <algorithm>
 
+using namespace tagger_utils;
+
 HMM::HMM(TaggerData *t)
 {
   this->td = t;

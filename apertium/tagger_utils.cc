@@ -20,6 +20,8 @@
 
 #include <stdio.h>
 
+namespace tagger_utils {
+
 void fatal_error (wstring const &s) {
   wcerr<<L"Error: "<<s<<L"\n";
   exit(1);
@@ -71,21 +73,55 @@ int nguiones_fs(string s) {
    return n;   
 } 
 
-string trim(string s) {
-  if (s.length()==0)
-    return s;
+wstring trim(wstring const &s) 
+{
+  unsigned int posmin, posmax;
+  for(posmin = 0; s[posmin] == L' '; posmin++);
+  for(posmax = s.length()-1; s[posmax] == L' '; posmax--);
 
-  for (unsigned int i=0; i<(s.length()-1); i++) {
-    if ((s.at(i)==' ')&&(s.at(i+1)==' ')) {
-      s.erase(i,1);
-      i--;
-    }
+  if(posmax > posmin)
+  {
+    return s.substr(posmin, posmax - posmin + 1);
   }
-
-  if ((s.length()>0)&&(s.at(s.length()-1)==' '))
-    s.erase(s.length()-1,1);
-  if ((s.length()>0)&&(s.at(0)==' '))
-    s.erase(0,1);
-
-  return s;
+  else
+  {
+    return L"";
+  }
 }
+  
+};  
+
+template <class T>
+ostream& operator<< (ostream& os, const map <int, T> & f){
+  typename map <int, T>::const_iterator it;
+  os<<f.size();
+  for (it=f.begin(); it!=f.end(); it++) 
+    os<<' '<<it->first<<' '<<it->second;
+  return os;
+}
+
+template <class T>
+istream& operator>> (istream& is, map <int, T> & f) {
+  int n, i, k;
+  f.clear();
+  is>>n; 
+  for (k=0; k<n; k++) {
+    is>>i;     // warning: does not work if both
+    is>>f[i];  // lines merged in a single one
+  }
+  if (is.bad()) tagger_utils::fatal_error(L"reading map");
+  return is;
+}
+
+template <class T>
+ostream& operator<< (ostream& os, const set<T>& s) {
+  typename set<T>::iterator it = s.begin();
+  os<<'{';
+  if (it!=s.end()) {
+    os<<*it;
+    while (++it!=s.end()) os<<','<<*it;
+  }
+  os<<'}';
+  return os;
+}
+

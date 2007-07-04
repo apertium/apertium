@@ -29,6 +29,8 @@
 
 using namespace std;
 
+namespace tagger_utils
+{
 /** Print a fatal error message
  *  @param s the error message to print
  */
@@ -66,39 +68,13 @@ void clear_array_vector(vector<TTag> v[], int l);
 int nguiones_fs(string cadena);
 
 string trim(string s);
+};
 
 template <class T>
-ostream& operator<< (ostream& os, const map <int, T> & f) {
-  typename map <int, T>::const_iterator it;
-  os<<f.size();
-  for (it=f.begin(); it!=f.end(); it++) 
-    os<<' '<<it->first<<' '<<it->second;
-  return os;
-}
-
+ostream& operator<< (ostream& os, const map <int, T> & f);
 template <class T>
-istream& operator>> (istream& is, map <int, T> & f) {
-  int n, i, k;
-  f.clear();
-  is>>n; 
-  for (k=0; k<n; k++) {
-    is>>i;     // warning: does not work if both
-    is>>f[i];  // lines merged in a single one
-  }
-  if (is.bad()) fatal_error(L"reading map");
-  return is;
-}
-
+istream& operator>> (istream& is, map <int, T> & f);
 template <class T>
-ostream& operator<< (ostream& os, const set<T>& s) {
-  typename set<T>::iterator it = s.begin();
-  os<<'{';
-  if (it!=s.end()) {
-    os<<*it;
-    while (++it!=s.end()) os<<','<<*it;
-  }
-  os<<'}';
-  return os;
-}
+ostream& operator<< (ostream& os, const set<T>& s);
 
 #endif
