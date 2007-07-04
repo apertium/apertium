@@ -39,7 +39,7 @@ void fatal_error (wstring const &s);
 /** Print a fatal error message related to a file
  *  @param s the file name to be printted in the error message
  */
-void file_name_error (string s);
+void file_name_error (string const &s);
 
 /** Convert from int to string
  *  @param i the int value to convert
@@ -61,13 +61,13 @@ void clear_array_vector(vector<TTag> v[], int l);
 
 /** Return the number of tokens in the multiword unit
  */
- int ntokens_multiword(string s);
+ int ntokens_multiword(wstring const &s);
  
 /** Devuelve el nº de guiones que contiene la cadena pasada como argumento
   */
-int nguiones_fs(string cadena);
+int nguiones_fs(wstring const &cadena);
 
-string trim(string s);
+wstring trim(wstring s);
 };
 
 template <class T>

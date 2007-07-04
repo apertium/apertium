@@ -48,28 +48,36 @@ void clear_array_vector(vector<TTag> v[], int l) {
     v[i].clear();
 }
 
-int ntokens_multiword(string s) {
-   char *news = strdup((char*) s.c_str());
-   char *delim ="_";
+int ntokens_multiword(wstring const &s) 
+{
+   wchar_t *news = wcsdup(s.c_str());
+   wchar_t const *delim = L"_";
+   wchar_t *ptr;
    int n=0;
    
-   if (strtok(news,delim))
+   if (wcstok(news, delim, &ptr))
      n++;  
-   while (strtok(NULL, delim))
+   while (wcstok(NULL, delim, &ptr))
      n++;
+     
+   free(news);
      
    return n;   
 }
  
-int nguiones_fs(string s) {
-   char *news = strdup((char*) s.c_str());
-   char *delim ="-";
+int nguiones_fs(wstring const & s) {
+   wchar_t *news = wcsdup(s.c_str());
+   wchar_t const *delim = L"-";
+   wchar_t *ptr;
    int n=0;
-
-   if (strtok(news,delim))
+   
+   if (wcstok(news, delim, &ptr))
      n++;  
-   while (strtok(NULL, delim))
+   while (wcstok(NULL, delim, &ptr))
      n++;
+     
+   free(news);
+     
    return n;   
 } 
 
