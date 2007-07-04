@@ -73,20 +73,24 @@ int nguiones_fs(string s) {
    return n;   
 } 
 
-wstring trim(wstring const &s) 
+wstring trim(wstring s) 
 {
-  unsigned int posmin, posmax;
-  for(posmin = 0; s[posmin] == L' '; posmin++);
-  for(posmax = s.length()-1; s[posmax] == L' '; posmax--);
-
-  if(posmax > posmin)
-  {
-    return s.substr(posmin, posmax - posmin + 1);
-  }
-  else
-  {
+  if (s.length()==0)
     return L"";
+      
+  for (unsigned int i=0; i<(s.length()-1); i++) {
+    if ((s.at(i)==L' ')&&(s.at(i+1)==L' ')) {
+      s.erase(i,1);
+      i--;
+    }
   }
+                              
+  if ((s.length()>0)&&(s.at(s.length()-1)==L' '))
+    s.erase(s.length()-1,1);
+  if ((s.length()>0)&&(s.at(0)==L' '))
+    s.erase(0,1);  
+
+  return s;
 }
   
 };  
