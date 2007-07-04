@@ -1,4 +1,8 @@
 case $# in
+#  1)
+#    PREFIJO=$2
+#    FORMATADOR=txt
+#    ;;
   2)
     DATOS=$1
     PREFIJO=$2
@@ -25,7 +29,7 @@ case $# in
   *)
     echo "USAGE: $(basename $0) <datadir> <translation> [format [infile [outfile]]]"
     echo " datadir          Directory of linguistic data"
-    echo " translation      tipically, LANG1-LANG2, but see modes.xml in language data"
+    echo " translation      typically, LANG1-LANG2, but see modes.xml in language data"
     echo " format           one of: txt (default), txtu, html, htmlu, rtf, rtfu"
     echo " infile           input file (stdin by default)"
     echo " outfile          output file (stdout by default)"
@@ -36,11 +40,22 @@ esac
 PREFIJO=$2    #Dirección traducción Ejm.- es-ca
 FORMATADOR=$3 #Fuente a traducir Ejm.- txt
 
-DATOS=$1
+if [ $# -ne 1 ]; then
 
-if [ ! -d $DATOS/modes ];
-  then echo "Error: Directory '$DATOS/modes' does not exist."
-       exit 1;
+	DATOS=$1
+
+	if [ ! -d $DATOS/modes ];
+	  then echo "Error: Directory '$DATOS/modes' does not exist."
+	       exit 1;
+	fi
+
+else 
+	$DATOS=/etc/apertium
+
+	if [ ! -d $DATOS/modes ]; then
+		echo "Error: Directory '$DATOS/modes' does not exist." # this should never ever happen.
+		exit
+	fi
 fi
 
 if [ ! -e $DATOS/modes/$PREFIJO ];

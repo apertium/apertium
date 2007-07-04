@@ -6,5 +6,5 @@ includedir=@includedir@
 Name: apertium
 Description: lttoolbox-based translation modules generator
 Version: @VERSION@
-Libs: -L${libdir} -l@GENERIC_LIBRARY_NAME@-@GENERIC_API_VERSION@ @APERTIUM_LIBS@
-Cflags: -I${includedir}/@GENERIC_LIBRARY_NAME@-@GENERIC_API_VERSION@ -I${libdir}/@GENERIC_LIBRARY_NAME@-@GENERIC_API_VERSION@/include @APERTIUM_CFLAGS@
+Libs: -L${libdir} -l@GENERIC_LIBRARY_NAME@@GENERIC_API_VERSION@ @APERTIUM_LIBS@
+Cflags: -I${includedir}/@GENERIC_LIBRARY_NAME@-@GENERIC_API_VERSION@.0 -I${libdir}/@GENERIC_LIBRARY_NAME@-@GENERIC_API_VERSION@.0/include @APERTIUM_CFLAGS@

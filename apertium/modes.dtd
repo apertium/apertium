@@ -7,6 +7,7 @@
 
 <!ELEMENT mode (pipeline)>
 <!ATTLIST mode name ID #REQUIRED>
+<!ATTLIST mode install CDATA #IMPLIED>
 
 <!ELEMENT pipeline (program+)>
 
