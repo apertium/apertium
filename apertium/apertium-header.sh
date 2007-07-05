@@ -1,105 +1,96 @@
-case $# in
-#  1)
-#    PREFIJO=$2
-#    FORMATADOR=txt
-#    ;;
-  2)
-    DATOS=$1
-    PREFIJO=$2
-    FORMATADOR=txt
-    ;;
-  3)
-    DATOS=$1
-    PREFIJO=$2
-    FORMATADOR=$3
-    ;;
-  4)
-    DATOS=$1
-    PREFIJO=$2
-    FORMATADOR=$3
-    FICHERO=$4
-    ;;
-  5)  
-    DATOS=$1
-    PREFIJO=$2
-    FORMATADOR=$3
-    FICHERO=$4
-    SALIDA=$5
-    ;;
-  *)
-    echo "USAGE: $(basename $0) <datadir> <translation> [format [infile [outfile]]]"
-    echo " datadir          Directory of linguistic data"
-    echo " translation      typically, LANG1-LANG2, but see modes.xml in language data"
-    echo " format           one of: txt (default), txtu, html, htmlu, rtf, rtfu"
-    echo " infile           input file (stdin by default)"
-    echo " outfile          output file (stdout by default)"
-    exit 1;
-esac
+PAIR=""
+INPUT_FILE=""
+OUTPUT_FILE=""
 
-#Parámetros obligatorios
-PREFIJO=$2    #Dirección traducción Ejm.- es-ca
-FORMATADOR=$3 #Fuente a traducir Ejm.- txt
+function message
+{
+  echo "USAGE: $(basename $0) [-d datadir] [-f format] [-u] <translation> [in [out]]"
+  echo " -d datadir       directory of linguistic data"
+  echo " -f format        one of: txt (default), html, rtf"
+  echo " -u               don't display marks '*' for unknown words" 
+  echo " translation      typically, LANG1-LANG2, but see modes.xml in language data"
+  echo " in               input file (stdin by default)"
+  echo " out              output file (stdout by default)"
+  exit 1;
+}
 
-if [ $# -ne 1 ]; then
+ARGS=$(getopt "uhf:d:" $*)
+set -- $ARGS
+for i
+do
+  case "$i" in
+    -f) shift; FORMAT=$1; shift;;
+    -d) shift; DIRECTORY=$1; shift;;
+    -u) UWORDS="no"; shift;;
+    -h) message;;
+    --) shift; break;;
+  esac
+done
 
-	DATOS=$1
+case "$#" in 
+     3)
+       OUTPUT_FILE=$3; 
+       INPUT_FILE=$2;
+       PAIR=$1;
+       ;;
+     2)
+       INPUT_FILE=$2;
+       PAIR=$1;
+       ;;
+     1)
+       PAIR=$1
+       ;;
+     *)
+       message 
+       ;;
+esac    
 
-	if [ ! -d $DATOS/modes ];
-	  then echo "Error: Directory '$DATOS/modes' does not exist."
-	       exit 1;
-	fi
+if [ x$FORMAT = x ]; then FORMAT="txt"; fi
+if [ x$DIRECTORY = x ]; then DIRECTORY=$DEFAULT_DIRECTORY; fi
 
-else 
-	$DATOS=/etc/apertium
+PREFIJO=$PAIR;
+FORMATADOR=$FORMAT;
+DATOS=$DIRECTORY;
+FICHERO=$INPUT_FILE;
+SALIDA=$OUTPUT_FILE;
 
-	if [ ! -d $DATOS/modes ]; then
-		echo "Error: Directory '$DATOS/modes' does not exist." # this should never ever happen.
-		exit
-	fi
+if [ ! -d $DATOS/modes ];
+then echo "Error: Directory '$DATOS/modes' does not exist."
+     message
 fi
 
-if [ ! -e $DATOS/modes/$PREFIJO ];
+if [ ! -e $DATOS/modes/$PREFIJO.mode ];
   then echo -n "Error: Mode $PREFIJO does not exist";
        c=$(find $DATOS/modes|wc -l)
        if((c <= 1));
        then echo ".";
        else echo ". Try one of:";
          for i in $DATOS/modes/*;
-         do echo "  " $(basename $i);
+         do echo "  " $(basename $i) |awk '{gsub(".mode", ""); print;}'
          done;
        fi
        exit 1;
 fi
 
 #Parametro opcional, de no estar, lee de la entrada estandar (stdin)
-FICHERO=$4    #Fichero con el texto a traducir
 
-PATH=.:/usr/local/bin:$PATH
-	      
 case "$FORMATADOR" in 
-	txt)
-		FORMATADOR="txt"
-		OPTION="-g"		
+	txt|rtf|html)
+		if [[ $UWORDS == "no" ]]; then OPTION="-n"; 
+		else OPTION="-g";
+		fi;
 		;;
 	txtu)
-		FORMATADOR="txt"
+	        FORMATADOR="txt";
 		OPTION="-n"
 		;;
-	rtf)
-		FORMATADOR="rtf"
-		OPTION="-g"		
+	htmlu) 
+		FORMATADOR="html";
+		OPTION="-n";
 		;;
 	rtfu)
-		FORMATADOR="rtf"		
-		OPTION="-n"
-		;;
-	html)
-		FORMATADOR="html"
-		OPTION="-g"	
-		;;
-	htmlu)
-		FORMATADOR="html"
-		OPTION="-n"		
+		FORMATADOR="rtfu";
+		OPTION="-n";
 		;;
 	*) # Por defecto asumimos txt
 		FORMATADOR="txt"
@@ -113,9 +104,9 @@ then
 fi
 
 $APERTIUM_PATH/apertium-des$FORMATADOR $FICHERO | \
-if [ ! -x $DATOS/modes/$PREFIJO ]
-then sh $DATOS/modes/$PREFIJO $OPTION
-else $DATOS/modes/$PREFIJO $OPTION
+if [ ! -x $DATOS/modes/$PREFIJO.mode ]
+then sh $DATOS/modes/$PREFIJO.mode $OPTION
+else $DATOS/modes/$PREFIJO.mode $OPTION
 fi | \
 if [ x$SALIDA = x ]
 then $APERTIUM_PATH/apertium-re$FORMATADOR 
