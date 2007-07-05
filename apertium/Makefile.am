@@ -224,7 +224,7 @@ apertium: Makefile.am apertium-header.sh
 	@echo "#!$(BASH)" > $@
 	@echo "APERTIUM_PATH=\"$(prefix)/bin\"" >>$@
 	@echo "LTTOOLBOX_PATH=\"$(prefix)/bin\"" >>$@
-	@echo "DEFAULT_DIRECTORY=\"$(prefix)/share/apertium/modes\"" >>$@
+	@echo "DEFAULT_DIRECTORY=\"$(prefix)/share/apertium\"" >>$@
 	@cat apertium-header.sh >>$@
 	@chmod a+x $@
 
