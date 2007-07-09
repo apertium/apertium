@@ -1428,7 +1428,7 @@ Postchunk::applyRule()
   }
   if(blank)
   {
-    for(unsigned int i = 0, limit = tmpword.size(); i != limit; i++)
+    for(unsigned int i = 0, limit = tmpword.size() - 1; i != limit; i++)
     {
       delete blank[i];
     }
