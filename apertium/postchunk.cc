@@ -99,20 +99,10 @@ Postchunk::readData(FILE *in)
   me = new MatchExe(t, finals);
  
   // attr_items
-
-  // fixed attr_items
-  attr_items["lem"] = "(([^<]|\"\\<\")+)";
-  attr_items["lemq"] = "(#[ _][^<]+)";
-  attr_items["lemh"] = "(([^<#]|\"\\<\"|\"\\#\")+)";
-  attr_items["whole"] = "(.+)";
-  attr_items["tags"] = "((<[^>]+>)+)";
-  attr_items["chname"] = "({([^/]+)/)"; // includes delimiters { and / !!!
-  attr_items["chcontent"] = "({([^}]|\"\\}\")+})";    
-
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
   {
     string const cad_k = UtfConverter::toUtf8(Compression::wstring_read(in));
-    attr_items[cad_k] = UtfConverter::toUtf8(Compression::wstring_read(in));
+    attr_items[cad_k].read(in);
   }
 
   // variables
@@ -246,7 +236,7 @@ Postchunk::evalString(xmlNode *element)
       case ti_clip_tl:
         if(checkIndex(element, ti.getPos(), lword))
         {
-          return word[ti.getPos()]->chunkPart(ti.getContent().c_str());
+          return word[ti.getPos()]->chunkPart(attr_items[ti.getContent()]);
         }
         break;
 
@@ -271,7 +261,7 @@ Postchunk::evalString(xmlNode *element)
       case ti_get_case_from:
         if(checkIndex(element, ti.getPos(), lword))
         {
-          return copycase(word[ti.getPos()]->chunkPart(ti.getContent().c_str()),
+          return copycase(word[ti.getPos()]->chunkPart(attr_items[ti.getContent()]),
                           evalString((xmlNode *) ti.getPointer()));
         }
         break;
@@ -279,7 +269,7 @@ Postchunk::evalString(xmlNode *element)
       case ti_case_of_tl:
         if(checkIndex(element, ti.getPos(), lword))
         {
-          return caseOf(word[ti.getPos()]->chunkPart(ti.getContent().c_str()));
+          return caseOf(word[ti.getPos()]->chunkPart(attr_items[ti.getContent()]));
         }
         break;
         
@@ -306,7 +296,7 @@ Postchunk::evalString(xmlNode *element)
       }
     }
 
-    evalStringCache[element] = TransferInstr(ti_clip_tl, attr_items[(const char *) part], pos, NULL);
+    evalStringCache[element] = TransferInstr(ti_clip_tl, (const char *) part, pos, NULL);
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "lit-tag"))
   {
@@ -342,8 +332,7 @@ Postchunk::evalString(xmlNode *element)
       }
     }
 
-    evalStringCache[element] = TransferInstr(ti_get_case_from,
-                                             attr_items["lem"], pos, param);
+    evalStringCache[element] = TransferInstr(ti_get_case_from, "lem", pos, param);
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "var"))
   {
@@ -366,7 +355,7 @@ Postchunk::evalString(xmlNode *element)
       }
     }
       
-    evalStringCache[element] = TransferInstr(ti_case_of_tl, attr_items[(const char *) part], pos);
+    evalStringCache[element] = TransferInstr(ti_case_of_tl, (const char *) part, pos);
   }
   else
   {
@@ -523,7 +512,7 @@ Postchunk::processLet(xmlNode *localroot)
         return;
         
       case ti_clip_tl:
-        word[ti.getPos()]->setChunkPart(ti.getContent().c_str(), evalString(rightSide));
+        word[ti.getPos()]->setChunkPart(attr_items[ti.getContent()], evalString(rightSide));
         return;      
         
       default:
@@ -554,10 +543,9 @@ Postchunk::processLet(xmlNode *localroot)
     }
     
 
-    word[pos]->setChunkPart(attr_items[(const char *) part].c_str(), 
+    word[pos]->setChunkPart(attr_items[(const char *) part], 
 			    evalString(rightSide));
-    evalStringCache[leftSide] = TransferInstr(ti_clip_tl, 
-					      attr_items[(const char *) part], 
+    evalStringCache[leftSide] = TransferInstr(ti_clip_tl, (const char *) part, 
 					      pos, NULL);
   }
 }
@@ -601,8 +589,8 @@ Postchunk::processModifyCase(xmlNode *localroot)
     }
 
     string const result = copycase(evalString(rightSide), 
-				   word[pos]->chunkPart(attr_items[(const char *) part].c_str()));
-    word[pos]->setChunkPart(attr_items[(const char *) part].c_str(), result);
+				   word[pos]->chunkPart(attr_items[(const char *) part]));
+    word[pos]->setChunkPart(attr_items[(const char *) part], result);
 
   }
   else if(!xmlStrcmp(leftSide->name, (const xmlChar *) "var"))

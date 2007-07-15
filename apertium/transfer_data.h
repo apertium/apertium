@@ -42,8 +42,9 @@ private:
   Alphabet alphabet;
   Transducer transducer;
   map<int, int> finals;
-  
-public:
+
+  void writeRegexps(FILE *output);
+ public:
   TransferData();
   ~TransferData();
   TransferData(TransferData const &o);

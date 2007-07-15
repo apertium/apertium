@@ -20,8 +20,8 @@
 #ifndef _INTERCHUNKWORD_
 #define _INTERCHUNKWORD_
 
+#include <apertium/apertium_re.h>
 #include <map>
-#include <pcrecpp.h>
 #include <string>
 
 using namespace std;
@@ -88,14 +88,14 @@ public:
    * @param part regular expression to match
    * @returns reference to the part of string matched
    */ 
-  string chunkPart(string const &part);
+  string chunkPart(ApertiumRE const &part);
 
   /**
    * Sets a value for a chunk part
    * @param part regular expression to match
    * @param value the new value for the given part
    */
-  void setChunkPart(string const &part, string const &value);
+  void setChunkPart(ApertiumRE const &part, string const &value);
 
 };
 

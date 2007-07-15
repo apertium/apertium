@@ -33,17 +33,6 @@ TransferWord::destroy()
 {
 }
 
-string
-TransferWord::access(string const &str, string const &part)
-{
-  string result;
-  pcrecpp::RE(part, 
-              pcrecpp::RE_Options().set_caseless(true)
-                                   .set_extended(true)
-                                   .set_utf8(true)).PartialMatch(str, &result);
-  return result;
-}
-
 TransferWord::TransferWord()
 {
 }
@@ -83,68 +72,59 @@ TransferWord::init(string const &src, string const &tgt)
 }
 
 string
-TransferWord::source(string const &part, bool with_queue)
+TransferWord::source(ApertiumRE const &part, bool with_queue)
 {
   if(with_queue)
   {
-    return access(s_str, part);
+    return part.match(s_str);
   }
   else
   {
-    return access(s_str.substr(0, s_str.size() - queue_length), part);
+    return part.match(s_str.substr(0, s_str.size() - queue_length));
   }
 }
 
 string
-TransferWord::target(string const &part, bool with_queue)
+TransferWord::target(ApertiumRE const &part, bool with_queue)
 {
   if(with_queue)
   {
-    return access(t_str, part);
+    return part.match(t_str);
   }
   else
   {
-    return access(t_str.substr(0, t_str.size() - queue_length), part);
+    return part.match(t_str.substr(0, t_str.size() - queue_length));
   }
 }
 
 void
-TransferWord::assign(string &str, string const &part, string const &value)
-{
-  pcrecpp::RE(part, 
-              pcrecpp::RE_Options().set_caseless(true)
-                                   .set_extended(true)
-                                   .set_utf8(true)).Replace(value, &str);
-}
-
-void
-TransferWord::setSource(string const &part, string const &value, 
+TransferWord::setSource(ApertiumRE const &part, string const &value, 
 			bool with_queue)
 {
   if(with_queue)
   {
-    assign(s_str, part, value);
+    part.replace(s_str, value);
   }
   else
   {
     string mystring = s_str.substr(0, s_str.size() - queue_length);
-    assign(mystring, part, value);
+    part.replace(mystring, value);
     s_str = mystring + s_str.substr(s_str.size() - queue_length);
   }
 }
 
 void
-TransferWord::setTarget(string const &part, string const &value, 
+TransferWord::setTarget(ApertiumRE const &part, string const &value, 
 			bool with_queue)
 {
   if(with_queue)
   {
-    assign(t_str, part, value);
+    part.replace(t_str, value);
   }
   else
   {
     string mystring = t_str.substr(0, t_str.size() - queue_length);
-    assign(mystring, part, value);
+    part.replace(mystring, value);
     t_str = mystring + t_str.substr(t_str.size() - queue_length);
   }
 }

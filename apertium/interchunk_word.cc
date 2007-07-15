@@ -68,21 +68,13 @@ InterchunkWord::init(string const &chunk)
 }
 
 string
-InterchunkWord::chunkPart(string const &part)
+InterchunkWord::chunkPart(ApertiumRE const &part)
 {
-  string result;
-  pcrecpp::RE(part,
-              pcrecpp::RE_Options().set_caseless(true)
-                                   .set_extended(true)
-                                   .set_utf8(true)).PartialMatch(chunk, &result);
-  return result;
+  return part.match(chunk);
 }
 
 void
-InterchunkWord::setChunkPart(string const &part, string const &value)
+InterchunkWord::setChunkPart(ApertiumRE const &part, string const &value)
 {
-  pcrecpp::RE(part,
-              pcrecpp::RE_Options().set_caseless(true)
-                                   .set_extended(true)
-                                   .set_utf8(true)).Replace(value, &chunk);
+  part.replace(chunk, value);
 }

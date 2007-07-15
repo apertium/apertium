@@ -19,6 +19,12 @@
 
 #include <apertium/transfer_data.h>
 #include <lttoolbox/compression.h>
+#include <apertium/utf_converter.h>
+#include <apertium/apertium_re.h>
+#include <pcre.h>
+#include <iostream>
+
+using namespace std;
 
 void
 TransferData::copy(TransferData const &o)
@@ -39,6 +45,14 @@ TransferData::destroy()
 
 TransferData::TransferData()
 {
+  // adding fixed attr_items
+  attr_items[L"lem"] = L"(([^<]|\"\\<\")+)";
+  attr_items[L"lemq"] = L"\\#[ _][^<]+"; 
+  attr_items[L"lemh"] = L"(([^<#]|\"\\<\"|\"\\#\")+)";
+  attr_items[L"whole"] = L"(.+)";
+  attr_items[L"tags"] = L"((<[^>]+>)+)";
+  attr_items[L"chname"] = L"({([^/]+)\\/)"; // includes delimiters { and / !!!
+  attr_items[L"chcontent"] = L"(\\{([^}]|\"\\}\")+\\})";    
 }
 
 TransferData::~TransferData()
@@ -121,14 +135,10 @@ TransferData::write(FILE *output)
   }
 
   // attr_items
-  Compression::multibyte_write(attr_items.size(), output);
-  for(map<wstring, wstring, Ltstr>::const_iterator it = attr_items.begin(), limit = attr_items.end();
-      it != limit; it++)
-  {
-    Compression::wstring_write(it->first, output);
-    Compression::wstring_write(it->second, output);
-  }
   
+  // precompiled regexps
+  writeRegexps(output);
+
   // variables
   Compression::multibyte_write(variables.size(), output);
   for(map<wstring, wstring, Ltstr>::const_iterator it = variables.begin(), limit = variables.end();
@@ -161,5 +171,20 @@ TransferData::write(FILE *output)
       Compression::wstring_write(*it2, output);
     }
   }
+
 }
 
+void
+TransferData::writeRegexps(FILE *output)
+{
+  Compression::multibyte_write(attr_items.size(), output);
+  
+  map<wstring, wstring, Ltstr>::iterator it, limit;
+  for(it = attr_items.begin(), limit = attr_items.end(); it != limit; it++)
+  {
+    Compression::wstring_write(it->first, output);
+    ApertiumRE my_re;
+    my_re.compile(UtfConverter::toUtf8(it->second));
+    my_re.write(output);
+  }   
+}

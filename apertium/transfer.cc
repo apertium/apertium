@@ -100,18 +100,10 @@ Transfer::readData(FILE *in)
   me = new MatchExe(t, finals);
  
   // attr_items
-
-  // fixed attr_items
-  attr_items["lem"] = "(([^<]|\"\\<\")+)";
-  attr_items["lemq"] = "(#[ _][^<]+)/";
-  attr_items["lemh"] = "(([^<#]|\"\\<\"|\"\\#\")+)";
-  attr_items["whole"] = "(.+)";
-  attr_items["tags"] = "((<[^>]+>)+)";
-  
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
   {
     string const cad_k = UtfConverter::toUtf8(Compression::wstring_read(in));
-    attr_items[cad_k] = UtfConverter::toUtf8(Compression::wstring_read(in));
+    attr_items[cad_k].read(in);
   }
 
   // variables
@@ -277,21 +269,21 @@ Transfer::evalString(xmlNode *element)
       case ti_clip_sl:
         if(checkIndex(element, ti.getPos(), lword))
         {
-          return word[ti.getPos()]->source(ti.getContent(), ti.getCondition());
+          return word[ti.getPos()]->source(attr_items[ti.getContent()], ti.getCondition());
         }
         break;
 
       case ti_clip_tl:
         if(checkIndex(element, ti.getPos(), lword))
         {
-          return word[ti.getPos()]->target(ti.getContent(), ti.getCondition());
+          return word[ti.getPos()]->target(attr_items[ti.getContent()], ti.getCondition());
         }
         break;
       
       case ti_linkto_sl:
         if(checkIndex(element, ti.getPos(), lword))
         {
-          if(word[ti.getPos()]->source(ti.getContent(), ti.getCondition()) != "")
+          if(word[ti.getPos()]->source(attr_items[ti.getContent()], ti.getCondition()) != "")
           {
             return "<" + string((char *) ti.getPointer()) + ">";
           }        
@@ -305,7 +297,7 @@ Transfer::evalString(xmlNode *element)
       case ti_linkto_tl:
         if(checkIndex(element, ti.getPos(), lword))
         {
-          if(word[ti.getPos()]->target(ti.getContent(), ti.getCondition()) != "")
+          if(word[ti.getPos()]->target(attr_items[ti.getContent()], ti.getCondition()) != "")
           {
             return "<" + string((char *) ti.getPointer()) + ">";
           }        
@@ -337,7 +329,7 @@ Transfer::evalString(xmlNode *element)
       case ti_get_case_from:
         if(checkIndex(element, ti.getPos(), lword))
         {
-          return copycase(word[ti.getPos()]->source(ti.getContent().c_str()),
+          return copycase(word[ti.getPos()]->source(attr_items[ti.getContent()]),
                           evalString((xmlNode *) ti.getPointer()));
         }
         break;
@@ -345,14 +337,14 @@ Transfer::evalString(xmlNode *element)
       case ti_case_of_sl:
         if(checkIndex(element, ti.getPos(), lword))
         {
-          return caseOf(word[ti.getPos()]->source(ti.getContent().c_str()));
+          return caseOf(word[ti.getPos()]->source(attr_items[ti.getContent()]));
         }
         break;
       
       case ti_case_of_tl:
         if(checkIndex(element, ti.getPos(), lword))
         {
-          return caseOf(word[ti.getPos()]->target(ti.getContent().c_str()));
+          return caseOf(word[ti.getPos()]->target(attr_items[ti.getContent()]));
         }
         break;
         
@@ -399,20 +391,20 @@ Transfer::evalString(xmlNode *element)
     {
       if(!xmlStrcmp(side, (const xmlChar *) "sl"))
       {
-        evalStringCache[element] = TransferInstr(ti_linkto_sl, attr_items[(const char *) part], pos, (void *) as, queue);
+        evalStringCache[element] = TransferInstr(ti_linkto_sl, (const char *) part, pos, (void *) as, queue);
       }
       else
       {
-        evalStringCache[element] = TransferInstr(ti_linkto_tl, attr_items[(const char *) part], pos, (void *) as, queue);
+        evalStringCache[element] = TransferInstr(ti_linkto_tl, (const char *) part, pos, (void *) as, queue);
       }      
     }      
     else if(!xmlStrcmp(side, (const xmlChar *) "sl"))
     {
-      evalStringCache[element] = TransferInstr(ti_clip_sl, attr_items[(const char *) part], pos, NULL, queue);
+      evalStringCache[element] = TransferInstr(ti_clip_sl, (const char *) part, pos, NULL, queue);
     }
     else
     {
-      evalStringCache[element] = TransferInstr(ti_clip_tl, attr_items[(const char *) part], pos, NULL, queue);
+      evalStringCache[element] = TransferInstr(ti_clip_tl, (const char *) part, pos, NULL, queue);
     }
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "lit-tag"))
@@ -449,8 +441,7 @@ Transfer::evalString(xmlNode *element)
       }
     }
 
-    evalStringCache[element] = TransferInstr(ti_get_case_from,
-                                             attr_items["lem"], pos, param);
+    evalStringCache[element] = TransferInstr(ti_get_case_from, "lem", pos, param);
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "var"))
   {
@@ -479,11 +470,11 @@ Transfer::evalString(xmlNode *element)
       
     if(!xmlStrcmp(side, (const xmlChar *) "sl"))
     {
-      evalStringCache[element] = TransferInstr(ti_case_of_sl, attr_items[(const char *) part], pos);
+      evalStringCache[element] = TransferInstr(ti_case_of_sl, (const char *) part, pos);
     }
     else
     {
-      evalStringCache[element] = TransferInstr(ti_case_of_tl, attr_items[(const char *) part], pos);
+      evalStringCache[element] = TransferInstr(ti_case_of_tl, (const char *) part, pos);
     }    
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "concat"))
@@ -801,11 +792,11 @@ Transfer::processLet(xmlNode *localroot)
         return;
         
       case ti_clip_sl:
-        word[ti.getPos()]->setSource(ti.getContent().c_str(), evalString(rightSide), ti.getCondition());
+        word[ti.getPos()]->setSource(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
         return;
       
       case ti_clip_tl:
-        word[ti.getPos()]->setTarget(ti.getContent().c_str(), evalString(rightSide), ti.getCondition());
+        word[ti.getPos()]->setTarget(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
         return;      
         
       default:
@@ -853,13 +844,13 @@ Transfer::processLet(xmlNode *localroot)
     
     if(!xmlStrcmp(side, (const xmlChar *) "tl"))
     {
-      word[pos]->setTarget(attr_items[(const char *) part].c_str(), evalString(rightSide), queue);
-      evalStringCache[leftSide] = TransferInstr(ti_clip_tl, attr_items[(const char *) part], pos, NULL, queue);
+      word[pos]->setTarget(attr_items[(const char *) part], evalString(rightSide), queue);
+      evalStringCache[leftSide] = TransferInstr(ti_clip_tl, (const char *) part, pos, NULL, queue);
     }
     else
     {
-      word[pos]->setSource(attr_items[(const char *) part].c_str(), evalString(rightSide), queue);
-      evalStringCache[leftSide] = TransferInstr(ti_clip_sl, attr_items[(const char *) part], pos, NULL, queue);
+      word[pos]->setSource(attr_items[(const char *) part], evalString(rightSide), queue);
+      evalStringCache[leftSide] = TransferInstr(ti_clip_sl, (const char *) part, pos, NULL, queue);
     }    
   }
 }
@@ -942,14 +933,14 @@ Transfer::processModifyCase(xmlNode *localroot)
     if(!xmlStrcmp(side, (const xmlChar *) "sl"))
     {
       string const result = copycase(evalString(rightSide), 
-				      word[pos]->source(attr_items[(const char *) part].c_str(), queue));
-      word[pos]->setSource(attr_items[(const char *) part].c_str(), result);
+				      word[pos]->source(attr_items[(const char *) part], queue));
+      word[pos]->setSource(attr_items[(const char *) part], result);
     }
     else
     {
       string const result = copycase(evalString(rightSide), 
-				     word[pos]->target(attr_items[(const char *) part].c_str(), queue));
-      word[pos]->setTarget(attr_items[(const char *) part].c_str(), result);
+				     word[pos]->target(attr_items[(const char *) part], queue));
+      word[pos]->setTarget(attr_items[(const char *) part], result);
     }
   }
   else if(!xmlStrcmp(leftSide->name, (const xmlChar *) "var"))

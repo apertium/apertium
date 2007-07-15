@@ -32,10 +32,18 @@ case "$#" in
        OUTPUT_FILE=$3; 
        INPUT_FILE=$2;
        PAIR=$1;
+       if [ ! -e $INPUT_FILE ];
+       then echo "Error: file '$INPUT_FILE' not found."
+            message;
+       fi
        ;;
      2)
        INPUT_FILE=$2;
        PAIR=$1;
+       if [ ! -e $INPUT_FILE ];
+       then echo "Error: file '$INPUT_FILE' not found."
+            message;
+       fi
        ;;
      1)
        PAIR=$1

@@ -21,7 +21,7 @@
 #define _TRANSFERWORD_
 
 #include <map>
-#include <pcrecpp.h>
+#include <apertium/apertium_re.h>
 #include <string>
 
 using namespace std;
@@ -64,7 +64,7 @@ private:
    * @param part regular expression to match/access
    * @return reference to matched/accessed string
    */
-  string access(string const &str, string const &part);
+  string access(string const &str, ApertiumRE const &part);
 
   /**
    * Assings a value to the source/target side of a word using the
@@ -73,7 +73,7 @@ private:
    * @param part regular expression to match/access 
    * @param value the string to be assigned
    */
-  void assign(string &str, string const &part, string const &value);
+  void assign(string &str, ApertiumRE const &part, string const &value);
 
 public:
   /**
@@ -120,7 +120,7 @@ public:
    * @param with_queue access taking into account the queue
    * @returns reference to the part of string matched
    */ 
-  string source(string const &part, bool with_queue = true);
+  string source(ApertiumRE const &part, bool with_queue = true);
 
   /**
    * Reference a target language word part
@@ -128,7 +128,7 @@ public:
    * @param with_queue access taking into account the queue
    * @returns reference to the part of string matched
    */ 
-  string target(string const &part, bool with_queue = true);
+  string target(ApertiumRE const &part, bool with_queue = true);
 
   /**
    * Sets a value for a source language word part
@@ -136,7 +136,7 @@ public:
    * @param value the new value for the given part
    * @param with_queue access taking or not into account the queue
    */
-  void setSource(string const &part, string const &value, 
+  void setSource(ApertiumRE const &part, string const &value, 
 		 bool with_queue = true);
 
   /**
@@ -145,7 +145,7 @@ public:
    * @param value the new value for the given part
    * @param with_queue access taking or not into account the queue
    */
-  void setTarget(string const &part, string const &value, 
+  void setTarget(ApertiumRE const &part, string const &value, 
 		 bool with_queue = true);
 };
 

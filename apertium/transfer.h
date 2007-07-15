@@ -22,6 +22,7 @@
 #include <apertium/transfer_instr.h>
 #include <apertium/transfer_token.h>
 #include <apertium/transfer_word.h>
+#include <apertium/apertium_re.h>
 #include <lttoolbox/alphabet.h>
 #include <lttoolbox/buffer.h>
 #include <lttoolbox/fst_processor.h>
@@ -45,7 +46,7 @@ private:
   Alphabet alphabet;
   MatchExe *me;
   MatchState ms;
-  map<string, string, Ltstr> attr_items;
+  map<string, ApertiumRE, Ltstr> attr_items;
   map<string, string, Ltstr> variables;
   map<string, int, Ltstr> macros;
   map<string, set<string, Ltstr>, Ltstr> lists;
