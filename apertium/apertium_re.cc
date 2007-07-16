@@ -7,7 +7,6 @@ using namespace std;
 
 ApertiumRE::ApertiumRE()
 {
-  extra = NULL;
   empty = true;
 }
 
@@ -31,21 +30,6 @@ ApertiumRE::read(FILE *input)
     exit(EXIT_FAILURE);
   }
   
-  size = Compression::multibyte_read(input);
-  if(size == 0)
-  {
-    extra = NULL;
-  }
-  else
-  {
-    extra = new pcre_extra;
-    extra->study_data = (void *) new char[size];
-    if(size != fread(extra->study_data, 1, size, input))
-    {
-      cerr << L"Error reading study data" << endl;
-      exit(EXIT_FAILURE);
-    }
-  }
   empty = false;
 }
 
@@ -63,7 +47,6 @@ ApertiumRE::compile(string const &str)
     exit(EXIT_FAILURE);
   }
   
-  extra = pcre_study(re, PCRE_CASELESS|PCRE_EXTENDED|PCRE_UTF8, &error);
   empty = false;
 }
 
@@ -77,7 +60,7 @@ ApertiumRE::write(FILE *output) const
   }
   
   int size;
-  int rc = pcre_fullinfo(re, extra, PCRE_INFO_SIZE, &size);
+  int rc = pcre_fullinfo(re, NULL, PCRE_INFO_SIZE, &size);
   if(rc < 0)
   {
     wcerr << L"Error calling pcre_fullinfo()\n" << endl;
@@ -91,38 +74,21 @@ ApertiumRE::write(FILE *output) const
   {
     wcerr << L"Error writing precompiled regex\n" << endl;
     exit(EXIT_FAILURE);
-  }              
-  
-  if(extra == NULL)
-  {
-    Compression::multibyte_write(0, output);
-  }
-  else
-  {
-    rc = pcre_fullinfo(re, extra, PCRE_INFO_STUDYSIZE, &size);
-    if(rc < 0)
-    {  
-      wcerr << L"Error calling pcre_fullinfo()\n" << endl;
-      exit(EXIT_FAILURE);
-    }
-  
-    Compression::multibyte_write(size, output);
-    rc = fwrite(extra->study_data, 1, size, output);
-    if(rc != size)
-    {
-      wcerr << L"Error writing precompiled regex\n" << endl;
-      exit(EXIT_FAILURE);
-    }              
-  }
+  }                
 }
 
 string
 ApertiumRE::match(string const &str) const
 {
+  if(empty)
+  {
+    return "";
+  }
+  
   int result[3];
   int workspace[4096];
-//  int rc = pcre_exec(re, extra, str.c_str(), str.size(), 0, PCRE_NO_UTF8_CHECK, result, 3);
-  int rc = pcre_dfa_exec(re, extra, str.c_str(), str.size(), 0, PCRE_NO_UTF8_CHECK, result, 3, workspace, 4096);
+//  int rc = pcre_exec(re, NULL, str.c_str(), str.size(), 0, PCRE_NO_UTF8_CHECK, result, 3);
+  int rc = pcre_dfa_exec(re, NULL, str.c_str(), str.size(), 0, PCRE_NO_UTF8_CHECK, result, 3, workspace, 4096);
 
   if(rc < 0)
   {
@@ -143,10 +109,15 @@ ApertiumRE::match(string const &str) const
 void
 ApertiumRE::replace(string &str, string const &value) const
 {
+  if(empty)
+  {
+    return;
+  }
+  
   int result[3];
   int workspace[4096];
-  // int rc = pcre_exec(re, extra, str.c_str(), str.size(), 0, PCRE_NO_UTF8_CHECK, result, 3);
-  int rc = pcre_dfa_exec(re, extra, str.c_str(), str.size(), 0, PCRE_NO_UTF8_CHECK, result, 3, workspace, 4096);
+  // int rc = pcre_exec(re, NULL, str.c_str(), str.size(), 0, PCRE_NO_UTF8_CHECK, result, 3);
+  int rc = pcre_dfa_exec(re, NULL, str.c_str(), str.size(), 0, PCRE_NO_UTF8_CHECK, result, 3, workspace, 4096);
   if(rc < 0)
   {
     switch(rc)

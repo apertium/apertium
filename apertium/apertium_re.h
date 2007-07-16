@@ -12,7 +12,6 @@ class ApertiumRE
 private:
   bool empty;
   pcre *re;
-  pcre_extra *extra;
 public:
   ApertiumRE();
   ~ApertiumRE();
