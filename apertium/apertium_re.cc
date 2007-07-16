@@ -120,9 +120,9 @@ string
 ApertiumRE::match(string const &str) const
 {
   int result[3];
-  int workspace[256];
+  int workspace[4096];
 //  int rc = pcre_exec(re, extra, str.c_str(), str.size(), 0, PCRE_NO_UTF8_CHECK, result, 3);
-  int rc = pcre_dfa_exec(re, extra, str.c_str(), str.size(), 0, PCRE_NO_UTF8_CHECK, result, 3, workspace, 256);
+  int rc = pcre_dfa_exec(re, extra, str.c_str(), str.size(), 0, PCRE_NO_UTF8_CHECK, result, 3, workspace, 4096);
 
   if(rc < 0)
   {
@@ -144,9 +144,9 @@ void
 ApertiumRE::replace(string &str, string const &value) const
 {
   int result[3];
-  int workspace[256];
+  int workspace[4096];
   // int rc = pcre_exec(re, extra, str.c_str(), str.size(), 0, PCRE_NO_UTF8_CHECK, result, 3);
-  int rc = pcre_dfa_exec(re, extra, str.c_str(), str.size(), 0, PCRE_NO_UTF8_CHECK, result, 3, workspace, 256);
+  int rc = pcre_dfa_exec(re, extra, str.c_str(), str.size(), 0, PCRE_NO_UTF8_CHECK, result, 3, workspace, 4096);
   if(rc < 0)
   {
     switch(rc)
