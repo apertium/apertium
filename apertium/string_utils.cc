@@ -94,8 +94,8 @@ wstring
 StringUtils::substitute(wstring const &source, wstring const &olds, wstring const &news) {
   wstring s = source;
 
-  unsigned p=s.find(olds , 0);
-  while (p!=wstring::npos)
+  unsigned int p=s.find(olds , 0);
+  while (p!=static_cast<unsigned int>(wstring::npos))
   {
     s.replace(p, olds.length(), news);
     p+=news.length();

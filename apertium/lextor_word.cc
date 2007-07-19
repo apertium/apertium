@@ -111,10 +111,10 @@ LexTorWord::extract_lexical_choices(FSTProcessor *fstp) {
   default_choice=0;
 
   if (lexical_choices.size()>1) { //lexically ambiguous word
-    for(unsigned i=0; i<lexical_choices.size(); i++) {
+    for(unsigned int i=0; i<lexical_choices.size(); i++) {
 
-      unsigned p=lexical_choices[i].find(L" D<");
-      if (p!=string::npos) {
+      unsigned int p=lexical_choices[i].find(L" D<");
+      if (p!=static_cast<unsigned int>(string::npos)) {
 	if (!((lexical_choices[i].length()>p+2) && (lexical_choices[i][p+2]=='<'))) {
 	  wcerr<<L"Error in LexTorWord::next_word when analyzing lexical options\n";
 	  wcerr<<L"Word: "<<word<<"; lexical choices: "<<fstp->biltrans(word,false)<<L"\n";
@@ -172,7 +172,7 @@ LexTorWord::next_word(wistream& is, FSTProcessor *fstp) {
 
   /*
     cerr<<"word: "<<w.word<<"\n";
-    for (unsigned i=0; i<w.lexical_choices.size(); i++) {
+    for (unsigned int i=0; i<w.lexical_choices.size(); i++) {
     cerr<<"Lex choice at "<<i<<": "<<w.lexical_choices[i]<<"\n";
     }
     cerr<<"Default: "<<w.default_choice<<"\n\n";

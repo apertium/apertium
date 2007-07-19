@@ -124,14 +124,14 @@ LexTorData::read(FILE *is) {
 
   //Read the set of stopwords
   //cerr<<"stopwords--------------------------------------------\n";
-  for (unsigned i=0; i<n_stopwords; i++) {
+  for (unsigned int i=0; i<n_stopwords; i++) {
     stopwords.insert(Compression::wstring_read(is));
     //cerr<<"len: "<<len<<" str: "<<str<<"\n";
   }
 
   //Read the list of words
   //cerr<<"list of words----------------------------------------\n";
-  for(unsigned i=1; i<n_words; i++) {
+  for(unsigned int i=1; i<n_words; i++) {
     wstring str = Compression::wstring_read(is);
     index2word.push_back(str);
     word2index[str]=i;
@@ -140,7 +140,7 @@ LexTorData::read(FILE *is) {
   }
 
   //Read data of each set associate to each lexical choice (or word)
-  for(unsigned i=0; i<n_set; i++) {
+  for(unsigned int i=0; i<n_set; i++) {
     WORD_DATA_TYPE lexchoice;
     COUNT_DATA_TYPE sum;
     //double prob;
@@ -157,7 +157,7 @@ LexTorData::read(FILE *is) {
 
     /////lexical_choices.insert(index2word[lexchoice]);
 
-    for(unsigned j=0; j<n_words_per_set; j++) {
+    for(unsigned int j=0; j<n_words_per_set; j++) {
       WORD_DATA_TYPE word;
       COUNT_DATA_TYPE count;
 
@@ -172,7 +172,7 @@ LexTorData::read(FILE *is) {
   WORD_DATA_TYPE nwords2workwith;
 
   nwords2workwith=(WORD_DATA_TYPE)Compression::multibyte_read(is);
-  for (unsigned i=0; i<nwords2workwith; i++) {
+  for (unsigned int i=0; i<nwords2workwith; i++) {
     WORD_DATA_TYPE word;
 
     word=(WORD_DATA_TYPE)Compression::multibyte_read(is);
@@ -202,7 +202,7 @@ LexTorData::write(FILE *os) {
 
   //Write the list of words
   //cerr<<"list of words----------------------------------------\n";
-  for(unsigned i=1; i<index2word.size(); i++) {
+  for(unsigned int i=1; i<index2word.size(); i++) {
     Compression::wstring_write(index2word[i], os);
     EndianUtil<COUNT_DATA_TYPE>::write(os, wordcount[i]);
   }
@@ -336,7 +336,7 @@ LexTorData::set_cooccurrence_context(const wstring& lexical_choice,
 
   new_word_register(lexical_choice);
 
-  for (unsigned i=0; ((i<n_words_per_set)&&(i<context.size())); i++) {
+  for (unsigned int i=0; ((i<n_words_per_set)&&(i<context.size())); i++) {
     wcerr<<context[i].first<<L" "<<context[i].second<<L"\n";
 
     new_word_register(context[i].first);
@@ -396,9 +396,9 @@ LexTorData::reduce(const wstring& s) {
     }
   }
 
-  unsigned p=str.find(L">");
-  unsigned i=0;
-  if (p==wstring::npos) { //s could correspond to an unknown word
+  unsigned int p=str.find(L">");
+  unsigned int i=0;
+  if (p==static_cast<unsigned int>(wstring::npos)) { //s could correspond to an unknown word
     p=str.length();
     if ((str.length()>0) && (str[0]=='*'))
       i=1; // to remove the star (unknown word mark)
