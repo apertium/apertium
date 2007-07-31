@@ -36,7 +36,7 @@ using namespace std;
 namespace UtfConverter
 {
 
-  typedef unsigned long	 UTF32;	/* at least 32 bits */
+  typedef unsigned int	 UTF32;	/* at least 32 bits */
   typedef unsigned short UTF16;	/* at least 16 bits */
   typedef unsigned char	 UTF8;	/* typically 8 bits */
 
@@ -524,8 +524,6 @@ namespace UtfConverter
     return result;
   }
 
-
-
   wstring fromUtf8(string const & utf8string)
   {
     size_t widesize = utf8string.length();
@@ -595,7 +593,7 @@ namespace UtfConverter
 	string resultstring;
 	resultstring.resize(utf8size, '\0');
 	const UTF32* sourcestart = reinterpret_cast<const UTF32*>(widestring.c_str());
-	const UTF32* sourceend = sourcestart + widesize;
+	const UTF32* sourceend = reinterpret_cast<const UTF32*>(widestring.c_str() + widesize);
 	UTF8* targetstart = reinterpret_cast<UTF8*>(&resultstring[0]);
 	UTF8* targetend = targetstart + utf8size;
 	ConversionResult res = ConvertUTF32toUTF8(&sourcestart, sourceend, &targetstart, targetend, strictConversion);

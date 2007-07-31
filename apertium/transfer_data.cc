@@ -184,6 +184,7 @@ TransferData::writeRegexps(FILE *output)
   {
     Compression::wstring_write(it->first, output);
     ApertiumRE my_re;
+    //wcerr << it->second << endl;
     my_re.compile(UtfConverter::toUtf8(it->second));
     my_re.write(output);
   }   
