@@ -450,7 +450,7 @@ TRXReader::procDefVars()
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
-        createVar(attrib(L"n"));
+        createVar(attrib(L"n"), attrib(L"v"));
       }
     }
     else if(name == L"#text")
@@ -553,9 +553,9 @@ TRXReader::insertListItem(wstring const &name, wstring const &value)
 }
 
 void
-TRXReader::createVar(wstring const &name)
+TRXReader::createVar(wstring const &name, wstring const &initial_value)
 {
-  td.getVariables()[name] = L"";
+  td.getVariables()[name] = initial_value;
 }
 
 void

@@ -77,10 +77,13 @@ patterns used in rules
 -->
 
 <!ELEMENT def-var EMPTY>
-<!ATTLIST def-var n ID #REQUIRED>
+<!ATTLIST def-var n ID #REQUIRED
+                  v CDATA #IMPLIED>
 <!-- 
      The definition of a global variable has a mandatory unique name 'n' that
-     will be used to refer to it.
+     will be used to refer to it. A value of initialization can also be specified
+     by means the 'v' attribute.  The default value of the initialization is the
+     empty string.
 -->
 
 <!ELEMENT section-def-lists (def-list)+>
