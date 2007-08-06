@@ -1,4 +1,4 @@
-if [ $# != 1 ]
+if [ $# -lt 1 ]
 then echo "USAGE: $(basename $0) <modes file> ";
      exit 1;
 fi
@@ -20,3 +20,9 @@ fi
 
 FILE1=$FULLDIRNAME/$(basename $1)
 cd $FULLDIRNAME/modes
+
+if [ $# -eq 2 ]; then
+	PREFIX=$2;
+	FULLDIRNAME=$APERTIUMDIR"/"$PREFIX;
+fi
+
