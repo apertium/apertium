@@ -9,7 +9,7 @@ This tool is part of the apertium machine translation
 architecture: \fBhttp://apertium.sf.net\fR.
 .SH SYNOPSIS
 .B apertium\-gen\-modes
-modes-file
+modes-file [package name]
 .SH DESCRIPTION
 This is an intermediate tool from Apertium level 2 engine. You should
 never have to use it independently.
@@ -20,7 +20,10 @@ as \fIinstall\fR, and for modes that are not to be installed, for
 example debugging modes, these are put into a \fImodes\fR directory 
 inside the linguistic data. 
 .SH OPTIONS
-It has no options.
+If a package name is specified, it creates the modes with the apertium
+install prefix plus the package name. If you wish to install the modes, 
+you should specify the package name. If you don't want to install the modes,
+leave it off.
 .SH FILES
 .B modes-file
 A XML file that tells \fBapertium\-gen\-modes\fR which scripts must
