@@ -149,7 +149,8 @@ public:
     *  @param in the input stream with the untagged text to tag
     *  @param out the output stream with the tagged text
     */
-   void tagger (FILE *in, FILE *out);
+   void tagger (FILE *in, FILE *out, bool show_all_good_first=false);
+
         
    /** Prints the A matrix.
     */

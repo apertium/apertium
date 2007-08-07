@@ -135,6 +135,49 @@ TaggerWord::get_lexical_form(TTag &t, int const TAG_kEOF) {
   return ret;
 }
 
+wstring 
+TaggerWord::get_all_choosen_tag_first(TTag &t, int const TAG_kEOF) {
+  wstring ret=L"";
+
+  if (show_ingnored_string)
+    ret.append(ignored_string);
+   
+  if(t==TAG_kEOF)
+    return ret;
+ 
+  if (!previous_plus_cut)
+    ret+=L"^";
+ 
+  ret.append(superficial_form);
+ 
+  if (lexical_forms.size()==0) { // This is an UNKNOWN WORD
+    ret+=L"/*";
+    ret.append(superficial_form);
+  } else {
+    ret+=L"/";
+    ret.append(lexical_forms[t]);
+    if (lexical_forms.size()>1) {
+      set<TTag>::iterator it;
+      for (it=tags.begin(); it!=tags.end(); it++) {
+	if (*it != t) {
+	  ret+=L"/";
+          ret.append(lexical_forms[*it]);
+	}
+      }
+    }
+  }
+   
+  if (ret != ignored_string) {
+    if (plus_cut)
+      ret+=L"+";
+    else {
+      ret+=L"$";
+    }
+  }
+      
+  return ret;
+}
+
 //OBSOLETE
 wstring
 TaggerWord::get_lexical_form_without_ignored_string(TTag &t, int const TAG_kEOF) {

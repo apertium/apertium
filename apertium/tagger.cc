@@ -55,14 +55,13 @@ Tagger::getMode(int argc, char *argv[])
       {"retrain",    required_argument, 0, 'r'},
       {"tagger",     no_argument,       0, 'g'},
       {"eval",       no_argument,       0, 'e'},
-      //{"forhandtag", no_argument,       0, 'f'},
+      {"first",      no_argument,       0, 'f'},
       {"help",       no_argument,       0, 'h'}, 
       {"debug",      no_argument,       0, 'd'}, 
       {0, 0, 0, 0}
     };
 
-    //c=getopt_long(argc, argv, "t:sr:gefh",long_options, &option_index);
-    c=getopt_long(argc, argv, "dt:s:r:geh",long_options, &option_index);
+    c=getopt_long(argc, argv, "dt:s:r:gefh",long_options, &option_index);
     if (c==-1)
       break;
       
@@ -163,11 +162,11 @@ Tagger::getMode(int argc, char *argv[])
       case 'f': 
         if(mode==TAGGER_MODE)
         {
-          mode=TAGGER_FORHANDTAG_MODE;
+          mode=TAGGER_FIRST_MODE;
         }
         else
         {
-          wcerr<<L"Error: --forhandtag optional argument should only appear after --tagger argument\n";
+          wcerr<<L"Error: --first optional argument should only appear after --tagger argument\n";
 	  help();
 	} 
 	break;
@@ -205,7 +204,7 @@ Tagger::getMode(int argc, char *argv[])
       }
       break;
     case 3:
-      if(mode != TAGGER_MODE)
+      if ((mode != TAGGER_MODE) && (mode != TAGGER_FIRST_MODE))
       {
         help();
       }
@@ -219,7 +218,7 @@ Tagger::getMode(int argc, char *argv[])
       break;
     
     case 1:
-      if(mode != TAGGER_MODE)
+      if ((mode != TAGGER_MODE) && (mode != TAGGER_FIRST_MODE))
       {
         help();
       }
@@ -250,7 +249,7 @@ Tagger::main(int argc, char *argv[])
   int mode = getMode(argc, argv);
 
   switch(mode)
-  {
+    {
     case TRAIN_MODE:
       train();
       break;
@@ -267,15 +266,19 @@ Tagger::main(int argc, char *argv[])
       tagger();
       break;
 
+    case TAGGER_FIRST_MODE:
+      tagger(true);
+      break;
+
     default:
       wcerr<<L"Error: Unknown working mode mode\n";
       help();
       break;
-  }
+    }
 }
 
 void
-Tagger::tagger()
+Tagger::tagger(bool mode_first)
 {
   FILE *ftdata = fopen(filenames[0].c_str(), "r");
   if (!ftdata) {
@@ -290,7 +293,7 @@ Tagger::tagger()
   
   if(filenames.size() == 1)
   {
-    hmm.tagger(stdin, stdout);
+    hmm.tagger(stdin, stdout, mode_first);
   }
   else
   {
@@ -300,7 +303,7 @@ Tagger::tagger()
     }
     if(filenames.size() == 2)
     {
-      hmm.tagger(finput, stdout);
+      hmm.tagger(finput, stdout, mode_first);
     }
     else
     {
@@ -309,7 +312,7 @@ Tagger::tagger()
         filerror(filenames[2]);
       }
 
-      hmm.tagger(finput, foutput);
+      hmm.tagger(finput, foutput, mode_first);
       fclose(foutput);
     }
     fclose(finput);
@@ -483,7 +486,7 @@ Tagger::help()
   out << "USAGE: " << basename(localname) << "[-d] -t=n DIC CRP TSX TAGGER_DATA" << endl;
   out << "       " << basename(localname) << "[-d] -s=n DIC CRP TSX TAGGER_DATA HTAG UNTAG" << endl;
   out << "       " << basename(localname) << "[-d] -r=n CRP TAGGER_DATA" << endl;
-  out << "       " << basename(localname) << "[-d] -g TAGGER_DATA [INPUT [OUTPUT]]" << endl;
+  out << "       " << basename(localname) << "[-d] -g [-f] TAGGER_DATA [INPUT [OUTPUT]]" << endl;
   out << endl;
   out << "Where OPTIONS are:" << endl;
   out << "  -t, --train=n:       performs n iterations of the Baum-Welch training" << endl;
@@ -493,6 +496,9 @@ Tagger::help()
   out << "  -r, --retrain=n:     retrains the model with n aditional Baum-Welch" << endl;
   out << "                       iterations (unsupervised)" << endl;
   out << "  -g, --tagger:        tags input text by means of Viterbi algorithm" << endl;
+  out << "  -f, --first:         used if conjuntion with -g (--tagger) makes the tagger"<< endl;
+  out << "                       to give all lexical forms of each word, being the choosen" << endl;
+  out << "                       one in the first place (after the lemma)"<<endl;
   out << "  -d, --debug:         print error mesages when tagging input text" << endl;
   out << endl;
   out << "And FILES are:" << endl;          

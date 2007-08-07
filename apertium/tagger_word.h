@@ -100,6 +100,8 @@ public:
    *  @return the lexical form of tag t
    */
   wstring get_lexical_form(TTag &t, int const TAG_kEOF); 
+
+  wstring get_all_choosen_tag_first(TTag &t, int const TAG_kEOF);
   
   /** Get the lexical form (fine tag) for a given tag (coarse one)
    *  @param  t the tag

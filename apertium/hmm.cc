@@ -692,8 +692,7 @@ HMM::train (FILE *ftxt) {
 }
 
 void 
-HMM::tagger(FILE *in, FILE *out)
-{
+HMM::tagger(FILE *in, FILE *out, bool show_all_good_first) {
   int i, j, k, nw;
   TaggerWord *word=NULL;
   TTag tag;
@@ -776,10 +775,14 @@ HMM::tagger(FILE *in, FILE *out)
         if (debug)
 	  wcerr<<L"Problem with word '"<<word->get_superficial_form()<<L"' "<<word->get_string_tags()<<L"\n";
       }
-      for (unsigned t=0; t<best[nwpend%2][tag].size(); t++)
-      {
-        wstring const &micad = wpend[t].get_lexical_form(best[nwpend%2][tag][t], (td->getTagIndex())[L"TAG_kEOF"]);
-        fputws_unlocked(micad.c_str(), out); 
+      for (unsigned t=0; t<best[nwpend%2][tag].size(); t++) {
+	if (show_all_good_first) {
+	  wstring const &micad = wpend[t].get_all_choosen_tag_first(best[nwpend%2][tag][t], (td->getTagIndex())[L"TAG_kEOF"]);
+	  fputws_unlocked(micad.c_str(), out); 
+	} else {
+	  wstring const &micad = wpend[t].get_lexical_form(best[nwpend%2][tag][t], (td->getTagIndex())[L"TAG_kEOF"]);
+	  fputws_unlocked(micad.c_str(), out); 
+	}
       }
       
       //Return to the initial state

@@ -17,7 +17,7 @@ architecture: \fBhttp://www.apertium.org\fR.
 {n} CRP PROB [\-\-debug|\-d] \fR
 .PP
 .B apertium-tagger \-\-tagger|\-g 
-PROB [\-\-debug|\-d] [INPUT [OUTPUT]] \fR
+[\-\-first|\-f] PROB [\-\-debug|\-d] [INPUT [OUTPUT]] \fR
 .PP
 .SH DESCRIPTION
 .BR apertium-tagger 
@@ -43,6 +43,11 @@ Retrains the model with \fBn\fR additional Baum-Welch iterations
 .TP
 .B \-g, \-\-tagger
 Tags input text by means of Viterbi algorithm.
+.TP
+.B \-f, \-\-first
+Used if conjuntion with -g (--tagger) makes the tagger
+to give all lexical forms of each word, being the choosen
+one in the first place (after the lemma)
 .TP
 .B \-d, \-\-debug
 Print error (if any) or debug messages while operating.

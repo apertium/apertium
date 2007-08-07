@@ -41,7 +41,7 @@ private:
             TRAIN_SUPERVISED_MODE,
             RETRAIN_SUPERVISED_MODE,
             TAGGER_EVAL_MODE,
-            TAGGER_FORHANDTAG_MODE};
+            TAGGER_FIRST_MODE};
             
   vector<string> filenames;
   int nit;
@@ -49,7 +49,7 @@ private:
   bool debug;
 
   int getMode(int argc, char *argv[]);
-  void tagger();
+  void tagger(bool model_first=false);
   void train();
   void retrain();
   void trainSupervised();
