@@ -26,8 +26,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-TMXBuilder::TMXBuilder()
+TMXBuilder::TMXBuilder(wstring const &l1, wstring const &l2)
 {
+  lang1 = l1;
+  lang2 = l2;
 }
 
 TMXBuilder::~TMXBuilder()
@@ -102,7 +104,7 @@ TMXBuilder::compatible(FILE *f1, FILE *f2, bool lazy)
   wstring s1 = nextBlank(f1), s2 = nextBlank(f2);
   if(!lazy)
   {  
-    while(s1 != L"")
+    while(!feof(f1) && !feof(f2))
     {
       if(s1 != s2)
       {
@@ -114,7 +116,7 @@ TMXBuilder::compatible(FILE *f1, FILE *f2, bool lazy)
   }    
   else
   {
-    while(s1 != L"")
+    while(!feof(f1) && !feof(f2))
     {
       if(s1.size() < s2.size()*(1-0.05) || s1.size() > s2.size()*(1+0.05))
       {
@@ -158,3 +160,97 @@ TMXBuilder::check(string const &file1, string const &file2, bool lazy)
   fclose(f2);
   return retval;
 }
+
+wstring
+TMXBuilder::nextTU(FILE *input)
+{
+  wstring current_tu = L"";
+  wstring tmp;
+  
+  while(true)
+  {
+    wint_t symbol = fgetwc_unlocked(input);
+    if(feof(input))
+    {
+      return L"";
+    }
+    switch(symbol)
+    {
+      case L'\\':
+        symbol = fgetwc_unlocked(input);
+        if(feof(input))
+        {
+          return L"";
+        }
+        // continued down
+      default:
+        current_tu += static_cast<wchar_t>(symbol);
+        break;
+      
+      case L'[':
+        tmp = restOfBlank(input);
+        current_tu += L' ';
+        break;
+      
+      case L'.':
+        return current_tu;
+    }
+  }
+  return L"";
+}
+
+void 
+TMXBuilder::generate(string const &file1, string const &file2, 
+                     string const &outfile) const
+{
+  FILE *output = stdin;
+  
+  if(outfile != "")
+  {
+    output = fopen(outfile.c_str(), "w");
+    if(!output)
+    {
+      wcerr << L"Error: file '" << UtfConverter::fromUtf8(outfile);
+      wcerr << L"' cannot be opened for writing" << endl;
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  FILE *f1 = fopen(file1.c_str(), "r");
+  if(!f1)
+  {
+    wcerr << L"Error: file '" << UtfConverter::fromUtf8(file1);
+    wcerr << L"' cannot be opened for reading" << endl;
+    exit(EXIT_FAILURE);
+  }
+
+  FILE *f2 = fopen(file2.c_str(), "r");
+  if(!f2)
+  {
+    wcerr << L"Error: file '" << UtfConverter::fromUtf8(file2);
+    wcerr << L"' cannot be opened for reading" << endl;
+    exit(EXIT_FAILURE);
+  }
+
+  wstring tu1 = nextTU(f1);
+  wstring tu2 = nextTU(f2);
+  
+  while(!feof(f1) && !feof(f2))
+  {
+    if(tu1 != L"" && tu2 != L"")
+    { 
+      fwprintf(output, L"<tu>\n  <tuv xml:lang=\"%s\">%s</tuv>\n", lang1.c_str(), tu1.c_str());
+      fwprintf(output, L"  <tuv xml:lang=\"%s\">%s</tuv>\n</tu>\n", lang2.c_str(), tu2.c_str());  
+    }
+    tu1 = nextTU(f1);
+    tu2 = nextTU(f2);
+  }
+
+  if(output != stdin)
+  {
+    fclose(output);
+  }
+  fclose(f1);
+  fclose(f2);
+}
+

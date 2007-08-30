@@ -36,9 +36,10 @@ bin_PROGRAMS = apertium-pretransfer apertium-destxt apertium-retxt \
                apertium-filter-ambiguity apertium-lextor \
                apertium-gen-wlist-lextor-translation \
                apertium-interchunk apertium-postchunk \
-               apertium-tagger-apply-new-rules 
+               apertium-tagger-apply-new-rules \
+               apertium-tmxbuild
                ###pruebas-lextor apertium-lextor-search apertium-lextor-eval
-### PONER apertium-tmxbuild
+
 bin_SCRIPTS =  $(GENERATEDSCRIPTS)
 
 instdir = apertium
@@ -68,8 +69,8 @@ apertium_rertf_SOURCES = apertium_rertf.cc
 apertium_tagger_SOURCES = apertium_tagger.cc
 apertium_tagger_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_API_VERSION)
 
-#apertium_tmxbuild_SOURCES = apertium_tmxbuild.cc
-#apertium_tmxbuild_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_API_VERSION)
+apertium_tmxbuild_SOURCES = apertium_tmxbuild.cc
+apertium_tmxbuild_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_API_VERSION)
 
 apertium_preprocess_transfer_SOURCES = transferpp.cc
 apertium_preprocess_transfer_LDADD = $(APERTIUM_LIBS) \

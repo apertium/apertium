@@ -24,6 +24,7 @@
 #include <apertium/apertium_config.h>
 #include <lttoolbox/lt_locale.h>
 #include <apertium/tmx_builder.h>
+#include <apertium/utf_converter.h>
 
 void usage(char *progname)
 {
@@ -39,14 +40,18 @@ int main(int argc, char *argv[])
   LtLocale::tryToSetLocale();
   string output_file = "";
   string doc1 = "", doc2 = "";
+  string lang1 = "", lang2 = "";
   
   switch(argc)
   {
-    case 4:
-      output_file = argv[3];  
-    case 3:
-      doc1 = argv[1];
-      doc2 = argv[2];
+    case 6:
+      output_file = argv[5];
+      // continued down  
+    case 5:
+      doc1 = argv[3];
+      doc2 = argv[4];
+      lang1 = argv[1];
+      lang2 = argv[2];
       break;
       
     default:
@@ -54,13 +59,13 @@ int main(int argc, char *argv[])
       return EXIT_FAILURE;
   } 
   
-  TMXBuilder tmxb;
-  if(!tmxb.check(argv[1], argv[2]))
+  TMXBuilder tmxb(UtfConverter::fromUtf8(lang1), UtfConverter::fromUtf8(lang2));
+  if(!tmxb.check(doc1, doc2))
   {
     wcerr << L"Error: The two files are incompatible for building a TMX." << endl;
     exit(EXIT_FAILURE);
   }
   
-//  tmx.generate(file1, file2, resultado);
+  tmxb.generate(doc1, doc2, output_file);
   return EXIT_SUCCESS;
 }

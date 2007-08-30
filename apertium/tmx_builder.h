@@ -29,15 +29,19 @@ using namespace std;
 class TMXBuilder
 {
 private:
+  wstring lang1;
+  wstring lang2;
+
+  static wstring nextTU(FILE *input);
   static wstring restOfBlank(FILE *input);
   static wstring nextBlank(FILE *input);
   static bool compatible(FILE *input, FILE *output, bool lazy = false);
 public:
-  TMXBuilder();
+  TMXBuilder(wstring const &l1, wstring const &l2);
   ~TMXBuilder();
   static bool check(string const &file1, string const &file2, bool lazy = false);
-  static void generate(string const &file1, string const &file2, 
-                       string const &outfile="");
+  void generate(string const &file1, string const &file2, 
+                string const &outfile="") const;
 };
 
 #endif
