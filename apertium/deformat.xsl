@@ -19,7 +19,7 @@
 -->
 <xsl:stylesheet version="1.0" 
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-  <xsl:output method="text" encoding="ISO-8859-1"/>
+  <xsl:output method="text" encoding="UTF-8"/>
 
 <xsl:param name="mode"/>
 
@@ -134,7 +134,7 @@
 #include &lt;vector&gt;
 #include &lt;regex.h&gt;
 #include &lt;string&gt;
-
+#include &lt;lttoolbox/lt_locale.h&gt;
 
 using namespace std;
 
@@ -233,7 +233,7 @@ string get_tagName(string tag){
 <xsl:for-each select="./rules/replacement-rule">
   <xsl:variable name="varname" 
 		select="concat(concat(string('S'),position()),string('_substitution'))"/>
-  <xsl:value-of select="string('map&lt;string, string&gt; S')"/>
+  <xsl:value-of select="string('map&lt;string, wstring&gt; S')"/>
   <xsl:value-of select="position()"/>
   <xsl:value-of select="string('_substitution;&#xA;&#xA;void S')"/>
   <xsl:value-of select="position()"/>
@@ -244,7 +244,7 @@ string get_tagName(string tag){
     <xsl:value-of select="$varname"/>
     <xsl:value-of select="string('[&quot;')"/>
     <xsl:value-of select="./@source"/>
-    <xsl:value-of select="string('&quot;] = &quot;')"/>
+    <xsl:value-of select="string('&quot;] = L&quot;')"/>
     <xsl:value-of select="./@target"/>
     <xsl:value-of select="string('&quot;;')"/>
   </xsl:for-each>
@@ -501,7 +501,7 @@ void printBuffer()
   <xsl:value-of select="$varname"/>
   <xsl:value-of select="string('.find(yytext) != ')"/>
   <xsl:value-of select="$varname"/>
-  <xsl:value-of select="string('.end())&#xA;  {&#xA;    printBuffer();&#xA;    fputs_unlocked(')"/>
+  <xsl:value-of select="string('.end())&#xA;  {&#xA;    printBuffer();&#xA;    fputws_unlocked(')"/>
   <xsl:value-of select="$varname"/>
   <xsl:value-of select="string('[yytext].c_str(), yyout);&#xA;    offset+=')"/>
   <xsl:value-of select="$varname"/>
@@ -561,6 +561,7 @@ void usage(string const &amp;progname)
 
 int main(int argc, char *argv[])
 {
+  LtLocale::tryToSetLocale();
 <xsl:choose>
   <xsl:when test="$mode=string('matxin')">
   if(argc &gt; 4 || argc &lt; 2)

@@ -19,7 +19,7 @@
 -->
 <xsl:stylesheet version="1.0" 
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-  <xsl:output method="text" encoding="ISO-8859-1"/>
+  <xsl:output method="text" encoding="UTF-8"/>
 
 <xsl:template match="format">
 
@@ -28,11 +28,11 @@
 #include &lt;apertium/apertium_config.h&gt;
 
 #if !HAVE_DECL_FPUTS_UNLOCKED
-#define fputs_unlocked fputs
+#define fputws_unlocked fputws
 #endif
 
 #if !HAVE_DECL_FPUTC_UNLOCKED
-#define fputc_unlocked fputc
+#define fputwc_unlocked fputwc
 #endif
 
 #include &lt;cstdlib&gt;
@@ -41,14 +41,16 @@
 #include &lt;map&gt;
 #include &lt;string&gt;
 #include &lt;unistd.h&gt;
-
+#include &lt;lttoolbox/lt_locale.h&gt;
+#include &lt;lttoolbox/ltstr.h&gt;
+#include &lt;wchar.h&gt;
 
 using namespace std;
 
 <xsl:for-each select="./rules/replacement-rule">
   <xsl:variable name="varname" 
 		select="concat(concat(string('S'),position()),string('_substitution'))"/>
-  <xsl:value-of select="string('map&lt;string, string&gt; S')"/>
+  <xsl:value-of select="string('map&lt;wstring, wstring, Ltstr&gt; S')"/>
   <xsl:value-of select="position()"/>
   <xsl:value-of select="string('_substitution;&#xA;&#xA;void S')"/>
   <xsl:value-of select="position()"/>
@@ -58,9 +60,9 @@ using namespace std;
     <xsl:if test="./@prefer = string('yes')">
       <xsl:value-of select="string('&#xA;  ')"/>
       <xsl:value-of select="$varname"/>
-      <xsl:value-of select="string('[&quot;')"/>
+      <xsl:value-of select="string('[L&quot;')"/>
       <xsl:value-of select="./@target"/>
-      <xsl:value-of select="string('&quot;] = &quot;')"/>
+      <xsl:value-of select="string('&quot;] = L&quot;')"/>
       <xsl:value-of select="./@source"/>
       <xsl:value-of select="string('&quot;;')"/>
     </xsl:if>
@@ -68,6 +70,31 @@ using namespace std;
 
   <xsl:value-of select="string('&#xA;}&#xA;')"/>
 </xsl:for-each>
+
+string memconv = "";  
+
+wstring convertir(char const *multibyte, int const length)
+{
+  memconv.append(multibyte, length); 
+  int tam = memconv.size();
+  wchar_t retval[tam];
+  size_t l = mbstowcs(retval, memconv.c_str(), tam);
+
+  if(l == ((size_t) -1))
+  {
+    if(memconv.size() >= 4)
+    {
+      wcerr &lt;&lt; L"Warning: wrong encoding" &lt;&lt; endl;
+    }
+    return L"";
+  }
+  else
+  {
+    memconv = "";
+    retval[l] = 0;
+    return retval;
+  }
+}
 
 %}
 
@@ -85,23 +112,23 @@ using namespace std;
   string filename = yytext;
   filename = filename.substr(2, filename.size()-3);
   FILE *temp = fopen(filename.c_str(), "r");
-  int mychar;
+  wint_t mychar;
 
   if(!temp)
   {
     cerr &lt;&lt; "ERROR: File '" &lt;&lt; filename &lt;&lt;"' not found." &lt;&lt; endl;
     exit(EXIT_FAILURE);
   }
-  while((mychar = fgetc_unlocked(temp)) != EOF)
+  while(static_cast&lt;int&gt;(mychar = fgetwc_unlocked(temp)) != EOF)
   {
-    fputc_unlocked(mychar, yyout);
+    fputwc_unlocked(mychar, yyout);
   }
   fclose(temp);
   unlink(filename.c_str());
 }
 
 "[\\@"&#x9;{
-  fputc_unlocked('@', yyout);
+  fputwc_unlocked(L'@', yyout);
 }
 
 ".[]"&#x9;{
@@ -109,12 +136,13 @@ using namespace std;
 }
 
 "\\"<xsl:value-of select="/format/options/escape-chars/@regexp"/>&#x9;{
-  fputc_unlocked(yytext[1], yyout);
+  fputws_unlocked(convertir(yytext+1, yyleng-1).c_str(), yyout);
 }
 
  
 
 .|\n&#x9;{
+  wstring yytext_conv = convertir(yytext, yyleng);
 <xsl:for-each select="./rules/replacement-rule">
   <xsl:variable name="varname" 
 		select="concat(concat(string('S'),position()),string('_substitution'))"/>
@@ -125,23 +153,22 @@ using namespace std;
   </xsl:if>
   <xsl:value-of select="string('if(')"/>
   <xsl:value-of select="$varname"/>
-  <xsl:value-of select="string('.find(yytext) != ')"/>
+  <xsl:value-of select="string('.find(yytext_conv) != ')"/>
   <xsl:value-of select="$varname"/>
   <xsl:value-of select="string('.end())&#xA;  {&#xA;')"/>
-  <xsl:value-of select="string('    fputs_unlocked(')"/>
+  <xsl:value-of select="string('    fputws_unlocked(')"/>
   <xsl:value-of select="$varname"/>
-  <xsl:value-of select="string('[yytext].c_str(), yyout);')"/>
+  <xsl:value-of select="string('[yytext_conv].c_str(), yyout);')"/>
   <xsl:value-of select="string('&#xA;  }&#xA;')"/>
 </xsl:for-each>   
 
 <xsl:if test="not(count(./rules/replacement-rule)=0)">
   <xsl:value-of select="string('  else&#xA;  {&#xA;  ')"/>
 </xsl:if>
-<xsl:value-of select="string('  fputc_unlocked(yytext[0], yyout);&#xA;')"/>
+<xsl:value-of select="string('  fputws_unlocked(yytext_conv.c_str(), yyout);&#xA;')"/>
 <xsl:if test="not(count(./rules/replacement-rule)=0)">
   <xsl:value-of select="string('  }')"/>
 </xsl:if>
-
 }
 
 &lt;&lt;EOF&gt;&gt;&#x9;{
@@ -159,6 +186,8 @@ void usage(string const &amp;progname)
 
 int main(int argc, char *argv[])
 {
+  LtLocale::tryToSetLocale();
+
   if(argc &gt; 3)
   {
     usage(argv[0]);
