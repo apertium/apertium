@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<format name="html">
+  <options>
+    <largeblocks size="8192"/>
+    <input encoding="ISO-8859-1"/>
+    <output encoding="ISO-8859-1"/>
+    <tag-name regexp="[a-zA-Z]+"/>
+    <escape-chars regexp='[][^@\\/]'/>
+    <space-chars regexp='[ \n\t\r$*&lt;&gt;]'/>
+    <case-sensitive value="no"/>
+  </options>
+
+  <rules>
+    <format-rule type="comment" eos="no" priority="1">
+      <begin regexp='"&lt;!--"'/>
+      <end regexp='"--&gt;"'/>
+    </format-rule>
+
+<!-- Regla ficticia -->
+
+    <format-rule type="comment" eos="no" priority="2">
+      <begin regexp='"&lt;style"(" "[^&gt;]*)?"&gt;"'/>
+      <end regexp='"&lt;/style"(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule> 
+
+    <format-rule type="open" eos="yes" priority="3">
+      <tag regexp='"&lt;text:"[hp](" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+    <format-rule type="close" eos="yes" priority="3">
+      <tag regexp='"&lt;/text:"[hp](" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+
+    <format-rule type="empty" eos="no" priority="4">
+      <tag regexp='("&lt;!"|"&lt;?")[a-zA-Z][^&gt;]*"&gt;"'/>
+    </format-rule>
+
+
+    <format-rule type="open" eos="no" priority="4">
+      <tag regexp='"&lt;"[a-zA-Z][^&gt;]*"&gt;"'/>
+    </format-rule>
+    
+    <format-rule type="close" eos="no" priority="4">
+      <tag regexp='"&lt;/"[a-zA-Z][^&gt;]*"&gt;"'/>
+    </format-rule>
+    <replacement-rule regexp='"&amp;"([a-zA-Z]+|"#x"[0-9a-fA-F]{1,4}|"#"[0-9]{1,8});'>
+      <replace source="&amp;apos;" target="'"/>
+    </replacement-rule>
+  </rules>
+
+</format>
