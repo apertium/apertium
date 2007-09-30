@@ -16,11 +16,9 @@
       <end regexp='"--&gt;"'/>
     </format-rule>
 
-<!-- Regla ficticia -->
-
     <format-rule type="comment" eos="no" priority="2">
-      <begin regexp='"&lt;style"(" "[^&gt;]*)?"&gt;"'/>
-      <end regexp='"&lt;/style"(" "[^&gt;]*)?"&gt;"'/>
+      <begin regexp='"&lt;math:"[a-zA-Z]+(" "[^&gt;]*)?"&gt;"'/>
+      <end regexp='"&lt;/math:"[a-zA-Z]+(" "[^&gt;]*)?"&gt;"'/>
     </format-rule> 
 
     <format-rule type="open" eos="yes" priority="3">

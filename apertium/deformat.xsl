@@ -157,14 +157,24 @@ regex_t names_regexp;
 
 void bufferAppend(wstring &amp;buf, string const &amp;str)
 {
-  for(size_t i = 0, limit = str.size(); i &lt; limit;)
+  symbuf.append(str);
+
+  for(size_t i = 0, limit = symbuf.size(); i &lt; limit;)
   {
     wchar_t symbol;
-    size_t gap = mbtowc(&amp;symbol, str.c_str() + i, MB_CUR_MAX);
-    if(gap == (size_t) -1)
+    int gap = mbtowc(&amp;symbol, symbuf.c_str() + i, MB_CUR_MAX);
+    if(gap == -1)
     {
-      buf += L'?';
-      gap = 1;
+      if(i + MB_CUR_MAX &lt; limit)
+      {
+        buf += L'?';
+        gap = 1;
+      }
+      else
+      { 
+        symbuf = symbuf.substr(i);
+        return;
+      }
     }
     else 
     { 
@@ -174,6 +184,7 @@ void bufferAppend(wstring &amp;buf, string const &amp;str)
     i += gap;
   }
 
+  symbuf = "";
   return;
 }
 
