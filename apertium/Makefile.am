@@ -305,6 +305,7 @@ apertium-gen-stopwords-lextor: Makefile.am gen-stopwords-lextor.sh
 	@chmod a+x $@
 
 man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
+         apertium-desodt.1 apertium-reodt.1 \
          apertium-filter-ambiguity.1 apertium-gen-deformat.1 apertium-gen-lextorbil.1 \
          apertium-gen-lextormono.1 apertium-gen-reformat.1 apertium-gen-stopwords-lextor.1 \
          apertium-gen-wlist-lextor.1 apertium-gen-wlist-lextor-translation.1 \

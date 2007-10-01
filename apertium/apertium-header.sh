@@ -18,8 +18,23 @@ function translate_odt
 {
   INPUT_TMPDIR=/tmp/$$odtdir
   INPUT_TMPFILE=/tmp/$$odtfile
+
+  export LC_CTYPE=$(locale -a|grep -i "utf[.]*8"|head -1);
+
+  if [[ LC_CTYPE == "" ]]
+  then echo "Error: Install an UTF-8 locale in your system";
+       exit 1;
+  fi
+
+  if [[ $(which zip) == "" ]]
+  then echo "Error: Install 'zip' command in your system";
+       exit 1;
+  fi
   
-  export LC_CTYPE=$(locale -a|grep -i "utf"|grep "8"|head -1);
+  if [[ $(which unzip) == "" ]]
+  then echo "Error: Install 'unzip' command in your system";
+       exit 1;
+  fi
   
   if [[ $FICHERO == "" ]]
   then FICHERO=/tmp/$$odtorig
@@ -128,6 +143,18 @@ case "$FORMATADOR" in
 		else OPTION="-g";
 		fi;
 		;;
+        rtf)
+		if [[ $UWORDS == "no" ]]; then OPTION="-n"; 
+		else OPTION="-g";
+		fi;
+		MILOCALE=$(locale -a|grep -i -v "utf\|^C$\|^POSIX$"|head -1);
+		if [[ $MILOCALE == "" ]]
+		then echo "Error: Install a ISO-8859-1 compatible locale in your system";
+	             exit 1;
+	        fi
+	        export LC_CTYPE=$MILOCALE
+		;;
+        
         odt)
 		if [[ $UWORDS == "no" ]]; then OPTION="-n"; 
 		else OPTION="-g";
@@ -146,6 +173,12 @@ case "$FORMATADOR" in
 	rtfu)
 		FORMATADOR="rtf";
 		OPTION="-n";
+		MILOCALE=$(locale -a|grep -i -v "utf\|^C$\|^POSIX$"|head -1);
+		if [[ $MILOCALE == "" ]]
+		then echo "Error: Install a ISO-8859-1 compatible locale in your system";
+	             exit 1;
+	        fi
+	        export LC_CTYPE=$MILOCALE
 		;;
  
         odtu) 
