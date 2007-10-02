@@ -6,7 +6,7 @@ modesdir=$(prefix)/share/apertium/modes/
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = apertium-$(GENERIC_RELEASE).pc
 
-EXTRA_DIST=autogen.sh
+EXTRA_DIST=autogen.sh README-MODES
 
 install-data-local:
 	mkdir -p $(modesdir)
