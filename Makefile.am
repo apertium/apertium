@@ -9,5 +9,5 @@ pkgconfig_DATA = apertium-$(GENERIC_RELEASE).pc
 EXTRA_DIST=autogen.sh README-MODES
 
 install-data-local:
-	mkdir -p $(modesdir)
-	$(INSTALL_DATA) README-MODES  $(modesdir)/README
+	mkdir -p $(DESTDIR)/$(modesdir)
+	$(INSTALL_DATA) README-MODES  $(DESTDIR)/$(modesdir)/README
