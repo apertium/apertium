@@ -146,7 +146,7 @@ HMM::init_probabilities_kupiec (FILE *is)
   //We count for each ambiguity class the number of ocurrences
   word = lexmorfo.get_next_word();
   while((word)) {
-    if (++nw%10000==0) cerr<<'.'<<flush; 
+    if (++nw%10000==0) wcerr<<L'.'<<flush; 
     
     tags=word->get_tags();
 
@@ -229,7 +229,7 @@ HMM::init_probabilities_kupiec (FILE *is)
       }
     }
   }
-  cerr<<"\n";
+  wcerr<<L"\n";
 }
 
 void 
@@ -410,7 +410,7 @@ HMM::read_dictionary (FILE *fdic) {
   word = morpho_stream.get_next_word();
   
   while (word) {
-    if (++nw%10000==0) cerr<<'.'<<flush;
+    if (++nw%10000==0) wcerr<<L'.'<<flush;
     
     tags = word->get_tags();
 
@@ -420,7 +420,7 @@ HMM::read_dictionary (FILE *fdic) {
     delete word;
     word = morpho_stream.get_next_word();
   }
-  cerr<<"\n";
+  wcerr<<L"\n";
   
   // OPEN AMBIGUITY CLASS
   // It contains all tags that are not closed.
@@ -439,7 +439,7 @@ HMM::read_dictionary (FILE *fdic) {
 
   int M = output.size();
   
-  cerr<< N <<" states and "<< M <<" ambiguity classes\n";
+  wcerr<< N <<L" states and "<< M <<L" ambiguity classes\n";
   td->setProbabilities(N, M);
 }
 
@@ -457,7 +457,7 @@ HMM::filter_ambiguity_classes(FILE *in, FILE *out) {
       if(ambiguity_classes.find(tags) == ambiguity_classes.end()) {
 	ambiguity_classes.insert(tags);
 	word->outputOriginal(out);
-	//cerr<<word->get_string_tags()<<"\n";
+	//wcerr<<word->get_string_tags()<<L"\n";
       }
     }
     delete word;
@@ -499,12 +499,12 @@ HMM::train (FILE *ftxt) {
 
   while (word) {   
 
-    //cerr<<"Enter para continuar\n";
+    //wcerr<<L"Enter para continuar\n";
     //getchar();
 
-    if (++nw%10000==0) cerr<<'.'<<flush;
+    if (++nw%10000==0) wcerr<<L'.'<<flush;
 
-    //cerr<<*word<<"\n";
+    //wcerr<<*word<<L"\n";
 
     pretags = pending.back();
 
@@ -573,13 +573,13 @@ HMM::train (FILE *ftxt) {
        
 	       gamma[i] +=  alpha[len-t][i]*beta[t%2][i]/prob;		       
 	       if (isnan(gamma[i])) {
-	          cout<<"NAN(3) gamma["<<i<<"] = "<<gamma[i]<<" alpha["<<len-t<<"]["<<i<<"]= "<<alpha[len-t][i]
-	              <<" beta["<<t%2<<"]["<<i<<"] = "<<beta[t%2][i]<<" prob = "<<prob<<" previous gamma = "<<previous_value<<"\n";
+	          wcerr<<L"NAN(3) gamma["<<i<<L"] = "<<gamma[i]<<L" alpha["<<len-t<<L"]["<<i<<L"]= "<<alpha[len-t][i]
+	               <<L" beta["<<t%2<<L"]["<<i<<L"] = "<<beta[t%2][i]<<L" prob = "<<prob<<L" previous gamma = "<<previous_value<<L"\n";
 	          exit(1);	               
 	       }
 	       if (isinf(gamma[i])) {
-	          cout<<"INF(3) gamma["<<i<<"] = "<<gamma[i]<<" alpha["<<len-t<<"]["<<i<<"]= "<<alpha[len-t][i]
-	              <<" beta["<<t%2<<"]["<<i<<"] = "<<beta[t%2][i]<<" prob = "<<prob<<" previous gamma = "<<previous_value<<"\n";
+	          wcerr<<L"INF(3) gamma["<<i<<L"] = "<<gamma[i]<<L" alpha["<<len-t<<L"]["<<i<<L"]= "<<alpha[len-t][i]
+	               <<L" beta["<<t%2<<L"]["<<i<<L"] = "<<beta[t%2][i]<<L" prob = "<<prob<<L" previous gamma = "<<previous_value<<L"\n";
 	          exit(1);	               
 	       }
 	       if (gamma[i]==0) {
@@ -603,8 +603,9 @@ HMM::train (FILE *ftxt) {
     delete word; 
     word = morpho_stream.get_next_word();
   }  
+
   if ((pending.size()>1) || ((tag!=eos)&&(tag != (td->getTagIndex())[L"TAG_kEOF"]))) 
-    cerr<<"Warning: Thee las tag is not the end-of-sentence-tag\n";
+    wcerr<<L"Warning: Thee las tag is not the end-of-sentence-tag\n";
   
   
   int N = td->getN();
@@ -624,15 +625,22 @@ HMM::train (FILE *ftxt) {
     for (jt=xsi[i].begin(); jt!=xsi[i].end(); jt++) {
       j = jt->first;
       if (xsi[i][j]>0) {        
+        if (gamma[i]==0) {
+          wcerr<<L"Warning: gamma["<<i<<L"]=0\n";
+          gamma[i]=DBL_MIN;
+        }
+        
         (td->getA())[i][j] = xsi[i][j]/gamma[i];
 	
         if (isnan((td->getA())[i][j])) {
-          cerr <<"Error: BW - NAN(1) a["<<i<<"]["<<j<<"]="<<(td->getA())[i][j]<<"\txsi["<<i<<"]["<<j<<"]="<<xsi[i][j]<<"\tgamma["<<i<<"]="<<gamma[i]<<"\n";
-	       exit(1);
+          wcerr<<L"NAN\n";
+          wcerr <<L"Error: BW - NAN(1) a["<<i<<L"]["<<j<<L"]="<<(td->getA())[i][j]<<L"\txsi["<<i<<L"]["<<j<<L"]="<<xsi[i][j]<<L"\tgamma["<<i<<L"]="<<gamma[i]<<L"\n";
+	  exit(1);
         }
 	if (isinf((td->getA())[i][j])) {
-          cerr <<"Error: BW - INF(1) a["<<i<<"]["<<j<<"]="<<(td->getA())[i][j]<<"\txsi["<<i<<"]["<<j<<"]="<<xsi[i][j]<<"\tgamma["<<i<<"]="<<gamma[i]<<"\n";
-	       exit(1);
+	  wcerr<<L"INF\n"; 
+          wcerr <<L"Error: BW - INF(1) a["<<i<<L"]["<<j<<L"]="<<(td->getA())[i][j]<<L"\txsi["<<i<<L"]["<<j<<L"]="<<xsi[i][j]<<L"\tgamma["<<i<<L"]="<<gamma[i]<<L"\n";
+          exit(1);
         }
 	if ((td->getA())[i][j]==0) {
           //cerr <<"Error: BW - ZERO(1) a["<<i<<"]["<<j<<"]="<<(td->getA())[i][j]<<"\txsi["<<i<<"]["<<j<<"]="<<xsi[i][j]<<"\tgamma["<<i<<"]="<<gamma[i]<<"\n";
@@ -650,11 +658,11 @@ HMM::train (FILE *ftxt) {
         (td->getB())[i][k] = phi[i][k]/gamma[i];	
         
 	if (isnan((td->getB())[i][k])) {
-          cerr <<"Error: BW - NAN(2) b["<<i<<"]["<<k<<"]="<<(td->getB())[i][k]<<"\tphi["<<i<<"]["<<k<<"]="<<phi[i][k]<<"\tgamma["<<i<<"]="<<gamma[i]<<"\n";
+          wcerr<<L"Error: BW - NAN(2) b["<<i<<L"]["<<k<<L"]="<<(td->getB())[i][k]<<L"\tphi["<<i<<L"]["<<k<<L"]="<<phi[i][k]<<L"\tgamma["<<i<<L"]="<<gamma[i]<<L"\n";
 	       exit(1);
         }
 	if (isinf((td->getB())[i][k])) {
-          cerr <<"Error: BW - INF(2) b["<<i<<"]["<<k<<"]="<<(td->getB())[i][k]<<"\tphi["<<i<<"]["<<k<<"]="<<phi[i][k]<<"\tgamma["<<i<<"]="<<gamma[i]<<"\n";
+          wcerr<<L"Error: BW - INF(2) b["<<i<<L"]["<<k<<L"]="<<(td->getB())[i][k]<<L"\tphi["<<i<<L"]["<<k<<L"]="<<phi[i][k]<<L"\tgamma["<<i<<L"]="<<gamma[i]<<L"\n";
 	       exit(1);
         }
 	if ((td->getB())[i][k]==0) {
@@ -665,7 +673,6 @@ HMM::train (FILE *ftxt) {
     }
   }
 
-    
   //It can be possible that a probability is not updated
   //We normalize the probabilitites
   for(i=0; i<N; i++) {
@@ -688,7 +695,7 @@ HMM::train (FILE *ftxt) {
     }
   }
 
-  cerr<<"Log="<<loli<<"\n";
+  wcerr<<L"Log="<<loli<<L"\n";
 }
 
 void 
@@ -738,7 +745,7 @@ HMM::tagger(FILE *in, FILE *out, bool show_all_good_first) {
 	errors+= L"Retraining the tagger is necessary so as to take it into account.\n";
 	errors+= L"Word '"+word->get_superficial_form()+L"'.\n";
 	errors+= L"New ambiguity class: "+word->get_string_tags()+L"\n";
-	wcerr<<"Error: "<<errors;
+	wcerr<<L"Error: "<<errors;
       }
       tags = find_similar_ambiguity_class(tags);
     } 
@@ -795,10 +802,10 @@ HMM::tagger(FILE *in, FILE *out, bool show_all_good_first) {
   }
   
   if ((tags.size()>1)&&(debug)) {
-    string errors;
-    errors = "The text to disambiguate has finished, but there are ambiguous words that has not been disambiguated.\n";
-    errors+= "This message should never appears. If you are reading this ..... these are very bad news.\n";
-    cerr<<"Error: "<<errors;
+    wstring errors;
+    errors = L"The text to disambiguate has finished, but there are ambiguous words that has not been disambiguated.\n";
+    errors+= L"This message should never appears. If you are reading this ..... these are very bad news.\n";
+    wcerr<<L"Error: "<<errors;
   }  
 }
 
