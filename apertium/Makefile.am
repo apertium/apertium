@@ -216,7 +216,7 @@ apertium-gen-reformat: Makefile.am gen-header.sh
 apertium-gen-modes: Makefile.am modes-header.sh
 	@echo "Creating apertium-gen-modes script"
 	@echo "#!$(BASH)" > $@
-	@echo "APERTIUMDIR="$(apertiumdir) > $@
+	@echo "APERTIUMDIR="$(apertiumdir) >> $@
 	@cat modes-header.sh >> $@
 	@echo "$(XMLLINT) --dtdvalid $(apertiumdir)/modes.dtd --noout \$$FILE1 && \\" >> $@
 	@if [ `basename $(XSLTPROC)` == xsltproc ]; \
