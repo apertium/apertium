@@ -17,7 +17,6 @@ function message
 function translate_odt
 {
   INPUT_TMPDIR=/tmp/$$odtdir
-  INPUT_TMPFILE=/tmp/$$odtfile
 
   export LC_CTYPE=$(locale -a|grep -i "utf[.]*8"|head -1);
 
@@ -45,8 +44,8 @@ function translate_odt
   
   unzip -q -o -d $INPUT_TMPDIR $FICHERO
   find $INPUT_TMPDIR | grep content\\.xml |\
-  awk '{printf "<file name=\"" $0 "\"/>" >> MYFILENAME; PART = $0; while(getline < PART) printf(" %s", $0) >> MYFILENAME; printf("\n") >> MYFILENAME;}' MYFILENAME=$INPUT_TMPFILE;
-  apertium-desodt $INPUT_TMPFILE |\
+  awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
+  apertium-desodt |\
   if [ ! -x $DATOS/modes/$PREFIJO.mode ]
   then sh $DATOS/modes/$PREFIJO.mode $OPTION
   else $DATOS/modes/$PREFIJO.mode $OPTION
@@ -57,7 +56,7 @@ function translate_odt
   cd $INPUT_TMPDIR
   zip -q -r $OTRASALIDA .
   cd $VUELVE
-  rm -Rf $INPUT_TMPDIR $INPUT_TMPFILE
+  rm -Rf $INPUT_TMPDIR
 
   if [[ $BORRAFICHERO == "true" ]]
   then rm -Rf $FICHERO;
