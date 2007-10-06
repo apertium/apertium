@@ -91,6 +91,11 @@ MorphoStream::get_next_word()
     else
     {
       wstring str = L"";
+      if(symbol == L'\\')
+      {
+        symbol = fgetwc_unlocked(input);
+        str += L'\\';
+      }
       str += static_cast<wchar_t>(symbol);
 
       while(symbol != L'^')
