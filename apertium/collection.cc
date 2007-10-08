@@ -18,7 +18,9 @@
  */
 #include <lttoolbox/compression.h>
 #include <apertium/collection.h>
+#include <apertium/string_utils.h>
 
+using namespace Apertium;
 
 int
 Collection::size()

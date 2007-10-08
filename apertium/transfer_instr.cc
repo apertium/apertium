@@ -17,7 +17,9 @@
  * 02111-1307, USA.
  */
 #include <apertium/transfer_instr.h>
+#include <apertium/string_utils.h>
 
+using namespace Apertium;
 void
 TransferInstr::copy(TransferInstr const &o)
 {

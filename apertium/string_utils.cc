@@ -142,3 +142,8 @@ StringUtils::toupper(wstring const &s) {
 
   return l;
 }
+
+bool Apertium::operator==(string const &s1, string const &s2)
+{
+  return !strcmp(s1.c_str(), s2.c_str());
+}

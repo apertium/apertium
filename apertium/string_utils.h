@@ -25,6 +25,11 @@
 
 using namespace std;
 
+namespace Apertium
+{
+bool operator==(string const &s1, string const &s2);
+}
+
 class StringUtils {
   public:
   

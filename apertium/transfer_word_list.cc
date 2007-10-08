@@ -17,7 +17,9 @@
  * 02111-1307, USA.
  */
 #include <apertium/transfer_word_list.h>
+#include <apertium/string_utils.h>
 
+using namespace Apertium;
 void
 TransferWordList::copy(TransferWordList const &o)
 {

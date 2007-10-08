@@ -25,7 +25,9 @@
 
 #include <lttoolbox/compression.h>
 #include <lttoolbox/endian_util.h>
+#include <apertium/string_utils.h>
 
+using namespace Apertium;
 LexTorData::LexTorData() {
   n_stopwords=0;
   n_words=0;

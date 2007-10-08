@@ -21,6 +21,7 @@
 #include <apertium/lextor_word.h>
 #include <apertium/string_utils.h>
 
+using namespace Apertium;
 LexTorWord::LexTorWord() {
   ignored_string = L"";
   word = L"";

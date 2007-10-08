@@ -35,7 +35,9 @@
 #if !HAVE_DECL_PUTC_UNLOCKED
 #define fputwc_unlocked fputwc
 #endif
+#include <apertium/string_utils.h>
 
+using namespace Apertium;
 using namespace std;
 
 void readAndWriteUntil(FILE *input, FILE *output, int const charcode)

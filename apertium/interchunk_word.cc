@@ -19,6 +19,9 @@
 
 #include <apertium/interchunk_word.h>
 #include <iostream>
+#include <apertium/string_utils.h>
+
+using namespace Apertium;
 
 void
 InterchunkWord::copy(InterchunkWord const &o)

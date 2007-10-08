@@ -22,7 +22,9 @@
 #include <cmath>
 #include <apertium/lextor_eval.h>
 #include <apertium/lextor.h>
+#include <apertium/string_utils.h>
 
+using namespace Apertium;
 LexTorEval::LexTorEval(wistream* iref) {
   nwords=0;
   //nunknown=0;

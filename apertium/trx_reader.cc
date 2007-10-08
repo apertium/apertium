@@ -22,7 +22,9 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <apertium/string_utils.h>
 
+using namespace Apertium;
 wstring const
 TRXReader::ANY_TAG = L"<ANY_TAG>";
 

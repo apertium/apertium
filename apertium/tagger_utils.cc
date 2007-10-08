@@ -19,6 +19,9 @@
 #include <apertium/tagger_utils.h>
 
 #include <stdio.h>
+#include <apertium/string_utils.h>
+
+using namespace Apertium;
 
 namespace tagger_utils {
 

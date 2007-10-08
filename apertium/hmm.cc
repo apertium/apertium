@@ -30,7 +30,9 @@
 #include <unistd.h>
 #include <vector>
 #include <algorithm>
+#include <apertium/string_utils.h>
 
+using namespace Apertium;
 using namespace tagger_utils;
 
 HMM::HMM(TaggerData *t)

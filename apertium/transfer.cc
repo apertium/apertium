@@ -19,6 +19,7 @@
 #include <apertium/transfer.h>
 #include <apertium/trx_reader.h>
 #include <apertium/utf_converter.h>
+#include <apertium/string_utils.h>
 #include <lttoolbox/compression.h>
 #include <lttoolbox/xml_parse_util.h>
 
@@ -26,6 +27,7 @@
 #include <iostream>
 #include <stack>
 
+using namespace Apertium;
 using namespace std;
 
 void
@@ -1248,7 +1250,7 @@ Transfer::processEqual(xmlNode *localroot)
       return tolower(evalString(first)) == tolower(evalString(second));
     }
     else
-    {
+    { 
       return evalString(first) == evalString(second);
     }
   }
@@ -1396,18 +1398,18 @@ Transfer::processContainsSubstring(xmlNode *localroot)
 
   if(localroot->properties == NULL)
   {
-    return evalString(first).find(evalString(second)) != wstring::npos;
+    return evalString(first).find(evalString(second)) != string::npos;
   }
   else
   {
     if(!xmlStrcmp(localroot->properties->children->content,
 		  (const xmlChar *) "yes"))
     {
-      return tolower(evalString(first)).find(tolower(evalString(second))) != wstring::npos;
+      return tolower(evalString(first)).find(tolower(evalString(second))) != string::npos;
     }
     else
     {
-      return evalString(first).find(evalString(second)) != wstring::npos;
+      return evalString(first).find(evalString(second)) != string::npos;
     }
   }
 }

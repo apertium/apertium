@@ -20,6 +20,9 @@
 #include <apertium/tagger_data.h>
 #include <lttoolbox/compression.h>
 #include <lttoolbox/endian_util.h>
+#include <apertium/string_utils.h>
+
+using namespace Apertium;
 
 void
 TaggerData::copy(TaggerData const &o)

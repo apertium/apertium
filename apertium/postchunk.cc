@@ -25,7 +25,9 @@
 #include <cctype>
 #include <iostream>
 #include <stack>
+#include <apertium/string_utils.h>
 
+using namespace Apertium;
 using namespace std;
 
 void

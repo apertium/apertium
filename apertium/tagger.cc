@@ -36,7 +36,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <getopt.h>
+#include <apertium/string_utils.h>
 
+using namespace Apertium;
 using namespace std;
 
 int

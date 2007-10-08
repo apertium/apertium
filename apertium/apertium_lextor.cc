@@ -31,6 +31,9 @@
 #include <apertium/utf_converter.h>
 #include <clocale>
 #include <cstdlib>
+#include <apertium/string_utils.h>
+
+using namespace Apertium;
 
 #define MODE_TRAINWRD 0
 #define MODE_TRAINLCH 1

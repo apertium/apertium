@@ -30,7 +30,9 @@
 #include <apertium/lextor_data.h>
 #include <apertium/lextor_eval.h>
 #include <clocale>
+#include <apertium/string_utils.h>
 
+using namespace Apertium;
 #define MODE_LEXTOR 1
 #define MODE_LEXTORTL 2
 

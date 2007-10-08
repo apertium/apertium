@@ -19,7 +19,9 @@
 
 #include <apertium/transfer_word.h>
 #include <iostream>
+#include <apertium/string_utils.h>
 
+using namespace Apertium;
 void
 TransferWord::copy(TransferWord const &o)
 {

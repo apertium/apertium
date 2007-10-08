@@ -25,7 +25,9 @@
 #include <iostream>
 
 #include <cstdlib>
+#include <apertium/string_utils.h>
 
+using namespace Apertium;
 using namespace std;
 
 int main(int argc, char *argv[])

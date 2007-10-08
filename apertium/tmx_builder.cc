@@ -25,7 +25,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <apertium/string_utils.h>
 
+using namespace Apertium;
 TMXBuilder::TMXBuilder(wstring const &l1, wstring const &l2)
 {
   lang1 = l1;

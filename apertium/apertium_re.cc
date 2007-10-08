@@ -2,7 +2,9 @@
 #include <lttoolbox/compression.h>
 #include <iostream>
 #include <cstdlib>
+#include <apertium/string_utils.h>
 
+using namespace Apertium;
 using namespace std;
 
 ApertiumRE::ApertiumRE()

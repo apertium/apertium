@@ -19,7 +19,9 @@
 #include <apertium/utf_converter.h>
 #include <iostream>
 #include <cstdlib>
+#include <apertium/string_utils.h>
 
+using namespace Apertium;
 
 #define UNI_REPLACEMENT_CHAR (UTF32)0x0000FFFD
 #define UNI_MAX_BMP (UTF32)0x0000FFFF

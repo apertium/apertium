@@ -17,6 +17,9 @@
  * 02111-1307, USA.
  */
 #include <apertium/transfer_token.h>
+#include <apertium/string_utils.h>
+
+using namespace Apertium;
 
 void
 TransferToken::copy(TransferToken const &o)

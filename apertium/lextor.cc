@@ -24,6 +24,10 @@
 #include <algorithm>
 #include <string>
 #include <cmath>
+#include <apertium/string_utils.h>
+
+using namespace Apertium;
+
 
 #define PI 3.14159265358979323846264338327950288
 

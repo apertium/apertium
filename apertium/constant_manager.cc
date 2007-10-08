@@ -18,7 +18,9 @@
  */
 #include <apertium/constant_manager.h>
 #include <lttoolbox/compression.h>
+#include <apertium/string_utils.h>
 
+using namespace Apertium;
 void
 ConstantManager::copy(ConstantManager const &o)
 {

@@ -17,7 +17,9 @@
  * 02111-1307, USA.
  */
 #include <apertium/tagger_word.h>
+#include <apertium/string_utils.h>
 
+using namespace Apertium;
 vector<wstring> TaggerWord::array_tags;
 bool TaggerWord::show_ingnored_string=true;
 

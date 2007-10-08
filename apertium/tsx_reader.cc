@@ -23,7 +23,9 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <apertium/string_utils.h>
 
+using namespace Apertium;
 void
 TSXReader::copy(TSXReader const &o)
 {

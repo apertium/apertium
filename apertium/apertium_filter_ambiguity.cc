@@ -29,6 +29,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+using namespace Apertium;
 using namespace std;
 
 FILE * open_file(char const *filename, char const *mode)

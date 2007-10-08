@@ -25,7 +25,9 @@
 #include <lttoolbox/lt_locale.h>
 #include <apertium/tmx_builder.h>
 #include <apertium/utf_converter.h>
+#include <apertium/string_utils.h>
 
+using namespace Apertium;
 void usage(char *progname)
 {
   wcerr << L"USAGE: " << basename(progname) << L"doc1 doc2 [output_file]" << endl;

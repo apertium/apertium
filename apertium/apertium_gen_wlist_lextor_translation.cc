@@ -28,7 +28,9 @@
 
 #include <apertium/lextor_word.h>
 #include <apertium/utf_converter.h>
+#include <apertium/string_utils.h>
 
+using namespace Apertium;
 using namespace std;
 
 

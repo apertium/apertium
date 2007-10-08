@@ -23,7 +23,9 @@
 #include <apertium/apertium_re.h>
 #include <pcre.h>
 #include <iostream>
+#include <apertium/string_utils.h>
 
+using namespace Apertium;
 using namespace std;
 
 void
