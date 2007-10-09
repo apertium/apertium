@@ -25,7 +25,9 @@
 #include <string>
 #include <vector>
 
+#include <lttoolbox/ltstr.h>
 #include <apertium/ttag.h>
+#include <apertium/apertium_re.h>
 
 using namespace std;
 
@@ -49,7 +51,9 @@ private:
   bool previous_plus_cut; //Flag to distinguish the way in which thre
 			  //previous word was ended. It has the same
 			  //plus_cut meaning
+  static map<wstring, ApertiumRE, Ltstr> patterns;
 
+  bool match(wstring const &s, wstring const &pattern);
 public:
   static vector<wstring> array_tags;
 

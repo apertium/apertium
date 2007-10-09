@@ -17,11 +17,16 @@
  * 02111-1307, USA.
  */
 #include <apertium/tagger_word.h>
+#include <apertium/utf_converter.h>
 #include <apertium/string_utils.h>
 
 using namespace Apertium;
+
 vector<wstring> TaggerWord::array_tags;
+
 bool TaggerWord::show_ingnored_string=true;
+
+map<wstring, ApertiumRE, Ltstr> TaggerWord::patterns;
 
 TaggerWord::TaggerWord(bool prev_plus_cut){
    ignored_string = L"";
@@ -51,6 +56,56 @@ TaggerWord::get_superficial_form() {
   return superficial_form;
 }
 
+bool
+TaggerWord::match(wstring const &s, wstring const &pattern)
+{
+  map<wstring, ApertiumRE, Ltstr>::iterator it = patterns.find(pattern);
+  string const utfs = UtfConverter::toUtf8(s);
+
+  if(it == patterns.end())
+  {
+    string const utfpattern = UtfConverter::toUtf8(pattern);
+    string regexp = "";
+    
+    size_t base = 0;
+    while(true)
+    {
+      size_t i = utfpattern.substr(base).find('.');
+      if(i == string::npos)
+      {
+        if(utfpattern.substr(base) == "*")
+	{
+          regexp.append("(<[^>]+>)+"); 
+	}
+        else
+	{
+          regexp += '<';
+          regexp.append(utfpattern.substr(base));
+          regexp += '>';
+        }
+        break;
+      }
+      else if(utfpattern.substr(base, i) == "*")
+      {
+	regexp.append("(<[^>]+>)+");
+      }
+      else
+      {
+	regexp += '<';
+        regexp.append(utfpattern.substr(base, i));
+	regexp += '>';
+      }
+      base = base+i+1;
+    }
+    patterns[pattern].compile(regexp);
+    return patterns[pattern].match(utfs) != "";
+  }
+  else
+  {
+    return it->second.match(utfs) != "";
+  }
+}
+
 void
 TaggerWord::add_tag(TTag &t, const wstring &lf, vector<wstring> const &prefer_rules){
 
@@ -61,8 +116,10 @@ TaggerWord::add_tag(TTag &t, const wstring &lf, vector<wstring> const &prefer_ru
     lexical_forms[t]=lf;
   } else {
     //Take a look at the prefer rules
-    for(int i=0; i < (int) prefer_rules.size(); i++) {
-      if (lf.find(prefer_rules[i])<lf.size()) {
+    for(int i=0; i < (int) prefer_rules.size(); i++)
+    {
+      if (match(lf, prefer_rules[i])) 
+      {
 	lexical_forms[t]=lf;
 	break;
       }
