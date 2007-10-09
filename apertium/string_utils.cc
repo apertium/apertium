@@ -145,5 +145,30 @@ StringUtils::toupper(wstring const &s) {
 
 bool Apertium::operator==(string const &s1, string const &s2)
 {
-  return !strcmp(s1.c_str(), s2.c_str());
+  return strcmp(s1.c_str(), s2.c_str()) == 0;
+}
+
+bool Apertium::operator==(string const &s1, char const *s2)
+{
+  return strcmp(s1.c_str(), s2) == 0;
+}
+
+bool Apertium::operator==(char const *s1, string const &s2)
+{
+  return strcmp(s1, s2.c_str()) == 0;
+}
+
+bool Apertium::operator!=(string const &s1, string const &s2)
+{
+  return strcmp(s1.c_str(), s2.c_str()) != 0;
+}
+
+bool Apertium::operator!=(string const &s1, char const *s2)
+{
+  return strcmp(s1.c_str(), s2) != 0;
+}
+
+bool Apertium::operator!=(char const *s1, string const &s2)
+{
+  return strcmp(s1, s2.c_str()) != 0;
 }

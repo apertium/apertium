@@ -521,9 +521,9 @@ Transfer::processOut(xmlNode *localroot)
 	  }
 	  if(myword != "")
 	  {
-  	    fputwc_unlocked('^', output);
+  	    fputwc_unlocked(L'^', output);
    	    fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
-	    fputwc_unlocked('$', output);
+	    fputwc_unlocked(L'$', output);
           }
         }
         else if(!xmlStrcmp(i->name, (const xmlChar *) "mlu"))

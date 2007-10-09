@@ -27,7 +27,12 @@ using namespace std;
 
 namespace Apertium
 {
-bool operator==(string const &s1, string const &s2);
+  bool operator==(string const &s1, string const &s2);
+  bool operator==(string const &s1, char const *s2);
+  bool operator==(char const *s1, string const &s2);
+  bool operator!=(string const &s1, string const &s2);
+  bool operator!=(string const &s1, char const *s2);
+  bool operator!=(char const *s1, string const &s2);
 }
 
 class StringUtils {
