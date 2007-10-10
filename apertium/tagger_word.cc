@@ -64,40 +64,19 @@ TaggerWord::match(wstring const &s, wstring const &pattern)
 
   if(it == patterns.end())
   {
-    string const utfpattern = UtfConverter::toUtf8(pattern);
+    string utfpattern = UtfConverter::toUtf8(pattern);
     string regexp = "";
     
-    size_t base = 0;
     while(true)
     {
-      size_t i = utfpattern.substr(base).find('.');
-      if(i == string::npos)
+      size_t pos = utfpattern.find("<*>");
+      if(pos == string::npos)
       {
-        if(utfpattern.substr(base) == "*")
-	{
-          regexp.append("(<[^>]+>)+"); 
-	}
-        else
-	{
-          regexp += '<';
-          regexp.append(utfpattern.substr(base));
-          regexp += '>';
-        }
         break;
       }
-      else if(utfpattern.substr(base, i) == "*")
-      {
-	regexp.append("(<[^>]+>)+");
-      }
-      else
-      {
-	regexp += '<';
-        regexp.append(utfpattern.substr(base, i));
-	regexp += '>';
-      }
-      base = base+i+1;
+      utfpattern.replace(pos, 3, "(<[^>]+>)+");
     }
-    patterns[pattern].compile(regexp);
+    patterns[pattern].compile(utfpattern);
     return patterns[pattern].match(utfs) != "";
   }
   else
