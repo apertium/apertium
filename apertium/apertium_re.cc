@@ -132,7 +132,7 @@ ApertiumRE::replace(string &str, string const &value) const
 	exit(EXIT_FAILURE);
     }
   }
-  
+
   string res = str.substr(0, result[0]);
   res.append(value);
   res.append(str.substr(result[1]));

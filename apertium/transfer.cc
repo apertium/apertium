@@ -129,9 +129,9 @@ Transfer::readData(FILE *in)
 
     for(int j = 0, limit2 = Compression::multibyte_read(in); j != limit2; j++)
     {
-      string const cad_v = UtfConverter::toUtf8(Compression::wstring_read(in));
-      lists[cad_k].insert(cad_v);
-      listslow[cad_k].insert(tolower(cad_v));
+      wstring const cad_v = Compression::wstring_read(in);
+      lists[cad_k].insert(UtfConverter::toUtf8(cad_v));
+      listslow[cad_k].insert(UtfConverter::toUtf8(StringUtils::tolower(cad_v)));
     }  
   }
 }
@@ -1417,45 +1417,43 @@ Transfer::processContainsSubstring(xmlNode *localroot)
 string
 Transfer::copycase(string const &source_word, string const &target_word)
 {
-  string result = target_word;
+  wstring result = L"";
+  wstring const s_word = UtfConverter::fromUtf8(source_word);
+  wstring const t_word = UtfConverter::fromUtf8(target_word);
 
-  bool firstupper = isupper(source_word[0]);
-  bool uppercase = firstupper && isupper(source_word[source_word.size()-1]);
-  bool sizeone = source_word.size() == 1;
+  bool firstupper = iswupper(s_word[0]);
+  bool uppercase = firstupper && iswupper(s_word[s_word.size()-1]);
+  bool sizeone = s_word.size() == 1;
 
   if(!uppercase || (sizeone && uppercase))
   {
-    for(unsigned int i = 0; i < target_word.size(); i++)
-    {
-      result[i] = ::tolower(target_word[i]);
-    }
+    result = StringUtils::tolower(t_word);
   }
   else
   {
-    for(unsigned int i = 0; i < target_word.size(); i++)
-    {
-      result[i] = ::toupper(target_word[i]);
-    }
+    result = StringUtils::toupper(t_word);
   }
   
   if(firstupper)
   {
-    result[0] = ::toupper(result[0]);
+    result[0] = towupper(result[0]);
   }
    
-  return result;
+  return UtfConverter::toUtf8(result);
 }
 
 string 
 Transfer::caseOf(string const &str)
 {
-  if(str.size() > 1)
+  wstring const s = UtfConverter::fromUtf8(str);
+
+  if(s.size() > 1)
   {
-    if(!isupper(str[0]))
+    if(!iswupper(s[0]))
     {
       return "aa";
     }
-    else if(!isupper(str[str.size()-1]))
+    else if(!iswupper(s[s.size()-1]))
     {
       return "Aa";
     }
@@ -1464,9 +1462,9 @@ Transfer::caseOf(string const &str)
       return "AA";
     }
   }
-  else if(str.size() == 1)
+  else if(s.size() == 1)
   {
-    if(!isupper(str[0]))
+    if(!iswupper(s[0]))
     {
       return "aa";
     }
@@ -1484,13 +1482,7 @@ Transfer::caseOf(string const &str)
 string
 Transfer::tolower(string const &str) const
 {
-  string result = str;
-  for(unsigned int i = 0, limit = str.size(); i != limit; i++)
-  {
-    result[i] = ::tolower(result[i]);
-  }
-
-  return result;
+  return UtfConverter::toUtf8(StringUtils::tolower(UtfConverter::fromUtf8(str)));
 }
 
 string

@@ -543,7 +543,7 @@ namespace UtfConverter
 	    conversionError();
 	  }
 	*targetstart = 0;
-	return resultstring;
+	return resultstring.substr(0, wcslen(resultstring.c_str()));
       }
     else if (sizeof(wchar_t) == 4)
       {
@@ -559,7 +559,7 @@ namespace UtfConverter
 	    conversionError();
 	  }
 	*targetstart = 0;
-	return resultstring;
+	return resultstring.substr(0,wcslen(resultstring.c_str()));
       }
     else
       {
@@ -587,7 +587,7 @@ namespace UtfConverter
 	    conversionError();
 	  }
 	*targetstart = 0;
-	return resultstring;
+	return resultstring.substr(0, strlen(resultstring.c_str()));
       }
     else if (sizeof(wchar_t) == 4)
       {
@@ -604,7 +604,7 @@ namespace UtfConverter
 	    conversionError();
 	  }
 	*targetstart = 0;
-	return resultstring;
+	return resultstring.substr(0, strlen(resultstring.c_str()));
       }
     else
       {
