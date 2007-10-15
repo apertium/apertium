@@ -127,7 +127,7 @@ if [ ! -e $DATOS/modes/$PREFIJO.mode ];
        if((c <= 1));
        then echo ".";
        else echo ". Try one of:";
-         for i in $DATOS/modes/*;
+         for i in $DATOS/modes/*.mode;
          do echo "  " $(basename $i) |awk '{gsub(".mode", ""); print;}'
          done;
        fi
