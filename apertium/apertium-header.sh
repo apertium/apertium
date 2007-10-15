@@ -6,7 +6,7 @@ function message
 {
   echo "USAGE: $(basename $0) [-d datadir] [-f format] [-u] <translation> [in [out]]"
   echo " -d datadir       directory of linguistic data"
-  echo " -f format        one of: txt (default), html, rtf"
+  echo " -f format        one of: txt (default), html, rtf, odt"
   echo " -u               don't display marks '*' for unknown words" 
   echo " translation      typically, LANG1-LANG2, but see modes.xml in language data"
   echo " in               input file (stdin by default)"
