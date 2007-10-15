@@ -23,35 +23,34 @@
 
 using namespace Apertium;
 
-namespace tagger_utils {
 
-void fatal_error (wstring const &s) {
+void tagger_utils::fatal_error (wstring const &s) {
   wcerr<<L"Error: "<<s<<L"\n";
   exit(1);
 }
 
-void file_name_error (string s) { 
+void tagger_utils::file_name_error (string const &s) { 
   cerr << "Error: " << s << endl;
   exit(1);
 }
 
-char *itoa(int i) {                 
+char * tagger_utils::itoa(int i) {                 
   static char buf[512];
   sprintf(buf,"%d",i);
   return buf;
 }
 
-void clear_array_double(double a[], int l) {
+void tagger_utils::clear_array_double(double a[], int l) {
   for(int i=0; i<l; i++)
     a[i]=0.0;
 }
 
-void clear_array_vector(vector<TTag> v[], int l) {
+void tagger_utils::clear_array_vector(vector<TTag> v[], int l) {
   for(int i=0; i<l; i++)
     v[i].clear();
 }
 
-int ntokens_multiword(wstring const &s) 
+int tagger_utils::ntokens_multiword(wstring const &s) 
 {
    wchar_t *news = wcsdup(s.c_str());
    wchar_t const *delim = L"_";
@@ -68,7 +67,7 @@ int ntokens_multiword(wstring const &s)
    return n;   
 }
  
-int nguiones_fs(wstring const & s) {
+int tagger_utils::nguiones_fs(wstring const & s) {
    wchar_t *news = wcsdup(s.c_str());
    wchar_t const *delim = L"-";
    wchar_t *ptr;
@@ -84,7 +83,7 @@ int nguiones_fs(wstring const & s) {
    return n;   
 } 
 
-wstring trim(wstring s) 
+wstring tagger_utils::trim(wstring s) 
 {
   if (s.length()==0)
     return L"";
@@ -104,8 +103,6 @@ wstring trim(wstring s)
   return s;
 }
   
-};  
-
 template <class T>
 ostream& operator<< (ostream& os, const map <int, T> & f){
   typename map <int, T>::const_iterator it;
