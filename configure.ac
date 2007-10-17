@@ -8,7 +8,7 @@ m4_define([required_libxml_version], [2.6.17])
 m4_define([required_libpcre_version], [6.4])
 #m4_define([required_pkg_config_version], [0.15])
 
-AC_INIT([apertium], [3.0.2], [sortiz@users.sourceforge.net])
+AC_INIT([apertium], [3.0.3], [sortiz@users.sourceforge.net])
 AC_CONFIG_HEADER([apertium/apertium_config.h])
 
 GENERIC_LIBRARY_NAME=apertium
@@ -16,7 +16,7 @@ GENERIC_LIBRARY_NAME=apertium
 # Release versioning
 GENERIC_MAJOR_VERSION=3
 GENERIC_MINOR_VERSION=0
-GENERIC_MICRO_VERSION=2
+GENERIC_MICRO_VERSION=3
 
 # API version (often = GENERIC_MAJOR_VERSION.GENERIC_MINOR_VERSION)
 GENERIC_API_VERSION=$GENERIC_MAJOR_VERSION
@@ -51,8 +51,12 @@ AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
 
 # Checks for programs.
 
-AC_MSG_CHECKING([Compilation architecture: PPC, i686, Other])
-ARCH=$(/bin/arch)
+AC_MSG_CHECKING([Compilation architecture: PPC, i686, x86_64, Other])
+if test x$(which arch) = x
+then ARCH=$($(which uname) -m)
+else ARCH=$($(which arch))
+fi
+
 if test x$ARCH = xppc
 then
   AC_MSG_RESULT([PowerPC])
@@ -66,9 +70,17 @@ else
     CXXFLAGS="$CXXFLAGS -Wall -ansi -march=i686 -O3 \
               -fomit-frame-pointer -funroll-loops"
   else
-    AC_MSG_RESULT([Other])
-    CFLAGS="$CFLAGS -Wall -ansi -O3"
-    CXXFLAGS="$CXXFLAGS -Wall -ansi -O3"
+    if test x$ARCH = xx86_64
+    then
+      AC_MSG_RESULT([x86_64])
+      CFLAGS="-Wall -ansi -O3 -mtune=nocona -fomit-frame-pointer -funroll-loops $CFLAGS"
+      CXXFLAGS="-Wall -ansi -O3 -mtune=nocona \
+              -fomit-frame-pointer -funroll-loops $CXXFLAGS"
+    else
+      AC_MSG_RESULT([Other])
+      CFLAGS="-Wall -ansi -O3 $CFLAGS"
+      CXXFLAGS="-Wall -ansi -O3 $CXXFLAGS"
+    fi    
   fi
 fi
 
@@ -170,8 +182,6 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 
 AC_CHECK_DECLS([fread_unlocked, fwrite_unlocked, fgetc_unlocked, fputc_unlocked, fputs_unlocked, getopt_long, fgetwc_unlocked, fputwc_unlocked, fgetws_unlocked, fputws_unlocked])
-
-
 
 AC_CHECK_FUNCS([setlocale strdup])
 
