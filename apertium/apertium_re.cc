@@ -17,6 +17,7 @@ ApertiumRE::~ApertiumRE()
   if(!empty)
   {
     delete reinterpret_cast<char *>(re);
+    pcre_free(re);
   }
   empty = true;
 }
@@ -25,7 +26,7 @@ void
 ApertiumRE::read(FILE *input)
 {
   unsigned int size = Compression::multibyte_read(input);
-  re = reinterpret_cast<pcre *>(new char[size]);
+  re = static_cast<pcre *>(pcre_malloc(size));
   if(size != fread(re, 1, size, input))
   {
     cerr << L"Error reading regexp" << endl;
@@ -61,7 +62,7 @@ ApertiumRE::write(FILE *output) const
     exit(EXIT_FAILURE);
   }
   
-  int size;
+  size_t size;
   int rc = pcre_fullinfo(re, NULL, PCRE_INFO_SIZE, &size);
   if(rc < 0)
   {
@@ -71,8 +72,8 @@ ApertiumRE::write(FILE *output) const
   
   Compression::multibyte_write(size, output);
   
-  rc = fwrite(re, 1, size, output);
-  if(rc != size)
+  size_t rc2 = fwrite(re, 1, size, output);
+  if(rc2 != size)
   {
     wcerr << L"Error writing precompiled regex\n" << endl;
     exit(EXIT_FAILURE);
