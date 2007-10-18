@@ -16,7 +16,6 @@ ApertiumRE::~ApertiumRE()
 {
   if(!empty)
   {
-    delete reinterpret_cast<char *>(re);
     pcre_free(re);
   }
   empty = true;
