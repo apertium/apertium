@@ -33,17 +33,17 @@ StringUtils::trim(wstring const &str)
 
   int begin = 0, end = str.size() - 1;
 
-  while(begin < end && str[begin] != L' ')
+  while(begin < end && iswspace(str[begin]))
   {
     begin++;
   }
 
-  while(end > begin && str[end] != L' ')
+  while(end > begin && iswspace(str[end]))
   {
     end--;
   }
 
-  if(str[end] != L' ')
+  if(!iswspace(str[end]))
   {
     end++;
   }

@@ -62,11 +62,11 @@ int main(int argc, char *argv[])
   } 
   
   TMXBuilder tmxb(UtfConverter::fromUtf8(lang1), UtfConverter::fromUtf8(lang2));
-  if(!tmxb.check(doc1, doc2))
-  {
-    wcerr << L"Error: The two files are incompatible for building a TMX." << endl;
-    exit(EXIT_FAILURE);
-  }
+//  if(!tmxb.check(doc1, doc2))
+//  {
+//    wcerr << L"Error: The two files are incompatible for building a TMX." << endl;
+//    exit(EXIT_FAILURE);
+//  }
   
   tmxb.generate(doc1, doc2, output_file);
   return EXIT_SUCCESS;

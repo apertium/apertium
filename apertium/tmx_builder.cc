@@ -18,6 +18,8 @@
  */
 #include <apertium/tmx_builder.h>
 #include <apertium/utf_converter.h>
+#include <apertium/string_utils.h>
+#include <lttoolbox/ltstr.h>
 #include <lttoolbox/compression.h>
 
 #include <cstdlib>
@@ -195,6 +197,27 @@ TMXBuilder::nextTU(FILE *input)
         break;
       
       case L'.':
+        symbol = fgetwc_unlocked(input);
+        if(symbol != L'[' && !iswspace(symbol))
+        {
+          ungetwc(symbol, input);
+          current_tu += L'.';
+        }
+        else
+        {
+          ungetwc(symbol, input);
+          size_t idx = current_tu.size()-1;
+          while(current_tu[idx] == L'.')
+          {
+            idx--;
+          }
+          return current_tu.substr(0, idx+1);
+        }
+        break;
+      
+      case L'?':
+      case L'!':
+        current_tu += static_cast<wchar_t>(symbol);
         return current_tu;
     }
   }
@@ -205,7 +228,7 @@ void
 TMXBuilder::generate(string const &file1, string const &file2, 
                      string const &outfile) const
 {
-  FILE *output = stdin;
+  FILE *output = stdout;
   
   if(outfile != "")
   {
@@ -234,18 +257,22 @@ TMXBuilder::generate(string const &file1, string const &file2,
     exit(EXIT_FAILURE);
   }
 
-  wstring tu1 = nextTU(f1);
-  wstring tu2 = nextTU(f2);
+  set<wstring, Ltstr> storage;
+  
+  storage.insert(L"|#|");
+  wstring tu1 = StringUtils::trim(nextTU(f1));
+  wstring tu2 = StringUtils::trim(nextTU(f2));
   
   while(!feof(f1) && !feof(f2))
   {
-    if(tu1 != L"" && tu2 != L"")
+    if(storage.find(tu1 + L"|#|" + tu2) == storage.end())
     { 
-      fwprintf(output, L"<tu>\n  <tuv xml:lang=\"%s\">%s</tuv>\n", lang1.c_str(), tu1.c_str());
-      fwprintf(output, L"  <tuv xml:lang=\"%s\">%s</tuv>\n</tu>\n", lang2.c_str(), tu2.c_str());  
+      storage.insert(tu1 + L"|#|" + tu2);
+      fwprintf(output, L"<tu>\n  <tuv xml:lang=\"%ls\">%ls</tuv>\n", lang1.c_str(), tu1.c_str());
+      fwprintf(output, L"  <tuv xml:lang=\"%ls\">%ls</tuv>\n</tu>\n", lang2.c_str(), tu2.c_str());  
     }
-    tu1 = nextTU(f1);
-    tu2 = nextTU(f2);
+    tu1 = StringUtils::trim(nextTU(f1));
+    tu2 = StringUtils::trim(nextTU(f2));
   }
 
   if(output != stdin)
@@ -255,4 +282,3 @@ TMXBuilder::generate(string const &file1, string const &file2,
   fclose(f1);
   fclose(f2);
 }
-
