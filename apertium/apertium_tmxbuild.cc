@@ -28,9 +28,11 @@
 #include <apertium/string_utils.h>
 
 using namespace Apertium;
+
 void usage(char *progname)
 {
-  wcerr << L"USAGE: " << basename(progname) << L" doc1 doc2 [output_file]" << endl;
+  wcerr << L"USAGE: " << basename(progname) << L" code1 code2 doc1 doc2 [output_file]" << endl;
+  wcerr << L"code1, code2 codes of the languages (i.e. ISO-631 ones)" << endl;
   wcerr << L"doc1, doc2    unformatted docs to build the TMX file" << endl;
   wcerr << L"output_file   if not specified, the result will be printed to stdout" << endl;
   exit(EXIT_FAILURE);

@@ -229,7 +229,7 @@ TMXBuilder::generate(string const &file1, string const &file2,
                      string const &outfile) const
 {
   FILE *output = stdout;
-  
+
   if(outfile != "")
   {
     output = fopen(outfile.c_str(), "w");
@@ -240,7 +240,25 @@ TMXBuilder::generate(string const &file1, string const &file2,
       exit(EXIT_FAILURE);
     }
   }
-
+  
+  //  Obtener el charset de acuerdo con la locale actual
+  
+  string loc = setlocale(LC_CTYPE, NULL);
+  
+  if(loc.find("utf-8") != loc::npos && loc.find("UTF-8") != loc::npos)
+  { 
+    fwprintf(output, L"<?xml version=\"1.0\"?>\n");
+  }
+  else
+  {
+    fwprint(output, L"<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
+  }
+  
+  fwprintf(output, L"<tmx version=\"version 1.1\">\n");
+  fwprinft(output, L"<header creationtool=\"Apertium TMX Builder\">\n");
+  fwprintf(output, L"</header>");
+  fwprintf(output, L"<body>");
+  
   FILE *f1 = fopen(file1.c_str(), "r");
   if(!f1)
   {
@@ -274,6 +292,8 @@ TMXBuilder::generate(string const &file1, string const &file2,
     tu1 = StringUtils::trim(nextTU(f1));
     tu2 = StringUtils::trim(nextTU(f2));
   }
+
+  fwprintf(output, L"</body>\n</tmx>\n");
 
   if(output != stdin)
   {
