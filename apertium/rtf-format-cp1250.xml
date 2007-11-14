@@ -3,7 +3,7 @@
   <options>
     <largeblocks size="8192"/>
     <input encoding="windows-1250"/>
-    <output encoding="ISO-8859-1"/>
+    <output encoding="UTF-8"/>
     <tag-name regexp=""/>
     <escape-chars regexp='\\|[][&lt;&gt;@^$/]'/> 
 <!--    <escape-chars regexp='[]]^@&lt;&gt;/]'/>  -->
