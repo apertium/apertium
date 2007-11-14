@@ -1,0 +1,532 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<format name="rtf"> <!-- version 1.0 -->
+  <options>
+    <largeblocks size="8192"/>
+    <input encoding="windows-1250"/>
+    <output encoding="ISO-8859-1"/>
+    <tag-name regexp=""/>
+    <escape-chars regexp='\\|[][&lt;&gt;@^$/]'/> 
+<!--    <escape-chars regexp='[]]^@&lt;&gt;/]'/>  -->
+
+    <space-chars regexp='[ \n\t\r$*]'/>
+    <case-sensitive value="no"/>
+  </options>
+
+  <rules>
+    
+    <!-- Exceptions with priority 1  -->
+    <!-- Style Sheet names are also format: -->
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\snext&quot;"/>
+      <end   regexp="&quot;;&quot;"/>
+    </format-rule> 
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\keycode&quot;"/>
+      <end   regexp="&quot;;&quot;"/>
+    </format-rule> 
+    <!-- Font names are also format: -->
+    <format-rule type="comment" eos="no" priority="1">
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\fcharset&quot;"/>
+      <end   regexp="&quot;;&quot;"/>
+    </format-rule>
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\fnil&quot;"/>
+      <end   regexp="&quot;;&quot;"/>
+    </format-rule> 
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\froman&quot;"/>
+      <end   regexp="&quot;;&quot;"/>
+    </format-rule> 
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\fswiss&quot;"/>
+      <end   regexp="&quot;;&quot;"/>
+    </format-rule> 
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\fmodern&quot;"/>
+      <end   regexp="&quot;;&quot;"/>
+    </format-rule> 
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\fscript&quot;"/>
+      <end   regexp="&quot;;&quot;"/>
+    </format-rule> 
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\fdecor&quot;"/>
+      <end   regexp="&quot;;&quot;"/>
+    </format-rule> 
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\ftech&quot;"/>
+      <end   regexp="&quot;;&quot;"/>
+    </format-rule> 
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\fbidi&quot;"/>
+      <end   regexp="&quot;;&quot;"/>
+    </format-rule> 
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\falt&quot;"/>
+      <end   regexp="&quot;;&quot;"/>
+    </format-rule> 
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\fontfile&quot;"/>
+      <end   regexp="&quot;;&quot;"/>
+    </format-rule> 
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\fn&quot;"/>
+      <end   regexp="&quot;;&quot;"/>
+    </format-rule> 
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\sbasedon&quot;"/>
+      <end   regexp="&quot;;&quot;"/>
+    </format-rule> 
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\additive&quot;"/>
+      <end   regexp="&quot;;&quot;"/>
+    </format-rule> 
+    <!-- File names are also format: -->
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\file&quot;"/>
+      <end   regexp="&quot;}&quot;"/>
+    </format-rule> 
+    <!-- List Table names are also format: -->
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\listname&quot;"/>
+      <end   regexp="&quot;;&quot;"/>
+    </format-rule> 
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\leveltext&quot;"/>
+      <end   regexp="&quot;;&quot;"/>
+    </format-rule> 
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\levelnumbers&quot;"/>
+      <end   regexp="&quot;;&quot;"/>
+    </format-rule> 
+    <!-- Pictures are also format: -->
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\pict&quot;"/>
+      <end   regexp="&quot;}&quot;"/>
+    </format-rule> 
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\sn&quot;"/>
+      <end   regexp="&quot;}&quot;"/>
+    </format-rule> 
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\sv&quot;"/>
+      <end   regexp="&quot;}&quot;"/>
+    </format-rule> 
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;{\\\*\\blipuid  &quot;[^ \n\r]+&quot;}&quot;"/>
+      <end   regexp="&quot;}&quot;"/>
+    </format-rule> 
+    <!-- Objects are also format: -->
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\object&quot;"/>
+      <end   regexp="&quot;}&quot;"/>
+    </format-rule> 
+    <!-- Document Variables are also format: -->
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\docvar&quot;"/>
+      <end   regexp="&quot;}&quot;"/>
+    </format-rule> 
+    <!-- Bookmarks are also format: -->
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\bkmkstart&quot;"/>
+      <end   regexp="&quot;}&quot;"/>
+    </format-rule> 
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\bkmkend&quot;"/>
+      <end   regexp="&quot;}&quot;"/>
+    </format-rule> 
+    <!-- Index Entries are also format: -->
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\rxe&quot;"/>
+      <end   regexp="&quot;}&quot;"/>
+    </format-rule> 
+    <!-- Fields are also format: -->
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\fldinst&quot;"/>
+      <end   regexp="&quot;}&quot;"/>
+    </format-rule> 
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\fldrslt&quot;"/>
+      <end   regexp="&quot;}&quot;"/>
+    </format-rule> 
+    <!-- Other format tags which contain #CDATA: -->
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\pntxt&quot;"/>
+      <end   regexp="&quot;}&quot;"/>
+    </format-rule> 
+    <format-rule type="comment" eos="no" priority="1"> 
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\colortbl&quot;"/>
+      <end   regexp="&quot;}&quot;"/>
+    </format-rule> 
+    <!-- Hexadecimal Data -->
+    <format-rule type="empty" eos="yes" priority="1">
+      <tag regexp="[a-f0-9]{20,}" />
+    </format-rule>
+    
+    
+    
+    
+
+    <!-- End of sentence tags: par, row, cell -->
+    <format-rule type="empty" eos="yes" priority="2">
+      <tag regexp="&quot;\\par&quot;|&quot;\\row&quot;|&quot;\\cell&quot;" />
+    </format-rule>
+    
+
+    <format-rule type="open" eos="no" priority="3">
+      <tag regexp="&quot;{&quot;[ \n\r]*\\[^'][^ \n\r]*[ \n\r]*"/>
+    </format-rule>
+
+    <!-- General Tags Specification -->
+    <format-rule type="empty" eos="no" priority="3">
+      <tag regexp="\\[^'][^ \n\r]*[ \n\r]*"/>
+    </format-rule>
+    <format-rule type="close" eos="no" priority="4">
+      <tag regexp="&quot;}&quot;"/>
+    </format-rule>
+    <format-rule type="open" eos="no" priority="4">
+      <tag regexp="&quot;{&quot;"/>
+    </format-rule>
+
+
+    <replacement-rule regexp="&quot;\\'&quot;[0-9a-fA-F][0-9a-fA-F](\r|\n|&quot;\r\n&quot;)?"> 
+      <replace source="\\'8a" target="Š" prefer="yes"/>
+      <replace source="\\'8c" target="Ś" prefer="yes"/>
+      <replace source="\\'8d" target="Ť" prefer="yes"/>
+      <replace source="\\'8e" target="Ž" prefer="yes"/>
+      <replace source="\\'8f" target="Ź" prefer="yes"/>
+      <replace source="\\'9a" target="š" prefer="yes"/>
+      <replace source="\\'9c" target="ś" prefer="yes"/>
+      <replace source="\\'9d" target="ť" prefer="yes"/>
+      <replace source="\\'9e" target="ž" prefer="yes"/>
+      <replace source="\\'9f" target="ź" prefer="yes"/>
+      <replace source="\\'a3" target="Ł" prefer="yes"/>
+      <replace source="\\'a5" target="Ą" prefer="yes"/>
+      <replace source="\\'aa" target="Ş" prefer="yes"/>
+      <replace source="\\'af" target="Ż" prefer="yes"/>
+      <replace source="\\'b3" target="ł" prefer="yes"/>
+      <replace source="\\'b5" target="µ" prefer="yes"/>
+      <replace source="\\'b9" target="ą" prefer="yes"/>
+      <replace source="\\'ba" target="ş" prefer="yes"/>
+      <replace source="\\'bc" target="Ľ" prefer="yes"/>
+      <replace source="\\'be" target="ľ" prefer="yes"/>
+      <replace source="\\'bf" target="ż" prefer="yes"/>
+      <replace source="\\'c0" target="Ŕ" prefer="yes"/>
+      <replace source="\\'c1" target="Á" prefer="yes"/>
+      <replace source="\\'c2" target="Â" prefer="yes"/>
+      <replace source="\\'c3" target="Ă" prefer="yes"/>
+      <replace source="\\'c4" target="Ä" prefer="yes"/>
+      <replace source="\\'c5" target="Ĺ" prefer="yes"/>
+      <replace source="\\'c6" target="Ć" prefer="yes"/>
+      <replace source="\\'c7" target="Ç" prefer="yes"/>
+      <replace source="\\'c8" target="Č" prefer="yes"/>
+      <replace source="\\'c9" target="É" prefer="yes"/>
+      <replace source="\\'ca" target="Ę" prefer="yes"/>
+      <replace source="\\'cb" target="Ë" prefer="yes"/>
+      <replace source="\\'cc" target="Ě" prefer="yes"/>
+      <replace source="\\'cd" target="Í" prefer="yes"/>
+      <replace source="\\'ce" target="Î" prefer="yes"/>
+      <replace source="\\'cf" target="Ď" prefer="yes"/>
+      <replace source="\\'d0" target="Ð" prefer="yes"/>
+      <replace source="\\'d1" target="Ń" prefer="yes"/>
+      <replace source="\\'d2" target="Ň" prefer="yes"/>
+      <replace source="\\'d3" target="Ó" prefer="yes"/>
+      <replace source="\\'d4" target="Ô" prefer="yes"/>
+      <replace source="\\'d5" target="Ő" prefer="yes"/>
+      <replace source="\\'d6" target="Ö" prefer="yes"/>
+      <replace source="\\'d8" target="Ř" prefer="yes"/>
+      <replace source="\\'d9" target="Ů" prefer="yes"/>
+      <replace source="\\'da" target="Ú" prefer="yes"/>
+      <replace source="\\'db" target="Ű" prefer="yes"/>
+      <replace source="\\'dc" target="Ü" prefer="yes"/>
+      <replace source="\\'dd" target="Ý" prefer="yes"/>
+      <replace source="\\'de" target="Ţ" prefer="yes"/>
+      <replace source="\\'df" target="ß" prefer="yes"/>
+      <replace source="\\'e0" target="ŕ" prefer="yes"/>
+      <replace source="\\'e1" target="á" prefer="yes"/>
+      <replace source="\\'e2" target="â" prefer="yes"/>
+      <replace source="\\'e3" target="ă" prefer="yes"/>
+      <replace source="\\'e4" target="ä" prefer="yes"/>
+      <replace source="\\'e5" target="ĺ" prefer="yes"/>
+      <replace source="\\'e6" target="ć" prefer="yes"/>
+      <replace source="\\'e7" target="ç" prefer="yes"/>
+      <replace source="\\'e8" target="č" prefer="yes"/>
+      <replace source="\\'e9" target="é" prefer="yes"/>
+      <replace source="\\'ea" target="ę" prefer="yes"/>
+      <replace source="\\'eb" target="ë" prefer="yes"/>
+      <replace source="\\'ec" target="ě" prefer="yes"/>
+      <replace source="\\'ed" target="í" prefer="yes"/>
+      <replace source="\\'ee" target="î" prefer="yes"/>
+      <replace source="\\'ef" target="ď" prefer="yes"/>
+      <replace source="\\'f0" target="đ" prefer="yes"/>
+      <replace source="\\'f1" target="ń" prefer="yes"/>
+      <replace source="\\'f2" target="ň" prefer="yes"/>
+      <replace source="\\'f3" target="ó" prefer="yes"/>
+      <replace source="\\'f4" target="ô" prefer="yes"/>
+      <replace source="\\'f5" target="ő" prefer="yes"/>
+      <replace source="\\'f6" target="ö" prefer="yes"/>
+      <replace source="\\'f8" target="ř" prefer="yes"/>
+      <replace source="\\'f9" target="ů" prefer="yes"/>
+      <replace source="\\'fa" target="ú" prefer="yes"/>
+      <replace source="\\'fb" target="ű" prefer="yes"/>
+      <replace source="\\'fc" target="ü" prefer="yes"/>
+      <replace source="\\'fd" target="ý" prefer="yes"/>
+      <replace source="\\'fe" target="ţ" prefer="yes"/>
+      <replace source="\\'ff" target="˙" prefer="yes"/>
+      
+     <!-- The same characters followed by a \r\n: -->
+      <replace source="\\'8a\r\n" target="Š"/>
+      <replace source="\\'8c\r\n" target="Ś"/>
+      <replace source="\\'8d\r\n" target="Ť"/>
+      <replace source="\\'8e\r\n" target="Ž"/>
+      <replace source="\\'8f\r\n" target="Ź"/>
+      <replace source="\\'9a\r\n" target="š"/>
+      <replace source="\\'9c\r\n" target="ś"/>
+      <replace source="\\'9d\r\n" target="ť"/>
+      <replace source="\\'9e\r\n" target="ž"/>
+      <replace source="\\'9f\r\n" target="ź"/>
+      <replace source="\\'a3\r\n" target="Ł"/>
+      <replace source="\\'a5\r\n" target="Ą"/>
+      <replace source="\\'aa\r\n" target="Ş"/>
+      <replace source="\\'af\r\n" target="Ż"/>
+      <replace source="\\'b3\r\n" target="ł"/>
+      <replace source="\\'b5\r\n" target="µ"/>
+      <replace source="\\'b9\r\n" target="ą"/>
+      <replace source="\\'ba\r\n" target="ş"/>
+      <replace source="\\'bc\r\n" target="Ľ"/>
+      <replace source="\\'be\r\n" target="ľ"/>
+      <replace source="\\'bf\r\n" target="ż"/>
+      <replace source="\\'c0\r\n" target="Ŕ"/>
+      <replace source="\\'c1\r\n" target="Á"/>
+      <replace source="\\'c2\r\n" target="Â"/>
+      <replace source="\\'c3\r\n" target="Ă"/>
+      <replace source="\\'c4\r\n" target="Ä"/>
+      <replace source="\\'c5\r\n" target="Ĺ"/>
+      <replace source="\\'c6\r\n" target="Ć"/>
+      <replace source="\\'c7\r\n" target="Ç"/>
+      <replace source="\\'c8\r\n" target="Č"/>
+      <replace source="\\'c9\r\n" target="É"/>
+      <replace source="\\'ca\r\n" target="Ę"/>
+      <replace source="\\'cb\r\n" target="Ë"/>
+      <replace source="\\'cc\r\n" target="Ě"/>
+      <replace source="\\'cd\r\n" target="Í"/>
+      <replace source="\\'ce\r\n" target="Î"/>
+      <replace source="\\'cf\r\n" target="Ď"/>
+      <replace source="\\'d0\r\n" target="Ð"/>
+      <replace source="\\'d1\r\n" target="Ń"/>
+      <replace source="\\'d2\r\n" target="Ň"/>
+      <replace source="\\'d3\r\n" target="Ó"/>
+      <replace source="\\'d4\r\n" target="Ô"/>
+      <replace source="\\'d5\r\n" target="Ő"/>
+      <replace source="\\'d6\r\n" target="Ö"/>
+      <replace source="\\'d8\r\n" target="Ř"/>
+      <replace source="\\'d9\r\n" target="Ů"/>
+      <replace source="\\'da\r\n" target="Ú"/>
+      <replace source="\\'db\r\n" target="Ű"/>
+      <replace source="\\'dc\r\n" target="Ü"/>
+      <replace source="\\'dd\r\n" target="Ý"/>
+      <replace source="\\'de\r\n" target="Ţ"/>
+      <replace source="\\'df\r\n" target="ß"/>
+      <replace source="\\'e0\r\n" target="ŕ"/>
+      <replace source="\\'e1\r\n" target="á"/>
+      <replace source="\\'e2\r\n" target="â"/>
+      <replace source="\\'e3\r\n" target="ă"/>
+      <replace source="\\'e4\r\n" target="ä"/>
+      <replace source="\\'e5\r\n" target="ĺ"/>
+      <replace source="\\'e6\r\n" target="ć"/>
+      <replace source="\\'e7\r\n" target="ç"/>
+      <replace source="\\'e8\r\n" target="č"/>
+      <replace source="\\'e9\r\n" target="é"/>
+      <replace source="\\'ea\r\n" target="ę"/>
+      <replace source="\\'eb\r\n" target="ë"/>
+      <replace source="\\'ec\r\n" target="ě"/>
+      <replace source="\\'ed\r\n" target="í"/>
+      <replace source="\\'ee\r\n" target="î"/>
+      <replace source="\\'ef\r\n" target="ď"/>
+      <replace source="\\'f0\r\n" target="đ"/>
+      <replace source="\\'f1\r\n" target="ń"/>
+      <replace source="\\'f2\r\n" target="ň"/>
+      <replace source="\\'f3\r\n" target="ó"/>
+      <replace source="\\'f4\r\n" target="ô"/>
+      <replace source="\\'f5\r\n" target="ő"/>
+      <replace source="\\'f6\r\n" target="ö"/>
+      <replace source="\\'f8\r\n" target="ř"/>
+      <replace source="\\'f9\r\n" target="ů"/>
+      <replace source="\\'fa\r\n" target="ú"/>
+      <replace source="\\'fb\r\n" target="ű"/>
+      <replace source="\\'fc\r\n" target="ü"/>
+      <replace source="\\'fd\r\n" target="ý"/>
+      <replace source="\\'fe\r\n" target="ţ"/>
+      <replace source="\\'ff\r\n" target="˙"/>
+      <!-- The same characters followed by a \n: -->
+      <replace source="\\'8a\n" target="Š"/>
+      <replace source="\\'8c\n" target="Ś"/>
+      <replace source="\\'8d\n" target="Ť"/>
+      <replace source="\\'8e\n" target="Ž"/>
+      <replace source="\\'8f\n" target="Ź"/>
+      <replace source="\\'9a\n" target="š"/>
+      <replace source="\\'9c\n" target="ś"/>
+      <replace source="\\'9d\n" target="ť"/>
+      <replace source="\\'9e\n" target="ž"/>
+      <replace source="\\'9f\n" target="ź"/>
+      <replace source="\\'a3\n" target="Ł"/>
+      <replace source="\\'a5\n" target="Ą"/>
+      <replace source="\\'aa\n" target="Ş"/>
+      <replace source="\\'af\n" target="Ż"/>
+      <replace source="\\'b3\n" target="ł"/>
+      <replace source="\\'b5\n" target="µ"/>
+      <replace source="\\'b9\n" target="ą"/>
+      <replace source="\\'ba\n" target="ş"/>
+      <replace source="\\'bc\n" target="Ľ"/>
+      <replace source="\\'be\n" target="ľ"/>
+      <replace source="\\'bf\n" target="ż"/>
+      <replace source="\\'c0\n" target="Ŕ"/>
+      <replace source="\\'c1\n" target="Á"/>
+      <replace source="\\'c2\n" target="Â"/>
+      <replace source="\\'c3\n" target="Ă"/>
+      <replace source="\\'c4\n" target="Ä"/>
+      <replace source="\\'c5\n" target="Ĺ"/>
+      <replace source="\\'c6\n" target="Ć"/>
+      <replace source="\\'c7\n" target="Ç"/>
+      <replace source="\\'c8\n" target="Č"/>
+      <replace source="\\'c9\n" target="É"/>
+      <replace source="\\'ca\n" target="Ę"/>
+      <replace source="\\'cb\n" target="Ë"/>
+      <replace source="\\'cc\n" target="Ě"/>
+      <replace source="\\'cd\n" target="Í"/>
+      <replace source="\\'ce\n" target="Î"/>
+      <replace source="\\'cf\n" target="Ď"/>
+      <replace source="\\'d0\n" target="Ð"/>
+      <replace source="\\'d1\n" target="Ń"/>
+      <replace source="\\'d2\n" target="Ň"/>
+      <replace source="\\'d3\n" target="Ó"/>
+      <replace source="\\'d4\n" target="Ô"/>
+      <replace source="\\'d5\n" target="Ő"/>
+      <replace source="\\'d6\n" target="Ö"/>
+      <replace source="\\'d8\n" target="Ř"/>
+      <replace source="\\'d9\n" target="Ů"/>
+      <replace source="\\'da\n" target="Ú"/>
+      <replace source="\\'db\n" target="Ű"/>
+      <replace source="\\'dc\n" target="Ü"/>
+      <replace source="\\'dd\n" target="Ý"/>
+      <replace source="\\'de\n" target="Ţ"/>
+      <replace source="\\'df\n" target="ß"/>
+      <replace source="\\'e0\n" target="ŕ"/>
+      <replace source="\\'e1\n" target="á"/>
+      <replace source="\\'e2\n" target="â"/>
+      <replace source="\\'e3\n" target="ă"/>
+      <replace source="\\'e4\n" target="ä"/>
+      <replace source="\\'e5\n" target="ĺ"/>
+      <replace source="\\'e6\n" target="ć"/>
+      <replace source="\\'e7\n" target="ç"/>
+      <replace source="\\'e8\n" target="č"/>
+      <replace source="\\'e9\n" target="é"/>
+      <replace source="\\'ea\n" target="ę"/>
+      <replace source="\\'eb\n" target="ë"/>
+      <replace source="\\'ec\n" target="ě"/>
+      <replace source="\\'ed\n" target="í"/>
+      <replace source="\\'ee\n" target="î"/>
+      <replace source="\\'ef\n" target="ď"/>
+      <replace source="\\'f0\n" target="đ"/>
+      <replace source="\\'f1\n" target="ń"/>
+      <replace source="\\'f2\n" target="ň"/>
+      <replace source="\\'f3\n" target="ó"/>
+      <replace source="\\'f4\n" target="ô"/>
+      <replace source="\\'f5\n" target="ő"/>
+      <replace source="\\'f6\n" target="ö"/>
+      <replace source="\\'f8\n" target="ř"/>
+      <replace source="\\'f9\n" target="ů"/>
+      <replace source="\\'fa\n" target="ú"/>
+      <replace source="\\'fb\n" target="ű"/>
+      <replace source="\\'fc\n" target="ü"/>
+      <replace source="\\'fd\n" target="ý"/>
+      <replace source="\\'fe\n" target="ţ"/>
+      <replace source="\\'ff\n" target="˙"/>
+      <!-- The same characters followed by a \r: -->
+      <replace source="\\'8a\r" target="Š"/>
+      <replace source="\\'8c\r" target="Ś"/>
+      <replace source="\\'8d\r" target="Ť"/>
+      <replace source="\\'8e\r" target="Ž"/>
+      <replace source="\\'8f\r" target="Ź"/>
+      <replace source="\\'9a\r" target="š"/>
+      <replace source="\\'9c\r" target="ś"/>
+      <replace source="\\'9d\r" target="ť"/>
+      <replace source="\\'9e\r" target="ž"/>
+      <replace source="\\'9f\r" target="ź"/>
+      <replace source="\\'a3\r" target="Ł"/>
+      <replace source="\\'a5\r" target="Ą"/>
+      <replace source="\\'aa\r" target="Ş"/>
+      <replace source="\\'af\r" target="Ż"/>
+      <replace source="\\'b3\r" target="ł"/>
+      <replace source="\\'b5\r" target="µ"/>
+      <replace source="\\'b9\r" target="ą"/>
+      <replace source="\\'ba\r" target="ş"/>
+      <replace source="\\'bc\r" target="Ľ"/>
+      <replace source="\\'be\r" target="ľ"/>
+      <replace source="\\'bf\r" target="ż"/>
+      <replace source="\\'c0\r" target="Ŕ"/>
+      <replace source="\\'c1\r" target="Á"/>
+      <replace source="\\'c2\r" target="Â"/>
+      <replace source="\\'c3\r" target="Ă"/>
+      <replace source="\\'c4\r" target="Ä"/>
+      <replace source="\\'c5\r" target="Ĺ"/>
+      <replace source="\\'c6\r" target="Ć"/>
+      <replace source="\\'c7\r" target="Ç"/>
+      <replace source="\\'c8\r" target="Č"/>
+      <replace source="\\'c9\r" target="É"/>
+      <replace source="\\'ca\r" target="Ę"/>
+      <replace source="\\'cb\r" target="Ë"/>
+      <replace source="\\'cc\r" target="Ě"/>
+      <replace source="\\'cd\r" target="Í"/>
+      <replace source="\\'ce\r" target="Î"/>
+      <replace source="\\'cf\r" target="Ď"/>
+      <replace source="\\'d0\r" target="Ð"/>
+      <replace source="\\'d1\r" target="Ń"/>
+      <replace source="\\'d2\r" target="Ň"/>
+      <replace source="\\'d3\r" target="Ó"/>
+      <replace source="\\'d4\r" target="Ô"/>
+      <replace source="\\'d5\r" target="Ő"/>
+      <replace source="\\'d6\r" target="Ö"/>
+      <replace source="\\'d8\r" target="Ř"/>
+      <replace source="\\'d9\r" target="Ů"/>
+      <replace source="\\'da\r" target="Ú"/>
+      <replace source="\\'db\r" target="Ű"/>
+      <replace source="\\'dc\r" target="Ü"/>
+      <replace source="\\'dd\r" target="Ý"/>
+      <replace source="\\'de\r" target="Ţ"/>
+      <replace source="\\'df\r" target="ß"/>
+      <replace source="\\'e0\r" target="ŕ"/>
+      <replace source="\\'e1\r" target="á"/>
+      <replace source="\\'e2\r" target="â"/>
+      <replace source="\\'e3\r" target="ă"/>
+      <replace source="\\'e4\r" target="ä"/>
+      <replace source="\\'e5\r" target="ĺ"/>
+      <replace source="\\'e6\r" target="ć"/>
+      <replace source="\\'e7\r" target="ç"/>
+      <replace source="\\'e8\r" target="č"/>
+      <replace source="\\'e9\r" target="é"/>
+      <replace source="\\'ea\r" target="ę"/>
+      <replace source="\\'eb\r" target="ë"/>
+      <replace source="\\'ec\r" target="ě"/>
+      <replace source="\\'ed\r" target="í"/>
+      <replace source="\\'ee\r" target="î"/>
+      <replace source="\\'ef\r" target="ď"/>
+      <replace source="\\'f0\r" target="đ"/>
+      <replace source="\\'f1\r" target="ń"/>
+      <replace source="\\'f2\r" target="ň"/>
+      <replace source="\\'f3\r" target="ó"/>
+      <replace source="\\'f4\r" target="ô"/>
+      <replace source="\\'f5\r" target="ő"/>
+      <replace source="\\'f6\r" target="ö"/>
+      <replace source="\\'f8\r" target="ř"/>
+      <replace source="\\'f9\r" target="ů"/>
+      <replace source="\\'fa\r" target="ú"/>
+      <replace source="\\'fb\r" target="ű"/>
+      <replace source="\\'fc\r" target="ü"/>
+      <replace source="\\'fd\r" target="ý"/>
+      <replace source="\\'fe\r" target="ţ"/>
+      <replace source="\\'ff\r" target="˙"/>
+    </replacement-rule>
+  </rules>
+
+</format>
