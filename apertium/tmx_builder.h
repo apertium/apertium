@@ -35,6 +35,7 @@ private:
   static wstring nextTU(FILE *input);
   static wstring restOfBlank(FILE *input);
   static wstring nextBlank(FILE *input);
+  static wstring xmlize(wstring const &str);
   static bool compatible(FILE *input, FILE *output, bool lazy = false);
 public:
   TMXBuilder(wstring const &l1, wstring const &l2);

@@ -224,6 +224,36 @@ TMXBuilder::nextTU(FILE *input)
   return L"";
 }
 
+wstring
+TMXBuilder::xmlize(wstring const &str)
+{
+  wstring result = L"";
+  
+  for(size_t i = 0, limit = str.size(); i < limit; i++)
+  {
+    switch(str[i])
+    {
+      case L'<':
+        result.append(L"&lt;");
+        break;
+        
+      case L'>':
+        result.append(L"&gt;");
+        break;
+        
+      case L'&':
+        result.append(L"&amp;");
+        break;
+      
+      default:
+        result += str[i];
+        break;
+    }
+  }
+  
+  return result;
+} 
+
 void 
 TMXBuilder::generate(string const &file1, string const &file2, 
                      string const &outfile) const
@@ -241,23 +271,13 @@ TMXBuilder::generate(string const &file1, string const &file2,
     }
   }
   
-  //  Obtener el charset de acuerdo con la locale actual
+  // Generate the TMX in UTF-8
   
-  string loc = setlocale(LC_CTYPE, NULL);
-  
-  if(loc.find("utf-8") != loc::npos && loc.find("UTF-8") != loc::npos)
-  { 
-    fwprintf(output, L"<?xml version=\"1.0\"?>\n");
-  }
-  else
-  {
-    fwprint(output, L"<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
-  }
-  
-  fwprintf(output, L"<tmx version=\"version 1.1\">\n");
-  fwprinft(output, L"<header creationtool=\"Apertium TMX Builder\">\n");
-  fwprintf(output, L"</header>");
-  fwprintf(output, L"<body>");
+  fprintf(output, "<?xml version=\"1.0\"?>\n");
+  fprintf(output, "<tmx version=\"version 1.1\">\n");
+  fprintf(output, "<header creationtool=\"Apertium TMX Builder\">\n");
+  fprintf(output, "</header>");
+  fprintf(output, "<body>");
   
   FILE *f1 = fopen(file1.c_str(), "r");
   if(!f1)
@@ -286,14 +306,14 @@ TMXBuilder::generate(string const &file1, string const &file2,
     if(storage.find(tu1 + L"|#|" + tu2) == storage.end())
     { 
       storage.insert(tu1 + L"|#|" + tu2);
-      fwprintf(output, L"<tu>\n  <tuv xml:lang=\"%ls\">%ls</tuv>\n", lang1.c_str(), tu1.c_str());
-      fwprintf(output, L"  <tuv xml:lang=\"%ls\">%ls</tuv>\n</tu>\n", lang2.c_str(), tu2.c_str());  
+      fprintf(output, "<tu>\n  <tuv xml:lang=\"%s\">%s</tuv>\n", UtfConverter::toUtf8(lang1).c_str(), UtfConverter::toUtf8(xmlize(tu1)).c_str());
+      fprintf(output, "  <tuv xml:lang=\"%s\">%s</tuv>\n</tu>\n", UtfConverter::toUtf8(lang2).c_str(), UtfConverter::toUtf8(xmlize(tu2)).c_str());  
     }
     tu1 = StringUtils::trim(nextTU(f1));
     tu2 = StringUtils::trim(nextTU(f2));
   }
 
-  fwprintf(output, L"</body>\n</tmx>\n");
+  fprintf(output, "</body>\n</tmx>\n");
 
   if(output != stdin)
   {
