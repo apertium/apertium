@@ -32,7 +32,10 @@ GENERATEDSCRIPTS = apertium-gen-deformat apertium-gen-reformat \
 bin_PROGRAMS = apertium-pretransfer apertium-destxt apertium-retxt \
                apertium-deshtml apertium-rehtml \
                apertium-desodt apertium-reodt \
-               apertium-desrtf apertium-rertf apertium-tagger \
+               apertium-desrtf apertium-rertf \
+               apertium-desrtf-cp1250 apertium-rertf-cp1250 \
+               apertium-desrtf-cp1251 apertium-rertf-cp1251 \
+               apertium-tagger \
                apertium-preprocess-transfer apertium-transfer \
                apertium-filter-ambiguity apertium-lextor \
                apertium-gen-wlist-lextor-translation \
@@ -67,6 +70,10 @@ apertium_desodt_SOURCES = apertium_desodt.cc
 apertium_reodt_SOURCES = apertium_reodt.cc
 apertium_desrtf_SOURCES = apertium_desrtf.cc
 apertium_rertf_SOURCES = apertium_rertf.cc
+apertium_desrtf_cp1250_SOURCES = apertium_desrtf_cp1250.cc
+apertium_rertf_cp1250_SOURCES = apertium_rertf_cp1250.cc
+apertium_desrtf_cp1251_SOURCES = apertium_desrtf_cp1250.cc
+apertium_rertf_cp1251_SOURCES = apertium_rertf_cp1250.cc
 
 apertium_tagger_SOURCES = apertium_tagger.cc
 apertium_tagger_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_API_VERSION)
@@ -112,6 +119,8 @@ apertium_gen_wlist_lextor_translation_LDADD = $(APERTIUM_LIBS) -lapertium$(GENER
 INCLUDES = -I$(top_srcdir) $(APERTIUM_CFLAGS)
 CLEANFILES = *~ apertium_destxt.cc apertium_retxt.cc apertium_deshtml.cc \
              apertium_rehtml.cc apertium_desrtf.cc apertium_rertf.cc \
+             apertium_desrtf_cp1250.cc apertium_rertf_cp1250.cc \
+             apertium_desrtf_cp1251.cc apertium_rertf_cp1251.cc \
              apertium_desodt.cc apertium_reodt.cc \
              $(GENERATEDSCRIPTS)
 
@@ -138,6 +147,18 @@ apertium_desrtf.cc: rtf-format.xml Makefile.am deformat.xsl
 
 apertium_rertf.cc: rtf-format.xml Makefile.am reformat.xsl
 	$(XSLTPROC) reformat.xsl rtf-format.xml |$(FLEX) -Cfer -t >$@
+
+apertium_desrtf_cp1250.cc: rtf-format-cp1250.xml Makefile.am deformat.xsl
+	$(XSLTPROC) deformat.xsl rtf-format-cp1250.xml |$(FLEX) -Cfer -t >$@
+
+apertium_rertf_cp1250.cc: rtf-format-cp1250.xml Makefile.am reformat.xsl
+	$(XSLTPROC) reformat.xsl rtf-format-cp1250.xml |$(FLEX) -Cfer -t >$@
+
+apertium_desrtf_cp1251.cc: rtf-format-cp1251.xml Makefile.am deformat.xsl
+	$(XSLTPROC) deformat.xsl rtf-format-cp1251.xml |$(FLEX) -Cfer -t >$@
+
+apertium_rertf_cp1251.cc: rtf-format-cp1251.xml Makefile.am reformat.xsl
+	$(XSLTPROC) reformat.xsl rtf-format-cp1251.xml |$(FLEX) -Cfer -t >$@
 
 apertium-validate-tagger: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-tagger script"
