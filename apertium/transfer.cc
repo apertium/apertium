@@ -989,7 +989,7 @@ Transfer::processCallMacro(xmlNode *localroot)
       myword[idx] = word[pos];
       if(idx-1 >= 0)
       {
-        myblank[idx-1] = blank[pos];
+        myblank[idx-1] = blank[pos-1];
       }
       idx++;
     }
