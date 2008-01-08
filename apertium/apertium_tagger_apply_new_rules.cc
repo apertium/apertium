@@ -142,7 +142,7 @@ int main(int argc, char* argv[]) {
 
   FILE *fin, *fout;
 
-  fin=fopen(filein.c_str(), "r");
+  fin=fopen(filein.c_str(), "rb");
   check_file(fin, filein);
 
   cerr<<"Reading apertium-tagger data from file '"<<filein<<"' ... "<<flush;
@@ -162,7 +162,7 @@ int main(int argc, char* argv[]) {
   HMM hmm(&tagger_data);
   hmm.apply_rules();
 
-  fout=fopen(fileout.c_str(), "w");
+  fout=fopen(fileout.c_str(), "wb");
   check_file(fout, fileout);
   cerr<<"Writing apertium-tagger data to file '"<<fileout<<"' ... "<<flush;
   tagger_data.write(fout);

@@ -282,7 +282,7 @@ Tagger::main(int argc, char *argv[])
 void
 Tagger::tagger(bool mode_first)
 {
-  FILE *ftdata = fopen(filenames[0].c_str(), "r");
+  FILE *ftdata = fopen(filenames[0].c_str(), "rb");
   if (!ftdata) {
     filerror(filenames[0]);
   }
@@ -440,7 +440,7 @@ void
 Tagger::retrain()
 {
   TaggerData td;
-  FILE *ftdata = fopen(filenames[1].c_str(), "r");
+  FILE *ftdata = fopen(filenames[1].c_str(), "rb");
   if(!ftdata)
   {
     filerror(filenames[1]);
@@ -468,7 +468,7 @@ Tagger::retrain()
   hmm.apply_rules();
   fclose(fcrp);
 
-  ftdata = fopen(filenames[1].c_str(), "w");
+  ftdata = fopen(filenames[1].c_str(), "wb");
   if(!ftdata)
   {
     filerror(filenames[1]);

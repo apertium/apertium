@@ -139,7 +139,7 @@ Transfer::readData(FILE *in)
 void
 Transfer::readBil(string const &fstfile)
 {
-  FILE *in = fopen(fstfile.c_str(), "r");
+  FILE *in = fopen(fstfile.c_str(), "rb");
   if(!in)
   {
     cerr << "Error: Could not open file '" << fstfile << "'." << endl;
@@ -157,7 +157,7 @@ Transfer::read(string const &transferfile, string const &datafile,
   readTransfer(transferfile);
   
   // datafile
-  FILE *in = fopen(datafile.c_str(), "r");
+  FILE *in = fopen(datafile.c_str(), "rb");
   if(!in)
   {
     cerr << "Error: Could not open file '" << datafile << "'." << endl;

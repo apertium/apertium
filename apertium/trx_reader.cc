@@ -317,7 +317,7 @@ TRXReader::procRules()
 void
 TRXReader::write(string const &filename)
 {
-  FILE *out = fopen(filename.c_str(), "w");
+  FILE *out = fopen(filename.c_str(), "wb");
   if(!out)
   {
     cerr << "Error: cannot open '" << filename;

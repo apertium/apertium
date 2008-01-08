@@ -130,14 +130,14 @@ int main(int argc, char* argv[]) {
   wifstream fwlist;
   FILE *fmonodic, *fbildic;
 
-  fmonodic=fopen(monodic_file.c_str(), "r");
+  fmonodic=fopen(monodic_file.c_str(), "rb");
   if (!fmonodic) {
     wcerr<<L"Error: Cannot open file '"
          <<UtfConverter::fromUtf8(monodic_file)<<L"'\n";
     exit(EXIT_FAILURE);
   }
 
-  fbildic=fopen(bildic_file.c_str(), "r");
+  fbildic=fopen(bildic_file.c_str(), "rb");
   if (!fbildic) {
     wcerr<<L"Error: Cannot open file '"
          <<UtfConverter::fromUtf8(bildic_file)<<L"'\n";

@@ -237,7 +237,7 @@ int main(int argc, char* argv[]) {
     }
 
     FILE *fdic=NULL;
-    fdic=fopen(dic_file.c_str(), "r");
+    fdic=fopen(dic_file.c_str(), "rb");
     if (!fdic) {
       cerr<<"Error: Cannot open file '"<<dic_file<<"'\n";
       exit(EXIT_FAILURE);
@@ -325,13 +325,13 @@ int main(int argc, char* argv[]) {
       exit(EXIT_FAILURE);
     }
 
-    fdic=fopen(dic_file.c_str(), "r");
+    fdic=fopen(dic_file.c_str(), "rb");
     if(!fdic) {
       cerr<<"Error: Cannot open file '"<<dic_file<<"'\n";
       exit(EXIT_FAILURE);
     }
 
-    fbildic=fopen(bildic_file.c_str(), "r");
+    fbildic=fopen(bildic_file.c_str(), "rb");
     if(!fbildic) {
       cerr<<"Error: Cannot open file '"<<bildic_file<<"'\n";
       exit(EXIT_FAILURE);

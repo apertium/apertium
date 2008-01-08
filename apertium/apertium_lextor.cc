@@ -293,7 +293,7 @@ int main(int argc, char* argv[]) {
       exit(EXIT_FAILURE);
     }
 
-    FILE *fmodel = fopen(model_file.c_str(), "w");
+    FILE *fmodel = fopen(model_file.c_str(), "wb");
     if(!fmodel)
     {
       wcerr<<L"Error: Cannot open file '"
@@ -402,28 +402,28 @@ int main(int argc, char* argv[]) {
       exit(EXIT_FAILURE);
     }
 
-    fwordmodel = fopen(wordmodel_file.c_str(), "r");
+    fwordmodel = fopen(wordmodel_file.c_str(), "rb");
     if(!fwordmodel) {
       wcerr<<L"Error: Cannot open file '"
            <<UtfConverter::fromUtf8(wordmodel_file)<<L"'\n";
       exit(EXIT_FAILURE);
     }
 
-    fdic=fopen(dic_file.c_str(), "r");
+    fdic=fopen(dic_file.c_str(), "rb");
     if(!fdic) {
       wcerr<<L"Error: Cannot open file '"
            <<UtfConverter::fromUtf8(dic_file)<<L"'\n";
       exit(EXIT_FAILURE);
     }
 
-    fbildic=fopen(bildic_file.c_str(), "r");
+    fbildic=fopen(bildic_file.c_str(), "rb");
     if(!fbildic) {
       wcerr<<L"Error: Cannot open file '"
            <<UtfConverter::fromUtf8(bildic_file)<<L"'\n";
       exit(EXIT_FAILURE);
     }
 
-    FILE *fmodel = fopen(model_file.c_str(), "w");
+    FILE *fmodel = fopen(model_file.c_str(), "wb");
     if(!fmodel) {
       wcerr<<L"Error: Cannot open file '"
           <<UtfConverter::fromUtf8(model_file)<<L"'\n";
@@ -496,7 +496,7 @@ int main(int argc, char* argv[]) {
     }
 
     FILE *fdic=NULL;
-    fdic=fopen(dic_file.c_str(), "r");
+    fdic=fopen(dic_file.c_str(), "rb");
     if (!fdic) {
       wcerr<<L"Error: Cannot open dictionary file '"
            <<UtfConverter::fromUtf8(dic_file)<<L"' for lexical selection\n";
@@ -507,7 +507,7 @@ int main(int argc, char* argv[]) {
     fstp.initBiltrans();
     fclose(fdic);
 
-    FILE *fmodel = fopen(model_file.c_str(), "r");
+    FILE *fmodel = fopen(model_file.c_str(), "rb");
     if(!fmodel) {
       wcerr<<L"Error: Cannot open file '"
 	   <<UtfConverter::fromUtf8(model_file)<<L"'\n";
@@ -582,21 +582,21 @@ int main(int argc, char* argv[]) {
       exit(EXIT_FAILURE);
     }
 
-    fmodel = fopen(model_file.c_str(), "r");
+    fmodel = fopen(model_file.c_str(), "rb");
     if(!fmodel) {
       wcerr<<L"Error: Cannot open file '"
            <<UtfConverter::fromUtf8(model_file)<<L"'\n";
       exit(EXIT_FAILURE);
     }
 
-    fdic=fopen(dic_file.c_str(), "r");
+    fdic=fopen(dic_file.c_str(), "rb");
     if(!fdic) {
       wcerr<<L"Error: Cannot open file '"
            <<UtfConverter::fromUtf8(dic_file)<<L"'\n";
       exit(EXIT_FAILURE);
     }
 
-    fbildic=fopen(bildic_file.c_str(), "r");
+    fbildic=fopen(bildic_file.c_str(), "rb");
     if(!fbildic) {
       wcerr<<L"Error: Cannot open file '"
 	   <<UtfConverter::fromUtf8(bildic_file)<<L"'\n";

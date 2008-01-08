@@ -141,7 +141,7 @@ Postchunk::read(string const &transferfile, string const &datafile)
   readPostchunk(transferfile);
   
   // datafile
-  FILE *in = fopen(datafile.c_str(), "r");
+  FILE *in = fopen(datafile.c_str(), "rb");
   if(!in)
   {
     cerr << "Error: Could not open file '" << datafile << "'." << endl;
