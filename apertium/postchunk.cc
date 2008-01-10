@@ -1628,7 +1628,7 @@ Postchunk::unchunk(wstring const &chunk, FILE *output)
           }
           else if(uppercase_first)
           {
-	    if(iswalpha(chunk[i]))
+	    if(iswalnum(chunk[i]))
 	    {
 	      fputwc_unlocked(towupper(chunk[i]), output);
 	      uppercase_first = false;
@@ -1745,7 +1745,7 @@ Postchunk::splitWordsAndBlanks(wstring const &chunk, vector<wstring *> &words,
           }
           else if(uppercase_first)
           {
-	    if(iswalpha(chunk[i]))
+	    if(iswalnum(chunk[i]))
 	    {
 	      ref += towupper(chunk[i]);
 	      uppercase_first = false;
