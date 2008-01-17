@@ -28,7 +28,7 @@ ApertiumRE::read(FILE *input)
   re = static_cast<pcre *>(pcre_malloc(size));
   if(size != fread(re, 1, size, input))
   {
-    cerr << L"Error reading regexp" << endl;
+    wcerr << L"Error reading regexp" << endl;
     exit(EXIT_FAILURE);
   }
   
