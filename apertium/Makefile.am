@@ -346,4 +346,5 @@ EXTRA_DIST = gen-header.sh deformat-header.sh \
              validate-header.sh transformdic-header.sh transformdicbil-header.sh \
              gen-wlist-lextor-header.sh gen-stopwords-lextor.sh preprocess-corpus-lextor.sh \
              interchunk.dtd postchunk.dtd modes.dtd \
-             modes-header.sh apertium-createmodes.awk modes2bash.xsl ###trans-lextor-header.sh 
+             modes-header.sh apertium-createmodes.awk modes2bash.xsl \
+             rtf-format-cp1250.xml rtf-format-cp1251.xml ###trans-lextor-header.sh 
