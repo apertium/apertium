@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <format name="rtf"> <!-- version 1.0 -->
   <options>
     <largeblocks size="8192"/>
@@ -17,145 +17,145 @@
     <!-- Exceptions with priority 1  -->
     <!-- Style Sheet names are also format: -->
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\snext&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\snext&quot;"/>
       <end   regexp="&quot;;&quot;"/>
     </format-rule> 
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\keycode&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\keycode&quot;"/>
       <end   regexp="&quot;;&quot;"/>
     </format-rule> 
     <!-- Font names are also format: -->
     <format-rule type="comment" eos="no" priority="1">
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\fcharset&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\fcharset&quot;"/>
       <end   regexp="&quot;;&quot;"/>
     </format-rule>
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\fnil&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\fnil&quot;"/>
       <end   regexp="&quot;;&quot;"/>
     </format-rule> 
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\froman&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\froman&quot;"/>
       <end   regexp="&quot;;&quot;"/>
     </format-rule> 
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\fswiss&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\fswiss&quot;"/>
       <end   regexp="&quot;;&quot;"/>
     </format-rule> 
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\fmodern&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\fmodern&quot;"/>
       <end   regexp="&quot;;&quot;"/>
     </format-rule> 
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\fscript&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\fscript&quot;"/>
       <end   regexp="&quot;;&quot;"/>
     </format-rule> 
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\fdecor&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\fdecor&quot;"/>
       <end   regexp="&quot;;&quot;"/>
     </format-rule> 
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\ftech&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\ftech&quot;"/>
       <end   regexp="&quot;;&quot;"/>
     </format-rule> 
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\fbidi&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\fbidi&quot;"/>
       <end   regexp="&quot;;&quot;"/>
     </format-rule> 
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\falt&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\falt&quot;"/>
       <end   regexp="&quot;;&quot;"/>
     </format-rule> 
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\fontfile&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\fontfile&quot;"/>
       <end   regexp="&quot;;&quot;"/>
     </format-rule> 
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\fn&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\fn&quot;"/>
       <end   regexp="&quot;;&quot;"/>
     </format-rule> 
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\sbasedon&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\sbasedon&quot;"/>
       <end   regexp="&quot;;&quot;"/>
     </format-rule> 
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\additive&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\additive&quot;"/>
       <end   regexp="&quot;;&quot;"/>
     </format-rule> 
     <!-- File names are also format: -->
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\file&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\file&quot;"/>
       <end   regexp="&quot;}&quot;"/>
     </format-rule> 
     <!-- List Table names are also format: -->
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\listname&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\listname&quot;"/>
       <end   regexp="&quot;;&quot;"/>
     </format-rule> 
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\leveltext&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\leveltext&quot;"/>
       <end   regexp="&quot;;&quot;"/>
     </format-rule> 
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\levelnumbers&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\levelnumbers&quot;"/>
       <end   regexp="&quot;;&quot;"/>
     </format-rule> 
     <!-- Pictures are also format: -->
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\pict&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\pict&quot;"/>
       <end   regexp="&quot;}&quot;"/>
     </format-rule> 
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\sn&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\sn&quot;"/>
       <end   regexp="&quot;}&quot;"/>
     </format-rule> 
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\sv&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\sv&quot;"/>
       <end   regexp="&quot;}&quot;"/>
     </format-rule> 
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;{\\\*\\blipuid  &quot;[^ \n\r]+&quot;}&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;{\\\*\\blipuid  &quot;[^ \n\r]+&quot;}&quot;"/>
       <end   regexp="&quot;}&quot;"/>
     </format-rule> 
     <!-- Objects are also format: -->
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\object&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\object&quot;"/>
       <end   regexp="&quot;}&quot;"/>
     </format-rule> 
     <!-- Document Variables are also format: -->
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\docvar&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\docvar&quot;"/>
       <end   regexp="&quot;}&quot;"/>
     </format-rule> 
     <!-- Bookmarks are also format: -->
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\bkmkstart&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\bkmkstart&quot;"/>
       <end   regexp="&quot;}&quot;"/>
     </format-rule> 
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\bkmkend&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\bkmkend&quot;"/>
       <end   regexp="&quot;}&quot;"/>
     </format-rule> 
     <!-- Index Entries are also format: -->
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\rxe&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\rxe&quot;"/>
       <end   regexp="&quot;}&quot;"/>
     </format-rule> 
     <!-- Fields are also format: -->
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\fldinst&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\fldinst&quot;"/>
       <end   regexp="&quot;}&quot;"/>
     </format-rule> 
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\fldrslt&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\fldrslt&quot;"/>
       <end   regexp="&quot;}&quot;"/>
     </format-rule> 
     <!-- Other format tags which contain #CDATA: -->
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\pntxt&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\pntxt&quot;"/>
       <end   regexp="&quot;}&quot;"/>
     </format-rule> 
     <format-rule type="comment" eos="no" priority="1"> 
-      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r]*[ \n\r]*)*&quot;\\colortbl&quot;"/>
+      <begin regexp="&quot;{&quot;[ \n\r]*(\\[^'][^ \n\r\\]*[ \n\r]*)*&quot;\\colortbl&quot;"/>
       <end   regexp="&quot;}&quot;"/>
     </format-rule> 
     <!-- Hexadecimal Data -->
@@ -174,12 +174,12 @@
     
 
     <format-rule type="open" eos="no" priority="3">
-      <tag regexp="&quot;{&quot;[ \n\r]*\\[^'][^ \n\r]*[ \n\r]*"/>
+      <tag regexp="&quot;{&quot;[ \n\r]*\\[^'][^ \n\r\\]*[ \n\r]*"/>
     </format-rule>
 
     <!-- General Tags Specification -->
     <format-rule type="empty" eos="no" priority="3">
-      <tag regexp="\\[^'][^ \n\r]*[ \n\r]*"/>
+      <tag regexp="\\[^'][^ \n\r\\]*[ \n\r]*"/>
     </format-rule>
     <format-rule type="close" eos="no" priority="4">
       <tag regexp="&quot;}&quot;"/>
