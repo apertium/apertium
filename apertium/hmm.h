@@ -61,9 +61,9 @@ private:
     */
    void init(); 
    
-   /** This method returns a knwon ambiguity class that is a subset of
+   /** This method returns a known ambiguity class that is a subset of
     *  the one received as a parameter. This is useful when a new
-    *  ambiguty class is found because of changes in the morphological
+    *  ambiguity class is found because of changes in the morphological
     *  dictionary used by the MT system.
     *  @param c set of tags (ambiguity class)
     *  @return a known ambiguity class 
@@ -121,7 +121,7 @@ public:
    void read_dictionary(FILE *is);  
            
    /** It initializes the transtion (a) and emission (b) probabilities
-    *  from an untagged inputr text by means of Kupiec's method
+    *  from an untagged input text by means of Kupiec's method
     *  @param is the input stream with the untagged corpus to process
     */
    void init_probabilities_kupiec (FILE *is);
@@ -130,13 +130,13 @@ public:
     *  from a tagged input text by means of the expected-likelihood 
     *  estimate (ELE) method
     *  @param ftagged the input stream with the tagged corpus to process
-    *  @param funtagged the same corpus to porcesss but untagged
+    *  @param funtagged the same corpus to process but untagged
     */   
    void init_probabilities_from_tagged_text(FILE *ftagged, FILE *funtagged);
 
    /** It applies the forbid and enforce rules found in tagger specification.
-    *  To to so the transition matrix is modified by introducing null probabilitites
-    *  in the involded transitions.
+    *  To do so the transition matrix is modified by introducing null probabilities
+    *  in the involved transitions.
     */
    void apply_rules();
    
