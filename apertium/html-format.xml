@@ -329,6 +329,10 @@
       <replace source="&amp;#255;" target="ÿ"/>
       <replace source="&amp;#xFF;" target="ÿ"/>
       <replace source="&amp;#xff;" target="ÿ"/>
+      <replace source="&amp;middot;" target="·" prefer="yes"/>
+      <replace source="&amp;#183;" target="·"/>
+      <replace source="&amp;#xB7;" target="·"/>
+      <replace source="&amp;#xb7;" target="·"/>
       <replace source="&amp;rsquo;" target="'"/>
 <!--      <replace source="&amp;apos;" target="'"/>
       <replace source="&amp;quot;" target="\&quot;"/> -->
