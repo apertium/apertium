@@ -37,7 +37,7 @@ public:
    */
   int size (void);
 
-  /** Checks whether the collection has or not the element received as
+  /** Checks whether or not the collection has the element received as
    *  a parameter.  
    *  @param t element @return true if t is not in the
    *  collection
@@ -68,7 +68,7 @@ public:
   void write(FILE *output);
 
   /**
-   *  Reads the collection contents form an input stream
+   *  Reads the collection contents from an input stream
    *  @param input the input stream
    */
   void read(FILE *input);

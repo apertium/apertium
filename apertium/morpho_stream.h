@@ -42,8 +42,8 @@
 using namespace std;
 
 /** Class MorphoStream.  
- *  This class process the ouput of class  yyFlexLexer (lex.yy.cc), and 
- *  build the TaggerWord objects managed by the tagger 
+ *  This class processes the output of class  yyFlexLexer (lex.yy.cc), and 
+ *  builds the TaggerWord objects managed by the tagger 
  */
 class MorphoStream {
 private:
@@ -85,7 +85,7 @@ public:
     */
    ~MorphoStream();
   
-   /** Get next word in the input strem
+   /** Get next word in the input stream
     *  @return  A pointer to the next word in the input stream 
     */
    TaggerWord* get_next_word();  
