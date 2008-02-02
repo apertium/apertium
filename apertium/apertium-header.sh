@@ -6,7 +6,7 @@ function message
 {
   echo "USAGE: $(basename $0) [-d datadir] [-f format] [-u] <translation> [in [out]]"
   echo " -d datadir       directory of linguistic data"
-  echo " -f format        one of: txt (default), html, rtf, odt"
+  echo " -f format        one of: txt (default), html, rtf, odt, wxml"
   echo " -u               don't display marks '*' for unknown words" 
   echo " translation      typically, LANG1-LANG2, but see modes.xml in language data"
   echo " in               input file (stdin by default)"
@@ -14,11 +14,17 @@ function message
   exit 1;
 }
 
+function locale_utf8
+{
+  export LC_CTYPE=$(locale -a|grep -i "utf[.]*8"|head -1);
+}
+
+
 function translate_odt
 {
   INPUT_TMPDIR=/tmp/$$odtdir
 
-  export LC_CTYPE=$(locale -a|grep -i "utf[.]*8"|head -1);
+  locale_utf8;
 
   if [[ LC_CTYPE == "" ]]
   then echo "Error: Install an UTF-8 locale in your system";
@@ -161,6 +167,14 @@ case "$FORMATADOR" in
 		translate_odt
 		exit 0
 		;;
+		
+	wxml)
+		if [[ $UWORDS == "no" ]]; then OPTION="-n";
+		else OPTION="-g";
+		fi;
+	        locale_utf8
+	        ;;
+	        	
 	txtu)
 	        FORMATADOR="txt";
 		OPTION="-n"
@@ -185,6 +199,11 @@ case "$FORMATADOR" in
                 translate_odt
                 exit 0
                 ;;
+        wxmlu)
+		OPTION="-n";
+	        locale_utf8
+	        ;;
+
                 
         
 	*) # Por defecto asumimos txt

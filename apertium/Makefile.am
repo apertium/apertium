@@ -35,6 +35,7 @@ bin_PROGRAMS = apertium-pretransfer apertium-destxt apertium-retxt \
                apertium-desrtf apertium-rertf \
                apertium-desrtf-cp1250 apertium-rertf-cp1250 \
                apertium-desrtf-cp1251 apertium-rertf-cp1251 \
+               apertium-deswxml apertium-rewxml \
                apertium-tagger \
                apertium-preprocess-transfer apertium-transfer \
                apertium-filter-ambiguity apertium-lextor \
@@ -74,6 +75,8 @@ apertium_desrtf_cp1250_SOURCES = apertium_desrtf_cp1250.cc
 apertium_rertf_cp1250_SOURCES = apertium_rertf_cp1250.cc
 apertium_desrtf_cp1251_SOURCES = apertium_desrtf_cp1250.cc
 apertium_rertf_cp1251_SOURCES = apertium_rertf_cp1250.cc
+apertium_deswxml_SOURCES = apertium_deswxml.cc
+apertium_rewxml_SOURCES = apertium_rewxml.cc
 
 apertium_tagger_SOURCES = apertium_tagger.cc
 apertium_tagger_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_API_VERSION)
@@ -121,6 +124,7 @@ CLEANFILES = *~ apertium_destxt.cc apertium_retxt.cc apertium_deshtml.cc \
              apertium_rehtml.cc apertium_desrtf.cc apertium_rertf.cc \
              apertium_desrtf_cp1250.cc apertium_rertf_cp1250.cc \
              apertium_desrtf_cp1251.cc apertium_rertf_cp1251.cc \
+             apertium_deswxml.cc apertium_rewxml.cc \
              apertium_desodt.cc apertium_reodt.cc \
              $(GENERATEDSCRIPTS)
 
@@ -159,6 +163,12 @@ apertium_desrtf_cp1251.cc: rtf-format-cp1251.xml Makefile.am deformat.xsl
 
 apertium_rertf_cp1251.cc: rtf-format-cp1251.xml Makefile.am reformat.xsl
 	$(XSLTPROC) reformat.xsl rtf-format-cp1251.xml |$(FLEX) -Cfer -t >$@
+
+apertium_deswxml.cc: wxml-format.xml Makefile.am deformat.xsl
+	$(XSLTPROC) deformat.xsl wxml-format.xml |$(FLEX) -Cfer -t >$@
+
+apertium_rewxml.cc: wxml-format.xml Makefile.am reformat.xsl
+	$(XSLTPROC) reformat.xsl wxml-format.xml |$(FLEX) -Cfer -t >$@
 
 apertium-validate-tagger: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-tagger script"
@@ -327,6 +337,7 @@ apertium-gen-stopwords-lextor: Makefile.am gen-stopwords-lextor.sh
 
 man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
          apertium-desodt.1 apertium-reodt.1 \
+         apertium-deswxml.1 apertium-rewxml.1 \
          apertium-filter-ambiguity.1 apertium-gen-deformat.1 apertium-gen-lextorbil.1 \
          apertium-gen-lextormono.1 apertium-gen-reformat.1 apertium-gen-stopwords-lextor.1 \
          apertium-gen-wlist-lextor.1 apertium-gen-wlist-lextor-translation.1 \
@@ -342,7 +353,7 @@ man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
 EXTRA_DIST = gen-header.sh deformat-header.sh \
              reformat.xsl deformat.xsl new2old.xsl lexchoice.xsl lexchoicebil.xsl \
              tagger.dtd transfer.dtd format.dtd dix.dtd txt-format.xml \
-             html-format.xml odt-format.xml rtf-format.xml trans-header.sh apertium-header.sh $(man_MANS) \
+             html-format.xml odt-format.xml rtf-format.xml wxml-format.xml trans-header.sh apertium-header.sh $(man_MANS) \
              validate-header.sh transformdic-header.sh transformdicbil-header.sh \
              gen-wlist-lextor-header.sh gen-stopwords-lextor.sh preprocess-corpus-lextor.sh \
              interchunk.dtd postchunk.dtd modes.dtd \
