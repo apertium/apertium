@@ -91,7 +91,7 @@ function translate_docx
   OTRASALIDA=/tmp/$$docxsalida.zip
   
   unzip -q -o -d $INPUT_TMPDIR $FICHERO
-  find $INPUT_TMPDIR | grep document\\.xml |\
+  find $INPUT_TMPDIR | grep \\\(document\\\|core\\\)\\\.xml |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
   $APERTIUM_PATH/apertium-deswxml |\
   if [ ! -x $DATOS/modes/$PREFIJO.mode ]
