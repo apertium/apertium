@@ -6,7 +6,7 @@ function message
 {
   echo "USAGE: $(basename $0) [-d datadir] [-f format] [-u] <translation> [in [out]]"
   echo " -d datadir       directory of linguistic data"
-  echo " -f format        one of: txt (default), html, rtf, odt, wxml"
+  echo " -f format        one of: txt (default), html, rtf, odt, docx, wxml"
   echo " -u               don't display marks '*' for unknown words" 
   echo " translation      typically, LANG1-LANG2, but see modes.xml in language data"
   echo " in               input file (stdin by default)"
@@ -23,14 +23,9 @@ function locale_utf8
   fi
 }
 
-
-function translate_odt
+function test_zip
 {
-  INPUT_TMPDIR=/tmp/$$odtdir
-
-  locale_utf8
-
-  if [[ $(which zip) == "" ]]
+ if [[ $(which zip) == "" ]]
   then echo "Error: Install 'zip' command in your system";
        exit 1;
   fi
@@ -38,8 +33,16 @@ function translate_odt
   if [[ $(which unzip) == "" ]]
   then echo "Error: Install 'unzip' command in your system";
        exit 1;
-  fi
-  
+  fi 
+}
+
+function translate_odt
+{
+  INPUT_TMPDIR=/tmp/$$odtdir
+
+  locale_utf8
+  test_zip
+
   if [[ $FICHERO == "" ]]
   then FICHERO=/tmp/$$odtorig
        cat > $FICHERO
@@ -73,11 +76,51 @@ function translate_odt
   fi
 }
 
+function translate_docx
+{
+  INPUT_TMPDIR=/tmp/$$docxdir
+
+  locale_utf8
+  test_zip
+  
+  if [[ $FICHERO == "" ]]
+  then FICHERO=/tmp/$$docxorig
+       cat > $FICHERO
+       BORRAFICHERO="true"
+  fi
+  OTRASALIDA=/tmp/$$docxsalida.zip
+  
+  unzip -q -o -d $INPUT_TMPDIR $FICHERO
+  find $INPUT_TMPDIR | grep document\\.xml |\
+  awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
+  $APERTIUM_PATH/apertium-deswxml |\
+  if [ ! -x $DATOS/modes/$PREFIJO.mode ]
+  then sh $DATOS/modes/$PREFIJO.mode $OPTION
+  else $DATOS/modes/$PREFIJO.mode $OPTION
+  fi | \
+  $APERTIUM_PATH/apertium-rewxml|\
+  awk '{punto = index($0, "<?"); cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("\?> ", "?>\n", cola); print cola > name;}'
+  VUELVE=$(pwd)
+  cd $INPUT_TMPDIR
+  zip -q -r $OTRASALIDA .
+  cd $VUELVE
+  rm -Rf $INPUT_TMPDIR
+
+  if [[ $BORRAFICHERO == "true" ]]
+  then rm -Rf $FICHERO;
+  fi
+  if [[ $SALIDA == "" ]]
+  then cat $OTRASALIDA;
+       rm -Rf $OTRASALIDA
+  else mv $OTRASALIDA $SALIDA
+  fi
+}
+
 ARGS=$(getopt "uhf:d:" $*)
 set -- $ARGS
 for i
 do
-  case "$i" in
+  case "$i" in 
     -f) shift; FORMAT=$1; shift;;
     -d) shift; DIRECTORY=$1; shift;;
     -u) UWORDS="no"; shift;;
@@ -166,6 +209,14 @@ case "$FORMATADOR" in
 		translate_odt
 		exit 0
 		;;
+	docx)
+		if [[ $UWORDS == "no" ]]; then OPTION="-n"; 
+		else OPTION="-g";
+		fi;
+		translate_docx
+		exit 0
+		;;
+		
 		
 	wxml)
 		if [[ $UWORDS == "no" ]]; then OPTION="-n";
@@ -194,10 +245,17 @@ case "$FORMATADOR" in
 		;;
  
         odtu) 
-                OPTION="-n";
+                OPTION="-n"
                 translate_odt
                 exit 0
                 ;;
+                
+        docxu)
+                OPTION="-n"
+                translate_docx
+                exit 0
+                ;;
+        
         wxmlu)
 		OPTION="-n";
 	        locale_utf8
