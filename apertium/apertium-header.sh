@@ -17,6 +17,10 @@ function message
 function locale_utf8
 {
   export LC_CTYPE=$(locale -a|grep -i "utf[.]*8"|head -1);
+  if [[ LC_CTYPE == "" ]]
+  then echo "Error: Install an UTF-8 locale in your system";
+       exit 1;
+  fi
 }
 
 
@@ -24,12 +28,7 @@ function translate_odt
 {
   INPUT_TMPDIR=/tmp/$$odtdir
 
-  locale_utf8;
-
-  if [[ LC_CTYPE == "" ]]
-  then echo "Error: Install an UTF-8 locale in your system";
-       exit 1;
-  fi
+  locale_utf8
 
   if [[ $(which zip) == "" ]]
   then echo "Error: Install 'zip' command in your system";
