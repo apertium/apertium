@@ -6,7 +6,7 @@ function message
 {
   echo "USAGE: $(basename $0) [-d datadir] [-f format] [-u] <translation> [in [out]]"
   echo " -d datadir       directory of linguistic data"
-  echo " -f format        one of: txt (default), html, rtf, odt, docx, wxml"
+  echo " -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx"
   echo " -u               don't display marks '*' for unknown words" 
   echo " translation      typically, LANG1-LANG2, but see modes.xml in language data"
   echo " in               input file (stdin by default)"
@@ -90,9 +90,19 @@ function translate_docx
   fi
   OTRASALIDA=/tmp/$$docxsalida.zip
   
+  if [[ $UWORDS == "no" ]]
+  then OPCIONU="-u";
+  else OPCIONU="";
+  fi
+  
   unzip -q -o -d $INPUT_TMPDIR $FICHERO
-#  find $INPUT_TMPDIR | grep \\\(document\\\|core\\\)\\\.xml |\
-  find $INPUT_TMPDIR | grep "word" | grep "xml" |\
+  
+  for i in $(find $INPUT_TMPDIR|grep "xlsx$");
+  do $APERTIUM_PATH/apertium -f xlsx -d $DIRECTORY $OPCIONU $PREFIJO <$i >/tmp/$$xlsxembed;
+     mv /tmp/$$xlsxembed $i;
+  done;
+  
+  find $INPUT_TMPDIR | grep "xml" |\
   grep -v -i \\\(settings\\\|theme\\\|styles\\\|font\\\|rels\\\) |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
   $APERTIUM_PATH/apertium-deswxml |\
@@ -117,6 +127,47 @@ function translate_docx
   else mv $OTRASALIDA $SALIDA
   fi
 }
+
+function translate_xlsx
+{
+  INPUT_TMPDIR=/tmp/$$xlsxdir
+
+  locale_utf8
+  test_zip
+  
+  if [[ $FICHERO == "" ]]
+  then FICHERO=/tmp/$$xlsxorig
+       cat > $FICHERO
+       BORRAFICHERO="true"
+  fi
+  OTRASALIDA=/tmp/$$xslxsalida.zip
+  
+  unzip -q -o -d $INPUT_TMPDIR $FICHERO
+  find $INPUT_TMPDIR | grep "sharedStrings.xml" |\
+  awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
+  $APERTIUM_PATH/apertium-desxlsx |\
+  if [ ! -x $DATOS/modes/$PREFIJO.mode ]
+  then sh $DATOS/modes/$PREFIJO.mode $OPTION
+  else $DATOS/modes/$PREFIJO.mode $OPTION
+  fi | \
+  $APERTIUM_PATH/apertium-rexlsx|\
+  awk '{punto = index($0, "<?"); cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("\?> ", "?>\n", cola); print cola > name;}'
+  VUELVE=$(pwd)
+  cd $INPUT_TMPDIR
+  zip -q -r $OTRASALIDA .
+  cd $VUELVE
+  rm -Rf $INPUT_TMPDIR
+
+  if [[ $BORRAFICHERO == "true" ]]
+  then rm -Rf $FICHERO;
+  fi
+  if [[ $SALIDA == "" ]]
+  then cat $OTRASALIDA;
+       rm -Rf $OTRASALIDA
+  else mv $OTRASALIDA $SALIDA
+  fi
+}
+
 
 ARGS=$(getopt "uhf:d:" $*)
 set -- $ARGS
@@ -218,6 +269,13 @@ case "$FORMATADOR" in
 		translate_docx
 		exit 0
 		;;
+	xlsx)
+		if [[ $UWORDS == "no" ]]; then OPTION="-n"; 
+		else OPTION="-g";
+		fi;
+		translate_xlsx
+		exit 0
+		;;
 		
 		
 	wxml)
@@ -257,6 +315,13 @@ case "$FORMATADOR" in
                 translate_docx
                 exit 0
                 ;;
+
+        xlsxu)
+                OPTION="-n"
+                translate_xlsx
+                exit 0
+                ;;
+        
         
         wxmlu)
 		OPTION="-n";
