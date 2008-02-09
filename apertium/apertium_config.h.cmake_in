@@ -1,0 +1,23 @@
+/* Define to the address where bug reports for this package should be sent. */
+#define PACKAGE_BUGREPORT "${PACKAGE_BUGREPORT}"
+
+/* Define to the full name of this package. */
+#define PACKAGE_NAME "${PACKAGE_NAME}"
+
+/* Define to the full name and version of this package. */
+#define PACKAGE_STRING "${PACKAGE_STRING}"
+
+/* Define to the one symbol short name of this package. */
+#define PACKAGE_TARNAME "${PACKAGE_TARNAME}"
+
+/* Define to the version of this package. */
+#define PACKAGE_VERSION "${PACKAGE_VERSION}"
+
+#define HAVE_DECL_FPUTS_UNLOCKED   ${HAVE_DECL_FPUTS_UNLOCKED}
+#define HAVE_DECL_FGETC_UNLOCKED   ${HAVE_DECL_FGETC_UNLOCKED}
+#define HAVE_DECL_FPUTC_UNLOCKED   ${HAVE_DECL_FPUTC_UNLOCKED}
+#define HAVE_DECL_FWRITE_UNLOCKED  ${HAVE_DECL_FWRITE_UNLOCKED}
+#define HAVE_DECL_FREAD_UNLOCKED   ${HAVE_DECL_FREAD_UNLOCKED}
+#define HAVE_DECL_FGETWC_UNLOCKED  ${HAVE_DECL_FGETWC_UNLOCKED}
+#define HAVE_DECL_FPUTWC_UNLOCKED  ${HAVE_DECL_FPUTWC_UNLOCKED}
+#define HAVE_DECL_FPUTWS_UNLOCKED  ${HAVE_DECL_FPUTWS_UNLOCKED}
