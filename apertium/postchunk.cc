@@ -622,7 +622,7 @@ Postchunk::processCallMacro(xmlNode *localroot)
   InterchunkWord **myword = NULL;
   if(npar > 0)
   {
-    myword = new InterchunkWord *[npar];  
+    myword = new InterchunkWord *[npar+1];  
   }
   string **myblank = NULL;
   if(npar > 1)
@@ -630,14 +630,16 @@ Postchunk::processCallMacro(xmlNode *localroot)
     myblank = new string *[npar - 1];
   }
 
-  int idx = 0;
+  myword[0] = word[0];
+  
+  int idx = 1;
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE)
     {
-      int pos = atoi((const char *) i->properties->children->content)-1;
+      int pos = atoi((const char *) i->properties->children->content);
       myword[idx] = word[pos];
-      if(idx-1 >= 0)
+      if(idx > 1)
       {
         myblank[idx-1] = blank[pos-1];
       }
