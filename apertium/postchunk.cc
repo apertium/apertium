@@ -307,7 +307,7 @@ Postchunk::evalString(xmlNode *element)
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "lit"))
   {
-    evalStringCache[element] = TransferInstr(ti_lit, XMLParseUtil::latin1(element->properties->children->content), 0);
+    evalStringCache[element] = TransferInstr(ti_lit, string((char *) element->properties->children->content), 0);
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "b"))
   {
