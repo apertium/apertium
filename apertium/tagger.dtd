@@ -9,7 +9,7 @@
 <!ATTLIST tagger name CDATA #REQUIRED>
 <!--
 	'tagger' is the root element containing the whole tagset for a given
-    language especified through the mandatory attribute 'name'
+    language specified through the mandatory attribute 'name'
 -->
 
 <!ELEMENT tagset (def-label+,def-mult*)>
@@ -79,7 +79,7 @@
 <!ELEMENT enforce-rules (enforce-after+)>
 
 <!--
-        Element 'enforce-rules' defines sets of coarse tags that must follow specificied ones
+        Element 'enforce-rules' defines sets of coarse tags that must follow specified ones
 -->
 
 <!ELEMENT enforce-after (label-set)>
