@@ -35,7 +35,7 @@
 
 <!--
 	Each 'tags-item' may be a dot-separated subsequence of the morphological tags
-    corresponding to a coarse tag optionally in association wiht a given lemma 
+    corresponding to a coarse tag optionally in association with a given lemma 
 -->
 <!ELEMENT def-mult (sequence+)>
 <!ATTLIST def-mult name CDATA #REQUIRED
