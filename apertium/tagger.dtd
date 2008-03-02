@@ -51,7 +51,7 @@
 <!ELEMENT sequence ((tags-item|label-item)+)>
 
 <!--
-	Element 'sequence' encloses a set of tags o labels which defines 
+	Element 'sequence' encloses a set of tags or labels which defines 
     a unit with more than one label
 -->
 
