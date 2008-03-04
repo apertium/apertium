@@ -1427,7 +1427,9 @@ Transfer::copycase(string const &source_word, string const &target_word)
 
   if(!uppercase || (sizeone && uppercase))
   {
-    result = StringUtils::tolower(t_word);
+    result = t_word;
+    result[0] = towlower(result[0]);
+    //result = StringUtils::tolower(t_word);
   }
   else
   {
