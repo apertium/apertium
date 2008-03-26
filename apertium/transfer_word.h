@@ -23,6 +23,7 @@
 #include <map>
 #include <apertium/apertium_re.h>
 #include <string>
+#include <cstdlib>
 
 using namespace std;
 

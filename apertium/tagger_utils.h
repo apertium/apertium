@@ -26,6 +26,7 @@
 #include <iostream>
 #include <vector>
 #include <apertium/ttag.h>
+#include <cstdlib>
 
 using namespace std;
 
