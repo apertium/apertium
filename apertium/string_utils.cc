@@ -21,6 +21,7 @@
 #include <apertium/string_utils.h>
 #include <lttoolbox/xml_parse_util.h>
 #include <iostream>
+#include <cstring>
 
 //Delete white spaces from the end and the begining of the string
 wstring 
