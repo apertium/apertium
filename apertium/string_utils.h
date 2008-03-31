@@ -21,6 +21,7 @@
 #define __STRINGUTILS_H_
 
 #include <string>
+#include <cstring>
 #include <vector>
 
 using namespace std;
