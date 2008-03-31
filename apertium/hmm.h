@@ -33,6 +33,7 @@
 #include <set>
 #include <map>
 #include <cfloat>
+#include <cstring>
 
 #include <apertium/collection.h>
 #include <apertium/constant_manager.h>
