@@ -29,6 +29,7 @@
 #include <lttoolbox/match_exe.h>
 #include <lttoolbox/match_state.h>
 
+#include <cstring>
 #include <cstdio>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
