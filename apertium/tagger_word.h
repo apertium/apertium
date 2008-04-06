@@ -72,7 +72,7 @@ public:
    /** 
     * Destructor 
     */
-   ~TaggerWord();
+   virtual ~TaggerWord();
   
    /** Set the superficial form of the word.
     *  @param s the superfial form
@@ -88,22 +88,22 @@ public:
     *  @param t the coarse tag
     *  @param lf the lexical form (fine tag)
     */
-   void add_tag(TTag &t, const wstring &lf, vector<wstring> const &prefer_rules);
+   virtual void add_tag(TTag &t, const wstring &lf, vector<wstring> const &prefer_rules);
 
    /** Get the set of tags of this word.
     *  @return  set of tags.
     */  
-   set<TTag>& get_tags();
+   virtual set<TTag>& get_tags();
   
    /** Get a wstring with the set of tags
     */
-   wstring get_string_tags();
+   virtual wstring get_string_tags();
    
   /** Get the lexical form (fine tag) for a given tag (coarse one)
    *  @param  t the tag
    *  @return the lexical form of tag t
    */
-  wstring get_lexical_form(TTag &t, int const TAG_kEOF); 
+  virtual wstring get_lexical_form(TTag &t, int const TAG_kEOF); 
 
   wstring get_all_choosen_tag_first(TTag &t, int const TAG_kEOF);
   

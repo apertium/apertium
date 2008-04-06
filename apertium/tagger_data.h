@@ -53,7 +53,7 @@ private:
   void destroy();
 public:
   TaggerData();
-  ~TaggerData();
+  virtual ~TaggerData();
   TaggerData(TaggerData const &o);
   TaggerData & operator =(TaggerData const &o);
   
@@ -78,15 +78,15 @@ public:
   ConstantManager & getConstants();
   void setConstants(ConstantManager const &c);
   
-  Collection & getOutput();
+  virtual Collection & getOutput();
   void setOutput(Collection const &c);
  
   void setProbabilities(int const myN, int const myM, 
                         double **myA = NULL, double **myB = NULL);
-  double ** getA();
-  double ** getB();
-  int getN();
-  int getM();
+  virtual double ** getA();
+  virtual double ** getB();
+  virtual int getN();
+  virtual int getM();
   
   void setPatternList(PatternList const &pl);
 
