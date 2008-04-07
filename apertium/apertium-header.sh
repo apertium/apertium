@@ -1,4 +1,3 @@
-#! /bin/sh
 PAIR=""
 INPUT_FILE=""
 OUTPUT_FILE=""
