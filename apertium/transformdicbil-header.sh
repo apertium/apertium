@@ -1,3 +1,4 @@
+#! /bin/sh
 if [ $# != 2 ]
 then echo "USAGE: $(basename $0) <input_file> <output_file>";
      exit 1;

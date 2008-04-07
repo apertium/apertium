@@ -1,4 +1,4 @@
-
+#! /bin/sh
 if [ $# != 4 ]
 then echo "USAGE: $(basename $0) <dada_dir> <translation_dir> <input_file> <output_file>" 1>&2
      echo "where <data_dir> is the path to the linguistic data to use" 1>&2 
