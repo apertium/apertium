@@ -1,4 +1,3 @@
-#! /bin/sh
 if [ $# != 2 ]
 then if [ $# != 3 ]
      then echo "USAGE: $(basename $0) [-O] <input_file> <output_file>";

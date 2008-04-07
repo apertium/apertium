@@ -1,4 +1,3 @@
-#! /bin/sh
 if [ $# != 3 ]
 then echo "USAGE: $(basename $0) lr|rl <input_file> <output_file>";
      exit 1;

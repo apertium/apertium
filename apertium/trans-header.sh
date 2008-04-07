@@ -1,4 +1,3 @@
-#! /bin/sh
 case $# in
   2)
     DATOS=$1

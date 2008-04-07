@@ -1,4 +1,4 @@
-#! /bin/sh
+
 if [ $# != 3 ]
 then echo "USAGE: $(basename $0) <n> <input_file> <output_file>" 1>&2
      echo "where <n> is the desired number of stopwords" 1>&2
