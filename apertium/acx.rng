@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<element name="analysis-chars" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <oneOrMore>
+    <element name="char">
+      <attribute name="value">
+        <data type="token">
+          <param name="length">1</param>
+        </data>
+      </attribute>
+      <oneOrMore>
+        <element name="equiv-char">
+          <attribute name="value">
+            <data type="token">
+              <param name="length">1</param>
+            </data>
+          </attribute>
+        </element>
+      </oneOrMore>
+    </element>
+  </oneOrMore>
+</element>
