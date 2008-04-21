@@ -27,7 +27,7 @@ GENERATEDSCRIPTS = apertium-gen-deformat apertium-gen-reformat \
                    apertium-gen-stopwords-lextor \
                    apertium-validate-interchunk \
                    apertium-validate-postchunk apertium \
-                   apertium-gen-modes
+                   apertium-gen-modes apertium-validate-acx
 
 bin_PROGRAMS = apertium-pretransfer apertium-destxt apertium-retxt \
                apertium-deshtml apertium-rehtml \
@@ -60,7 +60,7 @@ apertiumsysconf = $(prefix)/etc/apertium
 
 apertium_DATA = deformat.xsl reformat.xsl new2old.xsl lexchoice.xsl \
                 lexchoicebil.xsl tagger.dtd interchunk.dtd format.dtd \
-                transfer.dtd dix.dtd postchunk.dtd modes.dtd modes2bash.xsl \
+                transfer.dtd dix.dtd postchunk.dtd acx.rng modes.dtd modes2bash.xsl \
                 apertium-createmodes.awk
 
 apertium_pretransfer_SOURCES = apertium_pretransfer.cc
@@ -209,6 +209,14 @@ apertium-validate-postchunk: Makefile.am validate-header.sh
 	@echo "#!$(BASH)" > $@
 	@cat validate-header.sh >> $@
 	@echo "$(XMLLINT) --dtdvalid $(apertiumdir)/postchunk.dtd --noout \$$FILE1 && exit 0;" >>$@
+	@echo "exit 1;" >> $@
+	@chmod a+x $@
+
+apertium-validate-acx: Makefile.am validate-header.sh
+	@echo "Creating apertium-validate-acx script"
+	@echo "#!$(BASH)" > $@
+	@cat validate-header.sh >> $@
+	@echo "$(XMLLINT) --relaxng $(apertiumdir)/acx.rng --noout \$$FILE1 && exit 0;" >>$@
 	@echo "exit 1;" >> $@
 	@chmod a+x $@
 
@@ -368,6 +376,6 @@ EXTRA_DIST = gen-header.sh deformat-header.sh \
              html-format.xml odt-format.xml rtf-format.xml wxml-format.xml xlsx-format.xml trans-header.sh apertium-header.sh $(man_MANS) \
              validate-header.sh transformdic-header.sh transformdicbil-header.sh \
              gen-wlist-lextor-header.sh gen-stopwords-lextor.sh preprocess-corpus-lextor.sh \
-             interchunk.dtd postchunk.dtd modes.dtd \
+             interchunk.dtd postchunk.dtd modes.dtd acx.rng \
              modes-header.sh apertium-createmodes.awk modes2bash.xsl \
              rtf-format-cp1250.xml rtf-format-cp1251.xml ###trans-lextor-header.sh 
