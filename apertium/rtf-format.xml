@@ -179,8 +179,14 @@
 
     <!-- General Tags Specification -->
     <format-rule type="empty" eos="no" priority="3">
-      <tag regexp="\\[^'][^ \n\r\\]*[ \n\r]*"/>
+      <tag regexp="\\[^r'][^ \n\r\\]*[ \n\r]*"/>
+      <tag regexp="\\r[^q][^ \n\r\\]*[ \n\r]*"/>
+      <tag regexp="\\rq[^u][^ \n\r\\]*[ \n\r]*"/>      
+      <tag regexp="\\rqu[^o][^ \n\r\\]*[ \n\r]*"/>      
+      <tag regexp="\\rquo[^t][^ \n\r\\]*[ \n\r]*"/>      
+      <tag regexp="\\rquote[^ \n\r\\]+[ \n\r]*"/>      
     </format-rule>
+
     <format-rule type="close" eos="no" priority="4">
       <tag regexp="&quot;}&quot;"/>
     </format-rule>
@@ -188,7 +194,11 @@
       <tag regexp="&quot;{&quot;"/>
     </format-rule>
 
-
+    <replacement-rule regexp="&quot;\\rquote &quot;">
+      <replace source="\\rquote " target="'"/>
+      <replace source="'" target="'" preferred="yes"/>
+    </replacement-rule>
+    
     <replacement-rule regexp="&quot;\\'&quot;[0-9a-fA-F][0-9a-fA-F](\r|\n|&quot;\r\n&quot;)?"> 
       <replace source="\\'c0" target="À" prefer="yes"/>
       <replace source="\\'c1" target="Á" prefer="yes"/>
