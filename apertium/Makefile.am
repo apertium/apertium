@@ -284,7 +284,7 @@ apertium-translator: Makefile.am trans-header.sh
 	@chmod a+x $@
 
 apertium: Makefile.am apertium-header.sh
-	@echo "Creating apertium  script"
+	@echo "Creating apertium script"
 	@echo "#!$(BASH)" > $@
 	@echo "APERTIUM_PATH=\"$(prefix)/bin\"" >>$@
 	@echo "LTTOOLBOX_PATH=\"$(prefix)/bin\"" >>$@

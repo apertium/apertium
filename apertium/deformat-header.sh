@@ -35,13 +35,13 @@ then if [ ! -e $2 ]
           exit 1;
      fi
 
-     if [ $1 == "-a" ]
+     if [ $1 = "-a" ]
      then FLEXOPTS="";
           MODE="apertium";
-     elif [ $1 == "-m" ]
+     elif [ $1 = "-m" ]
      then FLEXOPTS="";
           MODE="matxin";
-     elif [ $1 == "-M" ]
+     elif [ $1 = "-M" ]
      then FLEXOPTS="-Cfer";
           MODE="matxin";
      fi
