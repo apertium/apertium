@@ -57,6 +57,7 @@ Transfer::Transfer()
   root_element = NULL;
   lastrule = NULL;
   defaultAttrs = lu;
+  useBilingual = true;
 }
 
 Transfer::~Transfer()
@@ -166,7 +167,10 @@ Transfer::read(string const &transferfile, string const &datafile,
   readData(in);
   fclose(in);
   
-  readBil(fstfile);
+  if(fstfile != "")
+  {
+    readBil(fstfile);
+  }
 }
 
 void
@@ -1601,7 +1605,16 @@ Transfer::transfer(FILE *in, FILE *out)
       {
 	if(tmpword.size() != 0)
 	{
-	  pair<wstring, int> tr = fstp.biltransWithQueue(*tmpword[0], false);
+	  pair<wstring, int> tr;
+	  if(useBilingual)
+	  {
+  	    tr = fstp.biltransWithQueue(*tmpword[0], false);
+          }
+          else
+          {
+            tr = pair<wstring, int>(*tmpword[0], 0);
+          }
+          
 	  if(tr.first.size() != 0)
 	  {
 	    if(defaultAttrs == lu)
@@ -1707,7 +1720,15 @@ Transfer::applyRule()
       blank[i-1] = new string(UtfConverter::toUtf8(*tmpblank[i-1]));
     }
     
-    pair<wstring, int> tr = fstp.biltransWithQueue(*tmpword[i], false);
+    pair<wstring, int> tr;
+    if(useBilingual)
+    {
+      tr = fstp.biltransWithQueue(*tmpword[i], false);
+    }
+    else
+    {
+      tr = pair<wstring, int>(*tmpword[i], false);
+    }
 
     word[i] = new TransferWord(UtfConverter::toUtf8(*tmpword[i]), 
 			       UtfConverter::toUtf8(tr.first), tr.second);
@@ -1778,4 +1799,16 @@ Transfer::applyWord(wstring const &word_str)
     }
   }
   ms.step(L'$');
+}
+
+void 
+Transfer::setUseBilingual(bool value) 
+{
+  useBilingual = value;
+}
+
+bool
+Transfer::getUseBilingual(void) const
+{
+  return useBilingual;
 }

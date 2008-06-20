@@ -9,6 +9,8 @@ toolbox: \fBhttp://www.apertium.org\fR.
 .SH SYNOPSIS
 .B apertium-transfer
 trules preproc biltrans [input [output]]
+.B apertium-transfer
+-n trules preproc [input [output]]
 .SH DESCRIPTION
 .BR apertium-transfer 
 is the program that performs the transfer from input language
@@ -33,6 +35,8 @@ Input file (stdin by default).
 .PP
 .B outfile
 Output file (stdout by default).
+.B -n
+Do not use a bilingual dictionary to process the input.
 .PP
 .SH SEE ALSO
 .I apertium-translator\fR(1),

@@ -33,11 +33,13 @@ using namespace std;
 void message(char *progname)
 {
   cerr << "USAGE: " << basename(progname) << " trules preproc biltrans [input [output]]" << endl;
+  cerr << "       " << basename(progname) << " -n trules preproc [input [output]]" << endl;
   cerr << "  trules     transfer rules file" << endl;
   cerr << "  preproc    result of preprocess trules file" << endl;
   cerr << "  biltrans   bilingual letter transducer file" << endl;
   cerr << "  input      input file, standard input by default" << endl;
   cerr << "  output     output file, standard output by default" << endl;
+  cerr << "  -n         don't use bilingual dictionary" << endl;
   exit(EXIT_FAILURE);
 }
 
@@ -50,7 +52,12 @@ int main(int argc, char *argv[])
     message(argv[0]);
   }
 
-  for(unsigned int i = 1; i < 4; i++)
+  unsigned int firstfile = 1;
+  if(!strcmp(argv[1],"-n"))
+  {
+    firstfile = 2;
+  }
+  for(unsigned int i = firstfile; i < 4; i++)
   {
     struct stat mybuf;
     if(stat(argv[i], &mybuf) == -1)
@@ -83,7 +90,15 @@ int main(int argc, char *argv[])
   }
 
   Transfer t;
-  t.read(argv[1], argv[2], argv[3]);
+  if(firstfile == 1)
+  {
+    t.read(argv[1], argv[2], argv[3]);
+  }
+  else
+  {
+    t.read(argv[2], argv[3]);
+    t.setUseBilingual(false);
+  }
 
   t.transfer(input, output);
   return EXIT_SUCCESS;

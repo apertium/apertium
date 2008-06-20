@@ -75,6 +75,7 @@ private:
   enum OutputType{lu,chunk};
   
   OutputType defaultAttrs;
+  bool useBilingual;
   
   void copy(Transfer const &o);
   void destroy();
@@ -126,8 +127,11 @@ public:
   Transfer & operator =(Transfer const &o);
   
   void read(string const &transferfile, string const &datafile,
-	    string const &fstfile);
+	    string const &fstfile = "");
   void transfer(FILE *in, FILE *out);
+  void setUseBilingual(bool value);
+  bool getUseBilingual(void) const;
+
 };
 
 #endif
