@@ -267,7 +267,7 @@ representing a lexical form in the matched pattern
 -->
 
 
-<!ELEMENT out (b|chunk)+>
+<!ELEMENT out (b|chunk|var)+>
 <!-- 
       'out' is an output statement; it may output blanks or chunks
 -->

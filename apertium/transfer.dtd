@@ -270,7 +270,7 @@ representing a lexical form in the matched pattern
 -->
 
 
-<!ELEMENT out (mlu|lu|b|chunk)+>
+<!ELEMENT out (mlu|lu|b|chunk|var)+>
 <!-- 
       'out' is an output statement; it may output any sequence of
       clips, literal strings, literal tags, variables, and whitespace items 
@@ -393,7 +393,7 @@ get-case-from -->
 <!ELEMENT lu (%value;)+>
 <!-- Encloses a word inside an 'out' element. -->
 
-<!ELEMENT chunk (tags,(mlu|lu|b)+)>
+<!ELEMENT chunk (tags,(mlu|lu|b|var)+)>
 <!ATTLIST chunk name CDATA #IMPLIED
                 namefrom CDATA #IMPLIED
                 case CDATA #IMPLIED>

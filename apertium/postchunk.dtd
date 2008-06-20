@@ -258,7 +258,7 @@ representing a lexical form in the matched pattern
 -->
 
 
-<!ELEMENT out (b|lu|mlu)+>
+<!ELEMENT out (b|lu|mlu|var)+>
 <!-- 
       'out' is an output statement; it may output blanks or chunks
 -->
