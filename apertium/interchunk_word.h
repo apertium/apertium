@@ -33,10 +33,15 @@ class InterchunkWord
 {
 private:
   /**
-   * Target language word
+   * Target language chunk name and tags
    */
   string chunk;
   
+  /**
+   * Target language chunk content
+   */
+  string queue;   
+     
   /**
    * Copy method
    * @param o the object to be copied

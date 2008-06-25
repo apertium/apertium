@@ -67,13 +67,47 @@ InterchunkWord::operator =(InterchunkWord const &o)
 void
 InterchunkWord::init(string const &chunk)
 {
+  for(size_t i = 0; i < chunk.size(); i++)
+  {
+    if(chunk[i] == '\\')
+    {
+      i++;
+    }
+    else if(chunk[i] == '{')
+    {
+      this->chunk = chunk.substr(0, i);
+      this->queue = chunk.substr(i);
+      return;
+    }
+  }
   this->chunk = chunk;
+  this->queue = "";
 }
 
 string
 InterchunkWord::chunkPart(ApertiumRE const &part)
 {
-  return part.match(chunk);
+  string result = part.match(chunk);
+  if(result.size() == 0)
+  {
+    result = part.match(queue);
+    if(result.size() != queue.size())
+    {
+      return "";
+    }
+    else
+    {
+      return result;
+    }
+  }
+  else if(result.size() == chunk.size())
+  {
+    return part.match(chunk+queue);
+  }
+  else
+  {
+    return result;
+  }
 }
 
 void
