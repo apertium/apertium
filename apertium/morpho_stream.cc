@@ -97,9 +97,14 @@ MorphoStream::get_next_word()
       {
         symbol = fgetwc_unlocked(input);
         str += L'\\';
+        str += static_cast<wchar_t>(symbol);
+        symbol = L'\\';
       }
-      str += static_cast<wchar_t>(symbol);
-
+      else
+      {
+        str += static_cast<wchar_t>(symbol);
+      }
+      
       while(symbol != L'^')
       {
 	symbol = fgetwc_unlocked(input);
