@@ -120,6 +120,7 @@ MorphoStream::get_next_word()
 	    return get_next_word();
 	  }
 	  str += static_cast<wchar_t>(symbol);
+	  symbol = L'\\';
 	}
 	else if(symbol == L'^')
 	{
