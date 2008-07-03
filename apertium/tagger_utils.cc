@@ -35,7 +35,9 @@ void tagger_utils::file_name_error (string const &s) {
 }
 
 char * tagger_utils::itoa(int i) {                 
-  return string_utils::itoa(i);
+  static char buf[512];
+  sprintf(buf,"%d",i);
+  return buf;
 }
 
 void tagger_utils::clear_array_double(double a[], int l) {
