@@ -36,7 +36,7 @@
 	<!-- dictionary section -->
 <!ATTLIST section
 	id ID #REQUIRED
-	type (standard|inconditional|postblank) #REQUIRED
+	type (standard|inconditional|postblank|preblank) #REQUIRED
 	
 >
 	<!-- id: dictionary section identifier -->
