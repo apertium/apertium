@@ -31,6 +31,10 @@
 	n CDATA #REQUIRED
 >
 	<!-- n: paradigm name -->
+<!ATTLIST pardef
+        c CDATA  #IMPLIED
+>
+        <!-- c: comment about paradigm -->
 	
 <!ELEMENT section (e+)>
 	<!-- dictionary section -->
