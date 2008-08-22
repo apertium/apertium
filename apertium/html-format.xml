@@ -333,7 +333,17 @@
       <replace source="&amp;#183;" target="·"/>
       <replace source="&amp;#xB7;" target="·"/>
       <replace source="&amp;#xb7;" target="·"/>
+      <replace source="&amp;laquo;" target="«" prefer="yes"/>
+      <replace source="&amp;#171;" target="«"/>
+      <replace source="&amp;#xAB;" target="«"/>
+      <replace source="&amp;#xab;" target="«"/>
+      <replace source="&amp;raquo;" target="»" prefer="yes"/>
+      <replace source="&amp;#187;" target="»"/>
+      <replace source="&amp;#xBB;" target="»"/>
+      <replace source="&amp;#xbb;" target="»"/>
+
       <replace source="&amp;rsquo;" target="'"/>
+      
 <!--      <replace source="&amp;apos;" target="'"/>
       <replace source="&amp;quot;" target="\&quot;"/> -->
     </replacement-rule>  
