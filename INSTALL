@@ -11,6 +11,10 @@ Basic Installation
 ==================
 
 These are generic installation instructions.
+See also http://wiki.apertium.org/wiki/Installation
+
+   Note: If you have downloaded from SVN you first need to generate
+the 'configure' shell script by typing 'sh autogen.sh'
 
    The `configure' shell script attempts to guess correct values for
 various system-dependent variables used during compilation.  It uses
