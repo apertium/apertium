@@ -598,6 +598,7 @@ Interchunk::processCallMacro(xmlNode *localroot)
   }
 
   int idx = 0;
+  int lastpos = 0;
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE)
@@ -606,9 +607,10 @@ Interchunk::processCallMacro(xmlNode *localroot)
       myword[idx] = word[pos];
       if(idx-1 >= 0)
       {
-        myblank[idx-1] = blank[pos-1];
+        myblank[idx-1] = blank[lastpos];
       }
       idx++;
+      lastpos = pos;
     }
   }
 

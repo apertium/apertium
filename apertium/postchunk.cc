@@ -633,6 +633,7 @@ Postchunk::processCallMacro(xmlNode *localroot)
   myword[0] = word[0];
   
   int idx = 1;
+  int lastpos = 0;
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE)
@@ -641,9 +642,10 @@ Postchunk::processCallMacro(xmlNode *localroot)
       myword[idx] = word[pos];
       if(idx > 1)
       {
-        myblank[idx-1] = blank[pos-1];
+        myblank[idx-1] = blank[lastpos];
       }
       idx++;
+      lastpos = pos;
     }
   }
 
