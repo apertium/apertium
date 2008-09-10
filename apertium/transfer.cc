@@ -1003,6 +1003,7 @@ Transfer::processCallMacro(xmlNode *localroot)
 
   swap(myword, word);
   swap(myblank, blank);
+  swap(npar, lword);
   
   for(xmlNode *i = macro->children; i != NULL; i = i->next)
   {
@@ -1014,7 +1015,8 @@ Transfer::processCallMacro(xmlNode *localroot)
 
   swap(myword, word);
   swap(myblank, blank);
-
+  swap(npar, lword);
+  
   if(myword)
   {
     delete myword;
