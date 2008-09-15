@@ -1085,15 +1085,23 @@ Transfer::processLogical(xmlNode *localroot)
   {
     return processEqual(localroot);
   }
-  if(!xmlStrcmp(localroot->name, (const xmlChar *) "begins-with"))
+  else if(!xmlStrcmp(localroot->name, (const xmlChar *) "begins-with"))
   {
     return processBeginsWith(localroot);
   }
-  if(!xmlStrcmp(localroot->name, (const xmlChar *) "ends-with"))
+  else if(!xmlStrcmp(localroot->name, (const xmlChar *) "begins-with-list"))
+  {
+    return processBeginsWithList(localroot);
+  }
+  else if(!xmlStrcmp(localroot->name, (const xmlChar *) "ends-with"))
   {
     return processEndsWith(localroot);
   }
-  if(!xmlStrcmp(localroot->name, (const xmlChar *) "contains-substring"))
+  else if(!xmlStrcmp(localroot->name, (const xmlChar *) "ends-with-list"))
+  {
+    return processEndsWithList(localroot);
+  }
+  else if(!xmlStrcmp(localroot->name, (const xmlChar *) "contains-substring"))
   {
     return processContainsSubstring(localroot);
   }
@@ -1381,6 +1389,103 @@ Transfer::processEndsWith(xmlNode *localroot)
       return endsWith(evalString(first), evalString(second));
     }
   }
+}
+
+bool
+Transfer::processBeginsWithList(xmlNode *localroot)
+{
+  xmlNode *first = NULL, *second = NULL;
+
+  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
+  {
+    if(i->type == XML_ELEMENT_NODE)
+    {
+      if(first == NULL)
+      {
+        first = i;
+      }
+      else
+      {
+	second = i;
+	break;
+      }
+    }
+  }
+
+  xmlChar *idlist = second->properties->children->content;
+  string needle = evalString(first);
+  set<string, Ltstr>::iterator it, limit;
+
+  if(localroot->properties == NULL || 
+     xmlStrcmp(localroot->properties->children->content, (const xmlChar *) "yes"))
+  {
+    it = lists[(const char *) idlist].begin();
+    limit = lists[(const char *) idlist].end();
+  }
+  else
+  {
+    needle = tolower(needle);
+    it = listslow[(const char *) idlist].begin();
+    limit = listslow[(const char *) idlist].end();
+  }
+  
+  for(; it != limit; it++)
+  {
+    if(beginsWith(needle, *it))
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+
+bool
+Transfer::processEndsWithList(xmlNode *localroot)
+{
+  xmlNode *first = NULL, *second = NULL;
+
+  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
+  {
+    if(i->type == XML_ELEMENT_NODE)
+    {
+      if(first == NULL)
+      {
+        first = i;
+      }
+      else
+      {
+	second = i;
+	break;
+      }
+    }
+  }
+
+  xmlChar *idlist = second->properties->children->content;
+  string needle = evalString(first);
+  set<string, Ltstr>::iterator it, limit;
+
+  if(localroot->properties == NULL || 
+     xmlStrcmp(localroot->properties->children->content, (const xmlChar *) "yes"))
+  {
+    it = lists[(const char *) idlist].begin();
+    limit = lists[(const char *) idlist].end();
+  }
+  else
+  {
+    needle = tolower(needle);
+    it = listslow[(const char *) idlist].begin();
+    limit = listslow[(const char *) idlist].end();
+  }
+  
+  for(; it != limit; it++)
+  {
+    if(endsWith(needle, *it))
+    {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool

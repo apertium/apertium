@@ -6,7 +6,7 @@
     2005.07.29. 
 -->    
 
-<!ENTITY % condition "(and|or|not|equal|begins-with|ends-with|contains-substring|in)">
+<!ENTITY % condition "(and|or|not|equal|begins-with|begins-with-list|ends-with|ends-with-list|contains-substring|in)">
 <!ENTITY % container "(var|clip)">
 <!ENTITY % sentence "(let|out|choose|modify-case|call-macro|append)">
 <!ENTITY % value "(b|clip|lit|lit-tag|var|get-case-from|case-of|concat)">
@@ -220,6 +220,32 @@ representing a lexical form in the matched pattern
       'caseless' is set to 'yes', the comparison is made without attending
       to the case.
 -->
+
+<!ELEMENT begins-with-list (%value;,list)> 
+<!ATTLIST begins-with-list caseless (no|yes) #IMPLIED>
+<!-- 
+      Tests if the left part contains the right part at the beginning.
+      First parts of the test may be a clip (see below), a
+      literal string ('lit'), a literal tag ('lit-tag') or the value of 
+      a variable ('var') defined in the def-vars section. The second part
+      must be always a list.  When the attribute
+      'caseless' is set to 'yes', the comparison is made without attending
+      to the case.
+-->
+
+
+<!ELEMENT ends-with-list (%value;,list)> 
+<!ATTLIST ends-with-list caseless (no|yes) #IMPLIED>
+<!-- 
+      Tests if the left part contains the right part at the end.
+      First parts of the test may be a clip (see below), a
+      literal string ('lit'), a literal tag ('lit-tag') or the value of 
+      a variable ('var') defined in the def-vars section. The second part
+      must be always a list.  When the attribute
+      'caseless' is set to 'yes', the comparison is made without attending
+      to the case.
+-->
+
 
 <!ELEMENT contains-substring (%value;,%value;)> 
 <!ATTLIST contains-substring caseless (no|yes) #IMPLIED>

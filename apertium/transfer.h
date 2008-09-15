@@ -98,7 +98,9 @@ private:
   bool processOr(xmlNode *localroot);
   bool processEqual(xmlNode *localroot);
   bool processBeginsWith(xmlNode *localroot);
+  bool processBeginsWithList(xmlNode *localroot);
   bool processEndsWith(xmlNode *localroot);
+  bool processEndsWithList(xmlNode *local);
   bool processContainsSubstring(xmlNode *localroot);
   bool processNot(xmlNode *localroot);
   bool processIn(xmlNode *localroot);
