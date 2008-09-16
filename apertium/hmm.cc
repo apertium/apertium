@@ -40,6 +40,7 @@ HMM::HMM(TaggerData *t)
   this->td = t;
 
   debug=false;
+  show_sf=false;
   eos = (td->getTagIndex())[L"TAG_SENT"];  
 }
 
@@ -63,6 +64,13 @@ HMM::set_debug(bool d)
 { 
   debug = d; 
 } 
+
+void
+HMM::set_show_sf(bool sf)
+{ 
+  show_sf = sf; 
+} 
+
 
 void 
 HMM::read_ambiguity_classes(FILE *in) 
@@ -789,6 +797,8 @@ HMM::tagger(FILE *in, FILE *out, bool show_all_good_first) {
 	  wstring const &micad = wpend[t].get_all_choosen_tag_first(best[nwpend%2][tag][t], (td->getTagIndex())[L"TAG_kEOF"]);
 	  fputws_unlocked(micad.c_str(), out); 
 	} else {
+	  // print out
+	  wpend[t].set_show_sf(show_sf);
 	  wstring const &micad = wpend[t].get_lexical_form(best[nwpend%2][tag][t], (td->getTagIndex())[L"TAG_kEOF"]);
 	  fputws_unlocked(micad.c_str(), out); 
 	}

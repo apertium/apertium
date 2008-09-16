@@ -51,6 +51,7 @@ private:
   bool previous_plus_cut; //Flag to distinguish the way in which thre
 			  //previous word was ended. It has the same
 			  //plus_cut meaning
+  bool show_sf; // Show the superficial form in the output
   static map<wstring, ApertiumRE, Ltstr> patterns;
 
   bool match(wstring const &s, wstring const &pattern);
@@ -123,6 +124,12 @@ public:
    *  that there were a '+' between this word and the next one 
    */
    void set_plus_cut(const bool &c);
+
+  /**
+   * Get and set the "show superficial form" flag
+   */
+  void set_show_sf(bool sf);
+  bool get_show_sf();
 
   /** Get the value of the plus_cut flag */
   bool get_plus_cut();

@@ -41,6 +41,18 @@
 using namespace Apertium;
 using namespace std;
 
+void
+Tagger::setShowSF(bool val) 
+{
+  showSF = val;
+}
+
+bool
+Tagger::getShowSF()
+{
+  return showSF;
+}
+
 int
 Tagger::getMode(int argc, char *argv[])
 {
@@ -56,6 +68,7 @@ Tagger::getMode(int argc, char *argv[])
       {"supervised", required_argument, 0, 's'},
       {"retrain",    required_argument, 0, 'r'},
       {"tagger",     no_argument,       0, 'g'},
+      {"show-superficial",     no_argument,       0, 'p'},
       {"eval",       no_argument,       0, 'e'},
       {"first",      no_argument,       0, 'f'},
       {"help",       no_argument,       0, 'h'}, 
@@ -63,7 +76,7 @@ Tagger::getMode(int argc, char *argv[])
       {0, 0, 0, 0}
     };
 
-    c=getopt_long(argc, argv, "dt:s:r:gefh",long_options, &option_index);
+    c=getopt_long(argc, argv, "dt:s:r:gpefh",long_options, &option_index);
     if (c==-1)
       break;
       
@@ -114,6 +127,10 @@ Tagger::getMode(int argc, char *argv[])
 	  wcerr<<L"Error: --supervised optional argument should only appear after --train <n> argument\n";
 	  help();
 	}
+	break;
+
+      case 'p':
+        setShowSF(true);
 	break;
 	
       case 'r':
@@ -242,6 +259,7 @@ Tagger::getMode(int argc, char *argv[])
 Tagger::Tagger()
 {
   debug = false;
+  showSF = false;
 }
 
 void
@@ -292,6 +310,8 @@ Tagger::tagger(bool mode_first)
   fclose(ftdata);
   
   HMM hmm(&td);
+
+  hmm.set_show_sf(showSF);
   
   if(filenames.size() == 1)
   {
@@ -498,6 +518,8 @@ Tagger::help()
   out << "  -r, --retrain=n:     retrains the model with n aditional Baum-Welch" << endl;
   out << "                       iterations (unsupervised)" << endl;
   out << "  -g, --tagger:        tags input text by means of Viterbi algorithm" << endl;
+  out << "  -p, --show-superficial: " << endl;
+  out << "                       show superficial forms in the output stream" << endl;
   out << "  -f, --first:         used if conjuntion with -g (--tagger) makes the tagger"<< endl;
   out << "                       to give all lexical forms of each word, being the choosen" << endl;
   out << "                       one in the first place (after the lemma)"<<endl;

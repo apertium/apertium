@@ -37,6 +37,7 @@ TaggerWord::TaggerWord(bool prev_plus_cut){
 TaggerWord::TaggerWord(const TaggerWord &w){
   superficial_form = w.superficial_form;
   tags = w.tags;
+  show_sf = false;
   lexical_forms = w.lexical_forms;
   ignored_string = w.ignored_string;
   plus_cut = w.plus_cut;
@@ -44,6 +45,16 @@ TaggerWord::TaggerWord(const TaggerWord &w){
 }
 
 TaggerWord::~TaggerWord(){
+}
+
+void
+TaggerWord::set_show_sf(bool sf){
+  show_sf = sf;
+}
+
+bool
+TaggerWord::get_show_sf(){
+  return show_sf;
 }
 
 void
@@ -137,8 +148,13 @@ TaggerWord::get_lexical_form(TTag &t, int const TAG_kEOF) {
   if(t==TAG_kEOF)
     return ret;
 
-  if (!previous_plus_cut)
+  if (!previous_plus_cut){
     ret+=L'^'; 
+    if(get_show_sf()){   // append the superficial form
+      ret.append(superficial_form);
+      ret+=L'/'; 
+    }
+  }
 
   if (lexical_forms.size()==0) { // This is an UNKNOWN WORD
     ret +=L'*';

@@ -48,6 +48,10 @@ private:
   string name;
   bool debug;
 
+  bool showSF; // show superficial forms
+  void setShowSF(bool val);
+  bool getShowSF();
+
   int getMode(int argc, char *argv[]);
   void tagger(bool model_first=false);
   void train();

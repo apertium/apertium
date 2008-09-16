@@ -54,6 +54,7 @@ private:
    TaggerData *td;
    TTag eos; // end-of-sentence tag
    bool debug;  //If true, print error messages when tagging input text
+   bool show_sf;  //If true, print superficial forms when tagging input text
 
    /** It allocs memory for the transition (a) and the emission (b) matrices.
     *  Before calling this method the number of ambiguity classes must be known.
@@ -90,6 +91,11 @@ public:
     *
     */
    void set_debug(bool d);
+
+   /** Used to set the show superficial forms flag 
+    *
+    */
+   void set_show_sf(bool sf);
 
    /** It reads the ambiguity classes from the stream received as
     *  input
