@@ -949,9 +949,9 @@ Postchunk::endsWith(string const &s1, string const &s2) const
   {
     return false;
   }
-  for(int i = limit-1; i >= 0; i++)
+  for(int i = limit-1, j = constraint - 1; i >= 0; i--, j--)
   {
-    if(s1[i] != s2[i])
+    if(s1[j] != s2[i])
     {
       return false;
     }
