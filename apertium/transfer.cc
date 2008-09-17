@@ -58,6 +58,7 @@ Transfer::Transfer()
   lastrule = NULL;
   defaultAttrs = lu;
   useBilingual = true;
+  isExtended = false;
 }
 
 Transfer::~Transfer()
@@ -149,6 +150,21 @@ Transfer::readBil(string const &fstfile)
   fstp.load(in);
   fstp.initBiltrans();
   fclose(in);
+}
+
+void
+Transfer::setExtendedDictionary(string const &fstfile)
+{
+  FILE *in = fopen(fstfile.c_str(), "rb");
+  if(!in)
+  {
+    cerr << "Error: Could not open extended dictionary file '" << fstfile << "'." << endl;
+    exit(EXIT_FAILURE);
+  }
+  extended.load(in);
+  extended.initBiltrans();
+  fclose(in);
+  isExtended = true;
 }
 
 void
@@ -1717,7 +1733,22 @@ Transfer::transfer(FILE *in, FILE *out)
 	  pair<wstring, int> tr;
 	  if(useBilingual)
 	  {
-  	    tr = fstp.biltransWithQueue(*tmpword[0], false);
+	    if(isExtended && (*tmpword[0])[0] == L'*')
+	    {
+	      tr = extended.biltransWithQueue((*tmpword[0]).substr(1), false);
+              if(tr.first[0] == L'@')
+              {
+                tr.first[0] = L'*';
+              }
+              else
+              {
+                tr.first = L"%" + tr.first;
+              }
+            }
+            else
+            {
+	      tr = fstp.biltransWithQueue(*tmpword[0], false);
+            }
           }
           else
           {

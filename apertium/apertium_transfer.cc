@@ -34,12 +34,14 @@ void message(char *progname)
 {
   cerr << "USAGE: " << basename(progname) << " trules preproc biltrans [input [output]]" << endl;
   cerr << "       " << basename(progname) << " -n trules preproc [input [output]]" << endl;
+  cerr << "       " << basename(progname) << " -x trules preproc biltrans extended [input [output]]" << endl;
   cerr << "  trules     transfer rules file" << endl;
   cerr << "  preproc    result of preprocess trules file" << endl;
   cerr << "  biltrans   bilingual letter transducer file" << endl;
   cerr << "  input      input file, standard input by default" << endl;
   cerr << "  output     output file, standard output by default" << endl;
   cerr << "  -n         don't use bilingual dictionary" << endl;
+  cerr << "  -x         extended mode with user dictionary" << endl;
   exit(EXIT_FAILURE);
 }
 
@@ -47,17 +49,18 @@ int main(int argc, char *argv[])
 {
   LtLocale::tryToSetLocale();
   
-  if(argc > 6 || argc <4)
+  if(argc > 7 || argc <4)
   {
     message(argv[0]);
   }
 
-  unsigned int firstfile = 1;
-  if(!strcmp(argv[1],"-n"))
+  int firstfile = 1;
+  if(!strcmp(argv[1],"-n") || !strcmp(argv[1], "-x"))
   {
     firstfile = 2;
   }
-  for(unsigned int i = firstfile; i < 4; i++)
+  
+  for(int i = firstfile; i < argc; i++)
   {
     struct stat mybuf;
     if(stat(argv[i], &mybuf) == -1)
@@ -69,21 +72,30 @@ int main(int argc, char *argv[])
   }
   
   FILE *input = stdin, *output = stdout;
-  if(argc >= 5)
+  int argclimit1 = 5;
+  int argclimit2 = 6;
+  
+  if(!strcmp(argv[1],"-x"))
   {
-    input = fopen(argv[4], "r");
+    argclimit1 = 7;
+    argclimit2 = 8;
+  }
+  
+  if(argc >= argclimit1)
+  {
+    input = fopen(argv[argclimit1 - 1], "r");
     if(!input)
     {
-      cerr << "Error: can't open input file '" << argv[4] << "'." << endl;
+      cerr << "Error: can't open input file '" << argv[argclimit1 - 1] << "'." << endl;
       exit(EXIT_FAILURE);
     }
-    if(argc == 6)
+    if(argc == argclimit2)
     {
-      output = fopen(argv[5], "w");
+      output = fopen(argv[argclimit2 - 1], "w");
       if(!output)
       {
 	cerr << "Error: can't open output file '";
-	cerr << argv[5] << "'." << endl;
+	cerr << argv[argclimit2 - 1] << "'." << endl;
 	exit(EXIT_FAILURE);
       }
     }
@@ -94,12 +106,17 @@ int main(int argc, char *argv[])
   {
     t.read(argv[1], argv[2], argv[3]);
   }
-  else
+  else if(!strcmp(argv[1], "-n"))
   {
     t.read(argv[2], argv[3]);
     t.setUseBilingual(false);
   }
-
+  else if(!strcmp(argv[1], "-x"))
+  {
+    t.read(argv[2], argv[3], argv[4]);
+    t.setExtendedDictionary(argv[5]);
+  }
+  
   t.transfer(input, output);
   return EXIT_SUCCESS;
 }

@@ -63,6 +63,8 @@ private:
   vector<wstring *> tmpblank;
 
   FSTProcessor fstp;
+  FSTProcessor extended;
+  bool isExtended;
   FILE *output;
   int any_char;
   int any_tag;
@@ -133,6 +135,7 @@ public:
   void transfer(FILE *in, FILE *out);
   void setUseBilingual(bool value);
   bool getUseBilingual(void) const;
+  void setExtendedDictionary(string const &fstfile);
 
 };
 
