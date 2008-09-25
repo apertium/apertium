@@ -148,6 +148,9 @@ then
   AC_MSG_ERROR([You don't have pkg-config installed.])
 fi
 
+
+if test x$(uname -a) != xDarwin;
+then 
 AC_CHECK_HEADER(pcreposix.h,
   AC_CHECK_LIB(pcre, pcre_info,[
   LIBS="$LIBS -lpcreposix -lpcre"
@@ -161,6 +164,8 @@ AC_CHECK_HEADER(pcrecpp.h,
   no_comp_check=yes],
   AC_MSG_ERROR([*** unable to locate pcrecpp library ***])),
   AC_MSG_ERROR([*** unable to locate pcrecpp.h include file ***])) 
+fi
+
 
 PKG_CHECK_MODULES(APERTIUM, [dnl
   lttoolbox-3.0 >= required_lttoolbox_version dnl

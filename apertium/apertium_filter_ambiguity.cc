@@ -28,6 +28,7 @@
 #include <cstdio>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <libgen.h>
 
 using namespace Apertium;
 using namespace std;

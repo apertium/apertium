@@ -136,6 +136,7 @@
 #include &lt;string&gt;
 #include &lt;lttoolbox/lt_locale.h&gt;
 #include &lt;lttoolbox/ltstr.h&gt;
+#include &lt;apertium/unlocked_cstdio.h&gt;
 
 using namespace std;
 
@@ -622,7 +623,7 @@ void printBuffer()
   int pos = mbtowc(&amp;symbol, symbuf.c_str(), MB_CUR_MAX);
   if(pos == -1)
   {
-    if(symbuf.size() > MB_CUR_MAX)
+    if(symbuf.size() > (size_t) MB_CUR_MAX)
     {
       // unknown character
       symbuf = "";

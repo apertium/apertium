@@ -4,7 +4,7 @@ h_sources = collection.h constant_manager.h hmm.h interchunk.h \
             tagger_data.h tagger.h tagger_utils.h tagger_word.h \
             transfer_data.h transfer.h transfer_instr.h transfer_token.h \
             transfer_word.h transfer_word_list.h trx_reader.h tsx_reader.h \
-            ttag.h utf_converter.h apertium_re.h #tmx_builder.h
+            ttag.h utf_converter.h apertium_re.h unlocked_cstdio.h #tmx_builder.h
 
 cc_sources = collection.cc constant_manager.cc hmm.cc interchunk.cc \
              interchunk_word.cc lextor.cc lextor_data.cc lextor_eval.cc \
@@ -33,8 +33,6 @@ bin_PROGRAMS = apertium-pretransfer apertium-destxt apertium-retxt \
                apertium-deshtml apertium-rehtml \
                apertium-desodt apertium-reodt \
                apertium-desrtf apertium-rertf \
-               apertium-desrtf-cp1250 apertium-rertf-cp1250 \
-               apertium-desrtf-cp1251 apertium-rertf-cp1251 \
                apertium-deswxml apertium-rewxml \
                apertium-desxlsx apertium-rexlsx \
                apertium-tagger \
@@ -72,10 +70,6 @@ apertium_desodt_SOURCES = apertium_desodt.cc
 apertium_reodt_SOURCES = apertium_reodt.cc
 apertium_desrtf_SOURCES = apertium_desrtf.cc
 apertium_rertf_SOURCES = apertium_rertf.cc
-apertium_desrtf_cp1250_SOURCES = apertium_desrtf_cp1250.cc
-apertium_rertf_cp1250_SOURCES = apertium_rertf_cp1250.cc
-apertium_desrtf_cp1251_SOURCES = apertium_desrtf_cp1250.cc
-apertium_rertf_cp1251_SOURCES = apertium_rertf_cp1250.cc
 apertium_deswxml_SOURCES = apertium_deswxml.cc
 apertium_rewxml_SOURCES = apertium_rewxml.cc
 apertium_desxlsx_SOURCES = apertium_desxlsx.cc
@@ -125,8 +119,6 @@ apertium_gen_wlist_lextor_translation_LDADD = $(APERTIUM_LIBS) -lapertium$(GENER
 INCLUDES = -I$(top_srcdir) $(APERTIUM_CFLAGS)
 CLEANFILES = *~ apertium_destxt.cc apertium_retxt.cc apertium_deshtml.cc \
              apertium_rehtml.cc apertium_desrtf.cc apertium_rertf.cc \
-             apertium_desrtf_cp1250.cc apertium_rertf_cp1250.cc \
-             apertium_desrtf_cp1251.cc apertium_rertf_cp1251.cc \
              apertium_deswxml.cc apertium_rewxml.cc \
              apertium_desxlsx.cc apertium_rexlsx.cc \
              apertium_desodt.cc apertium_reodt.cc \
@@ -155,18 +147,6 @@ apertium_desrtf.cc: rtf-format.xml Makefile.am deformat.xsl
 
 apertium_rertf.cc: rtf-format.xml Makefile.am reformat.xsl
 	$(XSLTPROC) reformat.xsl rtf-format.xml |$(FLEX) -Cfer -t >$@
-
-apertium_desrtf_cp1250.cc: rtf-format-cp1250.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl rtf-format-cp1250.xml |$(FLEX) -Cfer -t >$@
-
-apertium_rertf_cp1250.cc: rtf-format-cp1250.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl rtf-format-cp1250.xml |$(FLEX) -Cfer -t >$@
-
-apertium_desrtf_cp1251.cc: rtf-format-cp1251.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl rtf-format-cp1251.xml |$(FLEX) -Cfer -t >$@
-
-apertium_rertf_cp1251.cc: rtf-format-cp1251.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl rtf-format-cp1251.xml |$(FLEX) -Cfer -t >$@
 
 apertium_deswxml.cc: wxml-format.xml Makefile.am deformat.xsl
 	$(XSLTPROC) deformat.xsl wxml-format.xml |$(FLEX) -Cfer -t >$@
@@ -367,7 +347,6 @@ man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
          apertium-validate-transfer.1 apertium-gen-modes.1 apertium-interchunk.1 \
          apertium-postchunk.1 apertium-validate-interchunk.1 \
          apertium-validate-postchunk.1 apertium-validate-modes.1 apertium-tagger-apply-new-rules.1 \
-	 apertium-desrtf-cp1251.1 apertium-rertf-cp1250.1 apertium-rertf-cp1251.1 apertium-desrtf-cp1250.1 \
 	 apertium-validate-acx.1
          ###apertium-lextor-eval.1 
 
@@ -378,5 +357,4 @@ EXTRA_DIST = gen-header.sh deformat-header.sh \
              validate-header.sh transformdic-header.sh transformdicbil-header.sh \
              gen-wlist-lextor-header.sh gen-stopwords-lextor.sh preprocess-corpus-lextor.sh \
              interchunk.dtd postchunk.dtd modes.dtd acx.rng \
-             modes-header.sh apertium-createmodes.awk modes2bash.xsl \
-             rtf-format-cp1250.xml rtf-format-cp1251.xml ###trans-lextor-header.sh 
+             modes-header.sh apertium-createmodes.awk modes2bash.xsl ###trans-lextor-header.sh 

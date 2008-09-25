@@ -8,13 +8,11 @@
   }
   else if(HEAD != 0)
   {
+    myfilename = NAME ".mode";
     if(ARR[3] == "yes")
     {
-      print $0 >"../"NAME".mode";
-    } 
-    else
-    {
-      print $0 >NAME".mode";
+      myfilename = "../" myfilename;
     }
+    print $0 > myfilename;
   }
 }

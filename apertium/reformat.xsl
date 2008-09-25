@@ -25,15 +25,7 @@
 
 %{
 
-#include &lt;apertium/apertium_config.h&gt;
-
-#if !HAVE_DECL_FPUTS_UNLOCKED
-#define fputws_unlocked fputws
-#endif
-
-#if !HAVE_DECL_FPUTC_UNLOCKED
-#define fputwc_unlocked fputwc
-#endif
+#include &lt;apertium/unlocked_cstdio.h&gt;
 
 #include &lt;cstdlib&gt;
 #include &lt;iostream&gt;

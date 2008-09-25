@@ -21,20 +21,8 @@
 #include <libgen.h>
 #include <string>
 
-#include <apertium/apertium_config.h>
 #include <lttoolbox/lt_locale.h>
-
-#if !HAVE_DECL_FPUTS_UNLOCKED
-#define fputws_unlocked fputws
-#endif
-
-#if !HAVE_DECL_FGETC_UNLOCKED 
-#define fgetwc_unlocked fgetwc
-#endif
-
-#if !HAVE_DECL_PUTC_UNLOCKED
-#define fputwc_unlocked fputwc
-#endif
+#include <apertium/unlocked_cstdio.h>
 #include <apertium/string_utils.h>
 
 using namespace Apertium;

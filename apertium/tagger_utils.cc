@@ -52,7 +52,11 @@ void tagger_utils::clear_array_vector(vector<TTag> v[], int l) {
 
 int tagger_utils::ntokens_multiword(wstring const &s) 
 {
-   wchar_t *news = wcsdup(s.c_str());
+   wchar_t *news = new wchar_t[s.size()+1];
+   wcscpy(news, s.c_str());
+   news[s.size()] = 0;
+   wcerr << news << endl;
+   
    wchar_t const *delim = L"_";
    wchar_t *ptr;
    int n=0;
@@ -62,13 +66,16 @@ int tagger_utils::ntokens_multiword(wstring const &s)
    while (wcstok(NULL, delim, &ptr))
      n++;
      
-   free(news);
+   delete[] news;
      
    return n;   
 }
  
 int tagger_utils::nguiones_fs(wstring const & s) {
-   wchar_t *news = wcsdup(s.c_str());
+   wchar_t *news = new wchar_t[s.size()+1];
+   wcscpy(news, s.c_str());
+   news[s.size()] = 0;
+   wcerr << news << endl;   
    wchar_t const *delim = L"-";
    wchar_t *ptr;
    int n=0;
@@ -78,7 +85,7 @@ int tagger_utils::nguiones_fs(wstring const & s) {
    while (wcstok(NULL, delim, &ptr))
      n++;
      
-   free(news);
+   delete[] news;
      
    return n;   
 } 

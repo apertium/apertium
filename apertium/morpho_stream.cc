@@ -26,6 +26,7 @@
 #include <apertium/constant_manager.h>
 #include <vector>
 #include <apertium/string_utils.h>
+#include <apertium/unlocked_cstdio.h>
 
 using namespace Apertium;
 MorphoStream::MorphoStream(FILE *ftxt, bool d, TaggerData *t)

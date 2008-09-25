@@ -26,6 +26,7 @@
 #include <iostream>
 #include <stack>
 #include <apertium/string_utils.h>
+#include <apertium/unlocked_cstdio.h>
 
 using namespace Apertium;
 using namespace std;

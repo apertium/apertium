@@ -24,6 +24,7 @@
 
 #include <apertium/hmm.h>
 #include <apertium/tagger_utils.h>
+#include <apertium/unlocked_cstdio.h>
 #include <lttoolbox/endian_util.h>
 
 #include <stdio.h>

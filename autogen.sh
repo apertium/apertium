@@ -32,7 +32,7 @@ fi
 rm -f config.cache acconfig.h
 
 echo "- libtoolize."		&& \
-libtoolize --force		&& \
+if test x$(uname -s) = xDarwin; then glibtoolize --force; else libtoolize --force; fi && \
 echo "- aclocal."		&& \
 aclocal			&& \
 echo "- autoconf."		&& \
