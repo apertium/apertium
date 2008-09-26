@@ -125,40 +125,64 @@ CLEANFILES = *~ apertium_destxt.cc apertium_retxt.cc apertium_deshtml.cc \
              $(GENERATEDSCRIPTS)
 
 apertium_destxt.cc: txt-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl txt-format.xml |$(FLEX) -Cfer -t >$@
+	$(XSLTPROC) deformat.xsl txt-format.xml >$@tmp
+	$(FLEX) -Cfer -o $@ $@tmp
+	rm $@tmp
 
 apertium_retxt.cc: txt-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl txt-format.xml |$(FLEX) -Cfer -t >$@
+	$(XSLTPROC) reformat.xsl txt-format.xml >$@tmp
+	$(FLEX) -Cfer -o $@ $@tmp
+	rm $@tmp
 
 apertium_deshtml.cc: html-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl html-format.xml |$(FLEX) -Cfer -t >$@
+	$(XSLTPROC) deformat.xsl html-format.xml >$@tmp
+	$(FLEX) -Cfer -o $@ $@tmp
+	rm $@tmp
 
 apertium_rehtml.cc: html-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl html-format.xml |$(FLEX) -Cfer -t >$@
+	$(XSLTPROC) reformat.xsl html-format.xml >$@tmp
+	$(FLEX) -Cfer -o $@ $@tmp
+	rm $@tmp
 
 apertium_desodt.cc: odt-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl odt-format.xml |$(FLEX) -Cfer -t >$@
+	$(XSLTPROC) deformat.xsl odt-format.xml >$@tmp
+	$(FLEX) -Cfer -o $@ $@tmp
+	rm $@tmp
 
 apertium_reodt.cc: odt-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl odt-format.xml |$(FLEX) -Cfer -t >$@
-	
+	$(XSLTPROC) reformat.xsl odt-format.xml >$@tmp
+	$(FLEX) -Cfer -o $@ $@tmp
+	rm $@tmp
+
 apertium_desrtf.cc: rtf-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl rtf-format.xml |$(FLEX) -Cfer -t >$@
+	$(XSLTPROC) deformat.xsl rtf-format.xml >$@tmp
+	$(FLEX) -Cfer -o $@ $@tmp
+	rm $@tmp
 
 apertium_rertf.cc: rtf-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl rtf-format.xml |$(FLEX) -Cfer -t >$@
+	$(XSLTPROC) reformat.xsl rtf-format.xml >$@tmp
+	$(FLEX) -Cfer -o $@ $@tmp
+	rm $@tmp
 
 apertium_deswxml.cc: wxml-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl wxml-format.xml |$(FLEX) -Cfer -t >$@
+	$(XSLTPROC) deformat.xsl wxml-format.xml >$@tmp
+	$(FLEX) -Cfer -o $@ $@tmp
+	rm $@tmp
 
 apertium_rewxml.cc: wxml-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl wxml-format.xml |$(FLEX) -Cfer -t >$@
+	$(XSLTPROC) reformat.xsl wxml-format.xml >$@tmp
+	$(FLEX) -Cfer -o $@ $@tmp
+	rm $@tmp
 
 apertium_desxlsx.cc: xlsx-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl xlsx-format.xml |$(FLEX) -Cfer -t >$@
+	$(XSLTPROC) deformat.xsl xlsx-format.xml >$@tmp
+	$(FLEX) -Cfer -o $@ $@tmp
+	rm $@tmp
 
 apertium_rexlsx.cc: xlsx-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl xlsx-format.xml |$(FLEX) -Cfer -t >$@
+	$(XSLTPROC) reformat.xsl xlsx-format.xml >$@tmp
+	$(FLEX) -Cfer -o $@ $@tmp
+	rm $@tmp
 
 apertium-validate-tagger: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-tagger script"

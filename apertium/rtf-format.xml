@@ -4,7 +4,7 @@
     <largeblocks size="8192"/>
     <input encoding="ISO-8859-1"/>
     <output encoding="ISO-8859-1"/>
-    <tag-name regexp=""/>
+    <tag-name regexp="''"/>
     <escape-chars regexp='(\\|[][&lt;&gt;@^$/])'/> 
 <!--    <escape-chars regexp='[]]^@&lt;&gt;/]'/>  -->
 
