@@ -33,7 +33,7 @@
 #define WORD_DATA_TYPE unsigned short
 #define MAX_WORD_INDEX (pow(2.0,(double)(sizeof(WORD_DATA_TYPE)*8))-1)
 
-#define COUNT_DATA_TYPE float
+#define COUNT_DATA_TYPE double
 
 #define NULLWORD L"NULLWORD"
 

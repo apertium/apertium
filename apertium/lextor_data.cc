@@ -24,7 +24,7 @@
 #include <apertium/lextor.h>
 
 #include <lttoolbox/compression.h>
-#include <lttoolbox/endian_util.h>
+#include <apertium/endian_double_util.h>
 #include <apertium/string_utils.h>
 
 using namespace Apertium;
@@ -137,7 +137,7 @@ LexTorData::read(FILE *is) {
     wstring str = Compression::wstring_read(is);
     index2word.push_back(str);
     word2index[str]=i;
-    wordcount[i]=EndianUtil<COUNT_DATA_TYPE>::read(is);
+    wordcount[i]=EndianDoubleUtil::read(is);
     //cerr<<"len: "<<len<<" str: "<<str<<" index: "<<i<<" word_count: "<<wordcount[i]<<"\n";
   }
 
@@ -148,7 +148,7 @@ LexTorData::read(FILE *is) {
     //double prob;
 
     lexchoice=(WORD_DATA_TYPE)Compression::multibyte_read(is);
-    sum=EndianUtil<COUNT_DATA_TYPE>::read(is);
+    sum=EndianDoubleUtil::read(is);
 
     //cerr<<"lexchoice: "<<lexchoice<<" sum: "<<sum<<" "<<index2word[lexchoice]<<"\n";
 
@@ -164,7 +164,7 @@ LexTorData::read(FILE *is) {
       COUNT_DATA_TYPE count;
 
       word=(WORD_DATA_TYPE)Compression::multibyte_read(is);
-      count=EndianUtil<COUNT_DATA_TYPE>::read(is);
+      count=EndianDoubleUtil::read(is);
       //cerr<<"     word: "<<word<<" count: "<<count<<"\n";
       lexchoice_set[lexchoice][word]=count;
     }
@@ -206,7 +206,7 @@ LexTorData::write(FILE *os) {
   //cerr<<"list of words----------------------------------------\n";
   for(unsigned int i=1; i<index2word.size(); i++) {
     Compression::wstring_write(index2word[i], os);
-    EndianUtil<COUNT_DATA_TYPE>::write(os, wordcount[i]);
+    EndianDoubleUtil::write(os, wordcount[i]);
   }
 
   //Write data of each set associate to each lexical choice (or word)
@@ -222,7 +222,7 @@ LexTorData::write(FILE *os) {
     //cerr<<"lexchoice: "<<lexchoice<<" sum: "<<sum<<" "<<index2word[lexchoice]<<"\n";
     Compression::multibyte_write(lexchoice, os);    
     //os.write(reinterpret_cast<char * const> (&prob), sizeof(double));
-    EndianUtil<COUNT_DATA_TYPE>::write(os, sum);
+    EndianDoubleUtil::write(os, sum);
 
     int nwritten_words=0;
     for(it_w_lch_set=it_lch_set->second.begin(); 
@@ -232,7 +232,7 @@ LexTorData::write(FILE *os) {
       COUNT_DATA_TYPE count=it_w_lch_set->second;
       //cerr<<"     word: "<<word<<" count: "<<count<<"\n";
       Compression::multibyte_write(word, os);
-      EndianUtil<COUNT_DATA_TYPE>::write(os, count);
+      EndianDoubleUtil::write(os, count);
       nwritten_words++;
     }
 
@@ -242,7 +242,7 @@ LexTorData::write(FILE *os) {
       COUNT_DATA_TYPE count=0;
       //cerr<<"     word: "<<word<<" count: "<<count<<"\n";
       Compression::multibyte_write(word, os);
-      EndianUtil<COUNT_DATA_TYPE>::write(os, count);
+      EndianDoubleUtil::write(os, count);
       nwritten_words++;
     }
   }

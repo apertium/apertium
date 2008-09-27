@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2005 Universitat d'Alacant / Universidad de Alicante
  *
@@ -25,7 +26,7 @@
 #include <apertium/hmm.h>
 #include <apertium/tagger_utils.h>
 #include <apertium/unlocked_cstdio.h>
-#include <lttoolbox/endian_util.h>
+#include <lttoolbox/compression.h>
 
 #include <stdio.h>
 #include <unistd.h>
@@ -78,7 +79,7 @@ HMM::read_ambiguity_classes(FILE *in)
 {
   while(in)
   {
-    int ntags = EndianUtil<int>::read(in);
+    int ntags = Compression::multibyte_read(in);
 
     if(feof(in))
     {
@@ -88,7 +89,7 @@ HMM::read_ambiguity_classes(FILE *in)
 
     for(; ntags != 0; ntags--)
     {
-      ambiguity_class.insert(EndianUtil<TTag>::read(in));
+      ambiguity_class.insert(Compression::multibyte_read(in));
     }
     
     if(ambiguity_class.size() != 0)
@@ -106,11 +107,11 @@ HMM::write_ambiguity_classes(FILE *out)
   for(int i=0, limit = td->getOutput().size(); i != limit; i++) 
   {
     set<TTag> const &ac = (td->getOutput())[i];
-    EndianUtil<int>::write(out, ac.size());
+    Compression::multibyte_write(ac.size(), out);
     for(set<TTag>::const_iterator it = ac.begin(), limit2 = ac.end();
         it != limit2; it++)
     {
-      EndianUtil<TTag>::write(out, *it);
+      Compression::multibyte_write(*it, out);
     }
   } 
 }  

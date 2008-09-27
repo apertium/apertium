@@ -4,7 +4,7 @@ h_sources = collection.h constant_manager.h hmm.h interchunk.h \
             tagger_data.h tagger.h tagger_utils.h tagger_word.h \
             transfer_data.h transfer.h transfer_instr.h transfer_token.h \
             transfer_word.h transfer_word_list.h trx_reader.h tsx_reader.h \
-            ttag.h utf_converter.h apertium_re.h unlocked_cstdio.h #tmx_builder.h
+            ttag.h utf_converter.h apertium_re.h unlocked_cstdio.h endian_double_util.h #tmx_builder.h
 
 cc_sources = collection.cc constant_manager.cc hmm.cc interchunk.cc \
              interchunk_word.cc lextor.cc lextor_data.cc lextor_eval.cc \
@@ -12,9 +12,9 @@ cc_sources = collection.cc constant_manager.cc hmm.cc interchunk.cc \
              tagger.cc tagger_data.cc tagger_utils.cc tagger_word.cc \
              transfer.cc transfer_data.cc transfer_instr.cc \
              transfer_token.cc transfer_word.cc transfer_word_list.cc \
-             trx_reader.cc tsx_reader.cc utf_converter.cc apertium_re.cc #tmx_builder.cc
+             trx_reader.cc tsx_reader.cc utf_converter.cc apertium_re.cc endian_double_util.cc #tmx_builder.cc
 
-library_includedir = $(includedir)/$(GENERIC_LIBRARY_NAME)-$(GENERIC_API_VERSION).0/$(GENERIC_LIBRARY_NAME)
+library_includedir = $(includedir)/$(GENERIC_LIBRARY_NAME)-$(GENERIC_API_VERSION)/$(GENERIC_LIBRARY_NAME)
 library_include_HEADERS = $(h_sources)
 
 GENERATEDSCRIPTS = apertium-gen-deformat apertium-gen-reformat \
@@ -76,45 +76,45 @@ apertium_desxlsx_SOURCES = apertium_desxlsx.cc
 apertium_rexlsx_SOURCES = apertium_rexlsx.cc
 
 apertium_tagger_SOURCES = apertium_tagger.cc
-apertium_tagger_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_API_VERSION)
+apertium_tagger_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
 
 #apertium_tmxbuild_SOURCES = apertium_tmxbuild.cc
-#apertium_tmxbuild_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_API_VERSION)
+#apertium_tmxbuild_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
 
 apertium_preprocess_transfer_SOURCES = transferpp.cc
 apertium_preprocess_transfer_LDADD = $(APERTIUM_LIBS) \
-                                     -lapertium$(GENERIC_API_VERSION)
+                                     -lapertium$(GENERIC_MAJOR_VERSION)
 
 apertium_filter_ambiguity_SOURCES = apertium_filter_ambiguity.cc
 apertium_filter_ambiguity_LDADD = $(APERTIUM_LIBS) \
-                                  -lapertium$(GENERIC_API_VERSION)
+                                  -lapertium$(GENERIC_MAJOR_VERSION)
 
 apertium_transfer_SOURCES = apertium_transfer.cc
-apertium_transfer_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_API_VERSION)
+apertium_transfer_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
 
 apertium_interchunk_SOURCES = apertium_interchunk.cc
-apertium_interchunk_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_API_VERSION)
+apertium_interchunk_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
 
 apertium_postchunk_SOURCES = apertium_postchunk.cc
-apertium_postchunk_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_API_VERSION)
+apertium_postchunk_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
 
 apertium_lextor_SOURCES = apertium_lextor.cc
-apertium_lextor_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_API_VERSION)
+apertium_lextor_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
 
 #apertium_lextor_eval_SOURCES = apertium-lextor-eval.C
-#apertium_lextor_eval_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_API_VERSION)
+#apertium_lextor_eval_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
 
 apertium_tagger_apply_new_rules_SOURCES = apertium_tagger_apply_new_rules.cc
-apertium_tagger_apply_new_rules_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_API_VERSION)
+apertium_tagger_apply_new_rules_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
 
 ###apertium_lextor_search_SOURCES = apertium-lextor-search.C
-###apertium_lextor_search_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_API_VERSION)
+###apertium_lextor_search_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
 
 ###pruebas_lextor_SOURCES = pruebas-lextor.C
-###pruebas_lextor_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_API_VERSION)
+###pruebas_lextor_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
 
 apertium_gen_wlist_lextor_translation_SOURCES = apertium_gen_wlist_lextor_translation.cc
-apertium_gen_wlist_lextor_translation_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_API_VERSION)
+apertium_gen_wlist_lextor_translation_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
 
 INCLUDES = -I$(top_srcdir) $(APERTIUM_CFLAGS)
 CLEANFILES = *~ apertium_destxt.cc apertium_retxt.cc apertium_deshtml.cc \

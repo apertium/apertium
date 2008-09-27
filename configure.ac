@@ -3,24 +3,25 @@
 
 AC_PREREQ(2.52)
 
-m4_define([required_lttoolbox_version], [3.0.0])
+m4_define([required_lttoolbox_version], [3.1.0])
 m4_define([required_libxml_version], [2.6.17])
 m4_define([required_libpcre_version], [6.4])
 #m4_define([required_pkg_config_version], [0.15])
 
-AC_INIT([apertium], [3.0.9], [sortiz@users.sourceforge.net])
+AC_INIT([apertium], [3.1.0], [sortiz@users.sourceforge.net])
 AC_CONFIG_HEADER([apertium/apertium_config.h])
 
 GENERIC_LIBRARY_NAME=apertium
 
 # Release versioning
 GENERIC_MAJOR_VERSION=3
-GENERIC_MINOR_VERSION=0
-GENERIC_MICRO_VERSION=9
+GENERIC_MINOR_VERSION=1
+GENERIC_MICRO_VERSION=0
 
 # API version (often = GENERIC_MAJOR_VERSION.GENERIC_MINOR_VERSION)
-GENERIC_API_VERSION=$GENERIC_MAJOR_VERSION
+GENERIC_API_VERSION=$GENERIC_MAJOR_VERSION.$GENERIC_MINOR_VERSION
 AC_SUBST(GENERIC_API_VERSION)
+AC_SUBST(GENERIC_MAJOR_VERSION)
 
 # Shared library versioning
 GENERIC_LIBRARY_VERSION=0:0:0
@@ -168,7 +169,7 @@ fi
 
 
 PKG_CHECK_MODULES(APERTIUM, [dnl
-  lttoolbox-3.0 >= required_lttoolbox_version dnl
+  lttoolbox-3.1 >= required_lttoolbox_version dnl
   libxml-2.0 >= required_libxml_version dnl
   libpcre >= required_libpcre_version], CPPFLAGS="$CPPFLAGS $APERTIUM_CFLAGS"; LIBS="$LIBS $APERTIUM_LIBS")
 
@@ -187,6 +188,7 @@ std::wstring test = L"test";
 ])
 
 AC_CXX_WSTRING
+AC_C_BIGENDIAN
 
 if test "$ac_cv_cxx_wstring" = no 
 then
@@ -212,4 +214,4 @@ AC_CHECK_DECLS([fread_unlocked, fwrite_unlocked, fgetc_unlocked, fputc_unlocked,
 
 AC_CHECK_FUNCS([setlocale strdup])
 
-AC_OUTPUT([Makefile apertium-3.0.pc apertium/Makefile])
+AC_OUTPUT([Makefile apertium-3.1.pc apertium/Makefile])

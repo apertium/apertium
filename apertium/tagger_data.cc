@@ -19,7 +19,7 @@
 #include <apertium/hmm.h>
 #include <apertium/tagger_data.h>
 #include <lttoolbox/compression.h>
-#include <lttoolbox/endian_util.h>
+#include <apertium/endian_double_util.h>
 #include <apertium/string_utils.h>
 
 using namespace Apertium;
@@ -354,7 +354,7 @@ TaggerData::read(FILE *in)
   {
     for(int j = 0; j != N; j++)
     {
-      a[i][j] = EndianUtil<double>::read(in);
+      a[i][j] = EndianDoubleUtil::read(in);
     }
   }
 
@@ -374,7 +374,7 @@ TaggerData::read(FILE *in)
   {
     int i = Compression::multibyte_read(in);
     int j = Compression::multibyte_read(in);
-    b[i][j] = EndianUtil<double>::read(in);
+    b[i][j] = EndianDoubleUtil::read(in);
   }
 
   // read pattern list
@@ -451,7 +451,7 @@ TaggerData::write(FILE *out)
   {
     for(int j = 0; j != N; j++)
     {
-      EndianUtil<double>::write(out, a[i][j]);
+      EndianDoubleUtil::write(out, a[i][j]);
     }
   }
 
@@ -478,7 +478,7 @@ TaggerData::write(FILE *out)
       {
 	Compression::multibyte_write(i, out);
 	Compression::multibyte_write(j, out);
-	EndianUtil<double>::write(out, b[i][j]);
+	EndianDoubleUtil::write(out, b[i][j]);
       }
     }
   }  
