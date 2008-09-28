@@ -505,7 +505,7 @@ void
 Tagger::help()
 {
   ostream &out = cerr;
-  char localname[name.size()+1];
+  char* localname=new char[name.size()+1];
   strcpy(localname, name.c_str());
   out << basename(localname) << ": HMM part-of-speech tagging and training program" << endl;
   out << "GENERIC USAGE: " << basename(localname) << "[-d] <OPTION>=[PARAM] [FILES]" << endl;
@@ -540,6 +540,7 @@ Tagger::help()
   out << "               corpus to use both jointly with -s option" << endl; 
   out << "  INPUT:       input file, stdin by default" << endl;
   out << "  OUTPUT:      output file, stdout by default" << endl;
+  delete[] localname;
   exit(EXIT_FAILURE);
 }
 
