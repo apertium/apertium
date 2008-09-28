@@ -62,6 +62,7 @@ Tagger::getMode(int argc, char *argv[])
   int option_index=0;
 
   while (true) {
+#if HAVE_GETOPT_LONG
     static struct option long_options[] =
     {
       {"train",      required_argument, 0, 't'},
@@ -77,6 +78,9 @@ Tagger::getMode(int argc, char *argv[])
     };
 
     c=getopt_long(argc, argv, "dt:s:r:gpefh",long_options, &option_index);
+#else
+    c=getopt(argc, argv, "dt:s:r:gpefh");
+#endif
     if (c==-1)
       break;
       

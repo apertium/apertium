@@ -128,6 +128,7 @@ int main(int argc, char* argv[]) {
   //cerr<<"LOCALE: "<<setlocale(LC_ALL,"")<<"\n";
 
   while (true) {
+#if HAVE_GETOPT_LONG
     static struct option long_options[] =
       {
 	{"trainwrd",  required_argument, 0, 't'},
@@ -142,6 +143,9 @@ int main(int argc, char* argv[]) {
       };
 
     c=getopt_long(argc, argv, "t:r:l:e:w:dhv",long_options, &option_index);
+#else
+    c=getopt(argc, argv, "t:r:l:e:w:dhv");
+#endif
     if (c==-1)
       break;
       
