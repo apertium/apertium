@@ -23,6 +23,10 @@
 
 #include <lttoolbox/lt_locale.h>
 #include <apertium/unlocked_cstdio.h>
+#ifdef WIN32
+#include <io.h>
+#include <fcntl.h>
+#endif
 #include <apertium/string_utils.h>
 
 using namespace Apertium;
@@ -165,7 +169,12 @@ int main(int argc, char *argv[])
   {
     input = fopen(argv[1], "r");
     output = fopen(argv[2], "w");
-    if(!input || !output)
+#ifdef WIN32
+    _setmode(_fileno(input), _O_U8TEXT);
+    _setmode(_fileno(output), _O_U8TEXT);
+#endif
+
+  if(!input || !output)
     {
       usage(argv[0]);
     }
