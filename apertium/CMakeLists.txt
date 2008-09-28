@@ -1,21 +1,18 @@
-INCLUDE_DIRECTORIES (${LIBXML2_INCLUDE_DIR} ${LTTOOLBOX3_INCLUDE_DIR} ${LIBPCRE_INCLUDE_DIR})
+INCLUDE_DIRECTORIES (${ICONV_INCLUDE_DIR} ${LIBXML2_INCLUDE_DIR} ${LTTOOLBOX3_INCLUDE_DIR} ${LIBPCRE_INCLUDE_DIR})
 ADD_DEFINITIONS (${LIBXML2_DEFINITIONS} ${LTTOOLBOX3_DEFINITIONS})
 
-SET(APERTIUM_LIBS ${LIBXML2_LIBRARIES} ${LTTOOLBOX3_LIBRARIES} ${LIBPCRE_LIBRARIES})
+SET(APERTIUM_LIBS ${LIBXML2_LIBRARIES} ${LTTOOLBOX3_LIBRARIES} ${LIBPCRE_LIBRARIES} ${ICONV_LIBRARIES})
 
 MACRO (FROM_XML OUTPUT XSL XML)
         XSLTPROC (${OUTPUT}.yy ${XSL} ${XML})
         FLEX (${OUTPUT} "-Cfer" ${OUTPUT}.yy)
 ENDMACRO (FROM_XML)
 
-IF (WIN32)
-        SET_SOURCE_FILES_PROPERTIES (${WIN32_DIR}/regex.c
-                                     PROPERTIES COMPILE_FLAGS "/D REGEX_MALLOC")
-        ADD_LIBRARY (flex_support ${WIN32_DIR}/regex.c)
-        SET (FLEX_LIB flex_support)
-
-        ADD_EXECUTABLE (runner_skeleton ${WIN32_DIR}/runner_skeleton.c)
-ENDIF (WIN32)
+#IF (WIN32)
+#        SET (FLEX_LIB flex_support)
+#
+#        ADD_EXECUTABLE (runner_skeleton ${WIN32_DIR}/runner_skeleton.c)
+#ENDIF (WIN32)
 
 MACRO (ADD_FORMATTER SRC_NAME XSL XML)
         FROM_XML (${SRC_NAME}.cc ${XSL} ${XML})        # Create SRC_NAME using the stylesheet XSL and the xml file XML
@@ -26,7 +23,7 @@ MACRO (ADD_FORMATTER SRC_NAME XSL XML)
         ENDIF (WIN32)
 
         ADD_EXECUTABLE (${EXE_NAME} ${SRC_NAME}.cc)    # Compile EXE_NAME using the source file ${SRC_NAME}.cc
-        TARGET_LINK_LIBRARIES (${EXE_NAME} ${FLEX_LIB} ${LTTOOLBOX3_LIBRARIES}) # Link the lttoolbox library to EXE_NAME
+        TARGET_LINK_LIBRARIES (${EXE_NAME} ${LIBXML2_LIBRARIES} ${ICONV_LIBRARIES} ${LTTOOLBOX3_LIBRARIES}) # Link the lttoolbox library to EXE_NAME
 
         LIST (APPEND INSTALLABLES ${EXE_NAME})
 ENDMACRO (ADD_FORMATTER)
@@ -48,7 +45,7 @@ ADD_LIBRARY (apertium3 SHARED collection.cc constant_manager.cc hmm.cc interchun
              interchunk_word.cc lextor.cc lextor_data.cc lextor_eval.cc
              lextor_word.cc morpho_stream.cc postchunk.cc string_utils.cc
              tagger.cc tagger_data.cc tagger_utils.cc tagger_word.cc
-             transfer.cc transfer_data.cc transfer_instr.cc
+             transfer.cc transfer_data.cc transfer_instr.cc endian_double_util.cc
              transfer_token.cc transfer_word.cc transfer_word_list.cc
              trx_reader.cc tsx_reader.cc utf_converter.cc apertium_re.cc)
 
@@ -83,11 +80,11 @@ MACRO (ADD_SCRIPT SCRIPT_NAME SOURCE)
 	INSTALL (PROGRAMS    ${SCRIPT_NAME}
 		 DESTINATION bin)
 
-	IF (WIN32)
-		INSTALL (PROGRAMS    "${CMAKE_CURRENT_SOURCE_DIR}/runner_skeleton.exe"
-		         DESTINATION bin
-			 RENAME      ${SCRIPT_NAME}.exe)
-        ENDIF (WIN32)
+#	IF (WIN32)
+#		INSTALL (PROGRAMS    "${CMAKE_CURRENT_SOURCE_DIR}/runner_skeleton.exe"
+#		         DESTINATION bin
+#			 RENAME      ${SCRIPT_NAME}.exe)
+#       ENDIF (WIN32)
 ENDMACRO (ADD_SCRIPT)
 
 ADD_SCRIPT (apertium apertium-header.sh)
@@ -100,7 +97,7 @@ INSTALL (TARGETS ${INSTALLABLES}
 FILE(GLOB HEADERS *.h)
 
 INSTALL (FILES ${HEADERS}
-         DESTINATION include/apertium-3.0/apertium)
+         DESTINATION include/apertium-3.1/apertium)
 
 IF (WIN32)
 	INSTALL (FILES ${PROJECT_SOURCE_DIR}/etc/LEAVE_THIS_DIRECTORY_HERE.txt

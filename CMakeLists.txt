@@ -1,4 +1,5 @@
-PROJECT (apertium-3.0)
+cmake_minimum_required(VERSION 2.6)
+PROJECT (apertium-3.1)
 
 SET (CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
@@ -19,26 +20,29 @@ ELSE (WIN32)
         SET(DEFAULT_DIRECTORY "${CMAKE_ROOT}/share/apertium")
 ENDIF (WIN32)
 
-SET (C_CONFIG_FILE      "${PROJECT_SOURCE_DIR}/apertium/apertium_config.h")
 SET (SCRIPT_HEADER_FILE "${PROJECT_SOURCE_DIR}/apertium/script_header.sh.cmake_in")
 
 IF (WIN32)
         SET (WIN32_DIR ${PROJECT_SOURCE_DIR}/apertium/win32)
         INCLUDE_DIRECTORIES (${WIN32_DIR})
-        LIST (APPEND EXTRA_SOURCES ${WIN32_DIR}/getopt.c ${WIN32_DIR}/libgen.c)
+        SET (EXTRA_SOURCES "${WIN32_DIR}/getopt.c" "${WIN32_DIR}/libgen.c")
 
-        SET(FLEX_EXECUTABLE        C:/Program\ Files/Flex/bin/flex.exe)
+        SET(FLEX_EXECUTABLE        C:/Program\ Files/GnuWin32/bin/flex.exe)
 
-        SET(LIBXML2_BASE_DIR       E:/home/wynand/libxml2-2.6.30.win32)
+        SET(ICONV_BASE_DIR         C:/Program\ Files/iconv)
+        SET(ICONV_INCLUDE_DIR      ${ICONV_BASE_DIR}/include)
+	SET(ICONV_LIBRARIES        ${ICONV_BASE_DIR}/lib/iconv.lib)
+
+        SET(LIBXML2_BASE_DIR       C:/Program\ Files/LibXMl)
         SET(LIBXML2_INCLUDE_DIR    ${LIBXML2_BASE_DIR}/include)
         SET(LIBXML2_LIBRARIES      ${LIBXML2_BASE_DIR}/lib/libxml2.lib)
         SET(XSLTPROC_EXECUTABLE    ${LIBXML2_BASE_DIR}/bin/xsltproc.exe)
 
-        SET(LTTOOLBOX3_BASE_DIR    E:/home/wynand/local/apertium-3.0)
+        SET(LTTOOLBOX3_BASE_DIR    C:/Program\ Files/apertium-3.0)
         SET(LTTOOLBOX3_INCLUDE_DIR ${LTTOOLBOX3_BASE_DIR}/include/lttoolbox-3.0)
         SET(LTTOOLBOX3_LIBRARIES   ${LTTOOLBOX3_BASE_DIR}/lib/lttoolbox3.lib)
 
-        SET(LIBPCRE_BASE_DIR       "E:/home/wynand/local/PCRE")
+        SET(LIBPCRE_BASE_DIR       C:/Program\ Files/PCRE) 
         SET(LIBPCRE_INCLUDE_DIR    "${LIBPCRE_BASE_DIR}/include")
         SET(LIBPCRE_LIBRARIES      "${LIBPCRE_BASE_DIR}/lib/pcrecpp.lib"
                                    "${LIBPCRE_BASE_DIR}/lib/pcreposix.lib"
@@ -56,9 +60,9 @@ FIND_PACKAGE (LibPcre    REQUIRED)
 
 SET (PACKAGE_BUGREPORT sortiz@users.sourceforge.net)
 SET (PACKAGE_NAME      apertium/apertium.h)
-SET (PACKAGE_STRING    apertium/apertium.h 3.0.1)
+SET (PACKAGE_STRING    apertium/apertium.h 3.1.0)
 SET (PACKAGE_TARNAME   lttoolbox-lttoolbox-h)
-SET (PACKAGE_VERSION   3.0.5)
+SET (PACKAGE_VERSION   3.1.0)
 
 MACRO (BOOL_CHECK_SYMBOL_EXISTS SYMBOL HEADER VAR)
         CHECK_SYMBOL_EXISTS (${SYMBOL} ${HEADER} ${VAR})
@@ -80,7 +84,8 @@ BOOL_CHECK_SYMBOL_EXISTS (fputws_unlocked stdio.h HAVE_DECL_FPUTWS_UNLOCKED)
 
 CHECK_FUNCTION_EXISTS (setlocale HAVE_SETLOCALE)
 CHECK_FUNCTION_EXISTS (strdup HAVE_STRDUP)
+CHECK_FUNCTION_EXISTS (getopt_long HAVE_GETOPT_LONG)
 
-CONFIGURE_FILE (${C_CONFIG_FILE}.cmake_in      ${C_CONFIG_FILE})
+CONFIGURE_FILE (${PROJECT_SOURCE_DIR}/apertium/apertium_config.h.cmake_in ${PROJECT_SOURCE_DIR}/apertium/apertium_config.h)
 
 ADD_SUBDIRECTORY (apertium)
