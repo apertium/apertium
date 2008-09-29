@@ -14,5 +14,6 @@
       myfilename = "../" myfilename;
     }
     print $0 > myfilename;
+    close(myfilename);
   }
 }
