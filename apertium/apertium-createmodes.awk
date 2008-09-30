@@ -13,7 +13,9 @@
     {
       myfilename = "../" myfilename;
     }
-    print $0 > myfilename;
+    # fool code because a bug in mawk
+    system("rm -f myfilename");
+    printf $0 "\n"  >> myfilename;
     close(myfilename);
   }
 }
