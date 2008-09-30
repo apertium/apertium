@@ -217,7 +217,7 @@ Postchunk::collectMacros(xmlNode *localroot)
 bool
 Postchunk::checkIndex(xmlNode *element, int index, int limit)
 {
-  if(index >= limit)
+  if(index > limit)
   {
     wcerr << L"Error in " << UtfConverter::fromUtf8((char *) doc->URL) <<L": line " << element->line << endl;
     return false;
