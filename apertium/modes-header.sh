@@ -15,8 +15,11 @@ fi
 DIRNAME=$(dirname $1);
 FULLDIRNAME=$(cd $DIRNAME; pwd);
 
+rm *.mode
+
 if [ ! -d $FULLDIRNAME/modes ]
 then mkdir $FULLDIRNAME/modes
+else rm -Rf $FULLDIRNAME/modes && mkdir $FULLDIRNAME/modes
 fi
 
 FILE1=$FULLDIRNAME/$(basename $1)
