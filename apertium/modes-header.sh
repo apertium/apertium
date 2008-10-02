@@ -15,7 +15,7 @@ fi
 DIRNAME=$(dirname $1);
 FULLDIRNAME=$(cd $DIRNAME; pwd);
 
-rm *.mode
+rm -Rf *.mode
 
 if [ ! -d $FULLDIRNAME/modes ]
 then mkdir $FULLDIRNAME/modes
