@@ -59,7 +59,10 @@ Tagger::getMode(int argc, char *argv[])
   int mode=UNKNOWN_MODE;
    
   int c;
+
+#if HAVE_GETOPT_LONG
   int option_index=0;
+#endif
 
   while (true) {
 #if HAVE_GETOPT_LONG
