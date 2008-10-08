@@ -48,8 +48,10 @@ void help(char *name) {
 
 int main(int argc, char* argv[]) {
   int c;
+  
+#if HAVE_GETOPT_LONG
   int option_index=0;
-
+#endif
   string monodic_file="";
   string bildic_file="";
   string wlist_file="";

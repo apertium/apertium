@@ -101,7 +101,9 @@ void help(char *name) {
 
 int main(int argc, char* argv[]) {
   int c;
+#if HAVE_GETOPT_LONG
   int option_index=0;
+#endif
   int mode=-1;
 
   //Parameters for the "trainwrd" or the "trainlch" mode option

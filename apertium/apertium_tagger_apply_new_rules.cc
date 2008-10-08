@@ -63,7 +63,9 @@ int main(int argc, char* argv[]) {
   string filetsx="";
 
   int c;
+#if HAVE_GETOPT_LONG
   int option_index=0;
+#endif
 
   cerr<<"Command line: ";
   for(int i=0; i<argc; i++)
