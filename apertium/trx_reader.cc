@@ -110,7 +110,23 @@ TRXReader::insertLemma(int const base, wstring const &lemma)
   {
     for(unsigned int i = 0, limit = lemma.size();  i != limit; i++)
     {
-      retval = td.getTransducer().insertSingleTransduction(int(lemma[i]), retval);
+      if(lemma[i] == L'\\')
+      {
+        retval = td.getTransducer().insertSingleTransduction(L'\\', retval);
+	i++;
+        retval = td.getTransducer().insertSingleTransduction(int(lemma[i]), 
+							     retval);
+      }
+      else if(lemma[i] == L'*')
+      {
+	retval = td.getTransducer().insertSingleTransduction(any_char, retval);
+	td.getTransducer().linkStates(retval, retval, any_char);
+      }
+      else
+      {
+	retval = td.getTransducer().insertSingleTransduction(int(lemma[i]), 
+							     retval);
+      }
     }
   }
   
