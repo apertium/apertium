@@ -376,7 +376,7 @@ man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
          apertium-validate-transfer.1 apertium-gen-modes.1 apertium-interchunk.1 \
          apertium-postchunk.1 apertium-validate-interchunk.1 \
          apertium-validate-postchunk.1 apertium-validate-modes.1 apertium-tagger-apply-new-rules.1 \
-	 apertium-validate-acx.1
+	 apertium-validate-acx.1 apertium-multiple-translations.1
          ###apertium-lextor-eval.1 
 
 EXTRA_DIST = gen-header.sh deformat-header.sh \

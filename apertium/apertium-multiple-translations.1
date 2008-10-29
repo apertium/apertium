@@ -1,0 +1,44 @@
+.TH apertium-multiple-translations 1 2006-03-08 "" ""
+.SH NAME
+apertium-multiple-translations \- This application is part of (
+.B apertium
+)
+.PP
+This tool is part of the apertium open-source machine translation
+toolbox: \fBhttp://www.apertium.org\fR.
+.SH SYNOPSIS
+.B apertium-multiple-translations
+preproc biltrans [input [output]]
+.SH DESCRIPTION
+.BR apertium-multiple-translations 
+is the program that performs the multiplication of the text according to the
+different acceptions of the words in the bilingual dictionary (in a dictionar
+with support for it).  The place to put this program in the modes.xml file is 
+just after apertium-pretransfer.
+.PP
+.RE
+.SH FILES
+These are the four files that can be used with this command:
+.B preproc    
+Result of preprocess trules file
+.PP
+.B biltrans   
+Bilingual letter transducer file
+.PP
+.B infile
+Input file (stdin by default).
+.PP
+.B outfile
+Output file (stdout by default).
+.PP
+.SH SEE ALSO
+.I apertium-transfer\fR(1),
+.I apertium-translator\fR(1),
+.I apertium \fR(1).
+.SH BUGS
+Lots of...lurking in the dark and waiting for you!
+.SH AUTHOR
+Copyright (c) 2005, 2006 Universitat d'Alacant / Universidad de Alicante.
+This is free software.  You may redistribute copies of it under the terms
+of the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.
+
