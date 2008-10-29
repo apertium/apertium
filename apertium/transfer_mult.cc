@@ -254,7 +254,11 @@ TransferMult::transfer(FILE *in, FILE *out)
 	  pair<wstring, int> tr = fstp.biltransWithQueue(*tmpword[0], false);
 	  if(tr.first.size() != 0)
 	  {
-	    vector<wstring> multiword = acceptions(tr.first);	    
+	    vector<wstring> multiword = acceptions(tr.first);
+	    if(multiword.size() > 1)
+	    {
+	      fputws_unlocked(L"[{]", output);
+	    }	    
 	    for(unsigned int i = 0, limit = multiword.size(); i != limit; i++)
 	    {
 	      if(i > 0)
@@ -265,6 +269,10 @@ TransferMult::transfer(FILE *in, FILE *out)
 	      fputws_unlocked(multiword[i].c_str(), output);
 	      fputwc_unlocked(L'$', output);
 	    }
+	    if(multiword.size() > 1)
+	    {
+	      fputws_unlocked(L".[][}]", output);
+            }
 	  }
 	  tmpword.clear();
 	  isRule = false;
@@ -300,7 +308,7 @@ TransferMult::transfer(FILE *in, FILE *out)
 	break;
 
       case tt_blank:
-	ms.step(' ');
+	ms.step(L' ');
 	tmpblank.push_back(&current.getContent());
 	break;
 
@@ -335,16 +343,11 @@ TransferMult::acceptions(wstring str)
 {
   vector<wstring> result;
   int low = 0;
-  
-  // removing '@'
-  
+
+  // removing '@'  
   if(str[0] == L'@')
   {
     str = str.substr(1);
-  }
-  else if(str.substr(0,2) == L"^@")
-  {
-    str = L"^" + str.substr(2);
   }
   
   for(unsigned int i = 0, limit = str.size(); i != limit; i++)
@@ -433,7 +436,8 @@ TransferMult::applyRule()
   list<wstring> blanks;
   list<vector<wstring> > words;  
 
-  words.push_back(acceptions(fstp.biltransWithQueue(*tmpword[0], false).first));
+  pair<wstring, int> tr = fstp.biltransWithQueue(*tmpword[0], false);
+  words.push_back(acceptions(tr.first));
   
   for(unsigned int i = 1; i != numwords; i++)
   {
