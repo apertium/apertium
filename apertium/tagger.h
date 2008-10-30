@@ -47,7 +47,7 @@ private:
   int nit;
   string name;
   bool debug;
-
+  
   bool showSF; // show superficial forms
   void setShowSF(bool val);
   bool getShowSF();

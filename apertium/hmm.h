@@ -55,7 +55,7 @@ private:
    TTag eos; // end-of-sentence tag
    bool debug;  //If true, print error messages when tagging input text
    bool show_sf;  //If true, print superficial forms when tagging input text
-
+   
    /** It allocs memory for the transition (a) and the emission (b) matrices.
     *  Before calling this method the number of ambiguity classes must be known.
     *  This methos is called within read_ambiguity_classes and read_dictionary.

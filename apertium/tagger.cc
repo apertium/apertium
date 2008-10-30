@@ -26,6 +26,7 @@
 #include <apertium/hmm.h>
 #include <apertium/tagger_utils.h>
 #include <apertium/tsx_reader.h>
+#include <apertium/tagger_word.h>
 
 #include <cstdio>
 #include <fstream>
@@ -77,18 +78,23 @@ Tagger::getMode(int argc, char *argv[])
       {"first",      no_argument,       0, 'f'},
       {"help",       no_argument,       0, 'h'}, 
       {"debug",      no_argument,       0, 'd'}, 
+      {"mark",       no_argument,       0, 'm'},
       {0, 0, 0, 0}
     };
 
-    c=getopt_long(argc, argv, "dt:s:r:gpefh",long_options, &option_index);
+    c=getopt_long(argc, argv, "mdt:s:r:gpefh",long_options, &option_index);
 #else
-    c=getopt(argc, argv, "dt:s:r:gpefh");
+    c=getopt(argc, argv, "mdt:s:r:gpefh");
 #endif
     if (c==-1)
       break;
       
     switch (c)
     {
+      case 'm':
+	TaggerWord::generate_marks = true;
+        break;
+        
       case 'd':
         debug=true;
         break;
@@ -319,7 +325,7 @@ Tagger::tagger(bool mode_first)
   HMM hmm(&td);
 
   hmm.set_show_sf(showSF);
-  
+
   if(filenames.size() == 1)
   {
     hmm.tagger(stdin, stdout, mode_first);
@@ -528,9 +534,10 @@ Tagger::help()
   out << "  -p, --show-superficial: " << endl;
   out << "                       show superficial forms in the output stream" << endl;
   out << "  -f, --first:         used if conjuntion with -g (--tagger) makes the tagger"<< endl;
-  out << "                       to give all lexical forms of each word, being the choosen" << endl;
+  out << "                       to give all lexical forms of each word, being the chosen" << endl;
   out << "                       one in the first place (after the lemma)"<<endl;
   out << "  -d, --debug:         print error mesages when tagging input text" << endl;
+  out << "  -m, --mark:          generate marks of solved ambiguities" << endl;
   out << endl;
   out << "And FILES are:" << endl;          
   out << "  DIC:         full expanded dictionary file" << endl;

@@ -23,6 +23,8 @@
 
 using namespace Apertium;
 
+bool TaggerWord::generate_marks=false;
+
 vector<wstring> TaggerWord::array_tags;
 
 bool TaggerWord::show_ingnored_string=true;
@@ -123,6 +125,12 @@ TaggerWord::get_tags() {
   return tags;
 }
 
+bool
+TaggerWord::isAmbiguous() const
+{
+  return tags.size() > 1;
+}
+
 wstring
 TaggerWord::get_string_tags() {
   wstring st;
@@ -150,7 +158,15 @@ TaggerWord::get_lexical_form(TTag &t, int const TAG_kEOF) {
     return ret;
 
   if (!previous_plus_cut){
-    ret+=L'^'; 
+    if(TaggerWord::generate_marks && isAmbiguous())
+    {
+      ret.append(L"^=");
+    }
+    else
+    {
+      ret += L'^';
+    }
+
     if(get_show_sf()){   // append the superficial form
       ret.append(superficial_form);
       ret+=L'/'; 
@@ -191,7 +207,7 @@ TaggerWord::get_lexical_form(TTag &t, int const TAG_kEOF) {
 }
 
 wstring 
-TaggerWord::get_all_choosen_tag_first(TTag &t, int const TAG_kEOF) {
+TaggerWord::get_all_chosen_tag_first(TTag &t, int const TAG_kEOF) {
   wstring ret=L"";
 
   if (show_ingnored_string)
@@ -201,7 +217,16 @@ TaggerWord::get_all_choosen_tag_first(TTag &t, int const TAG_kEOF) {
     return ret;
  
   if (!previous_plus_cut)
-    ret+=L"^";
+  {
+    if(TaggerWord::generate_marks && isAmbiguous())
+    {
+      ret.append(L"^=");
+    }
+    else
+    {
+      ret += L'^';
+    }
+  }
  
   ret.append(superficial_form);
  

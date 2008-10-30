@@ -796,7 +796,7 @@ HMM::tagger(FILE *in, FILE *out, bool show_all_good_first) {
       }
       for (unsigned t=0; t<best[nwpend%2][tag].size(); t++) {
 	if (show_all_good_first) {
-	  wstring const &micad = wpend[t].get_all_choosen_tag_first(best[nwpend%2][tag][t], (td->getTagIndex())[L"TAG_kEOF"]);
+	  wstring const &micad = wpend[t].get_all_chosen_tag_first(best[nwpend%2][tag][t], (td->getTagIndex())[L"TAG_kEOF"]);
 	  fputws_unlocked(micad.c_str(), out); 
 	} else {
 	  // print out

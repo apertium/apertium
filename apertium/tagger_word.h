@@ -56,6 +56,7 @@ private:
 
   bool match(wstring const &s, wstring const &pattern);
 public:
+  static bool generate_marks;
   static vector<wstring> array_tags;
 
   static bool show_ingnored_string;
@@ -106,7 +107,7 @@ public:
    */
   virtual wstring get_lexical_form(TTag &t, int const TAG_kEOF); 
 
-  wstring get_all_choosen_tag_first(TTag &t, int const TAG_kEOF);
+  wstring get_all_chosen_tag_first(TTag &t, int const TAG_kEOF);
   
   /** Get the lexical form (fine tag) for a given tag (coarse one)
    *  @param  t the tag
@@ -143,6 +144,9 @@ public:
   void print();
   
   void outputOriginal(FILE *output);
+  
+  bool isAmbiguous() const;  // CAUTION: unknown words are not considered to 
+                             // be ambiguous by this method
 };
 
 #endif
