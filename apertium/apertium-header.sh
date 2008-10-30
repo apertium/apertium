@@ -7,6 +7,7 @@ message ()
   echo "USAGE: $(basename $0) [-d datadir] [-f format] [-u] <translation> [in [out]]"
   echo " -d datadir       directory of linguistic data"
   echo " -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx"
+  echo " -a               display ambiguity"
   echo " -u               don't display marks '*' for unknown words" 
   echo " translation      typically, LANG1-LANG2, but see modes.xml in language data"
   echo " in               input file (stdin by default)"
@@ -55,8 +56,8 @@ translate_odt ()
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
   $APERTIUM_PATH/apertium-desodt |\
   if [ ! -x $DATOS/modes/$PREFIJO.mode ]
-  then sh $DATOS/modes/$PREFIJO.mode $OPTION
-  else $DATOS/modes/$PREFIJO.mode $OPTION
+  then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
+  else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
   fi | \
   $APERTIUM_PATH/apertium-reodt|\
   awk '{punto = index($0, "<?"); cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("\?> ", "?>\n", cola); print cola > name;}'
@@ -107,8 +108,8 @@ translate_docx ()
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
   $APERTIUM_PATH/apertium-deswxml |\
   if [ ! -x $DATOS/modes/$PREFIJO.mode ]
-  then sh $DATOS/modes/$PREFIJO.mode $OPTION
-  else $DATOS/modes/$PREFIJO.mode $OPTION
+  then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
+  else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
   fi | \
   $APERTIUM_PATH/apertium-rewxml|\
   awk '{punto = index($0, "<?"); cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("\?> ", "?>\n", cola); print cola > name;}'
@@ -147,8 +148,8 @@ translate_xlsx ()
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
   $APERTIUM_PATH/apertium-desxlsx |\
   if [ ! -x $DATOS/modes/$PREFIJO.mode ]
-  then sh $DATOS/modes/$PREFIJO.mode $OPTION
-  else $DATOS/modes/$PREFIJO.mode $OPTION
+  then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
+  else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
   fi | \
   $APERTIUM_PATH/apertium-rexlsx|\
   awk '{punto = index($0, "<?"); cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("?> ", "?>\n", cola); print cola > name;}'
@@ -169,7 +170,7 @@ translate_xlsx ()
 }
 
 
-ARGS=$(getopt "uhf:d:" $*)
+ARGS=$(getopt "uahf:d:" $*)
 set -- $ARGS
 for i
 do
@@ -177,6 +178,7 @@ do
     -f) shift; FORMAT=$1; shift;;
     -d) shift; DIRECTORY=$1; shift;;
     -u) UWORDS="no"; shift;;
+    -a) OPTION_TAGGER="-m" shift;;
     -h) message;;
     --) shift; break;;
   esac
@@ -343,8 +345,8 @@ fi
 
 $APERTIUM_PATH/apertium-des$FORMATADOR $FICHERO | \
 if [ ! -x $DATOS/modes/$PREFIJO.mode ]
-then sh $DATOS/modes/$PREFIJO.mode $OPTION
-else $DATOS/modes/$PREFIJO.mode $OPTION
+then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
+else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
 fi | \
 if [ x$SALIDA = x ]
 then $APERTIUM_PATH/apertium-re$FORMATADOR 
