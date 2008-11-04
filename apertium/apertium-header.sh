@@ -60,7 +60,7 @@ translate_odt ()
   else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
   fi | \
   $APERTIUM_PATH/apertium-reodt|\
-  awk '{punto = index($0, "<?"); cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("\?> ", "?>\n", cola); print cola > name;}'
+  awk '{punto = index($0, "<?"); cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("[?]> ", "?>\n", cola); print cola > name;}'
   VUELVE=$(pwd)
   cd $INPUT_TMPDIR
   zip -q -r $OTRASALIDA .
@@ -112,7 +112,7 @@ translate_docx ()
   else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
   fi | \
   $APERTIUM_PATH/apertium-rewxml|\
-  awk '{punto = index($0, "<?"); cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("\?> ", "?>\n", cola); print cola > name;}'
+  awk '{punto = index($0, "<?"); cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("[?]> ", "?>\n", cola); print cola > name;}'
   VUELVE=$(pwd)
   cd $INPUT_TMPDIR
   zip -q -r $OTRASALIDA .
@@ -152,7 +152,7 @@ translate_xlsx ()
   else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
   fi | \
   $APERTIUM_PATH/apertium-rexlsx|\
-  awk '{punto = index($0, "<?"); cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("?> ", "?>\n", cola); print cola > name;}'
+  awk '{punto = index($0, "<?"); cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("[?]> ", "?>\n", cola); print cola > name;}'
   VUELVE=$(pwd)
   cd $INPUT_TMPDIR
   zip -q -r $OTRASALIDA .
