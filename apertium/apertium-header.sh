@@ -63,6 +63,7 @@ translate_odt ()
   awk '{punto = index($0, "<?"); cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("[?]> ", "?>\n", cola); print cola > name;}'
   VUELVE=$(pwd)
   cd $INPUT_TMPDIR
+  rm -Rf ObjectReplacements
   zip -q -r $OTRASALIDA .
   cd $VUELVE
   rm -Rf $INPUT_TMPDIR
