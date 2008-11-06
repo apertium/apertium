@@ -6,7 +6,7 @@ message ()
 {
   echo "USAGE: $(basename $0) [-d datadir] [-f format] [-u] <translation> [in [out]]"
   echo " -d datadir       directory of linguistic data"
-  echo " -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx"
+  echo " -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx, pptx"
   echo " -a               display ambiguity"
   echo " -u               don't display marks '*' for unknown words" 
   echo " translation      typically, LANG1-LANG2, but see modes.xml in language data"
@@ -130,6 +130,59 @@ translate_docx ()
   fi
 }
 
+translate_pptx ()
+{
+  INPUT_TMPDIR=/tmp/$$docxdir
+
+  locale_utf8
+  test_zip
+  
+  if [[ $FICHERO = "" ]]
+  then FICHERO=/tmp/$$docxorig
+       cat > $FICHERO
+       BORRAFICHERO="true"
+  fi
+  OTRASALIDA=/tmp/$$docxsalida.zip
+  
+  if [[ $UWORDS = "no" ]]
+  then OPCIONU="-u";
+  else OPCIONU="";
+  fi
+  
+  unzip -q -o -d $INPUT_TMPDIR $FICHERO
+  
+  for i in $(find $INPUT_TMPDIR|grep "xlsx$");
+  do $APERTIUM_PATH/apertium -f xlsx -d $DIRECTORY $OPCIONU $PREFIJO <$i >/tmp/$$xlsxembed;
+     mv /tmp/$$xlsxembed $i;
+  done;
+  
+  find $INPUT_TMPDIR | grep "xml$" |\
+  grep "slides\/slide" |\
+  awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
+  $APERTIUM_PATH/apertium-despptx |\
+  if [ ! -x $DATOS/modes/$PREFIJO.mode ]
+  then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
+  else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
+  fi | \
+  $APERTIUM_PATH/apertium-repptx |\
+  awk '{punto = index($0, "<?"); cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("[?]> ", "?>\n", cola); print cola > name;}'
+  VUELVE=$(pwd)
+  cd $INPUT_TMPDIR
+  zip -q -r $OTRASALIDA .
+  cd $VUELVE
+  rm -Rf $INPUT_TMPDIR
+
+  if [[ $BORRAFICHERO = "true" ]]
+  then rm -Rf $FICHERO;
+  fi
+  if [[ $SALIDA = "" ]]
+  then cat $OTRASALIDA;
+       rm -Rf $OTRASALIDA
+  else mv $OTRASALIDA $SALIDA
+  fi
+}
+
+
 translate_xlsx ()
 {
   INPUT_TMPDIR=/tmp/$$xlsxdir
@@ -152,7 +205,7 @@ translate_xlsx ()
   then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
   else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
   fi | \
-  $APERTIUM_PATH/apertium-rexlsx|\
+  $APERTIUM_PATH/apertium-rexlsx |\
   awk '{punto = index($0, "<?"); cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("[?]> ", "?>\n", cola); print cola > name;}'
   VUELVE=$(pwd)
   cd $INPUT_TMPDIR
@@ -279,7 +332,13 @@ case "$FORMATADOR" in
 		translate_xlsx
 		exit 0
 		;;
-		
+	pptx)
+		if [[ $UWORDS = "no" ]]; then OPTION="-n"; 
+		else OPTION="-g";
+		fi;
+		translate_pptx
+		exit 0
+		;;
 		
 	wxml)
 		if [[ $UWORDS = "no" ]]; then OPTION="-n";
@@ -324,7 +383,12 @@ case "$FORMATADOR" in
                 translate_xlsx
                 exit 0
                 ;;
-        
+
+        pptxu)
+                OPTION="-n"
+                translate_pptx
+                exit 0
+                ;;
         
         wxmlu)
 		OPTION="-n";

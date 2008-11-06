@@ -37,6 +37,7 @@ bin_PROGRAMS = apertium-pretransfer apertium-destxt apertium-retxt \
                apertium-desrtf apertium-rertf \
                apertium-deswxml apertium-rewxml \
                apertium-desxlsx apertium-rexlsx \
+               apertium-despptx apertium-repptx \
                apertium-tagger \
                apertium-preprocess-transfer apertium-transfer \
                apertium-filter-ambiguity apertium-lextor \
@@ -79,6 +80,8 @@ apertium_deswxml_SOURCES = apertium_deswxml.cc
 apertium_rewxml_SOURCES = apertium_rewxml.cc
 apertium_desxlsx_SOURCES = apertium_desxlsx.cc
 apertium_rexlsx_SOURCES = apertium_rexlsx.cc
+apertium_despptx_SOURCES = apertium_despptx.cc
+apertium_repptx_SOURCES = apertium_repptx.cc
 
 apertium_tagger_SOURCES = apertium_tagger.cc
 apertium_tagger_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
@@ -126,6 +129,7 @@ CLEANFILES = *~ apertium_destxt.cc apertium_retxt.cc apertium_deshtml.cc \
              apertium_rehtml.cc apertium_desrtf.cc apertium_rertf.cc \
              apertium_deswxml.cc apertium_rewxml.cc \
              apertium_desxlsx.cc apertium_rexlsx.cc \
+             apertium_despptx.cc apertium_repptx.cc \
              apertium_desodt.cc apertium_reodt.cc \
              $(GENERATEDSCRIPTS)
 
@@ -186,6 +190,16 @@ apertium_desxlsx.cc: xlsx-format.xml Makefile.am deformat.xsl
 
 apertium_rexlsx.cc: xlsx-format.xml Makefile.am reformat.xsl
 	$(XSLTPROC) reformat.xsl xlsx-format.xml >$@tmp
+	$(FLEX) -Cfer -o $@ $@tmp
+	rm $@tmp
+
+apertium_despptx.cc: pptx-format.xml Makefile.am deformat.xsl
+	$(XSLTPROC) deformat.xsl pptx-format.xml >$@tmp
+	$(FLEX) -Cfer -o $@ $@tmp
+	rm $@tmp
+
+apertium_repptx.cc: pptx-format.xml Makefile.am reformat.xsl
+	$(XSLTPROC) reformat.xsl pptx-format.xml >$@tmp
 	$(FLEX) -Cfer -o $@ $@tmp
 	rm $@tmp
 
@@ -366,6 +380,7 @@ man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
          apertium-desodt.1 apertium-reodt.1 \
          apertium-deswxml.1 apertium-rewxml.1 \
          apertium-desxlsx.1 apertium-rexlsx.1 \
+         apertium-despptx.1 apertium-repptx.1 \
          apertium-filter-ambiguity.1 apertium-gen-deformat.1 apertium-gen-lextorbil.1 \
          apertium-gen-lextormono.1 apertium-gen-reformat.1 apertium-gen-stopwords-lextor.1 \
          apertium-gen-wlist-lextor.1 apertium-gen-wlist-lextor-translation.1 \
@@ -382,7 +397,7 @@ man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
 EXTRA_DIST = gen-header.sh deformat-header.sh \
              reformat.xsl deformat.xsl new2old.xsl lexchoice.xsl lexchoicebil.xsl \
              tagger.dtd transfer.dtd format.dtd dix.dtd txt-format.xml \
-             html-format.xml odt-format.xml rtf-format.xml wxml-format.xml xlsx-format.xml trans-header.sh apertium-header.sh $(man_MANS) \
+             html-format.xml odt-format.xml rtf-format.xml wxml-format.xml xlsx-format.xml pptx-format.xml trans-header.sh apertium-header.sh $(man_MANS) \
              validate-header.sh transformdic-header.sh transformdicbil-header.sh \
              gen-wlist-lextor-header.sh gen-stopwords-lextor.sh preprocess-corpus-lextor.sh \
              interchunk.dtd postchunk.dtd modes.dtd acx.rng \
