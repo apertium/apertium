@@ -31,6 +31,10 @@ GENERATEDSCRIPTS = apertium-gen-deformat apertium-gen-reformat \
                    apertium-validate-postchunk apertium \
                    apertium-gen-modes apertium-validate-acx
 
+lib_LTLIBRARIES = libapertium3.la
+libapertium3_la_SOURCES = $(h_sources) $(cc_sources)
+libapertium3_la_LDFLAGS = -version-info $(GENERIC_LIBRARY_VERSION) -release $(GENERIC_RELEASE)
+
 bin_PROGRAMS = apertium-pretransfer apertium-destxt apertium-retxt \
                apertium-deshtml apertium-rehtml \
                apertium-desodt apertium-reodt \
@@ -50,10 +54,6 @@ bin_PROGRAMS = apertium-pretransfer apertium-destxt apertium-retxt \
 bin_SCRIPTS =  $(GENERATEDSCRIPTS)
 
 instdir = apertium
-
-lib_LTLIBRARIES = libapertium3.la
-libapertium3_la_SOURCES = $(h_sources) $(cc_sources)
-libapertium3_la_LDFLAGS = -version-info $(GENERIC_LIBRARY_VERSION) -release $(GENERIC_RELEASE)
 
 apertiumdir = $(prefix)/share/apertium
 apertiuminclude = $(prefix)/include/apertium-$(GENERIC_API_VERSION)
