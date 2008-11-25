@@ -28,6 +28,11 @@
 #include <apertium/unlocked_cstdio.h>
 #include <lttoolbox/compression.h>
 
+#ifdef WIN32
+#define isnan(n) _isnan(n)
+#define isinf(n) (!_finite(n))
+#endif
+
 #include <stdio.h>
 #include <unistd.h>
 #include <vector>
