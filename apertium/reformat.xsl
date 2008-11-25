@@ -36,6 +36,10 @@
 #include &lt;lttoolbox/lt_locale.h&gt;
 #include &lt;lttoolbox/ltstr.h&gt;
 #include &lt;wchar.h&gt;
+#ifdef WIN32
+#include &lt;io.h&gt;
+#include &lt;fcntl.h&gt;
+#endif
 
 using namespace std;
 
@@ -105,6 +109,9 @@ wstring convertir(char const *multibyte, int const length)
   filename = filename.substr(2, filename.size()-3);
   FILE *temp = fopen(filename.c_str(), "r");
   wint_t mychar;
+#ifdef WIN32
+  _setmode(_fileno(temp), _O_U8TEXT);
+#endif
 
   if(!temp)
   {
@@ -203,6 +210,10 @@ int main(int argc, char *argv[])
     default:
       break;
   }
+#ifdef WIN32
+  _setmode(_fileno(yyin), _O_U8TEXT);
+  _setmode(_fileno(yyout), _O_U8TEXT);
+#endif 
 
 <xsl:for-each select="./rules/replacement-rule">
   <xsl:value-of select="string('  S')"/>
