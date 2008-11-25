@@ -251,7 +251,7 @@ int main(int argc, char* argv[]) {
       exit(EXIT_FAILURE);
     }
     if (nwords_model==0) {
-      wcerr<<L"Error: the number of word per co-occurrence model must be grater than 0\n";
+      wcerr<<L"Error: the number of word per co-occurrence model must be greater than 0\n";
       help(argv[0]);
       exit(EXIT_FAILURE);
     }
@@ -261,7 +261,7 @@ int main(int argc, char* argv[]) {
       exit(EXIT_FAILURE);
     }
     if (nwords_right<0) {
-      wcerr<<L"Error: no rigth-side context number of words was provided\n";
+      wcerr<<L"Error: no right-side context number of words was provided\n";
       help(argv[0]);
       exit(EXIT_FAILURE);
     }
