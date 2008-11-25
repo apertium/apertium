@@ -67,7 +67,7 @@ Collection::write(FILE *output)
   for(int i = 0, limit = element.size(); i != limit; i++)
   {
     Compression::multibyte_write(element[i]->size(), output);
-    for(set<int>::iterator it = element[i]->begin(), 
+    for(set<int>::const_iterator it = element[i]->begin(), 
 	  limit2 = element[i]->end(); it != limit2; it++)
     {
       Compression::multibyte_write(*it, output);
