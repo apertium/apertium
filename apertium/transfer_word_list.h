@@ -22,6 +22,9 @@
 #include <cstring>
 #include <set>
 #include <string>
+#ifdef WIN32
+#define strcasecmp _stricmp
+#endif
 
 using namespace std;
 
