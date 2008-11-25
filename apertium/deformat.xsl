@@ -137,6 +137,10 @@
 #include &lt;lttoolbox/lt_locale.h&gt;
 #include &lt;lttoolbox/ltstr.h&gt;
 #include &lt;apertium/unlocked_cstdio.h&gt;
+#ifdef WIN32
+#include &lt;io.h&gt;
+#include &lt;fcntl.h&gt;
+#endif
 
 using namespace std;
 
@@ -725,6 +729,10 @@ int main(int argc, char *argv[])
   }
   </xsl:otherwise>
 </xsl:choose>
+#ifdef WIN32
+  _setmode(_fileno(yyin), _O_U8TEXT);
+  _setmode(_fileno(yyout), _O_U8TEXT);
+#endif 
   // prevent warning message
   yy_push_state(1);
   yy_top_state();
