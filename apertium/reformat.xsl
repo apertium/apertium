@@ -73,7 +73,7 @@ wstring convertir(char const *multibyte, int const length)
 {
   memconv.append(multibyte, length); 
   int tam = memconv.size();
-  wchar_t retval[tam];
+  wchar_t *retval = new wchar_t[tam];
   size_t l = mbstowcs(retval, memconv.c_str(), tam);
 
   if(l == ((size_t) -1))
@@ -88,7 +88,9 @@ wstring convertir(char const *multibyte, int const length)
   {
     memconv = "";
     retval[l] = 0;
-    return retval;
+	wstring ret = retval;
+	delete[] retval;
+    return ret;
   }
 }
 
