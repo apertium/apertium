@@ -20,6 +20,9 @@
 
 #include <stdio.h>
 #include <apertium/string_utils.h>
+#ifdef WIN32
+#define wcstok wcstok_s
+#endif
 
 using namespace Apertium;
 
