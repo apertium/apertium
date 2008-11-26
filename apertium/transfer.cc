@@ -1767,11 +1767,11 @@ Transfer::transfer(FILE *in, FILE *out)
             {
               if(tr.first[0] == '*')
               {
-                fputws_unlocked(L"^unknown{^", output);
+                fputws_unlocked(L"^unknown<unknown>{^", output);
               }
               else
               {                
-	        fputws_unlocked(L"^default{^", output);
+	        fputws_unlocked(L"^default<default>{^", output);
               }	        
 	      fputws_unlocked(tr.first.c_str(), output);
 	      fputws_unlocked(L"$}$", output);
