@@ -132,7 +132,7 @@
 #include &lt;iostream&gt;
 #include &lt;map&gt;
 #include &lt;vector&gt;
-#include &lt;pcreposix.h&gt;
+#include &lt;regex.h&gt;
 #include &lt;string&gt;
 #include &lt;lttoolbox/lt_locale.h&gt;
 #include &lt;lttoolbox/ltstr.h&gt;
