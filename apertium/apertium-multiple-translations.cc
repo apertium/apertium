@@ -26,6 +26,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#ifdef WIN32
+#include <io.h>
+#include <fcntl.h>
+#endif
 
 using namespace std;
 
@@ -79,6 +83,10 @@ int main(int argc, char *argv[])
       }
     }
   }
+#ifdef WIN32
+  _setmode(_fileno(input), _O_U8TEXT);
+  _setmode(_fileno(output), _O_U8TEXT);
+#endif 
 
   TransferMult t;
   t.read(argv[1], argv[2]);

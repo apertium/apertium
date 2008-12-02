@@ -29,6 +29,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <libgen.h>
+#ifdef WIN32
+#include <io.h>
+#include <fcntl.h>
+#endif
 
 using namespace Apertium;
 using namespace std;
@@ -51,7 +55,10 @@ FILE * open_file(char const *filename, char const *mode)
     cerr << "Can't open '" << filename << "'" << endl;
     exit(EXIT_FAILURE);
   }
-  
+#ifdef WIN32
+  _setmode(_fileno(retval), _O_U8TEXT);
+#endif   
+
   return retval;
 }
 
