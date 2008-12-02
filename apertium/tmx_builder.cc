@@ -28,6 +28,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <apertium/string_utils.h>
+#ifdef WIN32
+#include <io.h>
+#include <fcntl.h>
+#endif
 
 using namespace Apertium;
 TMXBuilder::TMXBuilder(wstring const &l1, wstring const &l2)
@@ -270,7 +274,10 @@ TMXBuilder::generate(string const &file1, string const &file2,
       exit(EXIT_FAILURE);
     }
   }
-  
+#ifdef WIN32
+  _setmode(_fileno(output), _O_U8TEXT);
+#endif
+
   // Generate the TMX in UTF-8
   
   fprintf(output, "<?xml version=\"1.0\"?>\n");
@@ -294,6 +301,11 @@ TMXBuilder::generate(string const &file1, string const &file2,
     wcerr << L"' cannot be opened for reading" << endl;
     exit(EXIT_FAILURE);
   }
+
+#ifdef WIN32
+  _setmode(_fileno(f1), _O_U8TEXT);
+  _setmode(_fileno(f2), _O_U8TEXT);
+#endif   
 
   set<wstring, Ltstr> storage;
   

@@ -38,6 +38,10 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <apertium/string_utils.h>
+#ifdef WIN32
+#include <io.h>
+#include <fcntl.h>
+#endif
 
 using namespace Apertium;
 using namespace std;
@@ -336,6 +340,9 @@ Tagger::tagger(bool mode_first)
     if (!finput) {
       filerror(filenames[1]);
     }
+#ifdef WIN32
+	_setmode(_fileno(finput), _O_U8TEXT);
+#endif
     if(filenames.size() == 2)
     {
       hmm.tagger(finput, stdout, mode_first);
@@ -346,6 +353,9 @@ Tagger::tagger(bool mode_first)
       if (!foutput) {
         filerror(filenames[2]);
       }
+#ifdef WIN32
+	  _setmode(_fileno(foutput), _O_U8TEXT);
+#endif
 
       hmm.tagger(finput, foutput, mode_first);
       fclose(foutput);
