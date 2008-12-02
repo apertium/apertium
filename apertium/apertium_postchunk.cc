@@ -26,6 +26,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <apertium/string_utils.h>
+#ifdef WIN32
+#include <io.h>
+#include <fcntl.h>
+#endif
 
 using namespace Apertium;
 using namespace std;
@@ -80,6 +84,11 @@ int main(int argc, char *argv[])
       }
     }
   }
+
+#ifdef WIN32
+  _setmode(_fileno(input), _O_U8TEXT);
+  _setmode(_fileno(output), _O_U8TEXT);
+#endif 
 
   Postchunk p;
   p.read(argv[1], argv[2]);
