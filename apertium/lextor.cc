@@ -862,7 +862,7 @@ LexTor::estimate_winner_lch_cosine(deque<LexTorWord>& window, int word_index, do
 int 
 LexTor::estimate_winner_lch_votingtl(deque<LexTorWord>& window, int word_index, double weigth_exponent) {
   if (tlmodel==NULL) {
-    wcerr<<L"Error in LexTor::estimate_winner_lch_votingtl: you must call LexTor::set_tlmodel before.\n";
+    wcerr<<L"Error in LexTor::estimate_winner_lch_votingtl: you must call LexTor::set_tlmodel first.\n";
     exit(EXIT_FAILURE);
   }  
 
@@ -1017,8 +1017,8 @@ LexTor::cosine(map<wstring, double>& vcontext, const wstring& reduced_lexchoice)
   double module_lexchoice_vector=lextor_data->get_module_lexchoice_vector(reduced_lexchoice);
 
   if (module_vcontext==0) { 
-    wcerr<<L"Error in LexTor::vectors_cosine: module_vcontext is equal zero.\n"
-	<<L"The cosine cannot be compute\n";
+    wcerr<<L"Error in LexTor::vectors_cosine: module_vcontext is equal to zero.\n"
+	<<L"The cosine cannot be computed\n";
     if (debug) {
       wcerr<<L"CONTEXT VECTOR\n-------------------\n";
       map<wstring, double>::iterator it;
@@ -1032,8 +1032,8 @@ LexTor::cosine(map<wstring, double>& vcontext, const wstring& reduced_lexchoice)
 
   if (module_lexchoice_vector==0) {
     if (debug) {
-      wcerr<<L"Warning in LexTor::vectors_cosine: module_lexchoice_vector is equal zero.\n"
-	  <<L"The cosine cannot be compute\n";
+      wcerr<<L"Warning in LexTor::vectors_cosine: module_lexchoice_vector is equal to zero.\n"
+	  <<L"The cosine cannot be computed\n";
       wcerr<<L"reduced lexical choice: "<<reduced_lexchoice<<L"\n";
     }
     return -2;
