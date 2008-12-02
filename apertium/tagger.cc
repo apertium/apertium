@@ -395,6 +395,9 @@ Tagger::train()
   FILE *fcrp = fopen(filenames[1].c_str(), "r");
   if(fcrp)
   {
+#ifdef WIN32
+    _setmode(_fileno(fcrp), _O_U8TEXT);
+#endif 
     hmm.init_probabilities_kupiec(fcrp);               
   }
   else
@@ -444,6 +447,10 @@ Tagger::trainSupervised()
   FILE *funtagged = fopen(filenames[5].c_str(), "r");
   if(ftagged && funtagged)
   {
+#ifdef WIN32
+    _setmode(_fileno(ftagged), _O_U8TEXT);
+    _setmode(_fileno(funtagged), _O_U8TEXT);
+#endif 
     wcerr << L"Initializing transition and emission probabilities from a hand-tagged corpus...\n";
     hmm.init_probabilities_from_tagged_text(ftagged, funtagged);
   }
@@ -461,6 +468,9 @@ Tagger::trainSupervised()
   FILE *fcrp = fopen(filenames[1].c_str(), "r");
   if(fcrp)
   {
+#ifdef WIN32
+    _setmode(_fileno(fcrp), _O_U8TEXT);
+#endif 
     for(int i=0; i != nit; i++)
     {
       fseek(fcrp, 0, SEEK_SET);
@@ -501,6 +511,9 @@ Tagger::retrain()
   {
     filerror(filenames[0]);
   }
+#ifdef WIN32
+  _setmode(_fileno(fcrp), _O_U8TEXT);
+#endif 
   wcerr << L"Training (Baum-Welch)...\n";
   for(int i=0; i != nit; i++)
   {
