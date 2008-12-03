@@ -20,14 +20,17 @@
 #include <iostream>
 #include <libgen.h>
 #include <string>
+#include <cstdio>
+#include <lttoolbox/lt_locale.h>
 
 #include <apertium/apertium_config.h>
-#include <lttoolbox/lt_locale.h>
 #include <apertium/tmx_builder.h>
 #include <apertium/utf_converter.h>
 #include <apertium/string_utils.h>
+#include <apertium/unlocked_cstdio.h>
 
 using namespace Apertium;
+using namespace std;
 
 void usage(char *progname)
 {

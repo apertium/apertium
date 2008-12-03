@@ -9,6 +9,9 @@ message ()
   echo " -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx, pptx"
   echo " -a               display ambiguity"
   echo " -u               don't display marks '*' for unknown words" 
+  echo " -m memory.tmx    use a translation memory to recycle translations"
+  echo " -o translation   translation direction using the translation memory,"
+  echo "                  by default 'translation' is used instead"
   echo " translation      typically, LANG1-LANG2, but see modes.xml in language data"
   echo " in               input file (stdin by default)"
   echo " out              output file (stdout by default)"
@@ -55,6 +58,10 @@ translate_odt ()
   find $INPUT_TMPDIR | grep content\\\.xml |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
   $APERTIUM_PATH/apertium-desodt |\
+  if [ "$TRANSLATION_MEMORY_FILE" = "" ]; 
+  then cat;  
+  else lt-tmxproc $TMCOMPFILE;
+  fi | \
   if [ ! -x $DATOS/modes/$PREFIJO.mode ]
   then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
   else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
@@ -75,6 +82,10 @@ translate_odt ()
   then cat $OTRASALIDA;
        rm -Rf $OTRASALIDA
   else mv $OTRASALIDA $SALIDA
+  fi
+  
+  if [ "$TRANSLATION_MEMORY_FILE" != "" ];
+  then rm -Rf $TMCOMPFILE
   fi
 }
 
@@ -108,6 +119,10 @@ translate_docx ()
   grep -v -i \\\(settings\\\|theme\\\|styles\\\|font\\\|rels\\\) |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
   $APERTIUM_PATH/apertium-deswxml |\
+  if [ "$TRANSLATION_MEMORY_FILE" = "" ]; 
+  then cat;  
+  else lt-tmxproc $TMCOMPFILE;
+  fi | \
   if [ ! -x $DATOS/modes/$PREFIJO.mode ]
   then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
   else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
@@ -127,6 +142,9 @@ translate_docx ()
   then cat $OTRASALIDA;
        rm -Rf $OTRASALIDA
   else mv $OTRASALIDA $SALIDA
+  fi
+  if [ "$TRANSLATION_MEMORY_FILE" != "" ];
+  then rm -Rf $TMCOMPFILE
   fi
 }
 
@@ -160,6 +178,10 @@ translate_pptx ()
   grep "slides\/slide" |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
   $APERTIUM_PATH/apertium-despptx |\
+  if [ "$TRANSLATION_MEMORY_FILE" = "" ]; 
+  then cat;  
+  else lt-tmxproc $TMCOMPFILE;
+  fi | \
   if [ ! -x $DATOS/modes/$PREFIJO.mode ]
   then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
   else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
@@ -179,6 +201,10 @@ translate_pptx ()
   then cat $OTRASALIDA;
        rm -Rf $OTRASALIDA
   else mv $OTRASALIDA $SALIDA
+  fi
+  
+  if [ "$TRANSLATION_MEMORY_FILE" != "" ];
+  then rm -Rf $TMCOMPFILE
   fi
 }
 
@@ -201,6 +227,10 @@ translate_xlsx ()
   find $INPUT_TMPDIR | grep "sharedStrings.xml" |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
   $APERTIUM_PATH/apertium-desxlsx |\
+  if [ "$TRANSLATION_MEMORY_FILE" = "" ]; 
+  then cat;  
+  else lt-tmxproc $TMCOMPFILE;
+  fi | \
   if [ ! -x $DATOS/modes/$PREFIJO.mode ]
   then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
   else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
@@ -221,16 +251,22 @@ translate_xlsx ()
        rm -Rf $OTRASALIDA
   else mv $OTRASALIDA $SALIDA
   fi
+  
+  if [ "$TRANSLATION_MEMORY_FILE" != "" ];
+  then rm -Rf $TMCOMPFILE
+  fi
 }
 
 
-ARGS=$(getopt "uahf:d:" $*)
+ARGS=$(getopt "uahf:d:m:o:" $*)
 set -- $ARGS
 for i
 do
   case "$i" in 
     -f) shift; FORMAT=$1; shift;;
     -d) shift; DIRECTORY=$1; shift;;
+    -m) shift; TRANSLATION_MEMORY_FILE=$1; shift;;
+    -o) shift; TRANSLATION_MEMORY_DIRECTION=$1 shift;;
     -u) UWORDS="no"; shift;;
     -a) OPTION_TAGGER="-m" shift;;
     -h) message;;
@@ -266,12 +302,23 @@ esac
 
 if [ x$FORMAT = x ]; then FORMAT="txt"; fi
 if [ x$DIRECTORY = x ]; then DIRECTORY=$DEFAULT_DIRECTORY; fi
+if [ x$TRANSLATION_MEMORY_DIRECTION = x ]; then TRANSLATION_MEMORY_DIRECTION=$PAIR; fi
 
 PREFIJO=$PAIR;
 FORMATADOR=$FORMAT;
 DATOS=$DIRECTORY;
 FICHERO=$INPUT_FILE;
 SALIDA=$OUTPUT_FILE;
+TMCOMPFILE="/tmp/$$tm"
+
+if [ "$TRANSLATION_MEMORY_FILE" != "" ]
+then lt-tmxcomp $TRANSLATION_MEMORY_DIRECTION $TRANSLATION_MEMORY_FILE $TMCOMPFILE >/dev/null
+     if [ "$?" != "0" ]
+     then echo "Error: Cannot compile TM '" $TRANSLATION_MEMORY_FILE "'";
+          echo"   hint: use -o parameter";
+          message;
+     fi
+fi
 
 if [ ! -d $DATOS/modes ];
 then echo "Error: Directory '$DATOS/modes' does not exist."
@@ -408,7 +455,13 @@ then
         REF=$FORMATADOR
 fi
 
+
+
 $APERTIUM_PATH/apertium-des$FORMATADOR $FICHERO | \
+if [ "$TRANSLATION_MEMORY_FILE" = "" ]; 
+then cat;  
+else lt-tmxproc $TMCOMPFILE;
+fi | \
 if [ ! -x $DATOS/modes/$PREFIJO.mode ]
 then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
 else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
@@ -417,4 +470,8 @@ if [ x$SALIDA = x ]
 then $APERTIUM_PATH/apertium-re$FORMATADOR 
 else
   $APERTIUM_PATH/apertium-re$FORMATADOR >$SALIDA
+fi
+
+if [ "$TRANSLATION_MEMORY_FILE" != "" ];
+then rm -Rf $TMCOMPFILE
 fi

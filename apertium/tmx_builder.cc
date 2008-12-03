@@ -28,6 +28,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <apertium/string_utils.h>
+#include <apertium/unlocked_cstdio.h>
+
 #ifdef WIN32
 #include <io.h>
 #include <fcntl.h>
@@ -180,7 +182,14 @@ TMXBuilder::nextTU(FILE *input)
     wint_t symbol = fgetwc_unlocked(input);
     if(feof(input))
     {
-      return L"";
+      if(current_tu == L"")
+      {
+        return L"";
+      }
+      else
+      {
+        return current_tu;
+      }
     }
     switch(symbol)
     {
@@ -188,7 +197,14 @@ TMXBuilder::nextTU(FILE *input)
         symbol = fgetwc_unlocked(input);
         if(feof(input))
         {
-          return L"";
+          if(current_tu == L"")
+          {
+            return L"";
+          }
+          else
+          {
+            return current_tu;
+          }
         }
         // continued down
       default:
@@ -197,7 +213,15 @@ TMXBuilder::nextTU(FILE *input)
       
       case L'[':
         tmp = restOfBlank(input);
-        current_tu += L' ';
+        if(tmp.substr(0,2) == L"[ ")
+        {
+          current_tu.append(L" ");
+        }  
+        current_tu.append(L"<ph/>");
+        if(tmp.substr(tmp.size()-2, 2) == L" ]")
+        {
+          current_tu.append(L" ");
+        }   
         break;
       
       case L'.':
@@ -225,7 +249,8 @@ TMXBuilder::nextTU(FILE *input)
         return current_tu;
     }
   }
-  return L"";
+  
+  return current_tu;
 }
 
 wstring
@@ -238,7 +263,16 @@ TMXBuilder::xmlize(wstring const &str)
     switch(str[i])
     {
       case L'<':
-        result.append(L"&lt;");
+        if(i + 5 <= limit && str.substr(i,5)==L"<ph/>")
+        {
+          result.append(L"<ph/>");
+          i += 4;
+          break;
+        }
+        else
+        {
+          result.append(L"&lt;");
+        }
         break;
         
       case L'>':
@@ -255,6 +289,20 @@ TMXBuilder::xmlize(wstring const &str)
     }
   }
   
+  // remove leading <ph/>'s
+  
+  while(result.size() > 5 && result.substr(0,5) == L"<ph/>")
+  {
+    result = result.substr(5);
+  }
+  
+  // remove trailing <ph/>'s
+  
+  while(result.size() > 5 && result.substr(result.size()-5) == L"<ph/>")
+  {
+    result = result.substr(0, result.size()-5);
+  }
+
   return result;
 } 
 
@@ -310,20 +358,22 @@ TMXBuilder::generate(string const &file1, string const &file2,
   set<wstring, Ltstr> storage;
   
   storage.insert(L"|#|");
-  wstring tu1 = StringUtils::trim(nextTU(f1));
-  wstring tu2 = StringUtils::trim(nextTU(f2));
+  wstring tu1 = L""; 
+  wstring tu2 = L""; 
   
-  while(!feof(f1) && !feof(f2))
+  do
   {
-    if(storage.find(tu1 + L"|#|" + tu2) == storage.end())
+    if(tu1 != L"" && tu2 != L"" && 
+       storage.find(tu1 + L"|#|" + tu2) == storage.end())
     { 
       storage.insert(tu1 + L"|#|" + tu2);
-      fprintf(output, "<tu>\n  <tuv xml:lang=\"%s\">%s</tuv>\n", UtfConverter::toUtf8(lang1).c_str(), UtfConverter::toUtf8(xmlize(tu1)).c_str());
-      fprintf(output, "  <tuv xml:lang=\"%s\">%s</tuv>\n</tu>\n", UtfConverter::toUtf8(lang2).c_str(), UtfConverter::toUtf8(xmlize(tu2)).c_str());  
+      fprintf(output, "<tu>\n  <tuv xml:lang=\"%s\"><seg>%s</seg></tuv>\n", UtfConverter::toUtf8(lang1).c_str(), UtfConverter::toUtf8(xmlize(tu1)).c_str());
+      fprintf(output, "  <tuv xml:lang=\"%s\"><seg>%s</seg></tuv>\n</tu>\n", UtfConverter::toUtf8(lang2).c_str(), UtfConverter::toUtf8(xmlize(tu2)).c_str());  
     }
-    tu1 = StringUtils::trim(nextTU(f1));
+    tu1 = StringUtils::trim(nextTU(f1));    
     tu2 = StringUtils::trim(nextTU(f2));
   }
+  while((tu1 != L"" || !feof(f1)) && (tu2 != L"" || !feof(f2)));
 
   fprintf(output, "</body>\n</tmx>\n");
 
