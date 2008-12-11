@@ -28,7 +28,7 @@ GENERATEDSCRIPTS = apertium-gen-deformat apertium-gen-reformat \
                    apertium-preprocess-corpus-lextor \
                    apertium-gen-stopwords-lextor \
                    apertium-validate-interchunk \
-                   apertium-validate-postchunk apertium \
+                   apertium-validate-postchunk apertium apertium-unformat \
                    apertium-gen-modes apertium-validate-acx
 
 lib_LTLIBRARIES = libapertium3.la
@@ -315,6 +315,16 @@ apertium: Makefile.am apertium-header.sh
 	@cat apertium-header.sh >>$@
 	@chmod a+x $@
 
+apertium-unformat: Makefile.am apertium-unformat-header.sh
+	@echo "Creating apertium-unformat script"
+	@echo "#!$(BASH)" > $@
+	@echo "APERTIUM_PATH=\"$(prefix)/bin\"" >>$@
+	@echo "LTTOOLBOX_PATH=\"$(prefix)/bin\"" >>$@
+	@echo "DEFAULT_DIRECTORY=\"$(prefix)/share/apertium\"" >>$@
+	@cat apertium-unformat-header.sh >>$@
+	@chmod a+x $@
+	
+
 #apertium-translator-lextor: Makefile.am trans-lextor-header.sh
 #	@echo "Creating apertium-translator-lextor script"
 #	@echo "#!$(BASH)" > $@
@@ -391,13 +401,14 @@ man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
          apertium-validate-transfer.1 apertium-gen-modes.1 apertium-interchunk.1 \
          apertium-postchunk.1 apertium-validate-interchunk.1 \
          apertium-validate-postchunk.1 apertium-validate-modes.1 apertium-tagger-apply-new-rules.1 \
-	 apertium-validate-acx.1 apertium-multiple-translations.1
+	 apertium-validate-acx.1 apertium-multiple-translations.1 \
+	 apertium-unformat.1
          ###apertium-lextor-eval.1 
 
 EXTRA_DIST = gen-header.sh deformat-header.sh \
              reformat.xsl deformat.xsl new2old.xsl lexchoice.xsl lexchoicebil.xsl \
              tagger.dtd transfer.dtd format.dtd dix.dtd txt-format.xml \
-             html-format.xml odt-format.xml rtf-format.xml wxml-format.xml xlsx-format.xml pptx-format.xml trans-header.sh apertium-header.sh $(man_MANS) \
+             html-format.xml odt-format.xml rtf-format.xml wxml-format.xml xlsx-format.xml pptx-format.xml trans-header.sh apertium-header.sh apertium-unformat-header.sh $(man_MANS) \
              validate-header.sh transformdic-header.sh transformdicbil-header.sh \
              gen-wlist-lextor-header.sh gen-stopwords-lextor.sh preprocess-corpus-lextor.sh \
              interchunk.dtd postchunk.dtd modes.dtd acx.rng \
