@@ -158,7 +158,7 @@ representing a lexical form in the matched pattern
      The otherwise case is also a block of one or more statements 
 -->
 
-<!ELEMENT test (%condition;)+>
+<!ELEMENT test (%condition;)>
 <!-- 
      The test in a tested case may be a conjunction, a disjunction, or
      a negation of simpler tests, as well as a simple equality test
