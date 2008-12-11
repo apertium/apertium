@@ -268,7 +268,7 @@ do
     -m) shift; TRANSLATION_MEMORY_FILE=$1; shift;;
     -o) shift; TRANSLATION_MEMORY_DIRECTION=$1 shift;;
     -u) UWORDS="no"; shift;;
-    -a) OPTION_TAGGER="-m" shift;;
+    -a) OPTION_TAGGER="-m"; shift;;
     -h) message;;
     --) shift; break;;
   esac
