@@ -53,7 +53,7 @@ void help(char *name) {
       <<"      left: left-side context to take into account (number of words)\n"
       <<"      right: right-side context to take into account (number of words)\n"
       <<"   --weightexp|-w: Specify a weight value to change the influence of surrounding words while\n"
-      <<"     performing the lexica selection. It must be positive.\n"
+      <<"     performing the lexical selection. It must be positive.\n"
       <<"   --help|-h: Show this help\n"
       <<"   --version|-v: Show version information\n\n";
 
