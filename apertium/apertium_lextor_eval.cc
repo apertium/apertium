@@ -199,7 +199,7 @@ int main(int argc, char* argv[]) {
       exit(EXIT_FAILURE);
     }
     if (nwords_right<0) {
-      cerr<<"Error: no rigth-side context number of words was provided\n";
+      cerr<<"Error: no right-side context number of words was provided\n";
       help(argv[0]);
       exit(EXIT_FAILURE);
     }
