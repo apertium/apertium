@@ -43,7 +43,7 @@ void help(char *name) {
       <<L"   --wlist|-w: Specifies the list of words to translate.\n"
       <<L"   --help|-h: Show this help\n"
       <<L"   --version|-v: Show version information\n\n"
-      <<L"Write to stadard output all possible translations of words found in wlistfile\n";
+      <<L"Write to standard output all possible translations of words found in wlistfile\n";
 }
 
 int main(int argc, char* argv[]) {
