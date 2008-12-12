@@ -39,7 +39,7 @@ void help(char *name) {
   wcerr<<name<<L" --mono dic.bin --bil bildic.bin --wlist wlistfile\n\n";
   wcerr<<L"ARGUMENTS: \n"
       <<L"   --mono|-m: Specifies the monolingual lexical selection dictionary to use.\n"
-      <<L"   --bil|-b: Specifies the bilingual lexical selection ditionary to use.\n"
+      <<L"   --bil|-b: Specifies the bilingual lexical selection dictionary to use.\n"
       <<L"   --wlist|-w: Specifies the list of words to translate.\n"
       <<L"   --help|-h: Show this help\n"
       <<L"   --version|-v: Show version information\n\n"
