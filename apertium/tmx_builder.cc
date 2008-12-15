@@ -291,18 +291,39 @@ TMXBuilder::xmlize(wstring const &str)
   
   // remove leading <ph/>'s
   
-  while(result.size() > 5 && result.substr(0,5) == L"<ph/>")
+  bool cambio = true;
+  while(cambio == true)
   {
-    result = result.substr(5);
+    cambio = false;
+    while(result.size() >= 5 && result.substr(0,5) == L"<ph/>")
+    {
+      result = result.substr(5);
+      cambio = true;
+    }
+    while(result.size() > 0 && !iswalnum(result[0]) && !iswpunct(result[0]))
+    {
+      result = result.substr(1);
+      cambio = true;
+    }
   }
-  
   // remove trailing <ph/>'s
   
-  while(result.size() > 5 && result.substr(result.size()-5) == L"<ph/>")
+  cambio = true;
+  while(cambio == true)
   {
-    result = result.substr(0, result.size()-5);
+    cambio = false;
+    while(result.size() > 5 && result.substr(result.size()-5) == L"<ph/>")
+    {
+      result = result.substr(0, result.size()-5);
+      cambio = true;
+    }
+    while(result.size() > 0 && !iswalnum(result[result.size()-1]) && !iswpunct(result[result.size()-1]))
+    {
+      result = result.substr(0, result.size()-1);
+      cambio = true;
+    }
   }
-
+  
   return result;
 } 
 
@@ -363,12 +384,15 @@ TMXBuilder::generate(string const &file1, string const &file2,
   
   do
   {
-    if(tu1 != L"" && tu2 != L"" && 
+    tu1 = xmlize(tu1);
+    tu2 = xmlize(tu2);
+    if(tu1 != L"" && tu2 != L"" &&
        storage.find(tu1 + L"|#|" + tu2) == storage.end())
     { 
+    
       storage.insert(tu1 + L"|#|" + tu2);
-      fprintf(output, "<tu>\n  <tuv xml:lang=\"%s\"><seg>%s</seg></tuv>\n", UtfConverter::toUtf8(lang1).c_str(), UtfConverter::toUtf8(xmlize(tu1)).c_str());
-      fprintf(output, "  <tuv xml:lang=\"%s\"><seg>%s</seg></tuv>\n</tu>\n", UtfConverter::toUtf8(lang2).c_str(), UtfConverter::toUtf8(xmlize(tu2)).c_str());  
+      fprintf(output, "<tu>\n  <tuv xml:lang=\"%s\"><seg>%s</seg></tuv>\n", UtfConverter::toUtf8(lang1).c_str(), UtfConverter::toUtf8(tu1).c_str());
+      fprintf(output, "  <tuv xml:lang=\"%s\"><seg>%s</seg></tuv>\n</tu>\n", UtfConverter::toUtf8(lang2).c_str(), UtfConverter::toUtf8(tu2).c_str());  
     }
     tu1 = StringUtils::trim(nextTU(f1));    
     tu2 = StringUtils::trim(nextTU(f2));
