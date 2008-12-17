@@ -383,8 +383,25 @@ TransferMult::acceptions(wstring str)
   {
     result.push_back(otherword);
   }
-  
-  return result;
+
+  // eliminar las acepciones sin sentido marcado
+  if(result.size() >= 2)
+  {
+    vector<wstring> result2;
+    for(unsigned int i = 0, limit = result.size(); i != limit; i++)
+    {
+      if(result[i].find(L"__") != wstring::npos)
+      {
+        result2.push_back(result[i]);
+      }
+    } 
+    
+    return result2;
+  }
+  else
+  {
+    return result;
+  }
 }
 
 void 
