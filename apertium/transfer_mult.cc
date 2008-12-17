@@ -182,7 +182,7 @@ TransferMult::readToken(FILE *in)
   wstring content = L"";
   while(true)
   {
-    int val = fgetc_unlocked(in);
+    int val = fgetwc_unlocked(in);
     if(feof(in))
     {
       return input_buffer.add(TransferToken(content, tt_eof));
@@ -198,12 +198,7 @@ TransferMult::readToken(FILE *in)
       while(true)
       {
 	int val2 = fgetwc_unlocked(in);
-	if(val2 == -1)
-	{
-	  content += L"";
-	  break;
-	}
-	else if(val2 == L'\\')
+	if(val2 == L'\\')
 	{
 	  content += L'\\';
 	  content += wchar_t(fgetwc_unlocked(in));
