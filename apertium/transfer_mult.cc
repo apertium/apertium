@@ -395,13 +395,13 @@ TransferMult::acceptions(wstring str)
         result2.push_back(result[i]);
       }
     } 
-    
-    return result2;
+    if(result2.size() >= 2)
+    {
+      return result2;
+    }
   }
-  else
-  {
-    return result;
-  }
+
+  return result;
 }
 
 void 
