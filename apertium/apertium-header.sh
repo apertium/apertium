@@ -60,7 +60,7 @@ translate_odt ()
   $APERTIUM_PATH/apertium-desodt |\
   if [ "$TRANSLATION_MEMORY_FILE" = "" ]; 
   then cat;  
-  else lt-tmxproc $TMCOMPFILE;
+  else $APERTIUM_PATH/lt-tmxproc $TMCOMPFILE;
   fi | \
   if [ ! -x $DATOS/modes/$PREFIJO.mode ]
   then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
@@ -121,7 +121,7 @@ translate_docx ()
   $APERTIUM_PATH/apertium-deswxml |\
   if [ "$TRANSLATION_MEMORY_FILE" = "" ]; 
   then cat;  
-  else lt-tmxproc $TMCOMPFILE;
+  else $APERTIUM_PATH/lt-tmxproc $TMCOMPFILE;
   fi | \
   if [ ! -x $DATOS/modes/$PREFIJO.mode ]
   then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
@@ -180,7 +180,7 @@ translate_pptx ()
   $APERTIUM_PATH/apertium-despptx |\
   if [ "$TRANSLATION_MEMORY_FILE" = "" ]; 
   then cat;  
-  else lt-tmxproc $TMCOMPFILE;
+  else $APERTIUM_PATH/lt-tmxproc $TMCOMPFILE;
   fi | \
   if [ ! -x $DATOS/modes/$PREFIJO.mode ]
   then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
@@ -229,7 +229,7 @@ translate_xlsx ()
   $APERTIUM_PATH/apertium-desxlsx |\
   if [ "$TRANSLATION_MEMORY_FILE" = "" ]; 
   then cat;  
-  else lt-tmxproc $TMCOMPFILE;
+  else $APERTIUM_PATH/lt-tmxproc $TMCOMPFILE;
   fi | \
   if [ ! -x $DATOS/modes/$PREFIJO.mode ]
   then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
@@ -312,7 +312,7 @@ SALIDA=$OUTPUT_FILE;
 TMCOMPFILE="/tmp/$$tm"
 
 if [ "$TRANSLATION_MEMORY_FILE" != "" ]
-then lt-tmxcomp $TRANSLATION_MEMORY_DIRECTION $TRANSLATION_MEMORY_FILE $TMCOMPFILE >/dev/null
+then $APERTIUM_PATH/lt-tmxcomp $TRANSLATION_MEMORY_DIRECTION $TRANSLATION_MEMORY_FILE $TMCOMPFILE >/dev/null
      if [ "$?" != "0" ]
      then echo "Error: Cannot compile TM '" $TRANSLATION_MEMORY_FILE "'";
           echo"   hint: use -o parameter";
@@ -460,7 +460,7 @@ fi
 $APERTIUM_PATH/apertium-des$FORMATADOR $FICHERO | \
 if [ "$TRANSLATION_MEMORY_FILE" = "" ]; 
 then cat;  
-else lt-tmxproc $TMCOMPFILE;
+else $APERTIUM_PATH/lt-tmxproc $TMCOMPFILE;
 fi | \
 if [ ! -x $DATOS/modes/$PREFIJO.mode ]
 then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
