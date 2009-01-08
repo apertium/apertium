@@ -20,7 +20,7 @@ library_includedir = $(includedir)/$(GENERIC_LIBRARY_NAME)-$(GENERIC_API_VERSION
 library_include_HEADERS = $(h_sources)
 
 GENERATEDSCRIPTS = apertium-gen-deformat apertium-gen-reformat \
-                   apertium-translator apertium-validate-tagger \
+                   apertium-validate-tagger \
                    apertium-validate-transfer apertium-validate-dictionary \
                    apertium-validate-modes \
                    apertium-gen-lextorbil \
@@ -297,15 +297,6 @@ apertium-gen-modes: Makefile.am modes-header.sh
           fi >> $@ 
 	@chmod a+x $@
 
-apertium-translator: Makefile.am trans-header.sh
-	@echo "Creating apertium-translator script"
-	@echo "#!$(BASH)" > $@
-	@echo "APERTIUM_PATH=\"$(prefix)/bin\"" >>$@
-	
-	@echo "LTTOOLBOX_PATH=\"$(prefix)/bin\"" >>$@
-	@cat trans-header.sh >>$@
-	@chmod a+x $@
-
 apertium: Makefile.am apertium-header.sh
 	@echo "Creating apertium script"
 	@echo "#!$(BASH)" > $@
@@ -397,7 +388,7 @@ man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
          apertium-lextor.1 apertium-preprocess-corpus-lextor.1 \
          apertium-preprocess-transfer.1 apertium-pretransfer.1 apertium-rehtml.1 \
          apertium-rertf.1 apertium-retxt.1 apertium-tagger.1 apertium-transfer.1 \
-         apertium-translator.1 apertium-validate-dictionary.1 apertium-validate-tagger.1 \
+         apertium-validate-dictionary.1 apertium-validate-tagger.1 \
          apertium-validate-transfer.1 apertium-gen-modes.1 apertium-interchunk.1 \
          apertium-postchunk.1 apertium-validate-interchunk.1 \
          apertium-validate-postchunk.1 apertium-validate-modes.1 apertium-tagger-apply-new-rules.1 \
