@@ -136,7 +136,7 @@ public:
   void setUseBilingual(bool value);
   bool getUseBilingual(void) const;
   void setExtendedDictionary(string const &fstfile);
-
+  void setCaseSensitiveness(bool value);
 };
 
 #endif

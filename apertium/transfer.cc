@@ -1952,3 +1952,9 @@ Transfer::getUseBilingual(void) const
 {
   return useBilingual;
 }
+
+void
+Transfer::setCaseSensitiveness(bool value)
+{
+  fstp.setCaseSensitiveMode(value);
+}

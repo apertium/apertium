@@ -15,31 +15,36 @@
       <begin regexp='"&lt;!--"'/>
       <end regexp='"--&gt;"'/>
     </format-rule>
+    
+    <format-rule type="comment" eos="no" priority="2">
+      <begin regexp='"&lt;Properties"(" "[^&gt;]*)?"&gt;"'/>
+      <end regexp='"&lt;/Properties"(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
 
-    <format-rule type="comment" eos="yes" priority="2">
+    <format-rule type="comment" eos="yes" priority="3">
       <begin regexp='"&lt;pkg:binaryData"(" "[^&gt;]*)?"&gt;"'/>
       <end regexp='"&lt;/pkg:binaryData"(" "[^&gt;]*)?"&gt;"'/>
     </format-rule> 
 
-    <format-rule type="open" eos="yes" priority="3">
+    <format-rule type="open" eos="yes" priority="4">
       <tag regexp='"&lt;w:p"(" "[^&gt;]*)?"&gt;"'/>
     </format-rule>
 
-    <format-rule type="close" eos="yes" priority="3">
+    <format-rule type="close" eos="yes" priority="4">
       <tag regexp='"&lt;/w:p"(" "[^&gt;]*)?"&gt;"'/>
     </format-rule>
 
 
-    <format-rule type="empty" eos="no" priority="4">
+    <format-rule type="empty" eos="no" priority="5">
       <tag regexp='("&lt;!"|"&lt;?")[a-zA-Z][^&gt;]*"&gt;"'/>
     </format-rule>
 
 
-    <format-rule type="open" eos="no" priority="4">
+    <format-rule type="open" eos="no" priority="5">
       <tag regexp='"&lt;"[a-zA-Z][^&gt;]*"&gt;"'/>
     </format-rule>
     
-    <format-rule type="close" eos="no" priority="4">
+    <format-rule type="close" eos="no" priority="5">
       <tag regexp='"&lt;/"[a-zA-Z][^&gt;]*"&gt;"'/>
     </format-rule>
     <replacement-rule regexp='"&amp;"([a-zA-Z]+|"#x"[0-9a-fA-F]{1,4}|"#"[0-9]{1,8});'>

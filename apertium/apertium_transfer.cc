@@ -39,6 +39,7 @@ void message(char *progname)
   cerr << "USAGE: " << basename(progname) << " trules preproc biltrans [input [output]]" << endl;
   cerr << "       " << basename(progname) << " -n trules preproc [input [output]]" << endl;
   cerr << "       " << basename(progname) << " -x trules preproc biltrans extended [input [output]]" << endl;
+  cerr << "       " << basename(progname) << " -c trules preproc biltrans extended [input [output]]" << endl;
   cerr << "  trules     transfer rules file" << endl;
   cerr << "  preproc    result of preprocess trules file" << endl;
   cerr << "  biltrans   bilingual letter transducer file" << endl;
@@ -46,6 +47,9 @@ void message(char *progname)
   cerr << "  output     output file, standard output by default" << endl;
   cerr << "  -n         don't use bilingual dictionary" << endl;
   cerr << "  -x         extended mode with user dictionary" << endl;
+  cerr << "  -c         case-sensitiveness while accessing bilingual dictionary" << endl;
+  
+
   exit(EXIT_FAILURE);
 }
 
@@ -59,7 +63,7 @@ int main(int argc, char *argv[])
   }
 
   int firstfile = 1;
-  if(!strcmp(argv[1],"-n") || !strcmp(argv[1], "-x"))
+  if(!strcmp(argv[1],"-n") || !strcmp(argv[1], "-x") || !strcmp(argv[1], "-c"))
   {
     firstfile = 2;
   }
@@ -119,6 +123,11 @@ int main(int argc, char *argv[])
   {
     t.read(argv[2], argv[3]);
     t.setUseBilingual(false);
+  }
+  else if(!strcmp(argv[1], "-c"))
+  {
+    t.read(argv[2], argv[3], argv[4]);
+    t.setCaseSensitiveness(true);
   }
   else if(!strcmp(argv[1], "-x"))
   {
