@@ -31,18 +31,26 @@ class TMXBuilder
 private:
   wstring lang1;
   wstring lang2;
+  double percent;
+  int lowLimit;
 
   static wstring nextTU(FILE *input);
   static wstring restOfBlank(FILE *input);
   static wstring nextBlank(FILE *input);
   static wstring xmlize(wstring const &str);
   static bool compatible(FILE *input, FILE *output, bool lazy = false);
+  bool similar(wstring const &str1, wstring const &str2) const;
+  static wstring removeLastPeriod(wstring const &str);
+  
 public:
   TMXBuilder(wstring const &l1, wstring const &l2);
   ~TMXBuilder();
   static bool check(string const &file1, string const &file2, bool lazy = false);
   void generate(string const &file1, string const &file2, 
                 string const &outfile="") const;
+                
+  void setPercent(double const p);
+  void setLowLimit(int const l);
 };
 
 #endif

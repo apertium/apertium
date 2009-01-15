@@ -36,10 +36,16 @@
 #endif
 
 using namespace Apertium;
+using namespace std;
+
 TMXBuilder::TMXBuilder(wstring const &l1, wstring const &l2)
 {
   lang1 = l1;
   lang2 = l2;
+
+  // by default: percent = 0.95, lowLimit = 10
+  percent = 0.95;
+  lowLimit = 10;
 }
 
 TMXBuilder::~TMXBuilder()
@@ -225,21 +231,30 @@ TMXBuilder::nextTU(FILE *input)
         break;
       
       case L'.':
+        current_tu += L'.';
         symbol = fgetwc_unlocked(input);
+
         if(symbol != L'[' && !iswspace(symbol))
         {
-          ungetwc(symbol, input);
-          current_tu += L'.';
+          if(!feof(input))          
+          {
+            ungetwc(symbol, input);
+          }
         }
         else
         {
-          ungetwc(symbol, input);
-          size_t idx = current_tu.size()-1;
+          if(!feof(input))
+          {
+            ungetwc(symbol, input);
+          }
+
+          return current_tu;
+/*          size_t idx = current_tu.size()-1;
           while(current_tu[idx] == L'.')
           {
             idx--;
           }
-          return current_tu.substr(0, idx+1);
+          return current_tu.substr(0, idx+1);*/
         }
         break;
       
@@ -389,13 +404,40 @@ TMXBuilder::generate(string const &file1, string const &file2,
     if(tu1 != L"" && tu2 != L"" &&
        storage.find(tu1 + L"|#|" + tu2) == storage.end())
     { 
-    
+      tu1 = removeLastPeriod(tu1);
+      tu2 = removeLastPeriod(tu2);
       storage.insert(tu1 + L"|#|" + tu2);
       fprintf(output, "<tu>\n  <tuv xml:lang=\"%s\"><seg>%s</seg></tuv>\n", UtfConverter::toUtf8(lang1).c_str(), UtfConverter::toUtf8(tu1).c_str());
       fprintf(output, "  <tuv xml:lang=\"%s\"><seg>%s</seg></tuv>\n</tu>\n", UtfConverter::toUtf8(lang2).c_str(), UtfConverter::toUtf8(tu2).c_str());  
     }
-    tu1 = StringUtils::trim(nextTU(f1));    
-    tu2 = StringUtils::trim(nextTU(f2));
+    tu1 = nextTU(f1);    
+    tu2 = nextTU(f2);
+    int contador = 0;
+    
+    fpos_t pos1, pos2;
+    
+    fgetpos(f1, &pos1);
+    fgetpos(f2, &pos2);    
+    while(!similar(tu1, tu2) && contador <= 4)
+    {
+      contador++;
+      if(tu1.size() < tu1.size())
+      {
+        tu1 += nextTU(f1);
+      }
+      else
+      {
+        tu2 += nextTU(f2);
+      }
+    }
+    
+    if(contador == 4 && !similar(tu1, tu2))
+    {
+      fsetpos(f1, &pos1);
+      fsetpos(f2, &pos2);
+      tu1 == L"";
+      tu2 == L"";
+    }
   }
   while((tu1 != L"" || !feof(f1)) && (tu2 != L"" || !feof(f2)));
 
@@ -407,4 +449,52 @@ TMXBuilder::generate(string const &file1, string const &file2,
   }
   fclose(f1);
   fclose(f2);
+}
+
+bool 
+TMXBuilder::similar(wstring const &str1, wstring const &str2) const
+{
+  if(abs(int(str1.size())-int(str2.size())) <= lowLimit)
+  {
+    return true;
+  }
+  else
+  {
+    if(str1.size() < str2.size())
+    {
+      return double(str1.size())/double(str2.size()) >= percent;
+    }
+    else
+    {
+      return double(str2.size())/double(str1.size()) >= percent;
+    }
+  }  
+}
+
+void
+TMXBuilder::setPercent(double const p)
+{
+  percent = p;
+}
+
+void
+TMXBuilder::setLowLimit(int const l)
+{
+  lowLimit = l;
+}
+
+wstring
+TMXBuilder::removeLastPeriod(wstring const &str)
+{
+  unsigned int index = str.size() - 1;
+  
+  if(index > 1)
+  {
+    if(str[index] == L'.' && iswalnum(str[index-1]))
+    {
+      return str.substr(0, index);
+    }
+  }
+  
+  return str;
 }
