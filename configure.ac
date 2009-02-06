@@ -11,6 +11,8 @@ m4_define([required_libpcre_version], [6.4])
 AC_INIT([apertium], [3.1.0], [sortiz@users.sourceforge.net])
 AC_CONFIG_HEADER([apertium/apertium_config.h])
 
+AC_CANONICAL_SYSTEM
+
 GENERIC_LIBRARY_NAME=apertium
 
 # Release versioning
@@ -84,6 +86,15 @@ else
     fi    
   fi
 fi
+
+case "${target_os}" in
+  mingw*)
+  echo "Found MinGW: Also considering MSYS paths"
+  CFLAGS="$CFLAGS -L/lib -I/include"
+  CXXFLAGS="$CXXFLAGS -L/lib -I/include"
+  CPPFLAGS="$CPPFLAGS -I/include"
+  ;;
+esac
 
 AC_PROG_CXX
 AC_PROG_LIBTOOL
