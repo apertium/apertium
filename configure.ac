@@ -160,6 +160,7 @@ then
   AC_MSG_ERROR([You don't have pkg-config installed.])
 fi
 
+AC_CHECK_FUNCS(strcasecmp)
 
 if test x$(uname -a) != xDarwin;
 then 
