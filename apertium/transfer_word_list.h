@@ -22,7 +22,7 @@
 #include <cstring>
 #include <set>
 #include <string>
-#ifdef WIN32
+#ifdef _MSCVER
 #define strcasecmp _stricmp
 #endif
 
