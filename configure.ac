@@ -60,41 +60,48 @@ then ARCH=$($(which uname) -m)
 else ARCH=$($(which arch))
 fi
 
+case "${target_os}" in
+  mingw*)
+    MinGW=yes
+  ;;
+esac
+
 if test x$ARCH = xppc
 then
   AC_MSG_RESULT([PowerPC])
   CFLAGS="$CFLAGS -Wall -ansi -mpowerpc -maltivec -fno-pic -fomit-frame-pointer"
   CXXFLAGS="$CXXFLAGS -Wall -ansi -mpowerpc -maltivec -fno-pic -fomit-frame-pointer"
 else
-  if test x$ARCH = xi686
-  then
-    AC_MSG_RESULT([i686])
-    CFLAGS="$CFLAGS -Wall -ansi -march=i686 -O3 -fomit-frame-pointer -funroll-loops"
-    CXXFLAGS="$CXXFLAGS -Wall -ansi -march=i686 -O3 \
-              -fomit-frame-pointer -funroll-loops"
-  else
-    if test x$ARCH = xx86_64
-    then
-      AC_MSG_RESULT([x86_64])
-      CFLAGS="-Wall -ansi -O3 -mtune=nocona -fomit-frame-pointer -funroll-loops $CFLAGS"
-      CXXFLAGS="-Wall -ansi -O3 -mtune=nocona \
-              -fomit-frame-pointer -funroll-loops $CXXFLAGS"
-    else
-      AC_MSG_RESULT([Other])
-      CFLAGS="-Wall -ansi -O3 $CFLAGS"
-      CXXFLAGS="-Wall -ansi -O3 $CXXFLAGS"
+  if test x$MinGW = xyes
+  then 
+    AC_MSG_RESULT([MinGW])
+    CFLAGS="$CFLAGS -Wall -march=i686 -O3 -DMINGW -fomit-frame-pointer \
+	        -funroll-loops -I/include -L/lib"
+    CXXFLAGS="$CXXFLAGS -Wall -march=i686 -O3 \
+            -fomit-frame-pointer -funroll-loops -I/include -L/lib"
+    CPPFLAGS="$CPPFLAGS -I/include"
+	else
+      if test x$ARCH = xi686
+      then
+        AC_MSG_RESULT([i686])
+        CFLAGS="$CFLAGS -Wall -ansi -march=i686 -O3 -fomit-frame-pointer -funroll-loops"
+        CXXFLAGS="$CXXFLAGS -Wall -ansi -march=i686 -O3 \
+                -fomit-frame-pointer -funroll-loops"
+      else
+      if test x$ARCH = xx86_64
+      then
+        AC_MSG_RESULT([x86_64])
+        CFLAGS="-Wall -ansi -O3 -mtune=nocona -fomit-frame-pointer -funroll-loops $CFLAGS"
+        CXXFLAGS="-Wall -ansi -O3 -mtune=nocona \
+                -fomit-frame-pointer -funroll-loops $CXXFLAGS"
+      else
+        AC_MSG_RESULT([Other])
+        CFLAGS="-Wall -ansi -O3 $CFLAGS"
+        CXXFLAGS="-Wall -ansi -O3 $CXXFLAGS"
+      fi
     fi    
   fi
 fi
-
-case "${target_os}" in
-  mingw*)
-  echo "Found MinGW: Also considering MSYS paths"
-  CFLAGS="$CFLAGS -L/lib -I/include"
-  CXXFLAGS="$CXXFLAGS -L/lib -I/include"
-  CPPFLAGS="$CPPFLAGS -I/include"
-  ;;
-esac
 
 AC_PROG_CXX
 AC_PROG_LIBTOOL
@@ -128,7 +135,6 @@ fi
   then
     AC_MSG_ERROR([You don't have xsltproc installed.])
   fi
-
 
 AC_PATH_PROG(BASH, bash, no)
 if test x$ac_cv_path_BASH = x
