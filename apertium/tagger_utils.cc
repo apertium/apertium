@@ -20,7 +20,14 @@
 
 #include <stdio.h>
 #include <apertium/string_utils.h>
-#ifdef WIN32
+#ifdef _WIN32
+#if defined(__MINGW32__)
+wchar_t *wcstok_s(
+   wchar_t *strToken,
+   const wchar_t *strDelimit, 
+   wchar_t **context
+);
+#endif
 #define wcstok wcstok_s
 #endif
 

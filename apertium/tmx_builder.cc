@@ -30,7 +30,10 @@
 #include <apertium/string_utils.h>
 #include <apertium/unlocked_cstdio.h>
 
-#ifdef _WIN32
+#ifdef WIN32
+#if defined(__MINGW32__)
+#define __MSVCRT_VERSION__  0x0800
+#endif
 #include <io.h>
 #include <fcntl.h>
 #endif

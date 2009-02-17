@@ -37,6 +37,9 @@
 #include &lt;lttoolbox/ltstr.h&gt;
 #include &lt;wchar.h&gt;
 #ifdef WIN32
+#if defined(__MINGW32__)
+#define __MSVCRT_VERSION__  0x0800
+#endif
 #include &lt;io.h&gt;
 #include &lt;fcntl.h&gt;
 #endif
