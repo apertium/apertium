@@ -55,6 +55,7 @@ TMXBuilder::TMXBuilder(wstring const &l1, wstring const &l2)
   window_size = 100;
   step = 75;
   percent=0.85;
+  edit_distance_percent=0.30;
 }
 
 TMXBuilder::~TMXBuilder()
@@ -513,7 +514,7 @@ TMXBuilder::printTable(int *table, unsigned int nrows, unsigned int ncols)
 void
 TMXBuilder::printTUCond(FILE *output, wstring const &tu1, wstring const &tu2, bool secure_zone)
 {
-  if(secure_zone && similarLengths(tu1.size(), tu2.size()))
+  if(secure_zone && similar(tu1, tu2))
   {
     printTU(output, tu1, tu2);
   }  
@@ -802,6 +803,12 @@ TMXBuilder::setLowLimit(int l)
   low_limit = l;
 }
 
+void
+TMXBuilder::setEditDistancePercent(double e)
+{
+  edit_distance_percent = e;
+}
+
 bool
 TMXBuilder::isRemovablePunct(wchar_t const &c)
 {
@@ -809,18 +816,28 @@ TMXBuilder::isRemovablePunct(wchar_t const &c)
 }
 
 bool
-TMXBuilder::similarLengths(unsigned int l1, unsigned int l2)
+TMXBuilder::similar(wstring const &s1, wstring const &s2)
 {
+  unsigned int l1 = s1.size();
+  unsigned int l2 = s2.size(); 
+
   if((l1 <= low_limit) && (l2 <= low_limit))
   {
     return true;
   }
-  else if(l1 <= l2)
-  {
-    return (double(l1)/double(l2)) > percent;
-  }
   else
   {
-    return (double(l2)/double(l1)) > percent;
+    int maxlength = max(l1, l2);
+    int minlength = min(l1, l2);
+    int ed = editDistance(s1, s2, maxlength);
+
+    if(double(ed) < edit_distance_percent*double(maxlength))
+    { 
+      return double(minlength)/double(maxlength) > percent;
+    }
+    else
+    {
+      return false;
+    }
   }
 }

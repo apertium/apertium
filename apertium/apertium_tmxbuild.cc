@@ -38,7 +38,9 @@ void usage(char *progname)
   wcerr << L"USAGE: " << basename(progname) << L" [options] code1 code2 doc1 doc2 [output_file]" << endl;
   wcerr << L"Options:" << endl;
   wcerr << L"  -p percent    number 0 < n <= 1 to set margin of confidence of TU's " << endl;
-  wcerr << L"                (0.85 by default)" << endl;
+  wcerr << L"                (0.85 by default) in length terms" << endl;
+  wcerr << L"  -e edit       number 0 < n <= 1 to set margin of confidence of TU's " << endl;
+  wcerr << L"                (0.30 by default) in edit distance terms" << endl;
   wcerr << L"  -l low-limit  ignore percent if the segment is less than lowlimit" <<endl;
   wcerr << L"                (15 by default)" << endl;
   wcerr << L"  -m max-edit   characters to be taken into account when aligning" << endl;
@@ -71,6 +73,7 @@ int main(int argc, char *argv[])
   int diagonal_width = 10;
   int window_size = 100;
   int step = 75;
+  double edit_distance_percent = 0.30;
 
 #if HAVE_GETOPT_LONG
   int option_index=0;
@@ -81,6 +84,7 @@ int main(int argc, char *argv[])
     static struct option long_options[] =
     {
       {"percent",      required_argument, 0, 'p'},
+      {"edit-distance-percent",      required_argument, 0, 'e'},
       {"low-limit", required_argument, 0, 'l'},
       {"max-edit", required_argument, 0, 'm'},
       {"diagonal", required_argument, 0, 'd'},
@@ -90,9 +94,9 @@ int main(int argc, char *argv[])
       {0, 0, 0, 0}
     };
 
-    int c=getopt_long(argc, argv, "p:l:m:d:w:s:h", long_options, &option_index);
+    int c=getopt_long(argc, argv, "p:e:l:m:d:w:s:h", long_options, &option_index);
 #else
-    int c=getopt(argc, argv, "p:l:m:d:w:s:h");
+    int c=getopt(argc, argv, "p:e:l:m:d:w:s:h");
 #endif
     if (c==-1)
       break;
@@ -102,6 +106,13 @@ int main(int argc, char *argv[])
       case 'p':
         percent = strtod(optarg, NULL);
         if(percent <= 0 || percent > 1)
+        {
+          usage(argv[0]);
+        }
+        break;
+      case 'e':
+        edit_distance_percent = strtod(optarg, NULL);
+        if(edit_distance_percent <= 0 || edit_distance_percent > 1)
         {
           usage(argv[0]);
         }
@@ -183,6 +194,7 @@ int main(int argc, char *argv[])
   // Set parameters
 
   tmxb.setPercent(percent);
+  tmxb.setEditDistancePercent(edit_distance_percent);
   tmxb.setMaxEdit(max_edit);
   tmxb.setDiagonalWidth(diagonal_width);
   tmxb.setWindowSize(window_size);

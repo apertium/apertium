@@ -34,6 +34,7 @@ private:
   unsigned int window_size;
   unsigned int step;
   double percent;
+  double edit_distance_percent;
   unsigned int low_limit;
 
   static wstring nextTU(FILE *input);
@@ -60,7 +61,7 @@ private:
 					 unsigned int width);
 
   static bool isRemovablePunct(wchar_t const &c);
-  bool similarLengths(unsigned int l1, unsigned int l2);
+  bool similar(wstring const &s1, wstring const &s2);
 
 public:
   TMXBuilder(wstring const &l1, wstring const &l2);
@@ -75,6 +76,7 @@ public:
   void setStep(int s);
   void setPercent(double p);
   void setLowLimit(int l);
+  void setEditDistancePercent(double e);
 };
 
 #endif
