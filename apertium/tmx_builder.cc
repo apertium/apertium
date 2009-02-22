@@ -664,11 +664,11 @@ TMXBuilder::levenshteinTable(vector<wstring> &l1, vector<wstring> &l2,
       
       if(i > (j + diagonal_width))
       {
-        ed = table[i*ncols];
+        ed = table[i*ncols]+table[j];
       }
       else if(j > (i + diagonal_width))
       {
-        ed = table[j];
+        ed = table[i*ncols]+table[j];
       }
       else
       {
