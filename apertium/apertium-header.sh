@@ -1,12 +1,13 @@
 PAIR=""
-INPUT_FILE=""
-OUTPUT_FILE=""
+INPUT_FILE="/dev/stdin"
+OUTPUT_FILE="/dev/stdout"
 
 message ()
 {
   echo "USAGE: $(basename $0) [-d datadir] [-f format] [-u] <translation> [in [out]]"
   echo " -d datadir       directory of linguistic data"
   echo " -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx, pptx"
+
   echo " -a               display ambiguity"
   echo " -u               don't display marks '*' for unknown words" 
   echo " -m memory.tmx    use a translation memory to recycle translations"
@@ -345,6 +346,12 @@ fi
 #Parametro opcional, de no estar, lee de la entrada estandar (stdin)
 
 case "$FORMATADOR" in 
+        none)
+        	if [ "$UWORDS" = "no" ]
+        	then OPTION="-n";
+        	else OPTION="-g";
+        	fi
+	        ;;
 	txt|rtf|html)
 		if [[ $UWORDS = "no" ]]; then OPTION="-n"; 
 		else OPTION="-g";
@@ -459,21 +466,18 @@ then
         REF=$FORMATADOR
 fi
 
-
-
-$APERTIUM_PATH/apertium-des$FORMATADOR $FICHERO | \
+if [ "$FORMATADOR" = "none" ]
+then cat $FICHERO;
+else $APERTIUM_PATH/apertium-des$FORMATADOR $FICHERO; fi| \
 if [ "$TRANSLATION_MEMORY_FILE" = "" ]; 
 then cat;  
 else $APERTIUM_PATH/lt-tmxproc $TMCOMPFILE;
-fi | \
-if [ ! -x $DATOS/modes/$PREFIJO.mode ]
+fi | if [ ! -x $DATOS/modes/$PREFIJO.mode ]
 then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
 else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
-fi | \
-if [ x$SALIDA = x ]
-then $APERTIUM_PATH/apertium-re$FORMATADOR 
-else
-  $APERTIUM_PATH/apertium-re$FORMATADOR >$SALIDA
+fi | if [ "$FORMATADOR" = "none" ]
+then cat >$SALIDA;
+else $APERTIUM_PATH/apertium-re$FORMATADOR >$SALIDA;
 fi
 
 if [ "$TRANSLATION_MEMORY_FILE" != "" ];

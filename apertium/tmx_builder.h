@@ -21,6 +21,7 @@
 
 #include <apertium/transfer_data.h>
 #include <string>
+#include <cstdio>
 
 using namespace std;
 
@@ -36,6 +37,7 @@ private:
   double percent;
   double edit_distance_percent;
   unsigned int low_limit;
+  FILE *freference;
 
   static wstring nextTU(FILE *input);
   static wstring restOfBlank(FILE *input);
@@ -77,6 +79,7 @@ public:
   void setPercent(double p);
   void setLowLimit(int l);
   void setEditDistancePercent(double e);
+  void setTranslation(string const &filename);
 };
 
 #endif

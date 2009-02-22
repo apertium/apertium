@@ -56,6 +56,8 @@ TMXBuilder::TMXBuilder(wstring const &l1, wstring const &l2)
   step = 75;
   percent=0.85;
   edit_distance_percent=0.30;
+ 
+  freference = NULL;
 }
 
 TMXBuilder::~TMXBuilder()
@@ -526,14 +528,32 @@ TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
   int base_i = 0, base_j = 0;
 
   vector<wstring> lista1 = reverseList(sentenceList(f1)),
-                  lista2 = reverseList(sentenceList(f2));
- 
+                  lista2 = reverseList(sentenceList(f2)), lista3;
+
+  if(freference != NULL)
+  {
+    lista3 = reverseList(sentenceList(freference));
+  } 
+
   while(true)
   { 
     vector<wstring> l1 = extractFragment(lista1, base_i, window_size);
-    vector<wstring> l2 = extractFragment(lista2, base_j, window_size);
+    vector<wstring> l2 = extractFragment(lista2, base_j, window_size) , l3;
 
-    int *table = levenshteinTable(l1, l2, diagonal_width, max_edit);
+    if(lista3.size() != 0)
+    {
+      l3 = extractFragment(lista3, base_j, window_size);
+    }
+
+    int *table;
+    if(lista3.size() == 0)
+    {
+      table = levenshteinTable(l1, l2, diagonal_width, max_edit);
+    }
+    else
+    {
+      table = levenshteinTable(l1, l3, diagonal_width, max_edit);
+    }
 
     unsigned int const nrows = l1.size() + 1;
     unsigned int const ncols = l2.size() + 1;
@@ -556,7 +576,21 @@ TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
         case 1:
           i--;
           j--;
-          printTUCond(output, l1[i], l2[i], newBase || l1.size() < step);
+	  
+          if(l3.size() == 0)
+	  {
+            if((newBase || l1.size() < step) && similar(l1[i], l2[i]))
+  	    {
+  	      printTU(output, l1[i], l2[i]);
+	    }
+	  }
+	  else
+	  {
+            if((newBase || l1.size() < step) && similar(l1[i], l3[i]))
+  	    {
+  	      printTU(output, l1[i], l2[i]);
+	    }
+	  }	    
           break;
       
         case 2:
@@ -840,4 +874,23 @@ TMXBuilder::similar(wstring const &s1, wstring const &s2)
       return false;
     }
   }
+}
+
+void
+TMXBuilder::setTranslation(string const &filename)
+{
+  freference = fopen(filename.c_str(), "r");
+  if(!freference)
+  {
+    wcerr << L"Error: file '" << UtfConverter::fromUtf8(filename);
+    wcerr << L"' cannot be opened for reading" << endl;
+    freference = NULL;
+  }
+
+#ifdef WIN32
+  if(freference != NULL)
+  {
+    _setmode(_fileno(freference), _O_U8TEXT);
+  }
+#endif     
 }

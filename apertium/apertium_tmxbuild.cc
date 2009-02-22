@@ -74,6 +74,8 @@ int main(int argc, char *argv[])
   int window_size = 100;
   int step = 75;
   double edit_distance_percent = 0.30;
+  string translation;
+
 
 #if HAVE_GETOPT_LONG
   int option_index=0;
@@ -90,13 +92,14 @@ int main(int argc, char *argv[])
       {"diagonal", required_argument, 0, 'd'},
       {"window", required_argument, 0, 'w'},
       {"step", required_argument, 0, 's'},
+      {"translation", required_argument, 0, 't'},
       {"help",       no_argument,       0, 'h'}, 
       {0, 0, 0, 0}
     };
 
-    int c=getopt_long(argc, argv, "p:e:l:m:d:w:s:h", long_options, &option_index);
+    int c=getopt_long(argc, argv, "p:e:l:m:d:w:s:t:h", long_options, &option_index);
 #else
-    int c=getopt(argc, argv, "p:e:l:m:d:w:s:h");
+    int c=getopt(argc, argv, "p:e:l:m:d:w:s:t:h");
 #endif
     if (c==-1)
       break;
@@ -157,7 +160,10 @@ int main(int argc, char *argv[])
           usage(argv[0]);
         }
         break;
-
+     
+      case 't':
+	translation = optarg;
+	break;
 
 
       default:
@@ -200,6 +206,7 @@ int main(int argc, char *argv[])
   tmxb.setWindowSize(window_size);
   tmxb.setStep(step);
   tmxb.setLowLimit(low_limit);
+  tmxb.setTranslation(translation);  
 
   tmxb.generate(doc1, doc2, output_file);
   return EXIT_SUCCESS;
