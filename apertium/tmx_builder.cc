@@ -595,11 +595,58 @@ TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
       
         case 2: 
           i--;
+          if(i > 2 && argmin(table[(i-1)*ncols + j-1],
+			     table[(i-1)*ncols + j],  
+			     table[i*ncols + j-1]) == 3 && 
+	              argmin(table[(i-1)*ncols + j-2],
+			     table[(i-1)*ncols + j-1],  
+			     table[i*ncols + j-2]) != 1)
+	    {
+	      if(l3.size() == 0)
+	      {
+		if((newBase || l1.size() < step) && similar(l1[i], l2[j]))
+		  {
+		      printTU(output, l1[i], l2[j]);
+		  }
+		}
+	      else
+		{
+		  if((newBase || l1.size() < step) && similar(l1[i], l3[j]))
+		    {
+		      printTU(output, l1[i], l2[j]);
+		    }
+		}	    
+	    } 
+
 	  //          wcerr << L"[" << i << L" " << j << L"]" << endl;
          break;
     
         case 3:
           j--;
+          if(j > 2 && argmin(table[(i-1)*ncols + j-1],
+			     table[(i-1)*ncols + j],  
+			     table[i*ncols + j-1]) == 1 && 
+	              argmin(table[(i-1)*ncols + j-2],
+			     table[(i-1)*ncols + j-1],  
+			     table[i*ncols + j-2]) != 3)
+	    {
+	      if(l3.size() == 0)
+	      {
+		if((newBase || l1.size() < step) && similar(l1[i], l2[j]))
+		  {
+		      printTU(output, l1[i], l2[j]);
+		  }
+		}
+	      else
+		{
+		  if((newBase || l1.size() < step) && similar(l1[i], l3[j]))
+		    {
+		      printTU(output, l1[i], l2[j]);
+		    }
+		}	    
+	    } 
+
+
           break;
     
         default:

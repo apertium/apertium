@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
   int window_size = 100;
   int step = 75;
   double edit_distance_percent = 0.30;
-  string translation;
+  string translation = "";
 
 
 #if HAVE_GETOPT_LONG
@@ -206,8 +206,11 @@ int main(int argc, char *argv[])
   tmxb.setWindowSize(window_size);
   tmxb.setStep(step);
   tmxb.setLowLimit(low_limit);
-  tmxb.setTranslation(translation);  
-
+  if(translation != "")
+  {
+    tmxb.setTranslation(translation);  
+  }
+  
   tmxb.generate(doc1, doc2, output_file);
   return EXIT_SUCCESS;
 }
