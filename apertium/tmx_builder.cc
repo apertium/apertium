@@ -561,7 +561,7 @@ TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
     unsigned int j = ncols - 1;
   
   
-    // printTable(table, nrows, ncols);
+    //    printTable(table, nrows, ncols);
   
     bool newBase = false;
   
@@ -579,22 +579,23 @@ TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
 	  
           if(l3.size() == 0)
 	  {
-            if((newBase || l1.size() < step) && similar(l1[i], l2[i]))
+            if((newBase || l1.size() < step) && similar(l1[i], l2[j]))
   	    {
-  	      printTU(output, l1[i], l2[i]);
+  	      printTU(output, l1[i], l2[j]);
 	    }
 	  }
 	  else
 	  {
-            if((newBase || l1.size() < step) && similar(l1[i], l3[i]))
+            if((newBase || l1.size() < step) && similar(l1[i], l3[j]))
   	    {
-  	      printTU(output, l1[i], l2[i]);
+  	      printTU(output, l1[i], l2[j]);
 	    }
 	  }	    
           break;
       
-        case 2:
+        case 2: 
           i--;
+	  //          wcerr << L"[" << i << L" " << j << L"]" << endl;
          break;
     
         case 3:
@@ -631,7 +632,7 @@ TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
 int 
 TMXBuilder::weight(wstring const &s)
 {
-  return s.size();  // just the size of the string
+  return s.size()*2;  // just the size of the string
 }
 
 int * 
@@ -686,17 +687,22 @@ TMXBuilder::levenshteinTable(vector<wstring> &l1, vector<wstring> &l2,
 wstring
 TMXBuilder::filter(wstring const &tu)
 {
-  bool has_text = false;
-  
+  bool has_text = false;  
+  bool has_blank = false;
+
   for(unsigned int i = 0, limit = tu.size(); i != limit; i++)
   {
     if(iswalpha(tu[i]))
     {
       has_text = true;
-    }  
+    }      
+    else if(has_text && iswspace(tu[i]))
+    {
+      has_blank = true;
+    }
   }  
 
-  if(!has_text || tu.size() == 0)
+  if(!has_text || !has_blank || tu.size() == 0)
   {
     return L"";
   }
@@ -792,8 +798,8 @@ TMXBuilder::editDistance(wstring const &s1, wstring const &s2, unsigned int max_
       }
       
       table[i*ncols+j] = min3(table[(i-1)*ncols+(j-1)]+coste,
-                              table[(i-1)*ncols+j] + 1,
-                              table[i*ncols+(j-1)]);
+                              table[(i-1)*ncols+j] + 2,
+                              table[i*ncols+(j-1)] + 2);
     }
   }
   int result = table[(nrows*ncols)-1];
