@@ -1303,8 +1303,14 @@ Interchunk::readToken(FILE *in)
 	}
 	else if(val2 == L'}')
 	{
+	  wint_t val3 = wchar_t(fgetwc_unlocked(in));
+	  ungetwc(val3, in);
+	  
 	  content += L'}';
-	  break;
+	  if(val3 == L'$')
+	  {
+	    break;  
+	  }
 	}
 	else
 	{
