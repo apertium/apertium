@@ -70,7 +70,8 @@ private:
   unsigned int nwords;
   
   map<xmlNode *, TransferInstr> evalStringCache;
-
+  bool inword;
+  
   void copy(Interchunk const &o);
   void destroy();
   void readData(FILE *input);
@@ -113,7 +114,7 @@ private:
   void applyWord(wstring const &word_str);
   void applyRule();
   TransferToken & readToken(FILE *in);
-  bool checkIndex(xmlNode *element, int index, int limit);  
+  bool checkIndex(xmlNode *element, int index, int limit); 
 public:
   Interchunk();
   ~Interchunk();

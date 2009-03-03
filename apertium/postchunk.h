@@ -70,6 +70,8 @@ private:
   
   map<xmlNode *, TransferInstr> evalStringCache;
 
+  bool inword;
+
   void copy(Postchunk const &o);
   void destroy();
   void readData(FILE *input);

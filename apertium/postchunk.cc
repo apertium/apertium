@@ -57,6 +57,7 @@ Postchunk::Postchunk()
   doc = NULL;
   root_element = NULL;
   lastrule = NULL;
+  inword = false;
 }
 
 Postchunk::~Postchunk()
@@ -1360,7 +1361,7 @@ Postchunk::readToken(FILE *in)
 	}
       }
     }
-    else if(val == L'{')
+    else if(inword && val == L'{')
     {
       content += L'{';
       while(true)
@@ -1382,12 +1383,14 @@ Postchunk::readToken(FILE *in)
 	}
       }
     }
-    else if(val == L'$')
+    else if(inword && val == L'$')
     {
+      inword = false;
       return input_buffer.add(TransferToken(content, tt_word));
     }
     else if(val == L'^')
     {
+      inword = true;
       return input_buffer.add(TransferToken(content, tt_blank));
     }
     else
