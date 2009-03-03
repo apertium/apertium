@@ -79,12 +79,9 @@ translate_odt ()
   if [[ $BORRAFICHERO = "true" ]]
   then rm -Rf $FICHERO;
   fi
-  if [[ $SALIDA = "" ]]
-  then cat $OTRASALIDA;
-       rm -Rf $OTRASALIDA
-  else mv $OTRASALIDA $SALIDA
-  fi
   
+  cat $OTRASALIDA >$SALIDA
+  rm -Rf $OTRASALIDA
   rm -Rf $TMCOMPFILE
 }
 
@@ -139,12 +136,9 @@ translate_docx ()
   if [[ $BORRAFICHERO = "true" ]]
   then rm -Rf $FICHERO;
   fi
-  if [[ $SALIDA = "" ]]
-  then cat $OTRASALIDA;
-       rm -Rf $OTRASALIDA
-  else mv $OTRASALIDA $SALIDA
-  fi
-
+  
+  cat $OTRASALIDA >$SALIDA
+  rm -Rf $OTRASALIDA
   rm -Rf $TMCOMPFILE
 }
 
@@ -199,12 +193,9 @@ translate_pptx ()
   if [[ $BORRAFICHERO = "true" ]]
   then rm -Rf $FICHERO;
   fi
-  if [[ $SALIDA = "" ]]
-  then cat $OTRASALIDA;
-       rm -Rf $OTRASALIDA
-  else mv $OTRASALIDA $SALIDA
-  fi
   
+  cat $OTRASALIDA >$SALIDA
+  rm -Rf $OTRASALIDA
   rm -Rf $TMCOMPFILE
 }
 
@@ -246,12 +237,9 @@ translate_xlsx ()
   if [[ $BORRAFICHERO = "true" ]]
   then rm -Rf $FICHERO;
   fi
-  if [[ $SALIDA = "" ]]
-  then cat $OTRASALIDA;
-       rm -Rf $OTRASALIDA
-  else mv $OTRASALIDA $SALIDA
-  fi
-  
+
+  cat $OTRASALIDA >$SALIDA
+  rm -Rf $OTRASALIDA
   rm -Rf $TMCOMPFILE
 }
 
