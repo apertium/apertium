@@ -642,7 +642,11 @@ Postchunk::processCallMacro(xmlNode *localroot)
     {
       int pos = atoi((const char *) i->properties->children->content);
       myword[idx] = word[pos];
-      myblank[idx-1] = blank[lastpos];
+      if(blank)
+      {
+        myblank[idx-1] = blank[lastpos];
+      }
+      
       idx++;
       lastpos = pos;
     }
