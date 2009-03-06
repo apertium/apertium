@@ -361,6 +361,19 @@ Interchunk::evalString(xmlNode *element)
       
     evalStringCache[element] = TransferInstr(ti_case_of_tl, (const char *) part, pos);
   }
+  else if(!xmlStrcmp(element->name, (const xmlChar *) "concat"))
+  { 
+    string value = "";
+    for(xmlNode *i = element->children; i != NULL; i = i->next)
+    {
+      if(i->type == XML_ELEMENT_NODE)
+      {
+        value.append(evalString(i));
+      }
+    }
+    return value;
+  }
+
   else
   {
     cerr << "Error: unexpected rvalue expression '" << element->name << endl;
