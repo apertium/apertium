@@ -49,7 +49,7 @@ TransferData::TransferData()
 {
   // adding fixed attr_items
   attr_items[L"lem"] = L"(([^<]|\"\\<\")+)";
-  attr_items[L"lemq"] = L"\\#[ _][^<]+"; 
+  attr_items[L"lemq"] = L"\\#[- _][^<]+"; 
   attr_items[L"lemh"] = L"(([^<#]|\"\\<\"|\"\\#\")+)";
   attr_items[L"whole"] = L"(.+)";
   attr_items[L"tags"] = L"((<[^>]+>)+)";
