@@ -142,6 +142,36 @@ TSXReader::newConstant(wstring const &constant)
 }
 
 void
+TSXReader::procDiscardOnAmbiguity()
+{
+  while(type != XML_READER_TYPE_END_ELEMENT || name != L"def-label")
+  {
+    step();
+
+    if(name == L"tags-item")
+    {
+      if(type != XML_READER_TYPE_END_ELEMENT)
+      {
+        tdata.addTagsItem(attrib(L"lemma"), attrib(L"tags"));
+      }
+    }
+    else if(name == L"#text")
+    {
+      // do nothing
+    }
+    else if(name == L"#comment")
+    {
+      // do nothing
+    }
+    else
+    {
+      parseError(L"unexpected '<" + name + L">' tag");
+    }
+  }
+
+}
+
+void
 TSXReader::procDefLabel()
 {
   wstring name_attr = attrib(L"name");
@@ -277,6 +307,13 @@ TSXReader::procTagset()
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
 	procDefLabel();
+      }
+    }
+    else if(name == L"discard-on-ambiguity")
+    {
+      if(type != XML_READER_TYPE_END_ELEMENT)
+      {
+        procDiscardOnAmbiguity();
       }
     }
     else if(name == L"def-mult")

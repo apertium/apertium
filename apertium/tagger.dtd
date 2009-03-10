@@ -5,7 +5,7 @@
      2005.07.29.
 -->
 
-<!ELEMENT tagger (tagset,forbid?,enforce-rules?,preferences?)>
+<!ELEMENT tagger (tagset,forbid?,enforce-rules?,preferences?,discard-on-ambiguity?)>
 <!ATTLIST tagger name CDATA #REQUIRED>
 <!--
 	'tagger' is the root element containing the whole tagset for a given
@@ -107,4 +107,10 @@
 
 <!-- 
 	Each 'prefer' element has a mandatory attribute 'tags' made of a sequence of fine tags 
+-->
+
+<!ELEMENT discard-on-ambiguity (tags-item+)>
+<!--
+        List of label-item or tags-item to be discarded when an ambiguity
+	occurs inside a word
 -->

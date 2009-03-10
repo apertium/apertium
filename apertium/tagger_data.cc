@@ -378,7 +378,24 @@ TaggerData::read(FILE *in)
   }
 
   // read pattern list
-  plist.read(in); 
+  plist.read(in);
+    
+  // read discards on ambiguity
+  discard.clear();
+
+  int limit = Compression::multibyte_read(in);  
+  if(feof(in))
+  {
+    return;
+  }
+  
+  for(int i = 0; i < limit; i++)
+  {
+    tags_item ti;
+    ti.lemma = Compression::wstring_read(in);
+    ti.tags = Compression::wstring_read(in);
+    discard.push_back(ti);
+  }
 }
 
 void
@@ -485,4 +502,25 @@ TaggerData::write(FILE *out)
   
   // write pattern list
   plist.write(out);
+  
+  // write discard list
+  
+  if(discard.size() != 0)
+  {
+    Compression::multibyte_write(discard.size(), out);  
+    for(unsigned int i = 0; i < discard.size(); i++)
+    {
+      Compression::wstring_write(discard[i].lemma, out);
+      Compression::wstring_write(discard[i].tags, out);
+    }
+  }  
+}
+
+void
+TaggerData::addTagsItem(wstring const &lemma, wstring const &tags)
+{
+  tags_item ti;
+  ti.lemma = lemma;
+  ti.tags = tags;
+  discard.push_back(ti);
 }

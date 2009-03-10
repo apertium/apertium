@@ -49,6 +49,13 @@ private:
   double **b;
   PatternList plist;
 
+  struct tags_item{
+    wstring lemma;
+    wstring tags;
+  };
+
+  vector<tags_item> discard;
+  
   void copy(TaggerData const &o);
   void destroy();
 public:
@@ -89,7 +96,7 @@ public:
   virtual int getM();
   
   void setPatternList(PatternList const &pl);
-
+  void addTagsItem(wstring const &lemma, wstring const &tags);
   PatternList & getPatternList();
   
   void read(FILE *in);

@@ -58,6 +58,7 @@ private:
   void newConstant(wstring const &constant);
   void procDefLabel();
   void procDefMult();
+  void procDiscardOnAmbiguity();
   void procTagset();
   void procForbid();
   void procLabelSequence();
