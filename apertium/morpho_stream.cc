@@ -59,13 +59,22 @@ MorphoStream::~MorphoStream()
   delete me;
 }
 
-TaggerWord*
+TaggerWord *
 MorphoStream::get_next_word()
 {
   if(vwords.size() != 0)
   {
     TaggerWord* word=vwords.front();
     vwords.erase(vwords.begin());
+    
+    if(word->isAmbiguous())
+    {
+      vector<wstring> &ref = td->getDiscardRules();
+      for(unsigned int i = 0; i < ref.size(); i++)
+      {
+        word->discardOnAmbiguity(ref[i]);
+      }
+    }
 //    cout << *word << endl;
     return word;
   }

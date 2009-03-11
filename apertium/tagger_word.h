@@ -59,7 +59,7 @@ public:
   static bool generate_marks;
   static vector<wstring> array_tags;
 
-  static bool show_ingnored_string;
+  static bool show_ignored_string;
 
    /** 
     * Constructor 
@@ -147,6 +147,8 @@ public:
   
   bool isAmbiguous() const;  // CAUTION: unknown words are not considered to 
                              // be ambiguous by this method
+  
+  void discardOnAmbiguity(wstring const &tags);
 };
 
 #endif

@@ -49,12 +49,7 @@ private:
   double **b;
   PatternList plist;
 
-  struct tags_item{
-    wstring lemma;
-    wstring tags;
-  };
-
-  vector<tags_item> discard;
+  vector<wstring> discard;
   
   void copy(TaggerData const &o);
   void destroy();
@@ -81,6 +76,9 @@ public:
 
   vector<wstring> & getPreferRules();
   void setPreferRules(vector<wstring> const &pr);
+  
+  vector<wstring> & getDiscardRules();
+  void setDiscardRules(vector<wstring> const &dr);
 
   ConstantManager & getConstants();
   void setConstants(ConstantManager const &c);
@@ -96,7 +94,7 @@ public:
   virtual int getM();
   
   void setPatternList(PatternList const &pl);
-  void addTagsItem(wstring const &lemma, wstring const &tags);
+  void addDiscard(wstring const &tags);
   PatternList & getPatternList();
   
   void read(FILE *in);

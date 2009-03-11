@@ -27,7 +27,7 @@ bool TaggerWord::generate_marks=false;
 
 vector<wstring> TaggerWord::array_tags;
 
-bool TaggerWord::show_ingnored_string=true;
+bool TaggerWord::show_ignored_string=true;
 
 map<wstring, ApertiumRE, Ltstr> TaggerWord::patterns;
 
@@ -151,7 +151,7 @@ wstring
 TaggerWord::get_lexical_form(TTag &t, int const TAG_kEOF) {
   wstring ret= L"";
 
-  if (show_ingnored_string)
+  if (show_ignored_string)
     ret.append(ignored_string);
    
   if(t==TAG_kEOF)
@@ -210,7 +210,7 @@ wstring
 TaggerWord::get_all_chosen_tag_first(TTag &t, int const TAG_kEOF) {
   wstring ret=L"";
 
-  if (show_ingnored_string)
+  if (show_ignored_string)
     ret.append(ignored_string);
    
   if(t==TAG_kEOF)
@@ -346,4 +346,38 @@ TaggerWord::outputOriginal(FILE *output) {
   }
 
   fputws_unlocked(s.c_str(), output);
+}
+
+void
+TaggerWord::discardOnAmbiguity(wstring const &tags)
+{
+  if(isAmbiguous())
+  {
+    map<TTag, wstring>::iterator it = lexical_forms.begin(),
+                              limit = lexical_forms.end();
+    set<TTag> newsettag;
+    while(it != limit)
+    {
+      if(match(it->second, tags))
+      {
+        lexical_forms.erase(it);
+        it = lexical_forms.begin();
+      }
+      else
+      {
+        newsettag.insert(it->first);
+      }
+        
+      if(lexical_forms.size() == 1)
+      {
+        newsettag.insert(lexical_forms.begin()->first);
+        break;
+      }
+      it++;
+    }
+    if(tags.size() != newsettag.size())
+    { 
+      this->tags = newsettag;
+    }
+  }
 }

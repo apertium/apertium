@@ -170,6 +170,18 @@ TaggerData::setPreferRules(vector<wstring> const &pr)
   prefer_rules = pr;
 }
 
+vector<wstring> &
+TaggerData::getDiscardRules()
+{
+  return discard;
+}
+
+void
+TaggerData::setDiscardRules(vector<wstring> const &v)
+{
+  discard = v;
+}
+
 ConstantManager &
 TaggerData::getConstants()
 {
@@ -181,7 +193,6 @@ TaggerData::setConstants(ConstantManager const &c)
 {  
   constants = c;
 }
-
 
 Collection &
 TaggerData::getOutput()
@@ -391,10 +402,7 @@ TaggerData::read(FILE *in)
   
   for(int i = 0; i < limit; i++)
   {
-    tags_item ti;
-    ti.lemma = Compression::wstring_read(in);
-    ti.tags = Compression::wstring_read(in);
-    discard.push_back(ti);
+    discard.push_back(Compression::wstring_read(in));
   }
 }
 
@@ -507,20 +515,16 @@ TaggerData::write(FILE *out)
   
   if(discard.size() != 0)
   {
-    Compression::multibyte_write(discard.size(), out);  
-    for(unsigned int i = 0; i < discard.size(); i++)
+    Compression::multibyte_write(discard.size(), out);
+    for(unsigned int i = 0, limit = discard.size(); i != limit; i++)
     {
-      Compression::wstring_write(discard[i].lemma, out);
-      Compression::wstring_write(discard[i].tags, out);
+      Compression::wstring_write(discard[i], out);
     }
   }  
 }
 
 void
-TaggerData::addTagsItem(wstring const &lemma, wstring const &tags)
+TaggerData::addDiscard(wstring const &tags)
 {
-  tags_item ti;
-  ti.lemma = lemma;
-  ti.tags = tags;
-  discard.push_back(ti);
+  discard.push_back(tags);
 }

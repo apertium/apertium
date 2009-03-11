@@ -148,11 +148,11 @@ TSXReader::procDiscardOnAmbiguity()
   {
     step();
 
-    if(name == L"tags-item")
+    if(name == L"discard")
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
-        tdata.addTagsItem(attrib(L"lemma"), attrib(L"tags"));
+        tdata.addDiscard(attrib(L"tags"));
       }
     }
     else if(name == L"#text")

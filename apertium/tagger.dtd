@@ -109,8 +109,16 @@
 	Each 'prefer' element has a mandatory attribute 'tags' made of a sequence of fine tags 
 -->
 
-<!ELEMENT discard-on-ambiguity (tags-item+)>
+<!ELEMENT discard-on-ambiguity (discard+)>
+
 <!--
         List of label-item or tags-item to be discarded when an ambiguity
 	occurs inside a word
+-->
+
+<!ELEMENT discard EMPTY>
+<!ATTLIST discard tags CDATA #REQUIRED>
+
+<!-- 
+	Each 'discard' element has a mandatory attribute 'tags' made of a sequence of fine tags 
 -->
