@@ -73,25 +73,30 @@
   </xsl:choose>
 </xsl:template>
 
-
 <xsl:template name="format-rule-matxin">
   <xsl:choose>
     <xsl:when test="./@type = 'open'">
       <xsl:value-of select="./tag/@regexp"/>
       <xsl:value-of select="string('&#x9;{&#xA;')"/>
       <xsl:if test="./@eos = string('yes')">
-	<xsl:value-of select="string('  isDot = true;&#xA;')"/>
+        <xsl:value-of select="string('  isDot = true;&#xA;')"/>
       </xsl:if>
       <xsl:value-of select="string('  printBuffer();&#xA;')"/>
+
+      <xsl:value-of select="string('  if (hasWrite_white) {&#xA;    fputws(L&quot; &quot;, yyout);&#xA;')"/>
+      <xsl:value-of select="string('    offset++;&#xA;    hasWrite_white = false;&#xA;  }&#xA;')"/>
+
       <xsl:value-of select="string('  current++;&#xA;  orders.push_back(current);&#xA;')"/>
       <xsl:value-of select="string('  last=&quot;open_tag&quot;;&#xA;  offsets.push_back(offset);&#xA;')"/>
-      <xsl:value-of select="string('  tags.push_back(yytext);&#xA;}&#xA;')"/>
+      <xsl:value-of select="string('  wchar_t symbol[sizeof(yytext) + 1];&#xA;')"/>
+      <xsl:value-of select="string('  mbstowcs(symbol, yytext, MB_CUR_MAX);&#xA;')"/>
+      <xsl:value-of select="string('  tags.push_back(symbol);&#xA;}&#xA;')"/>
     </xsl:when>
     <xsl:when test="./@type = 'close'">
       <xsl:value-of select="./tag/@regexp"/>
       <xsl:value-of select="string('&#x9;{&#xA;')"/>
       <xsl:if test="./@eos = string('yes')">
-	<xsl:value-of select="string('  isDot = true;&#xA;')"/>
+        <xsl:value-of select="string('  isDot = true;&#xA;')"/>
       </xsl:if>
       <xsl:value-of select="string('  int ind=get_index(yytext);&#xA;')"/>
       <xsl:value-of select="string('  printBuffer(ind, yytext);&#xA;}&#xA;')"/>
@@ -101,14 +106,14 @@
       <xsl:value-of select="./begin/@regexp"/>
       <xsl:value-of select="string('&#x9;{&#xA;')"/>
       <xsl:if test="./@eos = string('yes')">
-	<xsl:value-of select="string('  isDot = true;&#xA;')"/>
+        <xsl:value-of select="string('  isDot = true;&#xA;')"/>
       </xsl:if>
       <xsl:value-of select="string('  last = &quot;buffer&quot;;&#xA;')"/>
       <xsl:value-of select="string('  bufferAppend(buffer, yytext);&#xA;  yy_push_state(C')"/>
       <xsl:for-each select="/format/rules/format-rule[@type='comment']">
-	<xsl:if test="./begin/@regexp = $thisnode/begin/@regexp">
+        <xsl:if test="./begin/@regexp = $thisnode/begin/@regexp">
           <xsl:value-of select="position()"/>
-	</xsl:if>
+        </xsl:if>
       </xsl:for-each>
       <xsl:value-of select="string(');&#xA;}&#xA;')"/>
     </xsl:when>
@@ -116,7 +121,7 @@
       <xsl:value-of select="./tag/@regexp"/>
       <xsl:value-of select="string('&#x9;{&#xA;')"/>
       <xsl:if test="./@eos = string('yes')">
-	<xsl:value-of select="string('  isDot = true;&#xA;')"/>
+        <xsl:value-of select="string('  isDot = true;&#xA;')"/>
       </xsl:if>
       <xsl:value-of select="string('  last = &quot;buffer&quot;;&#xA;')"/>
       <xsl:value-of select="string('  bufferAppend(buffer, yytext);&#xA;}&#xA;')"/>
@@ -329,23 +334,39 @@ string get_tagName(string tag){
 
 <xsl:if test="$mode=string('matxin')">
 int get_index(string end_tag){
+  char tmp[end_tag.size() + 1];
+  string new_end_tag;
+  size_t pos;
+
+  // Fill tmp with zeros to avoid segfaults
+  memset(tmp, '\0', end_tag.size() + 1);
+
   for (int i=tags.size()-1; i >= 0; i--) {
-    if (get_tagName(end_tag) == get_tagName(tags[i]))
+    pos = wcstombs(tmp, tags[i].c_str(), tags[i].size());
+    if (pos == (size_t)-1)
+    {
+      wcerr &lt;&lt; L"Encoding error." &lt;&lt; endl;
+      exit(EXIT_FAILURE);
+    }
+    new_end_tag = tmp;
+
+    if (get_tagName(end_tag) == get_tagName(new_end_tag))
       return i;
   }
+
   return -1;
 }
 
-void print_emptyTags(){
+void print_emptyTags() {
   wchar_t tag[250];
 
-  for (int i=0; i &lt; tags.size(); i++) {
-    wsprintf(tag, L"&lt;format-tag offset=\"%d\" order= \"%d\"&gt;&lt;![CDATA[", offsets[i], orders[i]);
-    fputws_unlocked(tag, formatfile);
-    fputws_unlocked(tags[i].c_str(), formatfile); 
-    fputwc_unlocked(L']', formatfile);
-    swprintf(tag, L"]&gt;&lt;/format-tag&gt;\n");
-    fputws_unlocked(tag, formatfile);
+  for (size_t i=0; i &lt; tags.size(); i++) {
+    swprintf(tag, 250, L"&lt;format-tag offset=\"%d\" order= \"%d\"&gt;&lt;![CDATA[", offsets[i], orders[i]);
+    fputws(tag, formatfile);
+    fputws(tags[i].c_str(), formatfile);
+    fputwc(L']', formatfile);
+    swprintf(tag, 250, L"]&gt;&lt;/format-tag&gt;\n");
+    fputws(tag, formatfile);
   }
 }
 </xsl:if>
@@ -355,98 +376,115 @@ void print_emptyTags(){
 void printBuffer(int ind=-1, string end_tag="")
 {
   wchar_t tag[250];
+  wstring etiketa;
+  wstring wend_tag;
+  size_t pos;
+  int num;
+  wchar_t result[end_tag.size() + 1];
 
-  if (ind != -1 &amp;&amp; ind == tags.size()-1 &amp;&amp; offsets[ind] == offset) {
+  // Convert end_tag to wstring
+  pos = mbstowcs(result, end_tag.c_str(), end_tag.size());
+  if (pos == (size_t) -1)
+  {
+    wcerr &lt;&lt; L"Encoding error." &lt;&lt; endl;
+    exit(EXIT_FAILURE);
+  }
+  result[pos] = L'\0';
+  wend_tag = result;
+
+  if (ind != -1 &amp;&amp; ind == tags.size()-1 &amp;&amp;
+      offsets[ind] == offset &amp;&amp; orders[ind] == current)
+  {
     last = "buffer";
-    buffer = tags.back() + buffer + end_tag;
+    buffer = tags.back() + buffer + wend_tag;
     tags.pop_back();
     offsets.pop_back();
     orders.pop_back();
   }
-  else if (ind == -1 &amp;&amp; end_tag != "") {
+  else if (ind == -1 &amp;&amp; wend_tag != L"")
+  {
     last = "buffer";
-    buffer = buffer + end_tag;    
+    buffer = buffer + wend_tag;
   }
-  else {
-    if (hasWrite_dot &amp;&amp; isDot) {
-      swprintf(tag, L"&lt;empty-tag offset=\"%d\"/&gt;\n", offset);
-      fputws_unlocked(tag, formatfile);
-      fputws_unlocked(L".", yyout);
-      offset++;
+  else
+  {
+    if (hasWrite_dot &amp;&amp; isDot)
+    {
+      swprintf(tag, 250, L"&lt;empty-tag offset=\"%d\"/&gt;\n", offset+1);
+      fputws(tag, formatfile);
+
+      fputws(L" .\n", yyout);
+      offset += 2;
       hasWrite_dot = false;
     }
 
     isDot = false;
 
-    if(ind != -1) {
-      if (hasWrite_white) {
-        fputws_unlocked(L" ", yyout);
+    if ((buffer.size() == 1 &amp;&amp; buffer[0] != ' ') || buffer.size() &gt; 1)
+    {
+      if (hasWrite_white)
+      {
+        fputws(L" ", yyout);
         offset++;
         hasWrite_white = false;
       }
 
-      swprintf(tag, L"&lt;open-close-tag&gt;\n");
-      swprintf(tag, L"%s&lt;open-tag offset=\"%d\" order=\"%d\"&gt;&lt;![CDATA[", tag, offsets[ind], orders[ind]);
-      fputws_unlocked(tag, formatfile);
-      fputws_unlocked(tags[ind].c_str(), formatfile);
+      current++;
+
+      swprintf(tag, 250, L"&lt;format-tag offset=\"%d\" order=\"%d\"&gt;&lt;![CDATA[", offset, current);
+      fputws(tag, formatfile);
+      while ((pos = buffer.find(L"]]&gt;")) != wstring::npos)
+        buffer.replace(pos, 3, L"\\]\\]\\&gt;");
+      fputws(buffer.c_str(), formatfile);
+      swprintf(tag, 250, L"]]&gt;&lt;/format-tag&gt;\n");
+      fputws(tag, formatfile);
+    }
+    else
+    {
+      fputws(buffer.c_str(), yyout);
+      offset += buffer.size();
+    }
+
+
+    if (ind != -1)
+    {
+      if (hasWrite_white)
+      {
+        fputws(L" ", yyout);
+        offset++;
+        hasWrite_white = false;
+      }
+
+      num = swprintf(tag, 250, L"&lt;open-close-tag&gt;\n");
+      swprintf(tag + num, 250 - num, L"&lt;open-tag offset=\"%d\" order=\"%d\"&gt;&lt;![CDATA[", offsets[ind], orders[ind]);
+      fputws(tag, formatfile);
+      etiketa = tags[ind];
+      while ((pos = etiketa.find(L"]]&gt;")) != wstring::npos)
+        etiketa.replace(pos, 3, L"\\]\\]\\&gt;");
+      fputws(etiketa.c_str(), formatfile);
 
       current++;
 
-      swprintf(tag, L"]&gt;&lt;/open-tag&gt;\n");
-      swprintf(tag, L"]%s&lt;close-tag offset=\"%d\" order=\"%d\"&gt;&lt;![CDATA[", tag, offset, current);
-      fputws_unlocked(tag, formatfile);
-      fputws_unlocked(end_tag.c_str(), formatfile);
-      swprintf(tag, L"]&gt;&lt;/close-tag&gt;\n");
-      swprintf(tag, L"]%s&lt;/open-close-tag&gt;\n", tag);
-      fputws_unlocked(tag, formatfile);
+      num = swprintf(tag, 250, L"]]&gt;&lt;/open-tag&gt;\n");
+      swprintf(tag + num, 250 - num, L"&lt;close-tag offset=\"%d\" order=\"%d\"&gt;&lt;![CDATA[", offset, current);
+      fputws(tag, formatfile);
+      while ((pos = wend_tag.find(L"]]&gt;")) != wstring::npos)
+        wend_tag.replace(pos, 3, L"\\]\\]\\&gt;");
+      fputws(wend_tag.c_str(), formatfile);
+      num = swprintf(tag, 250, L"]]&gt;&lt;/close-tag&gt;\n");
+      swprintf(tag + num, 250 - num, L"&lt;/open-close-tag&gt;\n");
+      fputws(tag, formatfile);
 
       tags.erase(tags.begin() + ind);
       offsets.erase(offsets.begin() + ind);
       orders.erase(orders.begin() + ind);
     }
 
-    if(buffer.size() &gt; 1) {
-      if (hasWrite_white) {
-        fputws_unlocked(L" ", yyout);
-        offset++;
-        hasWrite_white = false;
-      }
-
-      current++;
-
-      swprintf(tag, L"&lt;format-tag offset=\"%d\" order=\"%d\"&gt;&lt;![CDATA[", offset, current);
-      fputws_unlocked(tag, formatfile);
-      fputws_unlocked(buffer.c_str(), formatfile);
-      swprintf(tag, L"]&gt;&lt;/format-tag&gt;\n"); 
-      fputwc_unlocked(L']', formatfile);
-      fputws_unlocked(tag, formatfile);
-    }
-    else if(buffer.size() == 1 &amp;&amp; buffer[0] != L' ') {
-      if (hasWrite_white) {
-        fputws_unlocked(L" ", yyout);
-        offset++;
-        hasWrite_white = false;
-      }
-
-      current++;
-
-      sprintf(tag, "&lt;format-tag offset=\"%d\" order=\"%d\"&gt;&lt;![CDATA[", offset, current);
-      fputws_unlocked(tag, formatfile);
-      fputws_unlocked(buffer.c_str(), formatfile);
-      swprintf(tag, L"]&gt;&lt;/format-tag&gt;\n");
-      fputwc_unlocked(L']', formatfile);
-      fputws_unlocked(tag, formatfile);
-    }
-    else {
-      fputws_unlocked(buffer.c_str(), yyout);
-      offset += buffer.size();
-      hasWrite_white = false;
-    }
-
 
     last = "buffer";
     buffer = L"";
   }
+
 }
   </xsl:when>
   <xsl:otherwise>
@@ -539,12 +577,12 @@ void printBuffer()
     <xsl:when test="$thisnode/@priority &gt; ./@priority">
       <xsl:value-of select="string('&#x9;')"/>
       <xsl:choose>
-	<xsl:when test="$mode=string('matxin')">
-	  <xsl:call-template name="format-rule-matxin"/>
-	</xsl:when>
-	<xsl:otherwise>
-	  <xsl:call-template name="format-rule-apertium"/>
-	</xsl:otherwise>
+        <xsl:when test="$mode=string('matxin')">
+          <xsl:call-template name="format-rule-matxin"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="format-rule-apertium"/>
+        </xsl:otherwise>
       </xsl:choose>
     </xsl:when>
     <xsl:otherwise/>
@@ -748,8 +786,8 @@ int main(int argc, char *argv[])
 </xsl:for-each>
 
 <xsl:if test="$mode=string('matxin')">
-  fputs_unlocked("&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;ISO-8859-1\&quot;?>\n", formatfile);
-  fputs_unlocked("&lt;format&gt;\n", formatfile);
+  fputws("&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot; ?>\n", formatfile);
+  fputws("&lt;format&gt;\n", formatfile);
 </xsl:if>
 
   last = "";
@@ -763,7 +801,7 @@ int main(int argc, char *argv[])
 
 <xsl:if test="$mode=string('matxin')">
   print_emptyTags();
-  fputs_unlocked("&lt;/format&gt;", formatfile);
+  fputws("&lt;/format&gt;", formatfile);
   fclose(formatfile);
 </xsl:if>
   fclose(yyin);
