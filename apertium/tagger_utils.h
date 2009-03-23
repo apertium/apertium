@@ -69,6 +69,7 @@ void clear_array_vector(vector<TTag> v[], int l);
 int nguiones_fs(wstring const &cadena);
 
 wstring trim(wstring s);
+
 };
 
 template <class T>

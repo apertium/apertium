@@ -144,7 +144,7 @@ TSXReader::newConstant(wstring const &constant)
 void
 TSXReader::procDiscardOnAmbiguity()
 {
-  while(type != XML_READER_TYPE_END_ELEMENT || name != L"def-label")
+  while(type != XML_READER_TYPE_END_ELEMENT || name != L"discard-on-ambiguity")
   {
     step();
 
@@ -152,7 +152,7 @@ TSXReader::procDiscardOnAmbiguity()
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
-        tdata.addDiscard(attrib(L"tags"));
+        tdata.addDiscard(L"<" + StringUtils::substitute(attrib(L"tags"), L".", L"><") + L">");
       }
     }
     else if(name == L"#text")
@@ -163,12 +163,22 @@ TSXReader::procDiscardOnAmbiguity()
     {
       // do nothing
     }
+    else if(name == L"discard-on-ambiguity")
+    {
+      if(type == XML_READER_TYPE_END_ELEMENT)
+      {
+	break;
+      }
+      else
+      {
+	parseError(L"Unexpected 'discard-on-ambiguity' open tag");
+      }
+    }
     else
     {
       parseError(L"unexpected '<" + name + L">' tag");
     }
   }
-
 }
 
 void
@@ -307,13 +317,6 @@ TSXReader::procTagset()
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
 	procDefLabel();
-      }
-    }
-    else if(name == L"discard-on-ambiguity")
-    {
-      if(type != XML_READER_TYPE_END_ELEMENT)
-      {
-        procDiscardOnAmbiguity();
       }
     }
     else if(name == L"def-mult")
@@ -552,6 +555,18 @@ TSXReader::read(string const &filename)
   if(name == L"preferences")
   {
     procPreferences();
+    step();
+    while(name == L"#text" || name == L"#comment")
+    {
+      step();
+    }
+  }
+  if(name == L"discard-on-ambiguity")
+  {
+    if(type != XML_READER_TYPE_END_ELEMENT)
+    {
+      procDiscardOnAmbiguity();
+    }
   }
 
   xmlFreeTextReader(reader);
