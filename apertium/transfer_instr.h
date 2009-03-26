@@ -35,7 +35,8 @@ enum TransferInstrType
   ti_case_of_sl,
   ti_case_of_tl,
   ti_linkto_sl,
-  ti_linkto_tl
+  ti_linkto_tl,
+  ti_lu_count
 };
 
 class TransferInstr

@@ -243,6 +243,9 @@ Postchunk::evalString(xmlNode *element)
           return word[ti.getPos()]->chunkPart(attr_items[ti.getContent()]);
         }
         break;
+        
+      case ti_lu_count:
+        return StringUtils::itoa_string(tmpword.size());
 
       case ti_var:
         return variables[ti.getContent()];
@@ -341,6 +344,10 @@ Postchunk::evalString(xmlNode *element)
   else if(!xmlStrcmp(element->name, (const xmlChar *) "var"))
   {
     evalStringCache[element] = TransferInstr(ti_var, (const char *) element->properties->children->content, 0);
+  }
+  else if(!xmlStrcmp(element->name, (const xmlChar *) "lu-count"))
+  {
+    evalStringCache[element] = TransferInstr(ti_lu_count, "", 0);
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "case-of"))
   {

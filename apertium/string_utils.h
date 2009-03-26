@@ -50,6 +50,8 @@ class StringUtils {
 
   static wstring itoa(int n);
   
+  static string itoa_string(int n);
+  
   static wstring ftoa(double f);
 
   static wstring tolower(wstring const &s);

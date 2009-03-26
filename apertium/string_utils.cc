@@ -109,9 +109,15 @@ StringUtils::substitute(wstring const &source, wstring const &olds, wstring cons
 wstring
 StringUtils::itoa(int n)
 {
+  return XMLParseUtil::stows(itoa_string(n));
+}
+
+string
+StringUtils::itoa_string(int n)
+{
   char str[256];
-  sprintf(str, "%d",n);
-  return XMLParseUtil::stows(str);
+  snprintf(str, 256, "%d", n);
+  return str;
 }
 
 wstring
