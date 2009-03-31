@@ -193,9 +193,9 @@ int main(int argc, char *argv[])
     case 3:
       if(t.getUseBilingual() == false)
       {
+        testfile(argv[argc-1]);
         testfile(argv[argc-2]);
-        testfile(argv[argc-3]);
-        t.read(argv[argc-3], argv[argc-2]);
+        t.read(argv[argc-2], argv[argc-1]);
       }
       else
       {
