@@ -4,19 +4,27 @@ OUTPUT_FILE="/dev/stdout"
 
 message ()
 {
-  echo "USAGE: $(basename $0) [-d datadir] [-f format] [-u] <translation> [in [out]]"
+  echo "USAGE: $(basename $0) [-d datadir] [-f format] [-u] <direction> [in [out]]"
   echo " -d datadir       directory of linguistic data"
   echo " -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx, pptx"
 
   echo " -a               display ambiguity"
   echo " -u               don't display marks '*' for unknown words" 
   echo " -m memory.tmx    use a translation memory to recycle translations"
-  echo " -o translation   translation direction using the translation memory,"
-  echo "                  by default 'translation' is used instead"
-  echo " translation      typically, LANG1-LANG2, but see modes.xml in language data"
+  echo " -o direction     translation direction using the translation memory,"
+  echo "                  by default 'direction' is used instead"
+  echo " -l               lists the available translation directions and exits"
+  echo " direction        typically, LANG1-LANG2, but see modes.xml in language data"
   echo " in               input file (stdin by default)"
   echo " out              output file (stdout by default)"
   exit 1;
+}
+
+list_directions ()
+{
+         for i in $DATOS/modes/*.mode;
+         do echo "  " $(basename $i) |awk '{gsub(".mode", ""); print;}'
+         done;
 }
 
 locale_utf8 ()
@@ -244,7 +252,7 @@ translate_xlsx ()
 }
 
 
-ARGS=$(getopt "uahf:d:m:o:" $*)
+ARGS=$(getopt "uahlf:d:m:o:" $*)
 set -- $ARGS
 for i
 do
@@ -255,6 +263,7 @@ do
     -o) shift; TRANSLATION_MEMORY_DIRECTION=$1 shift;;
     -u) UWORDS="no"; shift;;
     -a) OPTION_TAGGER="-m"; shift;;
+    -l) DATOS=$DEFAULT_DIRECTORY; list_directions; exit 0;;
     -h) message;;
     --) shift; break;;
   esac
@@ -317,9 +326,10 @@ if [ ! -e $DATOS/modes/$PREFIJO.mode ];
        if((c <= 1));
        then echo ".";
        else echo ". Try one of:";
-         for i in $DATOS/modes/*.mode;
-         do echo "  " $(basename $i) |awk '{gsub(".mode", ""); print;}'
-         done;
+         list_directions;
+#         for i in $DATOS/modes/*.mode;
+#         do echo "  " $(basename $i) |awk '{gsub(".mode", ""); print;}'
+#         done;
        fi
        exit 1;
 fi
