@@ -1477,8 +1477,6 @@ Interchunk::applyRule()
     }
     delete[] blank;
   }
-  word = NULL;
-  blank = NULL;
   tmpword.clear();
   tmpblank.clear();
   ms.init(me->getInitial());
