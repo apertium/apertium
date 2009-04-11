@@ -1467,7 +1467,7 @@ Interchunk::applyRule()
     {
       delete word[i];
     }
-    delete word;
+    delete[] word;
   }
   if(blank)
   {
