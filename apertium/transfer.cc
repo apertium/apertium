@@ -1035,11 +1035,11 @@ Transfer::processCallMacro(xmlNode *localroot)
   
   if(myword)
   {
-    delete myword;
+    delete[] myword;
   }
   if(myblank)
   {
-    delete myblank;
+    delete[] myblank;
   }
 }
 
@@ -1883,7 +1883,7 @@ Transfer::applyRule()
     {
       delete word[i];
     }
-    delete word;
+    delete[] word;
   }
   if(blank)
   {
@@ -1891,7 +1891,7 @@ Transfer::applyRule()
     {
       delete blank[i];
     }
-    delete blank;
+    delete[] blank;
   }
   word = NULL;
   blank = NULL;
