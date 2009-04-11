@@ -1535,7 +1535,7 @@ Postchunk::applyRule()
     {
       delete word[i];
     }
-    delete word;
+    delete[] word;
   }
   if(blank)
   {
@@ -1543,7 +1543,7 @@ Postchunk::applyRule()
     {
       delete blank[i];
     }
-    delete blank;
+    delete[] blank;
   }
   word = NULL;
   blank = NULL;
@@ -1554,7 +1554,7 @@ Postchunk::applyRule()
     {
       delete tmpblank[i];
     }
-    delete tmpword[i];
+    delete[] tmpword[i];
   }
   tmpword.clear();
   tmpblank.clear();
