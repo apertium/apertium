@@ -240,6 +240,10 @@ Interchunk::evalString(xmlNode *element)
       case ti_clip_tl:
         if(checkIndex(element, ti.getPos(), lword))
         {
+          if(ti.getContent()[0]=='x') { // Jacob - for the experiametal "x_pgcontent" part
+            string wf = word[ti.getPos()]->chunkPart(attr_items[ti.getContent()]);  // Jacob
+            return wf.substr(1, wf.length()-2); // trim away the { and }  // Jacob
+          } // Jacob
           return word[ti.getPos()]->chunkPart(attr_items[ti.getContent()]);
         }
         break;

@@ -55,6 +55,7 @@ TransferData::TransferData()
   attr_items[L"tags"] = L"((<[^>]+>)+)";
   attr_items[L"chname"] = L"({([^/]+)\\/)"; // includes delimiters { and / !!!
   attr_items[L"chcontent"] = L"(\\{.+)";    
+  attr_items[L"x_pgcontent"] = L"(\\{.+)";;    // Jacob
 }
 
 TransferData::~TransferData()
