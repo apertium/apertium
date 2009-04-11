@@ -651,11 +651,11 @@ Interchunk::processCallMacro(xmlNode *localroot)
 
   if(myword)
   {
-    delete myword;
+    delete[] myword;
   }
   if(myblank)
   {
-    delete myblank;
+    delete[] myblank;
   }
 }
 
