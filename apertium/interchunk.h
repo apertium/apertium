@@ -71,6 +71,7 @@ private:
   
   map<xmlNode *, TransferInstr> evalStringCache;
   bool inword;
+  bool null_flush;
   
   void copy(Interchunk const &o);
   void destroy();
@@ -115,6 +116,8 @@ private:
   void applyRule();
   TransferToken & readToken(FILE *in);
   bool checkIndex(xmlNode *element, int index, int limit); 
+  void interchunk_wrapper_null_flush(FILE *in, FILE *out);
+
 public:
   Interchunk();
   ~Interchunk();
@@ -123,6 +126,9 @@ public:
   
   void read(string const &transferfile, string const &datafile);
   void interchunk(FILE *in, FILE *out);
+  bool getNullFlush(void);
+  void setNullFlush(bool null_flush);
+
 };
 
 #endif

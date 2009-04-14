@@ -23,6 +23,7 @@
 #include <lttoolbox/xml_parse_util.h>
 
 #include <cctype>
+#include <cerrno>
 #include <iostream>
 #include <stack>
 #include <apertium/string_utils.h>
@@ -58,6 +59,7 @@ Interchunk::Interchunk()
   root_element = NULL;
   lastrule = NULL;
   inword = false;
+  null_flush = false;
 }
 
 Interchunk::~Interchunk()
@@ -1356,9 +1358,44 @@ Interchunk::readToken(FILE *in)
   }
 }
 
+bool
+Interchunk::getNullFlush(void)
+{
+  return null_flush;
+}
+
+void
+Interchunk::setNullFlush(bool null_flush)
+{
+  this->null_flush = null_flush;
+}
+
+void
+Interchunk::interchunk_wrapper_null_flush(FILE *in, FILE *out)
+{
+  setNullFlush(false);
+  
+  while(!feof(in))
+  {
+    interchunk(in, out);
+    fputwc_unlocked(L'\0', out);
+    int code = fflush(out);
+    if(code != 0)
+    {
+      wcerr << L"Could not flush output " << errno << endl;
+    }
+  }
+}    
+
+
 void
 Interchunk::interchunk(FILE *in, FILE *out)
 {
+  if(getNullFlush())
+  {
+    interchunk_wrapper_null_flush(in, out);
+  }
+  
   int last = 0;
 
   output = out;

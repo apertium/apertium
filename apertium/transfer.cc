@@ -26,6 +26,7 @@
 #include <cctype>
 #include <iostream>
 #include <stack>
+#include <cerrno>
 
 using namespace Apertium;
 using namespace std;
@@ -59,6 +60,7 @@ Transfer::Transfer()
   defaultAttrs = lu;
   useBilingual = true;
   isExtended = false;
+  null_flush = false;
 }
 
 Transfer::~Transfer()
@@ -1709,9 +1711,43 @@ Transfer::readToken(FILE *in)
   }
 }
 
+bool
+Transfer::getNullFlush(void)
+{
+  return null_flush;
+}
+
+void
+Transfer::setNullFlush(bool null_flush)
+{
+  this->null_flush = null_flush;
+}
+
+void
+Transfer::transfer_wrapper_null_flush(FILE *in, FILE *out)
+{
+  setNullFlush(false);
+  
+  while(!feof(in))
+  {
+    transfer(in, out);
+    fputwc_unlocked(L'\0', out);
+    int code = fflush(out);
+    if(code != 0)
+    {
+      wcerr << L"Could not flush output " << errno << endl;
+    }
+  }
+}    
+
 void
 Transfer::transfer(FILE *in, FILE *out)
 {
+  if(getNullFlush())
+  {
+    transfer_wrapper_null_flush(in, out);
+  }
+  
   int last = 0;
 
   output = out;

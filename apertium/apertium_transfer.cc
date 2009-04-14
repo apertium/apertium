@@ -49,6 +49,8 @@ void message(char *progname)
   cerr << "  -n         don't use bilingual dictionary" << endl;
   cerr << "  -x bindix  extended mode with user dictionary" << endl;
   cerr << "  -c         case-sensitiveness while accessing bilingual dictionary" << endl;
+  cerr << "  -z         null-flushing output on '\0'" << endl;
+  cerr << "  -h         shows this message" << endl;
   
 
   exit(EXIT_FAILURE);
@@ -111,13 +113,15 @@ int main(int argc, char *argv[])
     {
       {"no-bilingual",      no_argument, 0, 'n'},
       {"extended",      required_argument, 0, 'x'},
-      {"case-sensitive", required_argument, 0, 'c'},
+      {"case-sensitive", no_argument, 0, 'c'},
+      {"null-flush", no_argument, 0, 'z'},
+      {"help", no_argument, 0, 'h'},
       {0, 0, 0, 0}
     };
 
-    int c=getopt_long(argc, argv, "nx:c", long_options, &option_index);
+    int c=getopt_long(argc, argv, "nx:czh", long_options, &option_index);
 #else
-    int c=getopt(argc, argv, "nx:c");
+    int c=getopt(argc, argv, "nx:czh");
 #endif
     if (c==-1)
       break;
@@ -135,7 +139,12 @@ int main(int argc, char *argv[])
       case 'c':
         t.setCaseSensitiveness(true);
         break;
+      
+      case 'z':
+        t.setNullFlush(true);
+        break;
 
+      case 'h':
       default:
         message(argv[0]);
         break;

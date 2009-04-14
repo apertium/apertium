@@ -78,6 +78,7 @@ private:
   
   OutputType defaultAttrs;
   bool useBilingual;
+  bool null_flush;
   
   void copy(Transfer const &o);
   void destroy();
@@ -123,7 +124,8 @@ private:
   void applyWord(wstring const &word_str);
   void applyRule();
   TransferToken & readToken(FILE *in);
-    bool checkIndex(xmlNode *element, int index, int limit);
+  bool checkIndex(xmlNode *element, int index, int limit);
+  void transfer_wrapper_null_flush(FILE *in, FILE *out);
 public:
   Transfer();
   ~Transfer();
@@ -137,6 +139,8 @@ public:
   bool getUseBilingual(void) const;
   void setExtendedDictionary(string const &fstfile);
   void setCaseSensitiveness(bool value);
+  bool getNullFlush(void);
+  void setNullFlush(bool null_flush);
 };
 
 #endif

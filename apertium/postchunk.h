@@ -71,6 +71,7 @@ private:
   map<xmlNode *, TransferInstr> evalStringCache;
 
   bool inword;
+  bool null_flush;
 
   void copy(Postchunk const &o);
   void destroy();
@@ -123,6 +124,8 @@ private:
   static wstring pseudolemma(wstring const &chunk);
   static wstring wordzero(wstring const &chunk);
   bool checkIndex(xmlNode *element, int index, int limit);  
+  void postchunk_wrapper_null_flush(FILE *in, FILE *out);
+
 public:
   Postchunk();
   ~Postchunk();
@@ -131,6 +134,9 @@ public:
   
   void read(string const &transferfile, string const &datafile);
   void postchunk(FILE *in, FILE *out);
+  bool getNullFlush(void);
+  void setNullFlush(bool null_flush);
+
 };
 
 #endif

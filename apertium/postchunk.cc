@@ -23,6 +23,7 @@
 #include <lttoolbox/xml_parse_util.h>
 
 #include <cctype>
+#include <cerrno>
 #include <iostream>
 #include <stack>
 #include <apertium/string_utils.h>
@@ -58,6 +59,7 @@ Postchunk::Postchunk()
   root_element = NULL;
   lastrule = NULL;
   inword = false;
+  null_flush = false;
 }
 
 Postchunk::~Postchunk()
@@ -1414,9 +1416,43 @@ Postchunk::readToken(FILE *in)
   }
 }
 
+bool
+Postchunk::getNullFlush(void)
+{
+  return null_flush;
+}
+
+void
+Postchunk::setNullFlush(bool null_flush)
+{
+  this->null_flush = null_flush;
+}
+
+void
+Postchunk::postchunk_wrapper_null_flush(FILE *in, FILE *out)
+{
+  setNullFlush(false);
+  
+  while(!feof(in))
+  {
+    postchunk(in, out);
+    fputwc_unlocked(L'\0', out);
+    int code = fflush(out);
+    if(code != 0)
+    {
+      wcerr << L"Could not flush output " << errno << endl;
+    }
+  }
+}    
+
 void
 Postchunk::postchunk(FILE *in, FILE *out)
 {
+  if(getNullFlush())
+  {
+    postchunk_wrapper_null_flush(in, out);
+  }
+  
   int last = 0;
 
   output = out;

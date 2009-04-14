@@ -26,6 +26,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <apertium/string_utils.h>
+#include <getopt.h>
+
 #ifdef WIN32
 #include <io.h>
 #include <fcntl.h>
@@ -36,62 +38,131 @@ using namespace std;
 
 void message(char *progname)
 {
-  cerr << "USAGE: " << basename(progname) << " trules preproc [input [output]]" << endl;
+  cerr << "USAGE: " << basename(progname) << " [-z] t2x preproc [input [output]]" << endl;
   cerr << "  t2x        t2x rules file" << endl;
   cerr << "  preproc    result of preprocess trules file" << endl;
   cerr << "  input      input file, standard input by default" << endl;
   cerr << "  output     output file, standard output by default" << endl;
+  cerr << "OPTIONS" <<endl;
+  cerr << "  -z         flush buffer on '\0'" << endl;
+
   exit(EXIT_FAILURE);
+}
+
+void testfile(string const &filename)
+{
+  struct stat mybuf;
+  if(stat(filename.c_str(), &mybuf) == -1)
+  {
+    cerr << "Error: can't stat file '";
+    cerr << filename << "'." << endl;
+    exit(EXIT_FAILURE);
+  }
+}
+
+FILE * open_input(string const &filename)
+{
+  FILE *input = fopen(filename.c_str(), "r");
+  if(!input)
+  {
+    cerr << "Error: can't open input file '";
+    cerr << filename.c_str() << "'." << endl;
+    exit(EXIT_FAILURE);
+  }
+  
+  return input;
+}  
+
+FILE * open_output(string const &filename)
+{
+  FILE *output = fopen(filename.c_str(), "w");
+  if(!output)
+  {
+    cerr << "Error: can't open output file '";
+    cerr << filename.c_str() << "'." << endl;
+    exit(EXIT_FAILURE);
+  }
+  return output;
 }
 
 int main(int argc, char *argv[])
 {
   LtLocale::tryToSetLocale();
   
-  if(argc > 5 || argc < 3)
-  {
-    message(argv[0]);
+  Interchunk i;
+
+#if HAVE_GETOPT_LONG
+  int option_index=0;
+#endif
+
+  while (true) {
+#if HAVE_GETOPT_LONG
+    static struct option long_options[] =
+    {
+      {"null-flush", no_argument, 0, 'z'},
+      {"help", no_argument, 0, 'h'},
+      {0, 0, 0, 0}
+    };
+
+    int c=getopt_long(argc, argv, "zh", long_options, &option_index);
+#else
+    int c=getopt(argc, argv, "zh");
+#endif
+    if (c == -1)
+      break;
+      
+    switch (c)
+    {
+      case 'z':
+        i.setNullFlush(true);
+        break;
+
+      case 'h':
+      default:
+        message(argv[0]);
+        break;
+    }    
   }
 
-  for(unsigned int i = 1; i < 3; i++)
-  {
-    struct stat mybuf;
-    if(stat(argv[i], &mybuf) == -1)
-    {
-      cerr << "Error: can't stat file '";
-      cerr << argv[i] << "'." << endl;
-      exit(EXIT_FAILURE);
-    }
-  }
-  
   FILE *input = stdin, *output = stdout;
-  if(argc >= 4)
+  string f1, f2;
+  switch(argc - optind + 1)
   {
-    input = fopen(argv[3], "r");
-    if(!input)
-    {
-      cerr << "Error: can't open input file '" << argv[4] << "'." << endl;
-      exit(EXIT_FAILURE);
-    }
-    if(argc == 5)
-    {
-      output = fopen(argv[4], "w");
-      if(!output)
-      {
-	cerr << "Error: can't open output file '";
-	cerr << argv[4] << "'." << endl;
-	exit(EXIT_FAILURE);
-      }
-    }
-  }
+    case 5:
+      output = open_output(argv[argc-1]);
+      input = open_input(argv[argc-2]);
+      testfile(argv[argc-3]);
+      testfile(argv[argc-4]);
+      f1 = argv[argc-4];
+      f2 = argv[argc-3];
+      break;
+      
+    case 4:
+      input = open_input(argv[argc-1]);
+      testfile(argv[argc-2]);
+      testfile(argv[argc-3]);
+      f1 = argv[argc-3];
+      f2 = argv[argc-2];
+      break;
+
+    case 3:
+      testfile(argv[argc-1]);
+      testfile(argv[argc-2]);
+      f1 = argv[argc-2];
+      f2 = argv[argc-1];
+      break;
+    
+    default:
+      message(argv[0]);
+      break;
+  }  
+
 #ifdef WIN32
   _setmode(_fileno(input), _O_U8TEXT);
   _setmode(_fileno(output), _O_U8TEXT);
-#endif 
+#endif
 
-  Interchunk i;
-  i.read(argv[1], argv[2]);
-
+  i.read(f1, f2);
   i.interchunk(input, output);
   return EXIT_SUCCESS;
 }
