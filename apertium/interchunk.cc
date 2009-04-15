@@ -60,6 +60,7 @@ Interchunk::Interchunk()
   lastrule = NULL;
   inword = false;
   null_flush = false;
+  internal_null_flush = false;
 }
 
 Interchunk::~Interchunk()
@@ -1282,7 +1283,7 @@ Interchunk::readToken(FILE *in)
   while(true)
   {
     int val = fgetwc_unlocked(in);
-    if(feof(in))
+    if(feof(in) || (internal_null_flush && val == 0))
     {
       return input_buffer.add(TransferToken(content, tt_eof));
     }
@@ -1373,7 +1374,8 @@ Interchunk::setNullFlush(bool null_flush)
 void
 Interchunk::interchunk_wrapper_null_flush(FILE *in, FILE *out)
 {
-  setNullFlush(false);
+  null_flush = false;
+  internal_null_flush = true;
   
   while(!feof(in))
   {
@@ -1385,6 +1387,8 @@ Interchunk::interchunk_wrapper_null_flush(FILE *in, FILE *out)
       wcerr << L"Could not flush output " << errno << endl;
     }
   }
+  internal_null_flush = false;
+  null_flush = true;
 }    
 
 

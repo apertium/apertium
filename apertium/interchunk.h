@@ -72,6 +72,7 @@ private:
   map<xmlNode *, TransferInstr> evalStringCache;
   bool inword;
   bool null_flush;
+  bool internal_null_flush;
   
   void copy(Interchunk const &o);
   void destroy();

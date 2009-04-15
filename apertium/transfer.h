@@ -79,6 +79,7 @@ private:
   OutputType defaultAttrs;
   bool useBilingual;
   bool null_flush;
+  bool internal_null_flush;
   
   void copy(Transfer const &o);
   void destroy();

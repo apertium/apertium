@@ -61,6 +61,7 @@ Transfer::Transfer()
   useBilingual = true;
   isExtended = false;
   null_flush = false;
+  internal_null_flush = false;
 }
 
 Transfer::~Transfer()
@@ -1665,7 +1666,7 @@ Transfer::readToken(FILE *in)
   while(true)
   {
     int val = fgetwc_unlocked(in);
-    if(feof(in))
+    if(feof(in) || (val == 0 && internal_null_flush))
     {
       return input_buffer.add(TransferToken(content, tt_eof));
     }
@@ -1726,7 +1727,8 @@ Transfer::setNullFlush(bool null_flush)
 void
 Transfer::transfer_wrapper_null_flush(FILE *in, FILE *out)
 {
-  setNullFlush(false);
+  null_flush = false;
+  internal_null_flush = true;
   
   while(!feof(in))
   {
@@ -1738,6 +1740,9 @@ Transfer::transfer_wrapper_null_flush(FILE *in, FILE *out)
       wcerr << L"Could not flush output " << errno << endl;
     }
   }
+
+  internal_null_flush = false;
+  null_flush = true;
 }    
 
 void

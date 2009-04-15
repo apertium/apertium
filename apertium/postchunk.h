@@ -72,6 +72,7 @@ private:
 
   bool inword;
   bool null_flush;
+  bool internal_null_flush;
 
   void copy(Postchunk const &o);
   void destroy();
