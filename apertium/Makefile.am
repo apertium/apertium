@@ -37,6 +37,7 @@ libapertium3_la_LDFLAGS = -version-info $(GENERIC_LIBRARY_VERSION) -release $(GE
 
 bin_PROGRAMS = apertium-pretransfer apertium-destxt apertium-retxt \
                apertium-deshtml apertium-rehtml \
+               apertium-desxpresstag apertium-rexpresstag \
                apertium-desodt apertium-reodt \
                apertium-desrtf apertium-rertf \
                apertium-deswxml apertium-rewxml \
@@ -72,6 +73,8 @@ apertium_destxt_SOURCES = apertium_destxt.cc
 apertium_retxt_SOURCES = apertium_retxt.cc
 apertium_deshtml_SOURCES = apertium_deshtml.cc
 apertium_rehtml_SOURCES = apertium_rehtml.cc
+apertium_desxpresstag_SOURCES = apertium_desxpresstag.cc
+apertium_rexpresstag_SOURCES = apertium_rexpresstag.cc
 apertium_desodt_SOURCES = apertium_desodt.cc
 apertium_reodt_SOURCES = apertium_reodt.cc
 apertium_desrtf_SOURCES = apertium_desrtf.cc
@@ -131,12 +134,23 @@ CLEANFILES = *~ apertium_destxt.cc apertium_retxt.cc apertium_deshtml.cc \
              apertium_desxlsx.cc apertium_rexlsx.cc \
              apertium_despptx.cc apertium_repptx.cc \
              apertium_desodt.cc apertium_reodt.cc \
+             apertium_desxpresstag.cc apertium_rexpresstag.cc \
              $(GENERATEDSCRIPTS)
 
 apertium_destxt.cc: txt-format.xml Makefile.am deformat.xsl
 	$(XSLTPROC) deformat.xsl txt-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
+
+apertium_desxpresstag.cc: xpresstag-format.xml Makefile.am deformat.xsl
+	$(XSLTPROC) deformat.xsl xpresstag-format.xml >$@tmp
+	$(FLEX) -Cfer -o $@ $@tmp
+	rm $@tmp
+
+apertium_rexpresstag.cc: xpresstag-format.xml Makefile.am reformat.xsl
+	$(XSLTPROC) reformat.xsl xpresstag-format.xml >$@tmp
+	$(FLEX) -Cfer -o $@ $@tmp
+	rm $@tmp	
 
 apertium_retxt.cc: txt-format.xml Makefile.am reformat.xsl
 	$(XSLTPROC) reformat.xsl txt-format.xml >$@tmp
@@ -399,7 +413,10 @@ man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
 EXTRA_DIST = gen-header.sh deformat-header.sh \
              reformat.xsl deformat.xsl new2old.xsl lexchoice.xsl lexchoicebil.xsl \
              tagger.dtd transfer.dtd format.dtd dix.dtd txt-format.xml \
-             html-format.xml odt-format.xml rtf-format.xml wxml-format.xml xlsx-format.xml pptx-format.xml trans-header.sh apertium-header.sh apertium-unformat-header.sh $(man_MANS) \
+             html-format.xml odt-format.xml rtf-format.xml wxml-format.xml \
+             xlsx-format.xml pptx-format.xml trans-header.sh \
+             apertium-header.sh apertium-unformat-header.sh $(man_MANS) \
+             xpresstag-format.xml \
              validate-header.sh transformdic-header.sh transformdicbil-header.sh \
              gen-wlist-lextor-header.sh gen-stopwords-lextor.sh preprocess-corpus-lextor.sh \
              interchunk.dtd postchunk.dtd modes.dtd acx.rng \

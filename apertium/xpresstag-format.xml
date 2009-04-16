@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<format name="xpresstag">
+  <options>
+    <largeblocks size="8192"/>
+    <input encoding="ISO-8859-1"/>
+    <output encoding="ISO-8859-1"/>
+    <tag-name regexp="[a-zA-Z]+"/>
+    <escape-chars regexp='[][^@\\/$]'/>
+    <space-chars regexp='[ \n\t\r*&lt;&gt;]'/>
+    <case-sensitive value="no"/>
+  </options>
+
+  <rules>
+
+    <format-rule type="empty" eos="yes" priority="1">
+      <tag regexp="&quot;&lt;&quot;[^-&gt;]+&quot;-&gt;&quot;"/>
+    </format-rule>
+    <format-rule type="empty" eos="no" priority="2">
+      <tag regexp="&quot;&lt;&quot;[^&gt;]+&quot;&gt;&quot;"/>
+    </format-rule>
+    
+    <format-rule type="empty" eos="yes" priority="3">
+      <tag regexp="&quot;@&quot;[^&lt;:]+&quot;:&quot;"/>
+    </format-rule>
+    <format-rule type="empty" eos="yes" priority="3">
+      <tag regexp="&quot;@&quot;[^&lt;=]+&quot;=&quot;"/>
+    </format-rule>
+
+    <format-rule type="empty" eos="yes" priority="3">
+      <tag
+regexp="&quot;@&quot;[^&lt;=]+&quot;=[&quot;[^]]+&quot;]&quot;"/>
+    </format-rule>
+  </rules>
+</format>

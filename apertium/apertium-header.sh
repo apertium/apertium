@@ -6,8 +6,8 @@ message ()
 {
   echo "USAGE: $(basename $0) [-d datadir] [-f format] [-u] <direction> [in [out]]"
   echo " -d datadir       directory of linguistic data"
-  echo " -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx, pptx"
-
+  echo " -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx, pptx,"
+  echo "                  xpresstag";
   echo " -a               display ambiguity"
   echo " -u               don't display marks '*' for unknown words" 
   echo " -m memory.tmx    use a translation memory to recycle translations"
@@ -343,7 +343,7 @@ case "$FORMATADOR" in
         	else OPTION="-g";
         	fi
 	        ;;
-	txt|rtf|html)
+	txt|rtf|html|xpresstag)
 		if [[ $UWORDS = "no" ]]; then OPTION="-n"; 
 		else OPTION="-g";
 		fi;
@@ -402,6 +402,10 @@ case "$FORMATADOR" in
 		;;
 	htmlu) 
 		FORMATADOR="html";
+		OPTION="-n";
+		;;
+	xpresstagu)
+		FORMATADOR="xpresstag";
 		OPTION="-n";
 		;;
 	rtfu)
