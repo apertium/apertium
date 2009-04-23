@@ -52,6 +52,9 @@ MorphoStream::MorphoStream(FILE *ftxt, bool d, TaggerData *t)
   map<wstring, int, Ltstr> &tag_index = td->getTagIndex();
   ca_tag_keof = tag_index[L"TAG_kEOF"];  
   ca_tag_kundef = tag_index[L"TAG_kUNDEF"]; 
+
+  end_of_file = false;
+  null_flush = false;
 }
 
 MorphoStream::~MorphoStream() 
@@ -90,8 +93,9 @@ MorphoStream::get_next_word()
   while(true)
   {
     int symbol = fgetwc_unlocked(input);
-    if(feof(input))
+    if(feof(input) || (null_flush && symbol == L'\0'))
     {
+      end_of_file = true;
       vwords[ivwords]->add_tag(ca_tag_keof, L"", td->getPreferRules());
       return get_next_word();
     }
@@ -118,8 +122,9 @@ MorphoStream::get_next_word()
       while(symbol != L'^')
       {
 	symbol = fgetwc_unlocked(input);
-	if(feof(input))
+	if(feof(input) || (null_flush && symbol == L'\0'))
 	{
+	  end_of_file = true;
 	  vwords[ivwords]->add_ignored_string(str);
           vwords[ivwords]->add_tag(ca_tag_keof, L"", td->getPreferRules());
 	  return get_next_word();
@@ -128,8 +133,9 @@ MorphoStream::get_next_word()
 	{
 	  str += L'\\';
           symbol = fgetwc_unlocked(input);
-	  if(feof(input))
+	  if(feof(input) || (null_flush && symbol == L'\0'))
 	  {
+	    end_of_file = true;
 	    vwords[ivwords]->add_ignored_string(str);
             vwords[ivwords]->add_tag(ca_tag_keof, L"", td->getPreferRules());
 	    return get_next_word();
@@ -294,8 +300,9 @@ MorphoStream::readRestOfWord(int &ivwords)
   while(true)
   {
     int symbol = fgetwc_unlocked(input);
-    if(feof(input))
+    if(feof(input) || (null_flush && symbol == L'\0'))
     {
+      end_of_file = true;
       if(str.size() > 0)
       {
         vwords[ivwords]->add_ignored_string(str);
@@ -335,8 +342,9 @@ MorphoStream::readRestOfWord(int &ivwords)
   while(true)
   {
     int symbol = fgetwc_unlocked(input);
-    if(feof(input))
+    if(feof(input) || (null_flush && symbol == L'\0'))
     {
+      end_of_file = true;
       if(str.size() > 0)
       {
         vwords[ivwords]->add_ignored_string(str);
@@ -375,3 +383,22 @@ MorphoStream::readRestOfWord(int &ivwords)
     }    
   }
 }
+
+void
+MorphoStream::setNullFlush(bool nf)
+{
+  null_flush = nf;
+}
+
+bool
+MorphoStream::getEndOfFile(void)
+{
+  return end_of_file;
+}
+
+void
+MorphoStream::setEndOfFile(bool eof)
+{
+  end_of_file = eof;
+}
+  

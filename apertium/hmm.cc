@@ -48,6 +48,7 @@ HMM::HMM(TaggerData *t)
 
   debug=false;
   show_sf=false;
+  null_flush = false;
   eos = (td->getTagIndex())[L"TAG_SENT"];  
 }
 
@@ -733,7 +734,8 @@ HMM::tagger(FILE *in, FILE *out, bool show_all_good_first) {
   int nwpend;
   
   MorphoStream morpho_stream(in, debug, td);                             
-
+  morpho_stream.setNullFlush(null_flush);
+  
   Collection &output = td->getOutput();
   
   loli = nw = 0;
@@ -817,6 +819,12 @@ HMM::tagger(FILE *in, FILE *out, bool show_all_good_first) {
     }
     
     delete word;
+    
+    if(morpho_stream.getEndOfFile())
+    {
+      fflush(out);
+      morpho_stream.setEndOfFile(false);
+    }
     word = morpho_stream.get_next_word();    
   }
   
@@ -891,4 +899,10 @@ HMM::find_similar_ambiguity_class(set<TTag> c) {
     }
   }
   return ret;
+}
+
+void
+HMM::setNullFlush(bool nf)
+{
+  null_flush = nf;
 }

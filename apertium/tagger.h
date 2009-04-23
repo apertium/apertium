@@ -49,6 +49,8 @@ private:
   bool debug;
   
   bool showSF; // show superficial forms
+  bool null_flush; // flush on '\0'
+  
   void setShowSF(bool val);
   bool getShowSF();
 

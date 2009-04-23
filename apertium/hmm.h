@@ -55,6 +55,7 @@ private:
    TTag eos; // end-of-sentence tag
    bool debug;  //If true, print error messages when tagging input text
    bool show_sf;  //If true, print superficial forms when tagging input text
+   bool null_flush; // If true, flush on '\0'
    
    /** It allocs memory for the transition (a) and the emission (b) matrices.
     *  Before calling this method the number of ambiguity classes must be known.
@@ -96,6 +97,11 @@ public:
     *
     */
    void set_show_sf(bool sf);
+
+   /**
+    * Used to set the null_flush flag 
+    */
+   void setNullFlush(bool nf);
 
    /** It reads the ambiguity classes from the stream received as
     *  input

@@ -86,12 +86,14 @@ Tagger::getMode(int argc, char *argv[])
       {"help",       no_argument,       0, 'h'}, 
       {"debug",      no_argument,       0, 'd'}, 
       {"mark",       no_argument,       0, 'm'},
+      {"null-flush", no_argument,       0, 'z'},
+      {"help",       no_argument,       0, 'h'},
       {0, 0, 0, 0}
     };
 
-    c=getopt_long(argc, argv, "mdt:s:r:gpefh",long_options, &option_index);
+    c=getopt_long(argc, argv, "mdt:s:r:gpefhz",long_options, &option_index);
 #else
-    c=getopt(argc, argv, "mdt:s:r:gpefh");
+    c=getopt(argc, argv, "mdt:s:r:gpefhz");
 #endif
     if (c==-1)
       break;
@@ -209,6 +211,10 @@ Tagger::getMode(int argc, char *argv[])
 	  help();
 	} 
 	break;
+      
+      case 'z':
+        null_flush = true;
+        break;
         
       case 'h':
         help(); 
@@ -280,6 +286,7 @@ Tagger::Tagger()
 {
   debug = false;
   showSF = false;
+  null_flush = false;
 }
 
 void
@@ -332,6 +339,7 @@ Tagger::tagger(bool mode_first)
   HMM hmm(&td);
 
   hmm.set_show_sf(showSF);
+  hmm.setNullFlush(null_flush);
 
   if(filenames.size() == 1)
   {
@@ -564,6 +572,7 @@ Tagger::help()
   out << "                       one in the first place (after the lemma)"<<endl;
   out << "  -d, --debug:         print error mesages when tagging input text" << endl;
   out << "  -m, --mark:          generate marks of solved ambiguities" << endl;
+  out << "  -z, --null-flush:    flush output stream when reading '\\0' characters" <<endl;
   out << endl;
   out << "And FILES are:" << endl;          
   out << "  DIC:         full expanded dictionary file" << endl;

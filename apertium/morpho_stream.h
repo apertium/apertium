@@ -71,6 +71,9 @@ private:
   Alphabet alphabet;
   MatchState ms;
 
+  bool null_flush;
+  bool end_of_file;
+
   void readRestOfWord(int &ivwords);
   void lrlmClassify(wstring const &str, int &ivwords);
 public:
@@ -89,6 +92,25 @@ public:
     *  @return  A pointer to the next word in the input stream 
     */
    TaggerWord* get_next_word();  
+   
+   /** 
+    * Set up the flag to detect '\0' characters
+    * @param nf the null_flush value
+    */
+   void setNullFlush(bool nf);
+   
+   /**
+    * Return true if the last reading is end of file of '\0' when null_flush 
+    * is true
+    * @returns the value of end_of_file
+    */
+   bool getEndOfFile(void);
+   
+   /**
+    * Sets a new value for the end_of_file_flag
+    * @param eof the new value for end_of_file
+    */
+   void setEndOfFile(bool eof);
 };
 
 #endif
