@@ -21,6 +21,7 @@
 #include <iostream>
 #include <libgen.h>
 #include <string>
+#include <getopt.h>
 
 #include <lttoolbox/lt_locale.h>
 #include <apertium/unlocked_cstdio.h>
@@ -105,7 +106,7 @@ void procWord(FILE *input, FILE *output)
   fputws_unlocked(buffer.c_str(), output);
 }
 
-void processStream(FILE *input, FILE *output)
+void processStream(FILE *input, FILE *output, bool null_flush)
 {
   while(true)
   {
@@ -116,23 +117,35 @@ void processStream(FILE *input, FILE *output)
     }
     switch(mychar)
     {
-    case L'[':
-      fputwc_unlocked(L'[', output);
-      readAndWriteUntil(input, output, L']');
-      fputwc_unlocked(L']', output);
-      break;
-    case L'\\':
-      fputwc_unlocked(mychar, output);
-      fputwc_unlocked(fgetwc_unlocked(input), output);
-      break;
-    case L'^':
-      fputwc_unlocked(mychar, output);
-      procWord(input, output);
-      fputwc_unlocked(L'$', output);
-      break;
-    default:
-      fputwc_unlocked(mychar, output);
-      break;
+      case L'[':
+        fputwc_unlocked(L'[', output);
+        readAndWriteUntil(input, output, L']');
+        fputwc_unlocked(L']', output);
+        break;
+ 
+      case L'\\':
+        fputwc_unlocked(mychar, output);
+        fputwc_unlocked(fgetwc_unlocked(input), output);
+        break;
+ 
+      case L'^':
+        fputwc_unlocked(mychar, output);
+        procWord(input, output);
+        fputwc_unlocked(L'$', output);
+        break;
+      
+      case L'\0':
+        fputwc_unlocked(mychar, output);
+        
+        if(null_flush)
+        {
+          fflush(output);
+        }
+        break;  
+ 
+      default:
+        fputwc_unlocked(mychar, output);
+        break;
     }
   }
 }
@@ -144,25 +157,61 @@ void usage(char *progname)
 }
 
 
+
+
 int main(int argc, char *argv[])
 { 
   LtLocale::tryToSetLocale();
+  bool null_flush = false;
+  
+#if HAVE_GETOPT_LONG
+  int option_index=0;
+#endif
 
-  if(argc > 3)
+  while (true) {
+#if HAVE_GETOPT_LONG
+    static struct option long_options[] =
+    {
+      {"null-flush", no_argument, 0, 'z'},
+      {"help", no_argument, 0, 'h'},
+      {0, 0, 0, 0}
+    };
+
+    int c=getopt_long(argc, argv, "zh", long_options, &option_index);
+#else
+    int c=getopt(argc, argv, "zh");
+#endif
+    if (c==-1)
+      break;
+      
+    switch (c)
+    {
+      case 'z':
+        null_flush = true;
+        break;
+      
+      case 'h':
+      default:
+        usage(argv[0]);
+        break;
+    }
+  }
+
+  if((argc-optind+1) > 3)
   {
     usage(argv[0]);
   }
 
   FILE *input, *output;
   
-  if(argc == 1)
+  if((argc-optind+1) == 1)
   {
     input = stdin;
     output = stdout;
   }
-  else if (argc == 2)
+  else if ((argc-optind+1) == 2)
   {
-    input = fopen(argv[1], "r");
+    input = fopen(argv[argc-1], "r");
     if(!input)
     {
       usage(argv[0]);
@@ -171,14 +220,10 @@ int main(int argc, char *argv[])
   }
   else
   {
-    input = fopen(argv[1], "r");
-    output = fopen(argv[2], "w");
-#ifdef WIN32
-    _setmode(_fileno(input), _O_U8TEXT);
-    _setmode(_fileno(output), _O_U8TEXT);
-#endif
+    input = fopen(argv[argc-2], "r");
+    output = fopen(argv[argc-1], "w");
 
-  if(!input || !output)
+    if(!input || !output)
     {
       usage(argv[0]);
     }
@@ -190,5 +235,10 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
-  processStream(input, output);
+#ifdef WIN32
+    _setmode(_fileno(input), _O_U8TEXT);
+    _setmode(_fileno(output), _O_U8TEXT);
+#endif
+
+  processStream(input, output, null_flush);
 }
