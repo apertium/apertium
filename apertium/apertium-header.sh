@@ -64,7 +64,7 @@ translate_odt ()
   OTRASALIDA=$(mktemp /tmp/apertium.XXXXXXXX)
   
   unzip -q -o -d $INPUT_TMPDIR $FICHERO
-  find $INPUT_TMPDIR | grep content\\\.xml |\
+  find $INPUT_TMPDIR | grep "content\\.xml\\|styles\\.xml" |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
   $APERTIUM_PATH/apertium-desodt |\
   if [ "$TRANSLATION_MEMORY_FILE" = "" ]; 
