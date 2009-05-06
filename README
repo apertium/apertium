@@ -27,6 +27,9 @@ QUICK START
 1) Download the packages for lttoolbox-VERSION.tar.gz and 
    apertium-VERSION.tar.gz and linguistic data	
 
+   Note: If you are using the translator from SVN, run ./autogen.sh before 
+         running ./configure in all cases.
+
 2) Unpack lttoolbox and do ('#' means 'do that with root privileges'):
    $ cd lttoolbox-VERSION
    $ ./configure
