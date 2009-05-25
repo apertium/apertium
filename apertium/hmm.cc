@@ -822,6 +822,11 @@ HMM::tagger(FILE *in, FILE *out, bool show_all_good_first) {
     
     if(morpho_stream.getEndOfFile())
     {
+      if(null_flush)
+      { 
+        fputwc_unlocked(L'\0', out);
+      }
+      
       fflush(out);
       morpho_stream.setEndOfFile(false);
     }
