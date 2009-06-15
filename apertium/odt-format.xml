@@ -20,6 +20,11 @@
       <begin regexp='"&lt;math:"[a-zA-Z]+(" "[^&gt;]*)?"&gt;"'/>
       <end regexp='"&lt;/math:"[a-zA-Z]+(" "[^&gt;]*)?"&gt;"'/>
     </format-rule> 
+    
+    <format-rule type="comment" eos="no" priority="2">
+      <begin regexp='"&amp;lt;apertium-notrans&amp;gt;"'/>
+      <end regexp='"&amp;lt;/apertium-notrans&amp;gt;"'/>
+    </format-rule>
 
     <format-rule type="open" eos="yes" priority="3">
       <tag regexp='"&lt;text:"[hp](" "[^&gt;]*)?"&gt;"'/>
