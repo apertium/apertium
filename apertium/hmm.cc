@@ -25,6 +25,7 @@
 
 #include <apertium/hmm.h>
 #include <apertium/tagger_utils.h>
+#include  "apertium_config.h"
 #include <apertium/unlocked_cstdio.h>
 #include <lttoolbox/compression.h>
 

@@ -30,6 +30,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <apertium/string_utils.h>
+#include "apertium_config.h"
 #include <apertium/unlocked_cstdio.h>
 
 #ifdef WIN32

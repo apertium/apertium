@@ -141,6 +141,9 @@
 #include &lt;string&gt;
 #include &lt;lttoolbox/lt_locale.h&gt;
 #include &lt;lttoolbox/ltstr.h&gt;
+#ifndef GENFORMAT
+#include "apertium_config.h"
+#endif
 #include &lt;apertium/unlocked_cstdio.h&gt;
 #ifdef WIN32
 #if defined(__MINGW32__)

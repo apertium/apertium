@@ -2,7 +2,6 @@
 #define _APERTIUM_UNLOCKED_CSTDIO_
 
 #include <cstdio>
-#include <apertium_config.h>
 
 #if !HAVE_DECL_FPUTS_UNLOCKED
 #define fputws_unlocked fputws

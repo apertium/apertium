@@ -284,7 +284,7 @@ apertium-gen-deformat: Makefile.am deformat-header.sh
           else echo "$(XSLTPROC) $(apertiumdir)/deformat.xsl \$$FILE1 \"\\\$$mode=\$$MODE\" >/tmp/\$$\$$.deformat.l && \\"; \
           fi >> $@ 
 	@echo "$(FLEX) \$$FLEXOPTS -o/tmp/\$$\$$.lex.cc /tmp/\$$\$$.deformat.l && \\" >> $@
-	@echo "$(CXX) $(CXXFLAGS) -w $(APERTIUM_CFLAGS) -I $(apertiuminclude) -o \$$FILE2 /tmp/\$$\$$.lex.cc && \\" >> $@
+	@echo "$(CXX) -DGENFORMAT $(CXXFLAGS) -w $(APERTIUM_CFLAGS) -I $(apertiuminclude) -o \$$FILE2 /tmp/\$$\$$.lex.cc $(APERTIUM_LIBS) 2>/dev/null && \\" >> $@
 	@echo "rm /tmp/\$$\$$.deformat.l /tmp/\$$\$$.lex.cc" >> $@
 	@chmod a+x $@
 
@@ -295,7 +295,7 @@ apertium-gen-reformat: Makefile.am gen-header.sh
 	@echo "$(XMLLINT) --dtdvalid $(apertiumdir)/format.dtd --noout \$$FILE1 && \\" >> $@
 	@echo "$(XSLTPROC) $(apertiumdir)/reformat.xsl \$$FILE1 >/tmp/\$$\$$.reformat.l && \\" >> $@
 	@echo "$(FLEX) \$$FLEXOPTS -o/tmp/\$$\$$.lex.cc /tmp/\$$\$$.reformat.l && \\" >> $@
-	@echo "$(CXX) $(CXXFLAGS) -w $(APERTIUM_CFLAGS) -I $(apertiuminclude) -o \$$FILE2 /tmp/\$$\$$.lex.cc &&\\" >> $@
+	@echo "$(CXX) -DGENFORMAT $(CXXFLAGS) -w $(APERTIUM_CFLAGS) -I $(apertiuminclude) -o \$$FILE2 /tmp/\$$\$$.lex.cc $(APERTIUM_LIBS) 2>/dev/null &&\\" >> $@
 	@echo "rm /tmp/\$$\$$.reformat.l /tmp/\$$\$$.lex.cc" >> $@
 	@chmod a+x $@
 

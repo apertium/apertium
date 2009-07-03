@@ -24,7 +24,9 @@
 #include <getopt.h>
 
 #include <lttoolbox/lt_locale.h>
+#include "apertium_config.h"
 #include <apertium/unlocked_cstdio.h>
+
 #ifdef WIN32
 #if defined(__MINGW32__)
 #define __MSVCRT_VERSION__  0x0800
