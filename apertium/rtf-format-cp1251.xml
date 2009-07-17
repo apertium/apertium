@@ -5,7 +5,7 @@
     <input encoding="windows-1251"/>
     <output encoding="UTF-8"/>
     <tag-name regexp=""/>
-    <escape-chars regexp='\\|[][&lt;&gt;@^$/]'/> 
+    <escape-chars regexp='\\|[][&lt;&gt;@^$/{}]'/> 
 <!--    <escape-chars regexp='[]]^@&lt;&gt;/]'/>  -->
 
     <space-chars regexp='[ \n\t\r$*]'/>
