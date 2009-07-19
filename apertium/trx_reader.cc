@@ -39,6 +39,7 @@ TRXReader::copy(TRXReader const &o)
 void
 TRXReader::destroy()
 {
+  xmlFreeTextReader(reader);
 }
 
 TRXReader::TRXReader()
