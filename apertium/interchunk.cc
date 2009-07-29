@@ -1467,6 +1467,7 @@ Interchunk::interchunk(FILE *in, FILE *out)
 	else
 	{
 	  fputws_unlocked(current.getContent().c_str(), output);
+	  tmpblank.clear();
 	  return;
 	}
 	break;
