@@ -45,7 +45,14 @@
 </xsl:template>
 
 <xsl:template match="program">
-  <xsl:value-of select="$prefix"/>
+  <xsl:choose>
+    <xsl:when test="@prefix">
+      <xsl:value-of select="@prefix">
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$prefix">
+    </xsl:otherwise>
+  </xsl:choose>
   <xsl:value-of select="string('/')"/>
   <xsl:value-of select="./@name"/>
   <xsl:for-each select="./*">  
