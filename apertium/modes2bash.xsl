@@ -47,10 +47,10 @@
 <xsl:template match="program">
   <xsl:choose>
     <xsl:when test="@prefix">
-      <xsl:value-of select="@prefix">
+      <xsl:value-of select="@prefix"/>
     </xsl:when>
     <xsl:otherwise>
-      <xsl:value-of select="$prefix">
+      <xsl:value-of select="$prefix"/>
     </xsl:otherwise>
   </xsl:choose>
   <xsl:value-of select="string('/')"/>
