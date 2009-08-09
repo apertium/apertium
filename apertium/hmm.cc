@@ -145,6 +145,7 @@ HMM::init_probabilities_kupiec (FILE *is)
   double classes_pair_ocurrences[M][M];
   double tags_estimate[N]; //N = Number of tags (states)
   double tags_pair_estimate[N][N];
+  
   Collection &output = td->getOutput();
  
   MorphoStream lexmorfo(is, true, td);
@@ -728,8 +729,13 @@ HMM::tagger(FILE *in, FILE *out, bool show_all_good_first) {
   
   double prob, loli, x;
   int N = td->getN();  
+#ifdef __GNUC__
   double alpha[2][N];
   vector<TTag> best[2][N];
+#else
+  vector <vector <double> > alpha(2, vector<double>(N));
+  vector <vector <vector<TTag>> > best(2, vector<vector<TTag>>(N));
+#endif
   
   vector <TaggerWord> wpend; 
   int nwpend;
@@ -772,8 +778,10 @@ HMM::tagger(FILE *in, FILE *out, bool show_all_good_first) {
          
     k = output[tags];  //Ambiguity class the word belongs to
     
+#ifdef __GNUC__
     clear_array_double(alpha[nwpend%2], N);    
     clear_array_vector(best[nwpend%2], N);
+#endif
     
     //Induction
     for (itag=tags.begin(); itag!=tags.end(); itag++) { //For all tag from the current word
