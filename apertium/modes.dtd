@@ -13,6 +13,7 @@
 
 <!ELEMENT program (file*)>
 <!ATTLIST program name CDATA #REQUIRED>
+<!ATTLIST program prefix CDATA #IMPLIED>
 
 <!ELEMENT file EMPTY>
 <!ATTLIST file name CDATA #REQUIRED>
