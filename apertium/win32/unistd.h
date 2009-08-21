@@ -5,6 +5,9 @@
 
 #define fileno _fileno
 
-#define isatty(x) 0
+#if defined(_MSCVER) && defined(isatty)
+#undef isatty
+#define isatty _isatty
+#endif
 
 #define unlink _unlink
