@@ -21,3 +21,37 @@
 #define HAVE_DECL_FGETWC_UNLOCKED  ${HAVE_DECL_FGETWC_UNLOCKED}
 #define HAVE_DECL_FPUTWC_UNLOCKED  ${HAVE_DECL_FPUTWC_UNLOCKED}
 #define HAVE_DECL_FPUTWS_UNLOCKED  ${HAVE_DECL_FPUTWS_UNLOCKED}
+
+#define HAVE_DECL_FPUTS_NOLOCK   ${HAVE_DECL_FPUTS_NOLOCK}
+#define HAVE_DECL_FGETC_NOLOCK   ${HAVE_DECL_FGETC_NOLOCK}
+#define HAVE_DECL_FPUTC_NOLOCK   ${HAVE_DECL_FPUTC_NOLOCK}
+#define HAVE_DECL_FWRITE_NOLOCK  ${HAVE_DECL_FWRITE_NOLOCK}
+#define HAVE_DECL_FREAD_NOLOCK   ${HAVE_DECL_FREAD_NOLOCK}
+#define HAVE_DECL_FGETWC_NOLOCK  ${HAVE_DECL_FGETWC_NOLOCK}
+#define HAVE_DECL_FPUTWC_NOLOCK  ${HAVE_DECL_FPUTWC_NOLOCK}
+#define HAVE_DECL_FPUTWS_NOLOCK  ${HAVE_DECL_FPUTWS_NOLOCK}
+
+#if !defined(HAVE_DECL_FPUTS_UNLOCKED) && defined (HAVE_DECL_FPUTS_NOLOCK)
+#define fputs_unlocked _fputs_nolock
+#endif
+#if !defined(HAVE_DECL_FGETC_UNLOCKED) && defined (HAVE_DECL_FGETC_NOLOCK)
+#define fgetc_unlocked _fgetc_nolock
+#endif
+#if !defined(HAVE_DECL_FPUTC_UNLOCKED) && defined (HAVE_DECL_FPUTC_NOLOCK)
+#define fputc_unlocked _fputc_nolock
+#endif
+#if !defined(HAVE_DECL_FWRITE_UNLOCKED) && defined (HAVE_DECL_FWRITE_NOLOCK)
+#define fwrite_unlocked _fwrite_nolock
+#endif
+#if !defined(HAVE_DECL_FREAD_UNLOCKED) && defined (HAVE_DECL_FREAD_NOLOCK)
+#define fread_unlocked _fread_nolock
+#endif
+#if !defined(HAVE_DECL_FPUTWS_UNLOCKED) && defined (HAVE_DECL_FPUTWS_NOLOCK)
+#define fputws_unlocked _fputws_nolock
+#endif
+#if !defined(HAVE_DECL_FGETWC_UNLOCKED) && defined (HAVE_DECL_FGETWC_NOLOCK)
+#define fgetwc_unlocked _fgetwc_nolock
+#endif
+#if !defined(HAVE_DECL_FPUTWC_UNLOCKED) && defined (HAVE_DECL_FPUTWC_NOLOCK)
+#define fputwc_unlocked _fputwc_nolock
+#endif
