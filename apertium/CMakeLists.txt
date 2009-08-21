@@ -18,9 +18,8 @@ MACRO (ADD_FORMATTER SRC_NAME XSL XML)
         FROM_XML (${SRC_NAME}.cc ${XSL} ${XML})        # Create SRC_NAME using the stylesheet XSL and the xml file XML
         STRING (REPLACE "_" "-" EXE_NAME ${SRC_NAME})  # Convert underscores to dashes for the executable names
 
-
-        ADD_EXECUTABLE (${EXE_NAME} ${SRC_NAME}.cc)    # Compile EXE_NAME using the source file ${SRC_NAME}.cc
-        TARGET_LINK_LIBRARIES (${EXE_NAME} ${LIBXML2_LIBRARIES} ${ICONV_LIBRARIES} ${LTTOOLBOX3_LIBRARIES}) # Link the lttoolbox library to EXE_NAME
+        ADD_EXECUTABLE (${EXE_NAME} ${SRC_NAME}.cc "${WIN32_DIR}/regex.c")    # Compile EXE_NAME using the source file ${SRC_NAME}.cc
+        TARGET_LINK_LIBRARIES (${EXE_NAME} ${LIBXML2_LIBRARIES} ${ICONV_LIBRARIES} ${LTTOOLBOX3_LIBRARIES} ) # Link the lttoolbox library to EXE_NAME
 
         LIST (APPEND INSTALLABLES ${EXE_NAME})
 ENDMACRO (ADD_FORMATTER)
