@@ -95,12 +95,7 @@ FILE * open_output(string const &filename)
 int main(int argc, char *argv[])
 {
   LtLocale::tryToSetLocale();
-
-#ifdef WIN32
-  _setmode(_fileno(input), _O_U8TEXT);
-  _setmode(_fileno(output), _O_U8TEXT);
-#endif 
-  
+ 
   Transfer t;
   
 #if HAVE_GETOPT_LONG
@@ -217,6 +212,11 @@ int main(int argc, char *argv[])
       break;
   }  
   
+#ifdef WIN32
+  _setmode(_fileno(input), _O_U8TEXT);
+  _setmode(_fileno(output), _O_U8TEXT);
+#endif 
+
   t.transfer(input, output);
   return EXIT_SUCCESS; 
 }
