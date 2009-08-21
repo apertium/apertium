@@ -141,10 +141,17 @@ HMM::init_probabilities_kupiec (FILE *is)
   int N = td->getN();
   int M = td->getM();
   int i, j, k, k1, k2, nw=0;
+#ifdef __GNUC__
   double classes_ocurrences[M]; //M = Number of ambiguity classes
   double classes_pair_ocurrences[M][M];
   double tags_estimate[N]; //N = Number of tags (states)
   double tags_pair_estimate[N][N];
+#else
+  vector <double> classes_ocurrences (M);
+  vector <vector <double> > classes_pair_ocurrences(M, vector<double>(M));
+  vector <double> tags_estimate(N);
+  vector <vector <double> > tags_pair_estimate(N, vector<double>(N));
+#endif
   
   Collection &output = td->getOutput();
  
@@ -257,9 +264,15 @@ HMM::init_probabilities_from_tagged_text(FILE *ftagged, FILE *funtagged) {
   int i, j, k, nw=0;
   int N = td->getN();
   int M = td->getM();
+#ifdef __GNUC__
   double tags_pair[N][N];
   double emission[N][M];
-  
+#else
+  vector <vector <double> > tags_pair(N, vector<double>(N));
+  vector <vector <double> > emission(N, vector<double>(M));
+#endif
+
+
   MorphoStream stream_tagged(ftagged, true, td);
   MorphoStream stream_untagged(funtagged, true, td);
   
@@ -900,7 +913,7 @@ HMM::find_similar_ambiguity_class(set<TTag> c) {
     if ((((int)output[k].size())>((int)size_ret)) && (((int)output[k].size())<((int)c.size()))) {
       skeep_class=false;
       // Test if output[k] is a subset of class
-      for(set<TTag>::iterator it=output[k].begin(); it!=output[k].end(); it++) {
+      for(set<TTag>::const_iterator it=output[k].begin(); it!=output[k].end(); it++) {
         if (c.find(*it)==c.end()) { 
 	   skeep_class=true; //output[k] is not a subset of class
 	   break;
