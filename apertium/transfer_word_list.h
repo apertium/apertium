@@ -30,7 +30,7 @@ using namespace std;
 
 struct ltstr
 {
-  bool operator()(string const &s1, string const &s2)
+  bool operator()(string const &s1, string const &s2) const
   {
     return s1 < s2;
   }
@@ -38,7 +38,7 @@ struct ltstr
 
 struct ltstri
 {
-  bool operator()(string const &s1, string const &s2)
+  bool operator()(string const &s1, string const &s2) const
   {
     return strcasecmp(s1.c_str(), s2.c_str()) < 0;
   }
