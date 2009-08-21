@@ -38,8 +38,8 @@ IF (WIN32)
         SET(LIBXML2_LIBRARIES      ${LIBXML2_BASE_DIR}/lib/libxml2.lib)
         SET(XSLTPROC_EXECUTABLE    ${LIBXML2_BASE_DIR}/bin/xsltproc.exe)
 
-        SET(LTTOOLBOX3_BASE_DIR    C:/Program\ Files/apertium-3.0)
-        SET(LTTOOLBOX3_INCLUDE_DIR ${LTTOOLBOX3_BASE_DIR}/include/lttoolbox-3.0)
+        SET(LTTOOLBOX3_BASE_DIR    C:/Program\ Files/apertium-3.1)
+        SET(LTTOOLBOX3_INCLUDE_DIR ${LTTOOLBOX3_BASE_DIR}/include/lttoolbox-3.1)
         SET(LTTOOLBOX3_LIBRARIES   ${LTTOOLBOX3_BASE_DIR}/lib/lttoolbox3.lib)
 
         SET(LIBPCRE_BASE_DIR       C:/Program\ Files/PCRE) 
