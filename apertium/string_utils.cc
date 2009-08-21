@@ -23,6 +23,10 @@
 #include <iostream>
 #include <cstring>
 
+#ifdef _MSC_VER
+#define snprintf _snprintf
+#endif
+
 //Delete white spaces from the end and the begining of the string
 wstring 
 StringUtils::trim(wstring const &str) 

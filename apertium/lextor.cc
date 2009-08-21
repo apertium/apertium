@@ -277,8 +277,13 @@ LexTor::trainlch(wistream& is, int left, int right, LexTorData& tlwordmodel,
 	    //Note: Words in the context can also be ambiguous (with more than one lexical choice)
 	    //In that case the count will come from all the possible
 	    //translations 
+#ifdef __GNUC__
 	    vector<wstring> translation_buffer[buffer_max_size];
 	    wstring reduced_buffer[buffer_max_size];
+#else
+        vector <vector<wstring> > translation_buffer(buffer_max_size);
+		vector <wstring> reduced_buffer(buffer_max_size);
+#endif
 
 	    for (int i=0; i<(int)buffer_max_size; i++) {
 	      reduced_buffer[i]=lextor_data->reduce(buffer[i].get_word_string());	      
