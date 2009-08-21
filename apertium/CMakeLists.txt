@@ -18,9 +18,6 @@ MACRO (ADD_FORMATTER SRC_NAME XSL XML)
         FROM_XML (${SRC_NAME}.cc ${XSL} ${XML})        # Create SRC_NAME using the stylesheet XSL and the xml file XML
         STRING (REPLACE "_" "-" EXE_NAME ${SRC_NAME})  # Convert underscores to dashes for the executable names
 
-        IF (WIN32) # Ensure that __STDC__ is defined when compiling under Windows
-                SET_SOURCE_FILES_PROPERTIES (${SRC_NAME} PROPERTIES COMPILE_FLAGS "/D __STDC__")
-        ENDIF (WIN32)
 
         ADD_EXECUTABLE (${EXE_NAME} ${SRC_NAME}.cc)    # Compile EXE_NAME using the source file ${SRC_NAME}.cc
         TARGET_LINK_LIBRARIES (${EXE_NAME} ${LIBXML2_LIBRARIES} ${ICONV_LIBRARIES} ${LTTOOLBOX3_LIBRARIES}) # Link the lttoolbox library to EXE_NAME
@@ -66,7 +63,7 @@ ADD_APERTIUM_EXE (apertium-filter-ambiguity             apertium_filter_ambiguit
 ADD_APERTIUM_EXE (apertium-transfer                     apertium_transfer.cc)
 ADD_APERTIUM_EXE (apertium-interchunk                   apertium_interchunk.cc)
 ADD_APERTIUM_EXE (apertium-postchunk                    apertium_postchunk.cc)
-ADD_APERTIUM_EXE (apertium-lextor                       apertium_lextor.cc)
+#ADD_APERTIUM_EXE (apertium-lextor                       apertium_lextor.cc)
 ADD_APERTIUM_EXE (apertium-tagger-apply-new-rules       apertium_tagger_apply_new_rules.cc)
 ADD_APERTIUM_EXE (apertium-gen-wlist-lextor-translation apertium_gen_wlist_lextor_translation.cc)
 
