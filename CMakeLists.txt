@@ -33,10 +33,11 @@ IF (WIN32)
         SET(ICONV_INCLUDE_DIR      ${ICONV_BASE_DIR}/include)
 	SET(ICONV_LIBRARIES        ${ICONV_BASE_DIR}/lib/iconv.lib)
 
-        SET(LIBXML2_BASE_DIR       C:/Program\ Files/LibXMl)
+        SET(LIBXML2_BASE_DIR       C:/Program\ Files/LibXML)
+        SET(LIBXSLT_BASE_DIR       C:/Program\ Files/Libxslt)
         SET(LIBXML2_INCLUDE_DIR    ${LIBXML2_BASE_DIR}/include)
         SET(LIBXML2_LIBRARIES      ${LIBXML2_BASE_DIR}/lib/libxml2.lib)
-        SET(XSLTPROC_EXECUTABLE    ${LIBXML2_BASE_DIR}/bin/xsltproc.exe)
+        SET(XSLTPROC_EXECUTABLE    ${LIBXSLT_BASE_DIR}/bin/xsltproc.exe)
 
         SET(LTTOOLBOX3_BASE_DIR    C:/Program\ Files/apertium-3.1)
         SET(LTTOOLBOX3_INCLUDE_DIR ${LTTOOLBOX3_BASE_DIR}/include/lttoolbox-3.1)
