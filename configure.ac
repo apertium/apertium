@@ -168,7 +168,7 @@ fi
 
 AC_CHECK_FUNCS(strcasecmp)
 
-if test x$(uname -a) != xDarwin;
+if test x$(uname) != xDarwin;
 then 
 AC_CHECK_HEADER(pcreposix.h,
   AC_CHECK_LIB(pcre, pcre_info,[
