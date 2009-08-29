@@ -1,0 +1,1016 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  Draft of DTD for the structural transfer rule files 
+  
+  Sergio Ortiz, Gema Ramírez-Sánchez, Mireia Ginestí, Mikel L. Forcada, 
+  2005.07.29. 
+-->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <define name="condition">
+    <choice>
+      <ref name="and"/>
+      <ref name="or"/>
+      <ref name="not"/>
+      <ref name="equal"/>
+      <ref name="begins-with"/>
+      <ref name="begins-with-list"/>
+      <ref name="ends-with"/>
+      <ref name="ends-with-list"/>
+      <ref name="contains-substring"/>
+      <ref name="in"/>
+    </choice>
+  </define>
+  <define name="container">
+    <choice>
+      <ref name="var"/>
+      <ref name="clip"/>
+    </choice>
+  </define>
+  <define name="sentence">
+    <choice>
+      <ref name="let"/>
+      <ref name="out"/>
+      <ref name="choose"/>
+      <ref name="modify-case"/>
+      <ref name="call-macro"/>
+      <ref name="append"/>
+    </choice>
+  </define>
+  <define name="value">
+    <choice>
+      <ref name="b"/>
+      <ref name="clip"/>
+      <ref name="lit"/>
+      <ref name="lit-tag"/>
+      <ref name="var"/>
+      <ref name="get-case-from"/>
+      <ref name="case-of"/>
+      <ref name="concat"/>
+    </choice>
+  </define>
+  <define name="stringvalue">
+    <choice>
+      <ref name="clip"/>
+      <ref name="lit"/>
+      <ref name="var"/>
+      <ref name="get-case-from"/>
+      <ref name="case-of"/>
+    </choice>
+  </define>
+  <define name="transfer">
+    <element name="transfer">
+      <ref name="attlist.transfer"/>
+      <ref name="section-def-cats"/>
+      <ref name="section-def-attrs"/>
+      <ref name="section-def-vars"/>
+      <optional>
+        <ref name="section-def-lists"/>
+      </optional>
+      <optional>
+        <ref name="section-def-macros"/>
+      </optional>
+      <ref name="section-rules"/>
+    </element>
+  </define>
+  <define name="attlist.transfer" combine="interleave">
+    <optional>
+      <attribute name="default">
+        <choice>
+          <value>lu</value>
+          <value>chunk</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <!--
+    'transfer' is the root element containing the whole structural
+    transfer rule file.  Attribute 'default' specifies if
+    unmatched words have to be written as lexical units ("lu", this is
+    the default value) or as chunks ("chunk").
+  -->
+  <define name="section-def-cats">
+    <element name="section-def-cats">
+      <ref name="attlist.section-def-cats"/>
+      <oneOrMore>
+        <ref name="def-cat"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.section-def-cats" combine="interleave">
+    <empty/>
+  </define>
+  <!--
+         The 'def-cats' section defines the categories used to build the
+    patterns used in rules
+  -->
+  <define name="def-cat">
+    <element name="def-cat">
+      <ref name="attlist.def-cat"/>
+      <oneOrMore>
+        <ref name="cat-item"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.def-cat" combine="interleave">
+    <attribute name="n">
+      <data type="ID"/>
+    </attribute>
+  </define>
+  <!--
+    Each 'def-cat' defines one category in terms of a list of
+    category items and has a unique name 'n', which is mandatory
+  -->
+  <define name="cat-item">
+    <element name="cat-item">
+      <ref name="attlist.cat-item"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.cat-item" combine="interleave">
+    <optional>
+      <attribute name="lemma"/>
+    </optional>
+    <attribute name="tags"/>
+  </define>
+  <!--
+         Each 'cat-item' (category item) represents a set of lexical forms
+    and has a mandatory attribute 'tags' whose value is a sequence of
+    dot-separated tag names; this sequence is a subsequence of the
+    tag sequence defining each possible lexical form. For example,
+    tags="n.f" would match all lexical forms containing this tag
+    sequence, such as "^casa<n><f><pl>$".
+    
+    In addition, an optional attribute, "lemma", may be used to
+    define lexical forms having a particular substring in their lemma
+  -->
+  <define name="section-def-attrs">
+    <element name="section-def-attrs">
+      <ref name="attlist.section-def-attrs"/>
+      <oneOrMore>
+        <ref name="def-attr"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.section-def-attrs" combine="interleave">
+    <empty/>
+  </define>
+  <!--
+    The 'def-attrs' section defines the attributes that will be
+    identified in matched lexical forms 
+  -->
+  <define name="def-attr">
+    <element name="def-attr">
+      <ref name="attlist.def-attr"/>
+      <oneOrMore>
+        <ref name="attr-item"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.def-attr" combine="interleave">
+    <attribute name="n">
+      <data type="ID"/>
+    </attribute>
+  </define>
+  <!--
+    Each def-attr defines one attribute in terms of a list of
+    attribute items and has a mandatory unique name n 
+  -->
+  <define name="attr-item">
+    <element name="attr-item">
+      <ref name="attlist.attr-item"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.attr-item" combine="interleave">
+    <optional>
+      <attribute name="tags"/>
+    </optional>
+  </define>
+  <!--
+    Each 'attr-item' specifies a subsequence of the tags in
+    that lexical form (attribute 'tags')
+  -->
+  <define name="section-def-vars">
+    <element name="section-def-vars">
+      <ref name="attlist.section-def-vars"/>
+      <oneOrMore>
+        <ref name="def-var"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.section-def-vars" combine="interleave">
+    <empty/>
+  </define>
+  <!--
+    The 'def-vars' section defines the global variables
+    that will be used to transfer information between rules
+  -->
+  <define name="def-var">
+    <element name="def-var">
+      <ref name="attlist.def-var"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.def-var" combine="interleave">
+    <attribute name="n">
+      <data type="ID"/>
+    </attribute>
+    <optional>
+      <attribute name="v"/>
+    </optional>
+  </define>
+  <!--
+    The definition of a global variable has a mandatory unique name 'n' that
+    will be used to refer to it. A value of initialization can also be specified
+    by means the 'v' attribute.  The default value of the initialization is the
+    empty string.
+  -->
+  <define name="section-def-lists">
+    <element name="section-def-lists">
+      <ref name="attlist.section-def-lists"/>
+      <oneOrMore>
+        <ref name="def-list"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.section-def-lists" combine="interleave">
+    <empty/>
+  </define>
+  <!-- Element 'section-def-lists' encloses a set of list definitions -->
+  <define name="def-list">
+    <element name="def-list">
+      <ref name="attlist.def-list"/>
+      <oneOrMore>
+        <ref name="list-item"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.def-list" combine="interleave">
+    <attribute name="n">
+      <data type="ID"/>
+    </attribute>
+  </define>
+  <!--
+    The 'def-list' element defines a named list to search with the 'in' 
+    element.  Attribute 'n' sets the name of the list
+  -->
+  <define name="list-item">
+    <element name="list-item">
+      <ref name="attlist.list-item"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.list-item" combine="interleave">
+    <attribute name="v"/>
+  </define>
+  <!--
+    Attribute 'v' of 'list-item' element contains the value to be added to 
+    the list being defined     
+  -->
+  <define name="section-def-macros">
+    <element name="section-def-macros">
+      <ref name="attlist.section-def-macros"/>
+      <oneOrMore>
+        <ref name="def-macro"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.section-def-macros" combine="interleave">
+    <empty/>
+  </define>
+  <!--
+    
+    The 'def-macros' section defines macros containing portions of
+    code frequently used in the action part of rules
+    
+  -->
+  <define name="def-macro">
+    <element name="def-macro">
+      <ref name="attlist.def-macro"/>
+      <oneOrMore>
+        <ref name="sentence"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.def-macro" combine="interleave">
+    <attribute name="n">
+      <data type="ID"/>
+    </attribute>
+  </define>
+  <define name="attlist.def-macro" combine="interleave">
+    <attribute name="npar"/>
+  </define>
+  <!--
+    Macro definition:
+    
+    A macro has a mandatory name (the value of 'n'), a number of parameters
+    (the value of 'npar') and a body containing arguments and statements.  
+  -->
+  <define name="section-rules">
+    <element name="section-rules">
+      <ref name="attlist.section-rules"/>
+      <oneOrMore>
+        <ref name="rule"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.section-rules" combine="interleave">
+    <empty/>
+  </define>
+  <!-- The rules section contains a sequence of one or more rules -->
+  <define name="rule">
+    <element name="rule">
+      <ref name="attlist.rule"/>
+      <ref name="pattern"/>
+      <ref name="action"/>
+    </element>
+  </define>
+  <define name="attlist.rule" combine="interleave">
+    <optional>
+      <attribute name="comment"/>
+    </optional>
+  </define>
+  <!--
+    Each rule has a pattern and an action 
+    * attribute 'comment' allows to put in comments about the purpose of
+      the rule being defined
+  -->
+  <define name="pattern">
+    <element name="pattern">
+      <ref name="attlist.pattern"/>
+      <oneOrMore>
+        <ref name="pattern-item"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.pattern" combine="interleave">
+    <empty/>
+  </define>
+  <!--
+    The pattern is specified in terms of pattern items, each one
+    representing a lexical form in the matched pattern 
+  -->
+  <define name="pattern-item">
+    <element name="pattern-item">
+      <ref name="attlist.pattern-item"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.pattern-item" combine="interleave">
+    <attribute name="n">
+      <data type="IDREF"/>
+    </attribute>
+  </define>
+  <!-- Each attribute to be activated is referred to by its name in the def-cats section -->
+  <define name="action">
+    <element name="action">
+      <ref name="attlist.action"/>
+      <zeroOrMore>
+        <ref name="sentence"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.action" combine="interleave">
+    <empty/>
+  </define>
+  <!-- Encloses the procedural part of a rule -->
+  <define name="choose">
+    <element name="choose">
+      <ref name="attlist.choose"/>
+      <oneOrMore>
+        <ref name="when"/>
+      </oneOrMore>
+      <optional>
+        <ref name="otherwise"/>
+      </optional>
+    </element>
+  </define>
+  <define name="attlist.choose" combine="interleave">
+    <empty/>
+  </define>
+  <!--
+    The choose statement is a selection statement (similar to a case
+    statement) composed of one or more tested cases and an optional
+    otherwise 
+  -->
+  <define name="when">
+    <element name="when">
+      <ref name="attlist.when"/>
+      <ref name="test"/>
+      <zeroOrMore>
+        <ref name="sentence"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.when" combine="interleave">
+    <empty/>
+  </define>
+  <!-- Each tested case is a block of zero or more statements -->
+  <define name="otherwise">
+    <element name="otherwise">
+      <ref name="attlist.otherwise"/>
+      <oneOrMore>
+        <ref name="sentence"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.otherwise" combine="interleave">
+    <empty/>
+  </define>
+  <!-- The otherwise case is also a block of one or more statements -->
+  <define name="test">
+    <element name="test">
+      <ref name="attlist.test"/>
+      <ref name="condition"/>
+    </element>
+  </define>
+  <define name="attlist.test" combine="interleave">
+    <empty/>
+  </define>
+  <!--
+    The test in a tested case may be a conjunction, a disjunction, or
+    a negation of simpler tests, as well as a simple equality test
+  -->
+  <define name="and">
+    <element name="and">
+      <ref name="attlist.and"/>
+      <ref name="condition"/>
+      <oneOrMore>
+        <ref name="condition"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.and" combine="interleave">
+    <empty/>
+  </define>
+  <!-- Each conjuntion test contains two or more simpler tests -->
+  <define name="or">
+    <element name="or">
+      <ref name="attlist.or"/>
+      <ref name="condition"/>
+      <oneOrMore>
+        <ref name="condition"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.or" combine="interleave">
+    <empty/>
+  </define>
+  <!-- Each disjunction test contains two or more simpler tests -->
+  <define name="not">
+    <element name="not">
+      <ref name="attlist.not"/>
+      <ref name="condition"/>
+    </element>
+  </define>
+  <define name="attlist.not" combine="interleave">
+    <empty/>
+  </define>
+  <!-- The negation of a simpler test is a test itself -->
+  <define name="equal">
+    <element name="equal">
+      <ref name="attlist.equal"/>
+      <ref name="value"/>
+      <ref name="value"/>
+    </element>
+  </define>
+  <define name="attlist.equal" combine="interleave">
+    <optional>
+      <attribute name="caseless">
+        <choice>
+          <value>no</value>
+          <value>yes</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <!--
+    The simplest test is an equality test. The right part and the
+    left part of the equality may both be a clip (see below), a
+    literal string ('lit'), a literal tag ('lit-tag') or the value of 
+    a variable ('var') defined in the def-vars section.  When the attribute
+    'caseless' is set to 'yes', the comparison is made without attending
+    to the case.
+  -->
+  <define name="begins-with">
+    <element name="begins-with">
+      <ref name="attlist.begins-with"/>
+      <ref name="value"/>
+      <ref name="value"/>
+    </element>
+  </define>
+  <define name="attlist.begins-with" combine="interleave">
+    <optional>
+      <attribute name="caseless">
+        <choice>
+          <value>no</value>
+          <value>yes</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <!--
+    Tests if the left part contains the right part at the beginning.
+    Both parts of the test may both be a clip (see below), a
+    literal string ('lit'), a literal tag ('lit-tag') or the value of 
+    a variable ('var') defined in the def-vars section.  When the attribute
+    'caseless' is set to 'yes', the comparison is made without attending
+    to the case.
+  -->
+  <define name="ends-with">
+    <element name="ends-with">
+      <ref name="attlist.ends-with"/>
+      <ref name="value"/>
+      <ref name="value"/>
+    </element>
+  </define>
+  <define name="attlist.ends-with" combine="interleave">
+    <optional>
+      <attribute name="caseless">
+        <choice>
+          <value>no</value>
+          <value>yes</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <!--
+    Tests if the left part contains the right part at the end.
+    Both parts of the test may both be a clip (see below), a
+    literal string ('lit'), a literal tag ('lit-tag') or the value of 
+    a variable ('var') defined in the def-vars section.  When the attribute
+    'caseless' is set to 'yes', the comparison is made without attending
+    to the case.
+  -->
+  <define name="begins-with-list">
+    <element name="begins-with-list">
+      <ref name="attlist.begins-with-list"/>
+      <ref name="value"/>
+      <ref name="list"/>
+    </element>
+  </define>
+  <define name="attlist.begins-with-list" combine="interleave">
+    <optional>
+      <attribute name="caseless">
+        <choice>
+          <value>no</value>
+          <value>yes</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <!--
+    Tests if the left part contains the right part at the beginning.
+    First parts of the test may be a clip (see below), a
+    literal string ('lit'), a literal tag ('lit-tag') or the value of 
+    a variable ('var') defined in the def-vars section. The second part
+    must be always a list.  When the attribute
+    'caseless' is set to 'yes', the comparison is made without attending
+    to the case.
+  -->
+  <define name="ends-with-list">
+    <element name="ends-with-list">
+      <ref name="attlist.ends-with-list"/>
+      <ref name="value"/>
+      <ref name="list"/>
+    </element>
+  </define>
+  <define name="attlist.ends-with-list" combine="interleave">
+    <optional>
+      <attribute name="caseless">
+        <choice>
+          <value>no</value>
+          <value>yes</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <!--
+    Tests if the left part contains the right part at the end.
+    First parts of the test may be a clip (see below), a
+    literal string ('lit'), a literal tag ('lit-tag') or the value of 
+    a variable ('var') defined in the def-vars section. The second part
+    must be always a list.  When the attribute
+    'caseless' is set to 'yes', the comparison is made without attending
+    to the case.
+  -->
+  <define name="contains-substring">
+    <element name="contains-substring">
+      <ref name="attlist.contains-substring"/>
+      <ref name="value"/>
+      <ref name="value"/>
+    </element>
+  </define>
+  <define name="attlist.contains-substring" combine="interleave">
+    <optional>
+      <attribute name="caseless">
+        <choice>
+          <value>no</value>
+          <value>yes</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <!--
+    Tests if the left part contains the right part.
+    Both parts of the test may both be a clip (see below), a
+    literal string ('lit'), a literal tag ('lit-tag') or the value of 
+    a variable ('var') defined in the def-vars section.  When the attribute
+    'caseless' is set to 'yes', the comparison is made without attending
+    to the case.
+  -->
+  <define name="in">
+    <element name="in">
+      <ref name="attlist.in"/>
+      <ref name="value"/>
+      <ref name="list"/>
+    </element>
+  </define>
+  <define name="attlist.in" combine="interleave">
+    <optional>
+      <attribute name="caseless">
+        <choice>
+          <value>no</value>
+          <value>yes</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <!--
+    'in' performs a search of a value in a list.  If 'caseless' is set to yes,
+    this search is performed without attending to the case
+  -->
+  <define name="list">
+    <element name="list">
+      <ref name="attlist.list"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.list" combine="interleave">
+    <attribute name="n">
+      <data type="IDREF"/>
+    </attribute>
+  </define>
+  <!--
+    'list' refers, with the name in attribute 'n', a list defined before in
+    the 'section-def-list' section
+  -->
+  <define name="let">
+    <element name="let">
+      <ref name="attlist.let"/>
+      <ref name="container"/>
+      <ref name="value"/>
+    </element>
+  </define>
+  <define name="attlist.let" combine="interleave">
+    <empty/>
+  </define>
+  <!--
+    An assignment statement ('let') assigns the value of a clip (see
+    below), a literal string ('lit'), a literal tag('lit-tag') or the 
+    value of a global variable ('var') to either a global variable ('var') 
+    or a clip
+  -->
+  <define name="append">
+    <element name="append">
+      <ref name="attlist.append"/>
+      <oneOrMore>
+        <ref name="value"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.append" combine="interleave">
+    <attribute name="n">
+      <data type="IDREF"/>
+    </attribute>
+  </define>
+  <!--
+    This instruction appends the value of a clip (see
+    below), a literal string ('lit'), a literal tag('lit-tag') or the 
+    value of a global variable ('var') to either a global variable ('var') 
+    or a clip, identified by the "n" attribute
+  -->
+  <define name="out">
+    <element name="out">
+      <ref name="attlist.out"/>
+      <oneOrMore>
+        <choice>
+          <ref name="mlu"/>
+          <ref name="lu"/>
+          <ref name="b"/>
+          <ref name="chunk"/>
+          <ref name="var"/>
+        </choice>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.out" combine="interleave">
+    <empty/>
+  </define>
+  <!--
+    'out' is an output statement; it may output any sequence of
+    clips, literal strings, literal tags, variables, and whitespace items 
+    (see below) 
+  -->
+  <define name="modify-case">
+    <element name="modify-case">
+      <ref name="attlist.modify-case"/>
+      <ref name="container"/>
+      <ref name="stringvalue"/>
+    </element>
+  </define>
+  <define name="attlist.modify-case" combine="interleave">
+    <empty/>
+  </define>
+  <!--
+    The first argument of 'modify-case' copy the case of the second 
+    argument.
+  -->
+  <define name="call-macro">
+    <element name="call-macro">
+      <ref name="attlist.call-macro"/>
+      <zeroOrMore>
+        <ref name="with-param"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.call-macro" combine="interleave">
+    <attribute name="n">
+      <data type="IDREF"/>
+    </attribute>
+  </define>
+  <!--
+    A macro may be called anywhere by name with one or more
+    arguments
+  -->
+  <define name="with-param">
+    <element name="with-param">
+      <ref name="attlist.with-param"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.with-param" combine="interleave">
+    <attribute name="pos"/>
+  </define>
+  <!--
+    The attribute pos in each argument is used to refer to a lexical
+    form in the current rule. For example, if a 2-parameter macro
+    has been defined to perform noun-adjective agreement operations,
+    it may be used with arguments 1 and 2 in a noun-adjective rule,
+    with arguments 2, 3 and 1 in a determiner-noun-adjective rule, with
+    arguments 1 and 3 in a noun-adverb-adjective rule, and with
+    arguments 2 and 1 in an adjective-noun rule 
+  -->
+  <define name="clip">
+    <element name="clip">
+      <ref name="attlist.clip"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.clip" combine="interleave">
+    <attribute name="pos"/>
+    <attribute name="side">
+      <choice>
+        <value>sl</value>
+        <value>tl</value>
+      </choice>
+    </attribute>
+    <attribute name="part"/>
+    <optional>
+      <attribute name="queue"/>
+    </optional>
+    <optional>
+      <attribute name="link-to"/>
+    </optional>
+  </define>
+  <!--
+    A 'clip' is a substring of a source-language or target-language
+    lexical form, extracted according to an attribute:
+    
+    * 'pos' is an index (1, 2, 3...) used to select a lexical form
+       inside the rule;
+    
+    * 'side' is used to select a source-language ('sl') or a
+      target-language ('tl') clip
+    
+    * the value of 'part' is the name of an attribute defined in
+      def-attrs, but may take also the values 'lem' (referring to
+      the lemma of the lexical form), 'lemh' (lemma head), 'lemq'
+      (lemma queue) and 'whole' (referring to the whole lexical form).
+    
+    * the value of 'queue' may be 'no' or 'yes'.  'yes' is assumed  by 
+      default.
+    
+    * 'link-to' causes the other attributes to be ignored in clip evaluation
+      when using 'clip' as a right hand side element (as value), and 
+      returns its value.  When using as a left hand side (as reference), 
+      the value of the 'as' attribute is ignored.
+  -->
+  <define name="lit">
+    <element name="lit">
+      <ref name="attlist.lit"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.lit" combine="interleave">
+    <attribute name="v"/>
+  </define>
+  <!--
+    A literal string value: the value of the literal is the value of
+    the 'v' attribute
+  -->
+  <define name="lit-tag">
+    <element name="lit-tag">
+      <ref name="attlist.lit-tag"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.lit-tag" combine="interleave">
+    <attribute name="v"/>
+  </define>
+  <!--
+    A literal string value: the value of the literal is the value of
+    the 'v' attribute
+  -->
+  <define name="var">
+    <element name="var">
+      <ref name="attlist.var"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.var" combine="interleave">
+    <attribute name="n">
+      <data type="IDREF"/>
+    </attribute>
+  </define>
+  <!--
+    Each 'var' is a variable identifier: the attribute n is the name
+    of the variable. When it is in an 'out', a 'test', or the right
+    part of a 'let', it represents the value of the variable; when in
+    the left part of a 'let' it represents the reference of the
+    variable. 
+  -->
+  <define name="get-case-from">
+    <element name="get-case-from">
+      <ref name="attlist.get-case-from"/>
+      <choice>
+        <ref name="clip"/>
+        <ref name="lit"/>
+        <ref name="var"/>
+      </choice>
+    </element>
+  </define>
+  <define name="attlist.get-case-from" combine="interleave">
+    <attribute name="pos"/>
+  </define>
+  <!--
+    Atención, falta modificar todos los comentarios donde intervenga
+    get-case-from
+  -->
+  <define name="case-of">
+    <element name="case-of">
+      <ref name="attlist.case-of"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.case-of" combine="interleave">
+    <attribute name="pos"/>
+    <attribute name="side">
+      <choice>
+        <value>sl</value>
+        <value>tl</value>
+      </choice>
+    </attribute>
+    <attribute name="part"/>
+  </define>
+  <!--
+    A 'case-of' is a value representing the case of a "clip".  This value 
+    will be "aa" (all lowercase), "Aa" (first uppercase) and "AA",
+    (all uppercase).
+    
+    * 'pos' is an index (1, 2, 3...) used to select a lexical form
+       inside the rule;
+    
+    * 'side' is used to select a source-language ('sl') or a
+      target-language ('tl') clip
+    
+    * the value of 'part' is the name of an attribute defined in
+      def-attrs, but may take also the values 'lem' (referring to
+      the lemma of the lexical form), 'lemh' (lemma head), 'lemq'
+      (lemma queue) and 'whole' (referring to the whole lexical form).
+  -->
+  <define name="concat">
+    <element name="concat">
+      <ref name="attlist.concat"/>
+      <oneOrMore>
+        <ref name="value"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.concat" combine="interleave">
+    <empty/>
+  </define>
+  <!-- Concatenates a sequence of values -->
+  <define name="mlu">
+    <element name="mlu">
+      <ref name="attlist.mlu"/>
+      <oneOrMore>
+        <ref name="lu"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.mlu" combine="interleave">
+    <empty/>
+  </define>
+  <!-- Encloses a multiword -->
+  <define name="lu">
+    <element name="lu">
+      <ref name="attlist.lu"/>
+      <oneOrMore>
+        <ref name="value"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.lu" combine="interleave">
+    <empty/>
+  </define>
+  <!-- Encloses a word inside an 'out' element. -->
+  <define name="chunk">
+    <element name="chunk">
+      <ref name="attlist.chunk"/>
+      <ref name="tags"/>
+      <oneOrMore>
+        <choice>
+          <ref name="mlu"/>
+          <ref name="lu"/>
+          <ref name="b"/>
+          <ref name="var"/>
+        </choice>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.chunk" combine="interleave">
+    <optional>
+      <attribute name="name"/>
+    </optional>
+    <optional>
+      <attribute name="namefrom"/>
+    </optional>
+    <optional>
+      <attribute name="case"/>
+    </optional>
+  </define>
+  <!--
+    Encloses a chunk inside an 'out' element.      
+    * 'name' the pseudolemma of the chunk.
+    * 'namefrom' get the name from a variable.
+    * 'case' the variable to get the uppercase/lowercase policy
+       to apply it to the chunk name
+  -->
+  <define name="tags">
+    <element name="tags">
+      <ref name="attlist.tags"/>
+      <oneOrMore>
+        <ref name="tag"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.tags" combine="interleave">
+    <empty/>
+  </define>
+  <define name="tag">
+    <element name="tag">
+      <ref name="attlist.tag"/>
+      <ref name="value"/>
+    </element>
+  </define>
+  <define name="attlist.tag" combine="interleave">
+    <empty/>
+  </define>
+  <define name="b">
+    <element name="b">
+      <ref name="attlist.b"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.b" combine="interleave">
+    <optional>
+      <attribute name="pos"/>
+    </optional>
+  </define>
+  <start>
+    <choice>
+      <ref name="transfer"/>
+    </choice>
+  </start>
+</grammar>
+<!--
+  'b' is a [super]blanks item, indexed by pos; for example, a 'b'
+  with pos="2" refers to the [super]blanks (including format data
+  encapsulated by the de-formatter) between lexical form 2 and
+  lexical form 3. Managing [super]blanks explicitly allows for the
+  correct placement of format when the result of structural
+  transfer has more or less lexical items than the original or has
+  been reordered in some way.  If attribute "pos" is not specified, then
+  a single blank (ASCII 32) is generated.
+-->

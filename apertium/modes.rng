@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- DTD for the modes.xml file     -->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <define name="modes">
+    <element name="modes">
+      <ref name="attlist.modes"/>
+      <oneOrMore>
+        <ref name="mode"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.modes" combine="interleave">
+    <empty/>
+  </define>
+  <define name="mode">
+    <element name="mode">
+      <ref name="attlist.mode"/>
+      <ref name="pipeline"/>
+    </element>
+  </define>
+  <define name="attlist.mode" combine="interleave">
+    <attribute name="name">
+      <data type="ID"/>
+    </attribute>
+  </define>
+  <define name="attlist.mode" combine="interleave">
+    <optional>
+      <attribute name="install"/>
+    </optional>
+  </define>
+  <define name="pipeline">
+    <element name="pipeline">
+      <ref name="attlist.pipeline"/>
+      <oneOrMore>
+        <ref name="program"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.pipeline" combine="interleave">
+    <empty/>
+  </define>
+  <define name="program">
+    <element name="program">
+      <ref name="attlist.program"/>
+      <zeroOrMore>
+        <ref name="file"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.program" combine="interleave">
+    <attribute name="name"/>
+  </define>
+  <define name="file">
+    <element name="file">
+      <ref name="attlist.file"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.file" combine="interleave">
+    <attribute name="name"/>
+  </define>
+  <start>
+    <choice>
+      <ref name="modes"/>
+    </choice>
+  </start>
+</grammar>
