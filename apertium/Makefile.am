@@ -410,6 +410,7 @@ man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
          apertium-deswxml.1 apertium-rewxml.1 \
          apertium-desxlsx.1 apertium-rexlsx.1 \
          apertium-despptx.1 apertium-repptx.1 \
+         apertium-desmediawiki.1 apertium-remediawiki.1 \
          apertium-filter-ambiguity.1 apertium-gen-deformat.1 apertium-gen-lextorbil.1 \
          apertium-gen-lextormono.1 apertium-gen-reformat.1 apertium-gen-stopwords-lextor.1 \
          apertium-gen-wlist-lextor.1 apertium-gen-wlist-lextor-translation.1 \
