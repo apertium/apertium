@@ -43,6 +43,7 @@ bin_PROGRAMS = apertium-pretransfer apertium-destxt apertium-retxt \
                apertium-deswxml apertium-rewxml \
                apertium-desxlsx apertium-rexlsx \
                apertium-despptx apertium-repptx \
+               apertium-desmediawiki apertium-remediawiki \
                apertium-tagger \
                apertium-preprocess-transfer apertium-transfer \
                apertium-filter-ambiguity apertium-lextor \
@@ -85,6 +86,8 @@ apertium_desxlsx_SOURCES = apertium_desxlsx.cc
 apertium_rexlsx_SOURCES = apertium_rexlsx.cc
 apertium_despptx_SOURCES = apertium_despptx.cc
 apertium_repptx_SOURCES = apertium_repptx.cc
+apertium_desmediawiki_SOURCES = apertium_desmediawiki.cc
+apertium_remediawiki_SOURCES = apertium_remediawiki.cc
 
 apertium_tagger_SOURCES = apertium_tagger.cc
 apertium_tagger_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
@@ -134,7 +137,8 @@ CLEANFILES = *~ apertium_destxt.cc apertium_retxt.cc apertium_deshtml.cc \
              apertium_desxlsx.cc apertium_rexlsx.cc \
              apertium_despptx.cc apertium_repptx.cc \
              apertium_desodt.cc apertium_reodt.cc \
-             apertium_desxpresstag.cc apertium_rexpresstag.cc \
+	     apertium_desxpresstag.cc apertium_rexpresstag.cc \
+             apertium_desmediawiki.cc apertium_remediawiki.cc \
              $(GENERATEDSCRIPTS)
 
 apertium_destxt.cc: txt-format.xml Makefile.am deformat.xsl
@@ -214,6 +218,16 @@ apertium_despptx.cc: pptx-format.xml Makefile.am deformat.xsl
 
 apertium_repptx.cc: pptx-format.xml Makefile.am reformat.xsl
 	$(XSLTPROC) reformat.xsl pptx-format.xml >$@tmp
+	$(FLEX) -Cfer -o$@ $@tmp
+	rm $@tmp
+
+apertium_desmediawiki.cc: mediawiki-format.xml Makefile.am deformat.xsl
+	$(XSLTPROC) deformat.xsl mediawiki-format.xml >$@tmp
+	$(FLEX) -Cfer -o$@ $@tmp
+	rm $@tmp
+
+apertium_remediawiki.cc: mediawiki-format.xml Makefile.am reformat.xsl
+	$(XSLTPROC) reformat.xsl mediawiki-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
