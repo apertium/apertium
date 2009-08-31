@@ -23,6 +23,9 @@
 #ifdef _MSC_VER
 #define wcstok wcstok_s
 #endif
+#ifdef __MINGW32__
+#define wcstok _wcstok
+#endif
 
 using namespace Apertium;
 
