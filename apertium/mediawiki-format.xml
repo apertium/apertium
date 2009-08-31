@@ -110,9 +110,10 @@
       <tag regexp='^([\*=:;#]+)'/>
     </format-rule>
 
-    <format-rule type="empty" eos="no" priority="1">
-      <tag regexp='[=:;#]([=:;#]+)'/>
+    <format-rule type="empty" eos="yes" priority="1">
+      <tag regexp='"="([=]+)'/>
     </format-rule>
+
 
     <format-rule type="empty" eos="no" priority="3">
       <tag regexp='"[["([a-z][a-z]|[a-z][a-z][a-z]|"image"|"file")":"([^\]]*)"]]"'/>
