@@ -59,6 +59,10 @@
       <begin regexp='"{{"'/>
       <end regexp='"}}"'/>
     </format-rule>
+    <format-rule type="comment" eos="no" priority="2">
+      <begin regexp='"&amp;lt;math&amp;gt;"'/>
+      <end regexp='"&amp;lt;/math&amp;gt;"'/>
+    </format-rule>
 
 
     <format-rule type="comment" eos="no" priority="2">
