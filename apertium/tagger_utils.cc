@@ -24,6 +24,12 @@
 #define wcstok wcstok_s
 #endif
 #ifdef __MINGW32__
+
+wchar_t *_wcstok(wchar_t *wcs, const wchar_t *delim, wchar_t **ptr) {
+  (void)ptr;
+  return wcstok(wcs, delim);
+}
+
 #define wcstok _wcstok
 #endif
 
