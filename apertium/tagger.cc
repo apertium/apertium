@@ -38,10 +38,7 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <apertium/string_utils.h>
-#ifdef WIN32
-#if defined(__MINGW32__)
-#define __MSVCRT_VERSION__  0x0800
-#endif
+#ifdef _MSC_VER
 #include <io.h>
 #include <fcntl.h>
 #endif
@@ -351,7 +348,7 @@ Tagger::tagger(bool mode_first)
     if (!finput) {
       filerror(filenames[1]);
     }
-#ifdef WIN32
+#ifdef _MSC_VER
 	_setmode(_fileno(finput), _O_U8TEXT);
 #endif
     if(filenames.size() == 2)
@@ -364,7 +361,7 @@ Tagger::tagger(bool mode_first)
       if (!foutput) {
         filerror(filenames[2]);
       }
-#ifdef WIN32
+#ifdef _MSC_VER
 	  _setmode(_fileno(foutput), _O_U8TEXT);
 #endif
 
@@ -406,7 +403,7 @@ Tagger::train()
   FILE *fcrp = fopen(filenames[1].c_str(), "r");
   if(fcrp)
   {
-#ifdef WIN32
+#ifdef _MSC_VER
     _setmode(_fileno(fcrp), _O_U8TEXT);
 #endif 
     hmm.init_probabilities_kupiec(fcrp);               
@@ -458,7 +455,7 @@ Tagger::trainSupervised()
   FILE *funtagged = fopen(filenames[5].c_str(), "r");
   if(ftagged && funtagged)
   {
-#ifdef WIN32
+#ifdef _MSC_VER
     _setmode(_fileno(ftagged), _O_U8TEXT);
     _setmode(_fileno(funtagged), _O_U8TEXT);
 #endif 
@@ -479,7 +476,7 @@ Tagger::trainSupervised()
   FILE *fcrp = fopen(filenames[1].c_str(), "r");
   if(fcrp)
   {
-#ifdef WIN32
+#ifdef _MSC_VER
     _setmode(_fileno(fcrp), _O_U8TEXT);
 #endif 
     for(int i=0; i != nit; i++)
@@ -522,7 +519,7 @@ Tagger::retrain()
   {
     filerror(filenames[0]);
   }
-#ifdef WIN32
+#ifdef _MSC_VER
   _setmode(_fileno(fcrp), _O_U8TEXT);
 #endif 
   wcerr << L"Training (Baum-Welch)...\n";

@@ -33,10 +33,7 @@
 #include "apertium_config.h"
 #include <apertium/unlocked_cstdio.h>
 
-#ifdef WIN32
-#if defined(__MINGW32__)
-#define __MSVCRT_VERSION__  0x0800
-#endif
+#ifdef _MSC_VER
 #include <io.h>
 #include <fcntl.h>
 #endif
@@ -388,7 +385,7 @@ TMXBuilder::generate(string const &file1, string const &file2,
       exit(EXIT_FAILURE);
     }
   }
-#ifdef WIN32
+#ifdef _MSC_VER
   _setmode(_fileno(output), _O_U8TEXT);
 #endif
 
@@ -408,7 +405,7 @@ TMXBuilder::generate(string const &file1, string const &file2,
     exit(EXIT_FAILURE);
   }
 
-#ifdef WIN32
+#ifdef _MSC_VER
   _setmode(_fileno(f1), _O_U8TEXT);
   _setmode(_fileno(f2), _O_U8TEXT);
 #endif   
@@ -941,7 +938,7 @@ TMXBuilder::setTranslation(string const &filename)
     freference = NULL;
   }
 
-#ifdef WIN32
+#ifdef _MSC_VER
   if(freference != NULL)
   {
     _setmode(_fileno(freference), _O_U8TEXT);

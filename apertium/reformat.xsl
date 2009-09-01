@@ -39,10 +39,7 @@
 #include &lt;lttoolbox/lt_locale.h&gt;
 #include &lt;lttoolbox/ltstr.h&gt;
 #include &lt;wchar.h&gt;
-#ifdef WIN32
-#if defined(__MINGW32__)
-#define __MSVCRT_VERSION__  0x0800
-#endif
+#ifdef _MSC_VER
 #include &lt;io.h&gt;
 #include &lt;fcntl.h&gt;
 #endif
@@ -117,7 +114,7 @@ wstring convertir(char const *multibyte, int const length)
   filename = filename.substr(2, filename.size()-3);
   FILE *temp = fopen(filename.c_str(), "r");
   wint_t mychar;
-#ifdef WIN32
+#ifdef _MSC_VER
   _setmode(_fileno(temp), _O_U8TEXT);
 #endif
 
@@ -218,7 +215,7 @@ int main(int argc, char *argv[])
     default:
       break;
   }
-#ifdef WIN32
+#ifdef _MSC_VER
   _setmode(_fileno(yyin), _O_U8TEXT);
   _setmode(_fileno(yyout), _O_U8TEXT);
 #endif 

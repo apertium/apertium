@@ -29,10 +29,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <libgen.h>
-#ifdef WIN32
-#if defined(__MINGW32__)
-#define __MSVCRT_VERSION__  0x0800
-#endif
+#ifdef _MSC_VER
 #include <io.h>
 #include <fcntl.h>
 #endif
@@ -58,7 +55,7 @@ FILE * open_file(char const *filename, char const *mode)
     cerr << "Can't open '" << filename << "'" << endl;
     exit(EXIT_FAILURE);
   }
-#ifdef WIN32
+#ifdef _MSC_VER
   _setmode(_fileno(retval), _O_U8TEXT);
 #endif   
 
