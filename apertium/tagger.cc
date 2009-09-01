@@ -567,8 +567,8 @@ Tagger::help()
   out << "  -g, --tagger:        tags input text by means of Viterbi algorithm" << endl;
   out << "  -p, --show-superficial: " << endl;
   out << "                       show superficial forms in the output stream" << endl;
-  out << "  -f, --first:         used if conjuntion with -g (--tagger) makes the tagger"<< endl;
-  out << "                       to give all lexical forms of each word, being the chosen" << endl;
+  out << "  -f, --first:         used in conjuntion with -g (--tagger) makes the tagger"<< endl;
+  out << "                       give all lexical forms of each word, with the chosen" << endl;
   out << "                       one in the first place (after the lemma)"<<endl;
   out << "  -d, --debug:         print error mesages when tagging input text" << endl;
   out << "  -m, --mark:          generate marks of solved ambiguities" << endl;
