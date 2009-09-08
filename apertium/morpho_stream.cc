@@ -402,4 +402,3 @@ MorphoStream::setEndOfFile(bool eof)
 {
   end_of_file = eof;
 }
-  
