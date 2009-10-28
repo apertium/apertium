@@ -346,7 +346,8 @@ representing a lexical form in the matched pattern
                side (sl|tl) #REQUIRED
                part CDATA #REQUIRED
                queue CDATA #IMPLIED
-               link-to CDATA #IMPLIED>
+               link-to CDATA #IMPLIED
+               c CDATA #IMPLIED>
 <!-- 
       A 'clip' is a substring of a source-language or target-language
       lexical form, extracted according to an attribute:
