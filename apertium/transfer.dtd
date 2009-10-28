@@ -28,7 +28,8 @@ patterns used in rules
  -->
 
 <!ELEMENT def-cat (cat-item+)>
-<!ATTLIST def-cat  n ID #REQUIRED>
+<!ATTLIST def-cat  n ID #REQUIRED
+                   c CDATA #IMPLIED>
 <!-- 
      Each 'def-cat' defines one category in terms of a list of
      category items and has a unique name 'n', which is mandatory
@@ -36,7 +37,8 @@ patterns used in rules
 
 <!ELEMENT cat-item EMPTY>
 <!ATTLIST cat-item lemma CDATA #IMPLIED 
-                   tags CDATA #REQUIRED > 
+                   tags CDATA #REQUIRED 
+                   c CDATA #IMPLIED> 
 <!-- 
           Each 'cat-item' (category item) represents a set of lexical forms
      and has a mandatory attribute 'tags' whose value is a sequence of
@@ -57,14 +59,16 @@ patterns used in rules
 -->
 
 <!ELEMENT def-attr (attr-item+)>
-<!ATTLIST def-attr n ID #REQUIRED>
+<!ATTLIST def-attr n ID #REQUIRED
+                   c CDATA #IMPLIED>
 <!-- 
      Each def-attr defines one attribute in terms of a list of
      attribute items and has a mandatory unique name n 
 -->
 
 <!ELEMENT attr-item EMPTY>
-<!ATTLIST attr-item tags CDATA #IMPLIED>
+<!ATTLIST attr-item tags CDATA #IMPLIED
+                    c CDATA #IMPLIED>
 <!-- 
      Each 'attr-item' specifies a subsequence of the tags in
      that lexical form (attribute 'tags')
@@ -78,7 +82,8 @@ patterns used in rules
 
 <!ELEMENT def-var EMPTY>
 <!ATTLIST def-var n ID #REQUIRED
-                  v CDATA #IMPLIED>
+                  v CDATA #IMPLIED
+                  c CDATA #IMPLIED>
 <!-- 
      The definition of a global variable has a mandatory unique name 'n' that
      will be used to refer to it. A value of initialization can also be specified
@@ -92,14 +97,16 @@ patterns used in rules
 -->
 
 <!ELEMENT def-list (list-item+)>
-<!ATTLIST def-list n ID #REQUIRED>
+<!ATTLIST def-list n ID #REQUIRED
+                   c CDATA #IMPLIED>
 <!--
      The 'def-list' element defines a named list to search with the 'in' 
      element.  Attribute 'n' sets the name of the list
 -->
 
 <!ELEMENT list-item EMPTY>
-<!ATTLIST list-item v CDATA #REQUIRED>
+<!ATTLIST list-item v CDATA #REQUIRED
+                    c CDATA #IMPLIED>
 <!--
      Attribute 'v' of 'list-item' element contains the value to be added to 
      the list being defined     
@@ -115,7 +122,8 @@ patterns used in rules
 
 <!ELEMENT def-macro (%sentence;)+>
 <!ATTLIST def-macro n ID #REQUIRED>
-<!ATTLIST def-macro npar CDATA #REQUIRED>
+<!ATTLIST def-macro npar CDATA #REQUIRED
+                    c CDATA #IMPLIED>
 <!-- 
      Macro definition:
      
@@ -297,6 +305,7 @@ representing a lexical form in the matched pattern
 
 
 <!ELEMENT out (mlu|lu|b|chunk|var)+>
+<!ATTLIST out c CDATA #IMPLIED>
 <!-- 
       'out' is an output statement; it may output any sequence of
       clips, literal strings, literal tags, variables, and whitespace items 
@@ -422,7 +431,8 @@ get-case-from -->
 <!ELEMENT chunk (tags,(mlu|lu|b|var)+)>
 <!ATTLIST chunk name CDATA #IMPLIED
                 namefrom CDATA #IMPLIED
-                case CDATA #IMPLIED>
+                case CDATA #IMPLIED
+                c CDATA #IMPLIED>
 <!-- 
      Encloses a chunk inside an 'out' element.      
      * 'name' the pseudolemma of the chunk.
