@@ -156,16 +156,19 @@ representing a lexical form in the matched pattern
 -->
 
 <!ELEMENT when (test,(%sentence;)*)>
+<!ATTLIST when c CDATA #IMPLIED>
 <!-- 
      Each tested case is a block of zero or more statements 
 -->
 
 <!ELEMENT otherwise (%sentence;)+>
+<!ATTLIST otherwise c CDATA #IMPLIED>
 <!-- 
      The otherwise case is also a block of one or more statements 
 -->
 
 <!ELEMENT test (%condition;)>
+<!ATTLIST test c CDATA #IMPLIED>
 <!-- 
      The test in a tested case may be a conjunction, a disjunction, or
      a negation of simpler tests, as well as a simple equality test
@@ -290,6 +293,7 @@ representing a lexical form in the matched pattern
 
 
 <!ELEMENT out (b|lu|mlu|var)+>
+<!ATTLIST out c CDATA #IMPLIED>
 <!-- 
       'out' is an output statement; it may output blanks or chunks
 -->
