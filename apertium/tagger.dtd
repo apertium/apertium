@@ -22,11 +22,14 @@
 
 <!ELEMENT def-label (tags-item+)>
 <!ATTLIST def-label name CDATA #REQUIRED
+                    c CDATA #IMPLIED
                     closed CDATA #IMPLIED>
+
 <!-- 
 	Each 'def-label' defines one coarse tag in terms of a list of fine tags 
     and has a mandatory unique name. The optional attribute 'closed="true"' may be used
-    to specify if the defined fine tags belong to a closed list
+    to specify if the defined fine tags belong to a closed list.
+    c is for comments and is ignored
 -->
 
 <!ELEMENT tags-item EMPTY>
@@ -39,6 +42,7 @@
 -->
 <!ELEMENT def-mult (sequence+)>
 <!ATTLIST def-mult name CDATA #REQUIRED
+                    c CDATA #IMPLIED
                    closed CDATA #IMPLIED>
 
 <!--
@@ -46,6 +50,7 @@
     tags previously defined as 'def-labels' or a sequence of fine tags. A mandatory 
     name is required for each 'def-mult' which may also has an optional attribute 
     'closed="true"' if it belongs to a closed list
+    c is for comments and is ignored
 -->
 
 <!ELEMENT sequence ((tags-item|label-item)+)>
@@ -56,11 +61,13 @@
 -->
 
 <!ELEMENT label-item EMPTY>
-<!ATTLIST label-item label CDATA #REQUIRED> 
+<!ATTLIST label-item label CDATA #REQUIRED
+                    c CDATA #IMPLIED>
 
 <!--
 	Each 'label' of the 'label-item' correspond to a coarse tag previously 
     defined as a 'def-label' by a name.
+    c is for comments and is ignored
 -->
 
 <!ELEMENT forbid (label-sequence+)>
@@ -71,9 +78,11 @@
 -->
 
 <!ELEMENT label-sequence (label-item+)>
+<!ATTLIST label-sequence c CDATA #IMPLIED>
 
 <!--	
 	Each 'label-sequence' is restricted to two 'label-items' 
+    c is for comments and is ignored
 -->
 
 <!ELEMENT enforce-rules (enforce-after+)>
@@ -83,16 +92,20 @@
 -->
 
 <!ELEMENT enforce-after (label-set)>
-<!ATTLIST enforce-after label CDATA #REQUIRED>
+<!ATTLIST enforce-after label CDATA #REQUIRED
+                        c CDATA #IMPLIED>
 
 <!-- 
 	Each 'enforce-after' encloses the set of coarse tags ('label-set') that must follow 
     the one defined in 'label', as a mandatory attribute
+    c is for comments and is ignored
 -->
 
 <!ELEMENT label-set (label-item+)>
+<!ATTLIST label-set c CDATA #IMPLIED>
 <!--
 	The set of 'label-items' enforced after a 'label' are enclosed inside element 'label-set'  
+    c is for comments and is ignored
 -->
 
 <!ELEMENT preferences (prefer+)>
@@ -103,10 +116,12 @@
 -->
 
 <!ELEMENT prefer EMPTY>
-<!ATTLIST prefer tags CDATA #REQUIRED>
+<!ATTLIST prefer tags CDATA #REQUIRED
+                 c CDATA #IMPLIED>
 
 <!-- 
 	Each 'prefer' element has a mandatory attribute 'tags' made of a sequence of fine tags 
+    c is for comments and is ignored
 -->
 
 <!ELEMENT discard-on-ambiguity (discard+)>
@@ -117,8 +132,10 @@
 -->
 
 <!ELEMENT discard EMPTY>
-<!ATTLIST discard tags CDATA #REQUIRED>
+<!ATTLIST discard tags CDATA #REQUIRED
+                  c CDATA #IMPLIED>
 
 <!-- 
 	Each 'discard' element has a mandatory attribute 'tags' made of a sequence of fine tags 
+    c is for comments and is ignored
 -->
