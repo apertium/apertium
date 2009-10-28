@@ -154,6 +154,7 @@ representing a lexical form in the matched pattern
 -->
 
 <!ELEMENT action (%sentence;)*>
+<!ATTLIST action c CDATA #IMPLIED>
 <!-- 
        Encloses the procedural part of a rule
 -->
