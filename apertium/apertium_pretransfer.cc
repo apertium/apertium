@@ -62,7 +62,6 @@ void procWord(FILE *input, FILE *output)
   wstring buffer = L"";
 
   bool buffer_mode = false;
-  bool queuing = false;
   while((mychar = fgetwc_unlocked(input)) != L'$')
   {
     if(feof(input))
@@ -76,23 +75,22 @@ void procWord(FILE *input, FILE *output)
     case L'<':
       if(!buffer_mode)
       {
-        buffer_mode = true;
+	buffer_mode = true;
       }
       break;
     case L'#':
       if(buffer_mode)
       {
-        buffer_mode = false;
-        queuing = true;
+	buffer_mode = false;
       }
       break;
     }
 
     if(buffer_mode)
-    { 
+    {
       if(mychar != L'+')
       {
-        buffer += static_cast<wchar_t>(mychar);
+	buffer += static_cast<wchar_t>(mychar);
       }
       else
       {
@@ -101,17 +99,8 @@ void procWord(FILE *input, FILE *output)
     }
     else
     {
-      if(mychar == L'+' && queuing == true)  
-      {
-        buffer.append(L"$ ^");
-        buffer_mode = true;
-      }
-      else 
-      {
-        fputwc_unlocked(mychar, output);
-      }
+      fputwc_unlocked(mychar, output);
     }
-
   }
   fputws_unlocked(buffer.c_str(), output);
 }
@@ -252,3 +241,4 @@ int main(int argc, char *argv[])
 
   processStream(input, output, null_flush);
 }
+
