@@ -150,6 +150,7 @@ representing a lexical form in the matched pattern
 -->
 
 <!ELEMENT choose (when+,otherwise?)>
+<!ATTLIST choose c CDATA #IMPLIED>
 <!-- 
      The choose statement is a selection statement (similar to a case
      statement) composed of one or more tested cases and an optional
