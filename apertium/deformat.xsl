@@ -801,7 +801,7 @@ int main(int argc, char *argv[])
 
 <xsl:if test="$mode=string('matxin')">
   print_emptyTags();
-  fputws("&lt;/format&gt;", formatfile);
+  fputws(L"&lt;/format&gt;", formatfile);
   fclose(formatfile);
 </xsl:if>
   fclose(yyin);
