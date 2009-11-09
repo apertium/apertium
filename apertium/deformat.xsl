@@ -786,8 +786,8 @@ int main(int argc, char *argv[])
 </xsl:for-each>
 
 <xsl:if test="$mode=string('matxin')">
-  fputws("&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot; ?>\n", formatfile);
-  fputws("&lt;format&gt;\n", formatfile);
+  fputws(L"&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot; ?>\n", formatfile);
+  fputws(L"&lt;format&gt;\n", formatfile);
 </xsl:if>
 
   last = "";
