@@ -88,9 +88,10 @@
 
       <xsl:value-of select="string('  current++;&#xA;  orders.push_back(current);&#xA;')"/>
       <xsl:value-of select="string('  last=&quot;open_tag&quot;;&#xA;  offsets.push_back(offset);&#xA;')"/>
-      <xsl:value-of select="string('  wchar_t symbol[sizeof(yytext) + 1];&#xA;')"/>
-      <xsl:value-of select="string('  mbstowcs(symbol, yytext, MB_CUR_MAX);&#xA;')"/>
-      <xsl:value-of select="string('  tags.push_back(symbol);&#xA;}&#xA;')"/>
+      <xsl:value-of select="string('  wchar_t* symbol = new wchar_t[strlen(yytext) + 1];&#xA;')"/>
+      <xsl:value-of select="string('  mbstowcs(symbol, yytext, strlen(yytext));&#xA;')"/>
+      <xsl:value-of select="string('  symbol[strlen(yytext)] = (char) 0;&#xA;')"/>
+      <xsl:value-of select="string('  tags.push_back(symbol);&#xA;  delete[] symbol;&#xA;}&#xA;')"/>
     </xsl:when>
     <xsl:when test="./@type = 'close'">
       <xsl:value-of select="./tag/@regexp"/>
@@ -334,14 +335,15 @@ string get_tagName(string tag){
 
 <xsl:if test="$mode=string('matxin')">
 int get_index(string end_tag){
-  char tmp[end_tag.size() + 1];
   string new_end_tag;
   size_t pos;
 
-  // Fill tmp with zeros to avoid segfaults
-  memset(tmp, '\0', end_tag.size() + 1);
-
   for (int i=tags.size()-1; i >= 0; i--) {
+    // a wchar to char conversion can be up to 4 times larger
+    char *tmp = new char (sizeof(char)*((tags[i].size()+1) * 4));
+    // Keep the existing memset. Better safe than sorry.
+    memset(tmp, '\0', tags[i].size() + 1);
+
     pos = wcstombs(tmp, tags[i].c_str(), tags[i].size());
     if (pos == (size_t)-1)
     {
@@ -349,6 +351,7 @@ int get_index(string end_tag){
       exit(EXIT_FAILURE);
     }
     new_end_tag = tmp;
+    delete[] tmp;
 
     if (get_tagName(end_tag) == get_tagName(new_end_tag))
       return i;
