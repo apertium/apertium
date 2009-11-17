@@ -350,19 +350,24 @@
       <replace source="&amp;rsquo;" target="'"/>
 
 
-      <!-- For Esperanto characters -->
-      <replace source="&amp;circ;" target="ĉ" prefer="yes"/>
-      <replace source="&amp;Circ;" target="Ĉ" prefer="yes"/>
-      <replace source="&amp;girc;" target="ĝ" prefer="yes"/>
-      <replace source="&amp;Girc;" target="Ĝ" prefer="yes"/>
-      <replace source="&amp;hirc;" target="ĥ" prefer="yes"/>
-      <replace source="&amp;Hirc;" target="Ĥ" prefer="yes"/>
-      <replace source="&amp;jirc;" target="ĵ" prefer="yes"/>
-      <replace source="&amp;Jirc;" target="Ĵ" prefer="yes"/>
-      <replace source="&amp;sirc;" target="ŝ" prefer="yes"/>
-      <replace source="&amp;Sirc;" target="Ŝ" prefer="yes"/>
-      <replace source="&amp;ubreve;" target="ŭ" prefer="yes"/>
-      <replace source="&amp;Ubreve;" target="Ŭ" prefer="yes"/>
+      <!-- For Esperanto characters. Named entities like &circ; doesent work in browsers, so follow scheme of http://bertilow.com/html/esperantaj/html_uni.html -->
+      <replace source="&amp;#264;" target="Ĉ" prefer="yes"/>
+      <replace source="&amp;#265;" target="ĉ" prefer="yes"/>
+      <replace source="&amp;#284;" target="Ĝ" prefer="yes"/>
+      <replace source="&amp;#285;" target="ĝ" prefer="yes"/>
+      <replace source="&amp;#292;" target="Ĥ" prefer="yes"/>
+      <replace source="&amp;#293;" target="ĥ" prefer="yes"/>
+      <replace source="&amp;#308;" target="Ĵ" prefer="yes"/>
+      <replace source="&amp;#309;" target="ĵ" prefer="yes"/>
+      <replace source="&amp;#348;" target="Ŝ" prefer="yes"/>
+      <replace source="&amp;#349;" target="ŝ" prefer="yes"/>
+      <replace source="&amp;#364;" target="Ŭ" prefer="yes"/>
+      <replace source="&amp;#365;" target="ŭ" prefer="yes"/>
+
+      <!-- replace &#39; with ' in input (this will make i.a. English genitive work). -->
+      <replace source="&amp;#39;" target="'"/>
+      <replace source="'" target="'" prefer="yes"/>
+
 
       
 <!--      <replace source="&amp;apos;" target="'"/>
