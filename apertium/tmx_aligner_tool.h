@@ -1,3 +1,12 @@
+/*************************************************************************
+*                                                                        *
+*  (C) Copyright 2004. Media Research Centre at the                      *
+*  Sociology and Communications Department of the                        *
+*  Budapest University of Technology and Economics.                      *
+*                                                                        *
+*  Developed by Daniel Varga.                                            *
+*                                                                        *
+*************************************************************************/
 #ifndef _ALIGNER_TOOL_H_
 #define _ALIGNER_TOOL_C_
 

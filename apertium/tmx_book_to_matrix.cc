@@ -1,3 +1,12 @@
+/*************************************************************************
+*                                                                        *
+*  (C) Copyright 2004. Media Research Centre at the                      *
+*  Sociology and Communications Department of the                        *
+*  Budapest University of Technology and Economics.                      *
+*                                                                        *
+*  Developed by Daniel Varga.                                            *
+*                                                                        *
+*************************************************************************/
 #include <apertium/tmx_book_to_matrix.h>
 #include <apertium/tmx_alignment.h>
 #include <apertium/tmx_dictionary.h> // For IBMModelOne

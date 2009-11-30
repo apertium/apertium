@@ -1,2 +1,11 @@
 (c) 2005-2007 Universitat d'Alacant / Universidad de Alicante.
 (c) 2007-2008 Prompsit Language Engineering S.L.
+
+Most of the files tmx_* are taken from the hunalign package:
+(C) Copyright 2004. Media Research Centre at the
+Sociology and Communications Department of the
+Budapest University of Technology and Economics.
+
+hunalign is licensed under the GNU Lesser GPL v. 2.1, see
+COPYING.hunalign for more details.
+

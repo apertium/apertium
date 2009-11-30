@@ -1,3 +1,12 @@
+/*************************************************************************
+*                                                                        *
+*  (C) Copyright 2004. Media Research Centre at the                      *
+*  Sociology and Communications Department of the                        *
+*  Budapest University of Technology and Economics.                      *
+*                                                                        *
+*  Developed by Daniel Varga.                                            *
+*                                                                        *
+*************************************************************************/
 #include <apertium/tmx_dictionary.h>
 
 #include <apertium/tmx_serialize_impl.h>
