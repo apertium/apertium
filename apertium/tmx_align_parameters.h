@@ -1,0 +1,39 @@
+#ifndef __TMXALIGNER_ALIGN_PARAMETERS_H
+#define __TMXALIGNER_ALIGN_PARAMETERS_H
+
+
+class AlignParameters
+{
+public:
+  enum RealignType { NoRealign, ModelOneRealign, FineTranslationRealign };
+
+  bool justSentenceIds;
+  bool justBisentences;
+
+  bool cautiousMode;
+  RealignType realignType;
+  double qualityThreshold;
+
+  double postprocessTrailQualityThreshold;
+  double postprocessTrailStartAndEndQualityThreshold;
+  double postprocessTrailByTopologyQualityThreshold;
+
+  std::string handAlignFilename;
+
+  bool utfCharCountingMode;
+  
+  std::string autoDictionaryDumpFilename; // Empty string means do not dump.
+
+AlignParameters() : justSentenceIds(true), 
+    justBisentences(false), cautiousMode(false),
+    realignType(NoRealign),
+    qualityThreshold(-100000),
+    postprocessTrailQualityThreshold(-1),
+    postprocessTrailStartAndEndQualityThreshold(-1),
+    postprocessTrailByTopologyQualityThreshold(-1)
+      {}
+
+
+};
+
+#endif

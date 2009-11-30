@@ -29,13 +29,16 @@ EndianDoubleUtil::read(FILE *input)
 {
   double retval;
 #ifdef WORDS_BIGENDIAN
-  fread(&retval, sizeof(double), 1, input);
+  fread_unlocked(&retval, sizeof(double), 1, input);
 #else
   char *s = reinterpret_cast<char *>(&retval);
 
   for(int i = sizeof(double)-1; i != -1; i--)
   {
-    fread(&(s[i]), 1, 1, input);
+    if(fread_unlocked(&(s[i]), 1, 1, input)==0)
+    {
+      return 0;
+    }
   } 
 #endif
   return retval;

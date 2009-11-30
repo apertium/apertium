@@ -65,6 +65,7 @@ private:
   static bool isRemovablePunct(wchar_t const &c);
   bool similar(wstring const &s1, wstring const &s2);
 
+  void splitAndMove(FILE *file, string const &filename);
 public:
   TMXBuilder(wstring const &l1, wstring const &l2);
   ~TMXBuilder();

@@ -19,8 +19,10 @@
 #include <apertium/tmx_builder.h>
 #include <apertium/utf_converter.h>
 #include <apertium/string_utils.h>
+#include <apertium/tmx_aligner_tool.h>
 #include <lttoolbox/ltstr.h>
 #include <lttoolbox/compression.h>
+
 
 #include <cmath>
 #include <cstdlib>
@@ -521,8 +523,77 @@ TMXBuilder::printTUCond(FILE *output, wstring const &tu1, wstring const &tu2, bo
 }
 
 void
+TMXBuilder::splitAndMove(FILE *f1, string const &filename)
+{
+  FILE *stream = fopen(filename.c_str(), "w");
+  vector<wstring> fichero_por_cadenas = sentenceList(f1);
+  for(size_t i = 0; i < fichero_por_cadenas.size(); i++)
+  {
+    fputws_unlocked(fichero_por_cadenas[i].c_str(), stream);
+    fputws_unlocked(L"\n", stream);
+  }
+}
+
+void
 TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
 {
+  string left = tmpnam(NULL);
+  string right = tmpnam(NULL);
+  string out = tmpnam(NULL);
+
+  splitAndMove(f1, left);
+  fclose(f1);
+
+  splitAndMove(f2, right);
+  fclose(f2);
+
+  TMXAligner::DictionaryItems dict;
+  AlignParameters ap;
+  
+  ap.justSentenceIds = false;
+  ap.utfCharCountingMode = false;
+  ap.realignType=AlignParameters::NoRealign;
+
+  TMXAligner::alignerToolWithFilenames(dict, left, right, ap, out);
+
+  FILE *stream = fopen(out.c_str(), "r");
+  int conta = 0;
+  wstring partes[2];
+  while(true)
+  {
+    wchar_t val = fgetwc(stream);
+    if(feof(stream))
+    {
+      break;
+    }
+  
+    if(val == L'\t')
+    {
+      conta++;
+    }
+    else if(val == L'\n')
+    {
+      if(partes[0] != L"" && partes[1] != L"")
+      {
+        printTU(output, partes[0], partes[1]);
+      }
+      partes[0] = L"";
+      partes[1] = L"";
+      conta = 0;
+    }
+    if(conta != 2)
+    {
+      partes[conta] += val;
+    }
+  }
+  
+  unlink(left.c_str());
+  unlink(right.c_str());
+  unlink(out.c_str());
+
+  /*
+
+
   int base_i = 0, base_j = 0;
 
   vector<wstring> lista1 = reverseList(sentenceList(f1)),
@@ -671,7 +742,7 @@ TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
     {
       break;
     }
-  }
+    }*/
 }
 
 int 
