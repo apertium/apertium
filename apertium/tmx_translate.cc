@@ -176,7 +176,7 @@ void trivialTranslate(
   std::ofstream* translateLogsPtr;
   if (logging)
   {
-    translateLogsPtr = new std::ofstream( "translate.txt", std::ios::app );
+    translateLogsPtr = new std::ofstream( "/dev/null", std::ios::app );
   }
   std::ostream& logs = *translateLogsPtr ; // std::cout;
 
@@ -231,7 +231,7 @@ void trivialTranslateSentenceList(
                      )
 {
   {
-    std::ofstream translateLogs( "translate.txt" );
+    std::ofstream translateLogs( "/dev/null" );
   }
   
   translatedSentenceList.clear();
