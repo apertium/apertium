@@ -15,4 +15,8 @@
 #define fputwc_unlocked fputwc
 #endif
 
+#if !HAVE_DECL_FREAD_UNLOCKED
+#define fread_unlocked fread
+#endif
+
 #endif
