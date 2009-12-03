@@ -532,6 +532,7 @@ TMXBuilder::splitAndMove(FILE *f1, string const &filename)
     fputws_unlocked(fichero_por_cadenas[i].c_str(), stream);
     fputws_unlocked(L"\n", stream);
   }
+  fclose(stream);
 }
 
 void
