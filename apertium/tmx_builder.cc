@@ -805,7 +805,7 @@ wstring
 TMXBuilder::filter(wstring const &tu)
 {
   bool has_text = false;  
-  bool has_blank = false;
+  unsigned int count_blank = 0;
 
   for(unsigned int i = 0, limit = tu.size(); i != limit; i++)
   {
@@ -815,15 +815,14 @@ TMXBuilder::filter(wstring const &tu)
     }      
     else if(has_text && iswspace(tu[i]))
     {
-      has_blank = true;
+      count_blank++;
     }
   }  
 
-  if(!has_text || !has_blank || tu.size() == 0)
+  if(!has_text || count_blank < 2 || tu.size() == 0)
   {
     return L"";
   }
-
 
   return xmlize(tu);  
 }
