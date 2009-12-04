@@ -64,6 +64,9 @@ case "${target_os}" in
   mingw*)
     MinGW=yes
   ;;
+  cygwin*)
+    Cygwin=yes
+  ;;
 esac
 
 if test x$ARCH = xppc
@@ -80,7 +83,16 @@ else
     CXXFLAGS="$CXXFLAGS -Wall -march=i686 -O3 \
             -fomit-frame-pointer -funroll-loops -I/include -L/lib"
     CPPFLAGS="$CPPFLAGS -I/include"
-	else
+  else
+  if test x$Cygwin = xyes
+  then 
+    AC_MSG_RESULT([Cygwin])
+    CFLAGS="$CFLAGS -Wall -march=i686 -O3 -fomit-frame-pointer \
+	        -funroll-loops"
+    CXXFLAGS="$CXXFLAGS -Wall -march=i686 -O3 \
+            -fomit-frame-pointer -funroll-loops"
+    CPPFLAGS="$CPPFLAGS"
+  else
       if test x$ARCH = xi686
       then
         AC_MSG_RESULT([i686])
