@@ -819,7 +819,7 @@ TMXBuilder::filter(wstring const &tu)
     }
   }  
 
-  if(!has_text || count_blank < 2 || tu.size() == 0)
+  if(!has_text || count_blank <= 2 || tu.size() == 0)
   {
     return L"";
   }
