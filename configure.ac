@@ -230,6 +230,6 @@ AC_FUNC_ERROR_AT_LINE
 
 AC_CHECK_DECLS([fread_unlocked, fwrite_unlocked, fgetc_unlocked, fputc_unlocked, fputs_unlocked, getopt_long, fgetwc_unlocked, fputwc_unlocked, fgetws_unlocked, fputws_unlocked])
 
-AC_CHECK_FUNCS([setlocale strdup getopt_long])
+AC_CHECK_FUNCS([setlocale strdup getopt_long snprintf])
 
 AC_OUTPUT([Makefile apertium-3.2.pc apertium/Makefile])
