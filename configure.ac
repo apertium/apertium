@@ -84,15 +84,15 @@ else
             -fomit-frame-pointer -funroll-loops -I/include -L/lib"
     CPPFLAGS="$CPPFLAGS -I/include"
   else
-  if test x$Cygwin = xyes
-  then 
-    AC_MSG_RESULT([Cygwin])
-    CFLAGS="$CFLAGS -Wall -march=i686 -O3 -fomit-frame-pointer \
-	        -funroll-loops"
-    CXXFLAGS="$CXXFLAGS -Wall -march=i686 -O3 \
-            -fomit-frame-pointer -funroll-loops"
-    CPPFLAGS="$CPPFLAGS"
-  else
+    if test x$Cygwin = xyes
+    then 
+      AC_MSG_RESULT([Cygwin])
+      CFLAGS="$CFLAGS -Wall -march=i686 -O3 -fomit-frame-pointer \
+           -funroll-loops"
+      CXXFLAGS="$CXXFLAGS -Wall -march=i686 -O3 \
+              -fomit-frame-pointer -funroll-loops"
+      CPPFLAGS="$CPPFLAGS"
+    else
       if test x$ARCH = xi686
       then
         AC_MSG_RESULT([i686])
@@ -100,16 +100,17 @@ else
         CXXFLAGS="$CXXFLAGS -Wall -ansi -march=i686 -O3 \
                 -fomit-frame-pointer -funroll-loops"
       else
-      if test x$ARCH = xx86_64
-      then
-        AC_MSG_RESULT([x86_64])
-        CFLAGS="-Wall -ansi -O3 -mtune=nocona -fomit-frame-pointer -funroll-loops $CFLAGS"
-        CXXFLAGS="-Wall -ansi -O3 -mtune=nocona \
-                -fomit-frame-pointer -funroll-loops $CXXFLAGS"
-      else
-        AC_MSG_RESULT([Other])
-        CFLAGS="-Wall -ansi -O3 $CFLAGS"
-        CXXFLAGS="-Wall -ansi -O3 $CXXFLAGS"
+        if test x$ARCH = xx86_64
+        then
+          AC_MSG_RESULT([x86_64])
+          CFLAGS="-Wall -ansi -O3 -mtune=nocona -fomit-frame-pointer -funroll-loops $CFLAGS"
+          CXXFLAGS="-Wall -ansi -O3 -mtune=nocona \
+                  -fomit-frame-pointer -funroll-loops $CXXFLAGS"
+        else
+          AC_MSG_RESULT([Other])
+          CFLAGS="-Wall -ansi -O3 $CFLAGS"
+          CXXFLAGS="-Wall -ansi -O3 $CXXFLAGS"
+        fi
       fi
     fi    
   fi
