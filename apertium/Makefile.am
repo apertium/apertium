@@ -438,7 +438,7 @@ EXTRA_DIST = gen-header.sh deformat-header.sh \
              reformat.xsl deformat.xsl new2old.xsl lexchoice.xsl lexchoicebil.xsl \
              tagger.dtd transfer.dtd format.dtd dix.dtd txt-format.xml \
              html-format.xml odt-format.xml rtf-format.xml wxml-format.xml \
-             xlsx-format.xml pptx-format.xml trans-header.sh \
+             xlsx-format.xml pptx-format.xml mediawiki-format.xml trans-header.sh \
              apertium-header.sh apertium-unformat-header.sh $(man_MANS) \
              xpresstag-format.xml \
              validate-header.sh transformdic-header.sh transformdicbil-header.sh \
