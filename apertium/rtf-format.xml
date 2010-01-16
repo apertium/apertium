@@ -451,6 +451,9 @@
       <replace source="\\'fd\r" target="ý"/>
       <replace source="\\'fe\r" target="þ"/>
       <replace source="\\'ff\r" target="ÿ"/>
+      <!-- With UTF-8 -->
+      <replace source="\\u237" target="í"/>
+      <replace source="\\u243" target="ó"/>
     </replacement-rule>  
   </rules>
 

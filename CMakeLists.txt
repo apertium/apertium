@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
-PROJECT (apertium-3.1)
+PROJECT (apertium-3.2)
 
 SET (CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+SET (PROGRAM_FILES_PATH "C:/Program\ Files")
 
 INCLUDE (CheckFunctionExists)
 INCLUDE (CheckSymbolExists)
@@ -27,23 +28,23 @@ IF (WIN32)
         INCLUDE_DIRECTORIES (${WIN32_DIR})
         SET (EXTRA_SOURCES "${WIN32_DIR}/getopt.c" "${WIN32_DIR}/libgen.c")
 
-        SET(FLEX_EXECUTABLE        C:/Program\ Files/GnuWin32/bin/flex.exe)
+        SET(FLEX_EXECUTABLE        ${PROGRAM_FILES_PATH}/GnuWin32/bin/flex.exe)
 
-        SET(ICONV_BASE_DIR         C:/Program\ Files/iconv)
+        SET(ICONV_BASE_DIR         ${PROGRAM_FILES_PATH}/iconv)
         SET(ICONV_INCLUDE_DIR      ${ICONV_BASE_DIR}/include)
 	SET(ICONV_LIBRARIES        ${ICONV_BASE_DIR}/lib/iconv.lib)
 
-        SET(LIBXML2_BASE_DIR       C:/Program\ Files/LibXML)
-        SET(LIBXSLT_BASE_DIR       C:/Program\ Files/Libxslt)
+        SET(LIBXML2_BASE_DIR       ${PROGRAM_FILES_PATH}/LibXML)
+        SET(LIBXSLT_BASE_DIR       ${PROGRAM_FILES_PATH}/Libxslt)
         SET(LIBXML2_INCLUDE_DIR    ${LIBXML2_BASE_DIR}/include)
         SET(LIBXML2_LIBRARIES      ${LIBXML2_BASE_DIR}/lib/libxml2.lib)
         SET(XSLTPROC_EXECUTABLE    ${LIBXSLT_BASE_DIR}/bin/xsltproc.exe)
 
-        SET(LTTOOLBOX3_BASE_DIR    C:/Program\ Files/apertium-3.1)
-        SET(LTTOOLBOX3_INCLUDE_DIR ${LTTOOLBOX3_BASE_DIR}/include/lttoolbox-3.1)
+        SET(LTTOOLBOX3_BASE_DIR    ${PROGRAM_FILES_PATH}/apertium-3.2)
+        SET(LTTOOLBOX3_INCLUDE_DIR ${LTTOOLBOX3_BASE_DIR}/include/lttoolbox-3.2)
         SET(LTTOOLBOX3_LIBRARIES   ${LTTOOLBOX3_BASE_DIR}/lib/lttoolbox3.lib)
 
-        SET(LIBPCRE_BASE_DIR       C:/Program\ Files/PCRE) 
+        SET(LIBPCRE_BASE_DIR       ${PROGRAM_FILES_PATH}/PCRE) 
         SET(LIBPCRE_INCLUDE_DIR    "${LIBPCRE_BASE_DIR}/include")
         SET(LIBPCRE_LIBRARIES      "${LIBPCRE_BASE_DIR}/lib/pcrecpp.lib"
                                    "${LIBPCRE_BASE_DIR}/lib/pcreposix.lib"
@@ -61,9 +62,9 @@ FIND_PACKAGE (LibPcre    REQUIRED)
 
 SET (PACKAGE_BUGREPORT sortiz@users.sourceforge.net)
 SET (PACKAGE_NAME      apertium/apertium.h)
-SET (PACKAGE_STRING    apertium/apertium.h 3.1.0)
+SET (PACKAGE_STRING    apertium/apertium.h 3.2.0)
 SET (PACKAGE_TARNAME   lttoolbox-lttoolbox-h)
-SET (PACKAGE_VERSION   3.1.0)
+SET (PACKAGE_VERSION   3.2.0)
 
 MACRO (BOOL_CHECK_SYMBOL_EXISTS SYMBOL HEADER VAR)
         CHECK_SYMBOL_EXISTS (${SYMBOL} ${HEADER} ${VAR})
