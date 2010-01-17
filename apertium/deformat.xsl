@@ -138,7 +138,14 @@
 #include &lt;iostream&gt;
 #include &lt;map&gt;
 #include &lt;vector&gt;
+
+extern "C" {
+#if !defined(__STDC__)
+# define __STDC__ 1
+#endif
 #include &lt;regex.h&gt;
+}
+
 #include &lt;string&gt;
 #include &lt;lttoolbox/lt_locale.h&gt;
 #include &lt;lttoolbox/ltstr.h&gt;
