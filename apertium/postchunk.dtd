@@ -131,7 +131,7 @@ patterns used in rules
       * Attribute 'comment' allows to include a comment with the rule
 -->
 
-<!ELEMENT pattern (pattern-item+)>
+<!ELEMENT pattern (pattern-item)>
 <!-- 
 The pattern is specified in terms of pattern items, each one
 representing a lexical form in the matched pattern 
