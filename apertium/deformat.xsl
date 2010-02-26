@@ -163,6 +163,7 @@ using namespace std;
 wstring buffer;
 string symbuf = "";
 bool isDot, hasWrite_dot, hasWrite_white;
+bool eosIncond;
 FILE *formatfile;
 string last;
 int current;
@@ -499,9 +500,17 @@ void printBuffer(int ind=-1, string end_tag="")
   </xsl:when>
   <xsl:otherwise>
 
+void preDot()
+{
+  if(eosIncond)
+  {
+    fputws_unlocked(L".[]", yyout);
+  }
+}
+
 void printBuffer()
 {
-  if(isDot)
+  if(isDot &amp;&amp; !eosIncond)
   {
     fputws_unlocked(L".[]", yyout);
     isDot = false;
@@ -512,6 +521,7 @@ void printBuffer()
     FILE *largeblock = fopen(filename.c_str(), "w");
     fputws_unlocked(buffer.c_str(), largeblock);
     fclose(largeblock);
+    preDot();
     fputwc_unlocked(L'[', yyout);
     fputwc_unlocked(L'@', yyout);
     wchar_t cad[filename.size()];
@@ -529,6 +539,7 @@ void printBuffer()
   }
   else if(buffer.size() &gt; 1)
   {
+    preDot();
     fputwc_unlocked(L'[', yyout);
     wstring const tmp = escape(buffer);
     if(tmp[0] == L'@')
@@ -540,6 +551,7 @@ void printBuffer()
   }
   else if(buffer.size() == 1 &amp;&amp; buffer[0] != L' ')
   {
+    preDot();
     fputwc_unlocked(L'[', yyout);
     wstring const tmp = escape(buffer);
     if(tmp[0] == L'@')
@@ -722,6 +734,14 @@ void usage(string const &amp;progname)
 int main(int argc, char *argv[])
 {
   LtLocale::tryToSetLocale();
+  size_t base = 0;
+  eosIncond = false;
+  
+  if(argc &gt;= 2 &amp;&amp; !strcmp(argv[1],"-i"))
+  {
+    eosIncond = true;
+    base++;
+  }
 <xsl:choose>
   <xsl:when test="$mode=string('matxin')">
   if(argc &gt; 4 || argc &lt; 2)
@@ -729,22 +749,22 @@ int main(int argc, char *argv[])
     usage(argv[0]);
   }
  
-  switch(argc)
+  switch(argc-base)
   {
     case 4:
-      yyout = fopen(argv[3], "w");
+      yyout = fopen(argv[3+base], "w");
       if(!yyout)
       {
         usage(argv[0]);
       }
     case 3:
-      yyin = fopen(argv[2], "r");
+      yyin = fopen(argv[2+base], "r");
       if(!yyin)
       {
         usage(argv[0]);
       }
     case 2:
-      formatfile = fopen(argv[1], "w");
+      formatfile = fopen(argv[1+base], "w");
       if(!formatfile)
       {
         usage(argv[0]);
@@ -755,21 +775,21 @@ int main(int argc, char *argv[])
   }
   </xsl:when>
   <xsl:otherwise>
- if(argc &gt; 3)
+ if((argc-base) &gt; 4)
   {
     usage(argv[0]);
   }
- 
-  switch(argc)
+
+  switch(argc-base)
   {
     case 3:
-      yyout = fopen(argv[2], "w");
+      yyout = fopen(argv[2+base], "w");
       if(!yyout)
       {
         usage(argv[0]);
       }
     case 2:
-      yyin = fopen(argv[1], "r");
+      yyin = fopen(argv[1+base], "r");
       if(!yyin)
       {
         usage(argv[0]);
