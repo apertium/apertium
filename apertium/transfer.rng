@@ -115,6 +115,9 @@
     <attribute name="n">
       <data type="ID"/>
     </attribute>
+    <optional>
+      <attribute name="c"/>
+    </optional>
   </define>
   <!--
     Each 'def-cat' defines one category in terms of a list of
@@ -131,6 +134,9 @@
       <attribute name="lemma"/>
     </optional>
     <attribute name="tags"/>
+    <optional>
+      <attribute name="c"/>
+    </optional>
   </define>
   <!--
          Each 'cat-item' (category item) represents a set of lexical forms
@@ -170,6 +176,9 @@
     <attribute name="n">
       <data type="ID"/>
     </attribute>
+    <optional>
+      <attribute name="c"/>
+    </optional>
   </define>
   <!--
     Each def-attr defines one attribute in terms of a list of
@@ -184,6 +193,9 @@
   <define name="attlist.attr-item" combine="interleave">
     <optional>
       <attribute name="tags"/>
+    </optional>
+    <optional>
+      <attribute name="c"/>
     </optional>
   </define>
   <!--
@@ -218,6 +230,9 @@
     <optional>
       <attribute name="v"/>
     </optional>
+    <optional>
+      <attribute name="c"/>
+    </optional>
   </define>
   <!--
     The definition of a global variable has a mandatory unique name 'n' that
@@ -249,6 +264,9 @@
     <attribute name="n">
       <data type="ID"/>
     </attribute>
+    <optional>
+      <attribute name="c"/>
+    </optional>
   </define>
   <!--
     The 'def-list' element defines a named list to search with the 'in' 
@@ -262,6 +280,9 @@
   </define>
   <define name="attlist.list-item" combine="interleave">
     <attribute name="v"/>
+    <optional>
+      <attribute name="c"/>
+    </optional>
   </define>
   <!--
     Attribute 'v' of 'list-item' element contains the value to be added to 
@@ -299,6 +320,9 @@
   </define>
   <define name="attlist.def-macro" combine="interleave">
     <attribute name="npar"/>
+    <optional>
+      <attribute name="c"/>
+    </optional>
   </define>
   <!--
     Macro definition:
@@ -371,7 +395,9 @@
     </element>
   </define>
   <define name="attlist.action" combine="interleave">
-    <empty/>
+    <optional>
+      <attribute name="c"/>
+    </optional>
   </define>
   <!-- Encloses the procedural part of a rule -->
   <define name="choose">
@@ -386,7 +412,9 @@
     </element>
   </define>
   <define name="attlist.choose" combine="interleave">
-    <empty/>
+    <optional>
+      <attribute name="c"/>
+    </optional>
   </define>
   <!--
     The choose statement is a selection statement (similar to a case
@@ -403,7 +431,9 @@
     </element>
   </define>
   <define name="attlist.when" combine="interleave">
-    <empty/>
+    <optional>
+      <attribute name="c"/>
+    </optional>
   </define>
   <!-- Each tested case is a block of zero or more statements -->
   <define name="otherwise">
@@ -415,7 +445,9 @@
     </element>
   </define>
   <define name="attlist.otherwise" combine="interleave">
-    <empty/>
+    <optional>
+      <attribute name="c"/>
+    </optional>
   </define>
   <!-- The otherwise case is also a block of one or more statements -->
   <define name="test">
@@ -425,7 +457,9 @@
     </element>
   </define>
   <define name="attlist.test" combine="interleave">
-    <empty/>
+    <optional>
+      <attribute name="c"/>
+    </optional>
   </define>
   <!--
     The test in a tested case may be a conjunction, a disjunction, or
@@ -705,7 +739,9 @@
     </element>
   </define>
   <define name="attlist.out" combine="interleave">
-    <empty/>
+    <optional>
+      <attribute name="c"/>
+    </optional>
   </define>
   <!--
     'out' is an output statement; it may output any sequence of
@@ -781,6 +817,9 @@
     </optional>
     <optional>
       <attribute name="link-to"/>
+    </optional>
+    <optional>
+      <attribute name="c"/>
     </optional>
   </define>
   <!--
@@ -958,6 +997,9 @@
     </optional>
     <optional>
       <attribute name="case"/>
+    </optional>
+    <optional>
+      <attribute name="c"/>
     </optional>
   </define>
   <!--

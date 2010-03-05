@@ -50,6 +50,11 @@
   <define name="attlist.program" combine="interleave">
     <attribute name="name"/>
   </define>
+  <define name="attlist.program" combine="interleave">
+    <optional>
+      <attribute name="prefix"/>
+    </optional>
+  </define>
   <define name="file">
     <element name="file">
       <ref name="attlist.file"/>
