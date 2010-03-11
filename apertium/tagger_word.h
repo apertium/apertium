@@ -40,15 +40,15 @@ class TaggerWord{
 private:
   wstring superficial_form; 
   
-  set<TTag> tags;  //Set of al possible tags
-  map<TTag, wstring> lexical_forms;  //For a give corase tag it stores the fine tag 
+  set<TTag> tags;  //Set of all possible tags
+  map<TTag, wstring> lexical_forms;  //For a given coarse tag it stores the fine tag 
                                     //delevered by the morphological analyzer
   wstring ignored_string;
   
   bool plus_cut; //Flag to distinguish the way in which the word was ended.
                   //If it was done by '$' its value should be false
                   //If it was done by '+' its value should be true
-  bool previous_plus_cut; //Flag to distinguish the way in which thre
+  bool previous_plus_cut; //Flag to distinguish the way in which the
 			  //previous word was ended. It has the same
 			  //plus_cut meaning
   bool show_sf; // Show the superficial form in the output
