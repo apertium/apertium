@@ -77,11 +77,11 @@ public:
    virtual ~TaggerWord();
   
    /** Set the superficial form of the word.
-    *  @param s the superfial form
+    *  @param s the superficial form
     */
    void set_superficial_form(const wstring &s);
   
-   /** Get the superficla form of the word
+   /** Get the superficial form of the word
     *
     */
    wstring& get_superficial_form();
