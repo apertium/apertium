@@ -369,7 +369,7 @@ TaggerData::read(FILE *in)
     }
   }
 
-  // initializing b matix
+  // initializing b matrix
   for(int i = 0 ; i != N; i++)
   {
     for(int j = 0; j != M; j++)
