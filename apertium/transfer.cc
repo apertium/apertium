@@ -516,7 +516,7 @@ Transfer::evalString(xmlNode *element)
   }
   else
   {
-    cerr << "Error: unexpected rvalue expression '" << element->name << endl;
+    cerr << "Error: unexpected rvalue expression '" << element->name << "'" << endl;
     exit(EXIT_FAILURE);
   }
 

@@ -85,6 +85,7 @@ private:
   string copycase(string const &source_word, string const &target_word);
 
   void processLet(xmlNode *localroot);
+  void processAppend(xmlNode *localroot);
   void processOut(xmlNode *localroot);
   void processCallMacro(xmlNode *localroot);
   void processModifyCase(xmlNode *localroot);

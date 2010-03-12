@@ -388,7 +388,7 @@ Interchunk::evalString(xmlNode *element)
 
   else
   {
-    cerr << "Error: unexpected rvalue expression '" << element->name << endl;
+    cerr << "Error: unexpected rvalue expression '" << element->name << "'" << endl;
     exit(EXIT_FAILURE);
   }
 
@@ -461,6 +461,10 @@ Interchunk::processInstruction(xmlNode *localroot)
   else if(!xmlStrcmp(localroot->name, (const xmlChar *) "let"))
   {
     processLet(localroot);
+  }
+  else if(!xmlStrcmp(localroot->name, (const xmlChar *) "append"))
+  {
+    processAppend(localroot);
   }
   else if(!xmlStrcmp(localroot->name, (const xmlChar *) "out"))
   {
@@ -544,6 +548,28 @@ Interchunk::processLet(xmlNode *localroot)
     evalStringCache[leftSide] = TransferInstr(ti_clip_tl, 
 					      (const char *) part, 
 					      pos, NULL);
+  }
+}
+
+void
+Interchunk::processAppend(xmlNode *localroot)
+{
+  string name = "";
+  for(xmlAttr *i = localroot->properties; i != NULL; i = i->next)
+  {
+    if(!xmlStrcmp(i->name, (const xmlChar *) "n"))
+    {
+      name = (char *) i->children->content; 
+      break;
+    }
+  }
+
+  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
+  {
+    if(i->type == XML_ELEMENT_NODE)
+    {
+      variables[name].append(evalString(i));
+    }
   }
 }
 

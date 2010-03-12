@@ -372,9 +372,21 @@ Postchunk::evalString(xmlNode *element)
       
     evalStringCache[element] = TransferInstr(ti_case_of_tl, (const char *) part, pos);
   }
+  else if(!xmlStrcmp(element->name, (const xmlChar *) "concat"))
+  { 
+    string value = "";
+    for(xmlNode *i = element->children; i != NULL; i = i->next)
+    {
+      if(i->type == XML_ELEMENT_NODE)
+      {
+        value.append(evalString(i));
+      }
+    }
+    return value;
+  }
   else
   {
-    cerr << "Error: unexpected rvalue expression '" << element->name << endl;
+    cerr << "Error: unexpected rvalue expression '" << element->name << "'" << endl;
     exit(EXIT_FAILURE);
   }
 
@@ -481,6 +493,10 @@ Postchunk::processInstruction(xmlNode *localroot)
   {
     processLet(localroot);
   }
+  else if(!xmlStrcmp(localroot->name, (const xmlChar *) "append"))
+  {
+    processAppend(localroot);
+  }
   else if(!xmlStrcmp(localroot->name, (const xmlChar *) "out"))
   {
     processOut(localroot);
@@ -562,6 +578,28 @@ Postchunk::processLet(xmlNode *localroot)
 			    evalString(rightSide));
     evalStringCache[leftSide] = TransferInstr(ti_clip_tl, (const char *) part, 
 					      pos, NULL);
+  }
+}
+
+void
+Postchunk::processAppend(xmlNode *localroot)
+{
+  string name = "";
+  for(xmlAttr *i = localroot->properties; i != NULL; i = i->next)
+  {
+    if(!xmlStrcmp(i->name, (const xmlChar *) "n"))
+    {
+      name = (char *) i->children->content; 
+      break;
+    }
+  }
+
+  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
+  {
+    if(i->type == XML_ELEMENT_NODE)
+    {
+      variables[name].append(evalString(i));
+    }
   }
 }
 
