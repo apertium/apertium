@@ -72,8 +72,8 @@ esac
 if test x$ARCH = xppc
 then
   AC_MSG_RESULT([PowerPC])
-  CFLAGS="$CFLAGS -Wall -ansi -mpowerpc -maltivec -fno-pic -fomit-frame-pointer"
-  CXXFLAGS="$CXXFLAGS -Wall -ansi -mpowerpc -maltivec -fno-pic -fomit-frame-pointer"
+  CFLAGS="$CFLAGS -Wall -ansi -fomit-frame-pointer"
+  CXXFLAGS="$CXXFLAGS -Wall -ansi -fomit-frame-pointer"
 else
   if test x$MinGW = xyes
   then 
