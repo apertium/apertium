@@ -147,10 +147,10 @@ HMM::init_probabilities_kupiec (FILE *is)
   double tags_estimate[N]; //N = Number of tags (states)
   double tags_pair_estimate[N][N];
 #else
-  vector <double> classes_ocurrences (M);
-  vector <vector <double> > classes_pair_ocurrences(M, vector<double>(M));
-  vector <double> tags_estimate(N);
-  vector <vector <double> > tags_pair_estimate(N, vector<double>(N));
+  vector <double> classes_ocurrences (M, 1);
+  vector <vector <double> > classes_pair_ocurrences(M, vector<double>(M, 1));
+  vector <double> tags_estimate(N, 0);
+  vector <vector <double> > tags_pair_estimate(N, vector<double>(N, 0));
 #endif
   
   Collection &output = td->getOutput();
@@ -159,11 +159,13 @@ HMM::init_probabilities_kupiec (FILE *is)
   
   TaggerWord *word=NULL;
 
+#ifdef __GNUC__
   for(k=0; k<M; k++) {
     classes_ocurrences[k]=1; 
     for (k2=0; k2<M; k2++)
       classes_pair_ocurrences[k][k2]=1;
   }
+#endif
 
   set<TTag> tags;
   tags.insert(eos);  
@@ -202,7 +204,9 @@ HMM::init_probabilities_kupiec (FILE *is)
 
   //Estimation of the number of time each tags occurs in the training text
   for(i=0; i<N; i++) {  
+#ifdef __GNUC__
     tags_estimate[i]=0;
+#endif
     for(k=0; k<M;  k++) { 
   
       if(output[k].find(i) != output[k].end())
@@ -210,10 +214,12 @@ HMM::init_probabilities_kupiec (FILE *is)
     }
   }
   
+#ifdef __GNUC__
   //Estimation of the number of times each tag pair occurs
   for(i=0; i<N; i++)
     for(j=0; j<N; j++)
       tags_pair_estimate[i][j]=0;
+#endif
 
   set<TTag> tags1, tags2;
   set<TTag>::iterator itag1, itag2;
@@ -268,8 +274,8 @@ HMM::init_probabilities_from_tagged_text(FILE *ftagged, FILE *funtagged) {
   double tags_pair[N][N];
   double emission[N][M];
 #else
-  vector <vector <double> > tags_pair(N, vector<double>(N));
-  vector <vector <double> > emission(N, vector<double>(M));
+  vector <vector <double> > tags_pair(N, vector<double>(N, 0));
+  vector <vector <double> > emission(N, vector<double>(M, 0));
 #endif
 
 
@@ -281,7 +287,8 @@ HMM::init_probabilities_from_tagged_text(FILE *ftagged, FILE *funtagged) {
 
   
   set<TTag> tags;
- 
+
+#ifdef __GNUC__ 
   // Init counters - each event appears at least once. 
   // Espected likelihood estimate (ELE) with a fixed initial count of 1
   for(i=0; i<N; i++) {
@@ -294,7 +301,8 @@ HMM::init_probabilities_from_tagged_text(FILE *ftagged, FILE *funtagged) {
         emission[i][k] = 0;
     }  
   }
- 
+#endif 
+
   TTag tag1, tag2;  
   tag1 = eos; // The first seen tag is the end-of-sentence tag
   
