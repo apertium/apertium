@@ -137,6 +137,7 @@
 #include &lt;cstdlib&gt;
 #include &lt;iostream&gt;
 #include &lt;map&gt;
+#include &lt;string&gt;
 #include &lt;vector&gt;
 
 extern "C" {
@@ -291,7 +292,12 @@ wstring escape(wstring const &amp;str)
   
   for(size_t i = 0, limit = str.size(); i &lt; limit; i++)
   {
+#ifdef __GNUC__
     char symbol[MB_CUR_MAX+1];
+#else 
+    std::string _symbol(MB_CUR_MAX+1, 0);
+    char *symbol = &_symbol[0];
+#endif
     int pos = wctomb(symbol, str[i]);
     if(pos == -1)
     {
