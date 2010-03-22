@@ -296,7 +296,7 @@ wstring escape(wstring const &amp;str)
     char symbol[MB_CUR_MAX+1];
 #else 
     std::string _symbol(MB_CUR_MAX+1, 0);
-    char *symbol = &_symbol[0];
+    char *symbol = &amp;_symbol[0];
 #endif
     int pos = wctomb(symbol, str[i]);
     if(pos == -1)
