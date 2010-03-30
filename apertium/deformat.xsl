@@ -716,6 +716,8 @@ void printBuffer()
 
 &lt;&lt;EOF&gt;&gt;&#x9;{
   isDot = true;
+
+  preDot();
   printBuffer();
   return 0;
 }
