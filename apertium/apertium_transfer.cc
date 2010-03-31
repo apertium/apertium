@@ -181,11 +181,6 @@ int main(int argc, char *argv[])
     case 4:
       if(t.getUseBilingual() == false)
       {
-        if (string(argv[argc-1]).find(".autobil.bin") != string::npos)
-        {
-          message(argv[0]);
-          break;
-        }
         input = open_input(argv[argc-1]);
         testfile(argv[argc-2]);
         testfile(argv[argc-3]);
