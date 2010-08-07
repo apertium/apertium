@@ -1975,8 +1975,11 @@ Postchunk::splitWordsAndBlanks(wstring const &chunk, vector<wstring *> &words,
     }
     else if(chunk[i] == L'[')
     {
-      wstring *myblank = new wstring();
-      wstring &ref = *myblank;
+      if (!(lastblank && blanks.back())) 
+      {
+	blanks.push_back(new wstring());
+      }
+      wstring &ref = *(blanks.back());
       ref += L'[';
       while(chunk[++i] != L']')
       {
@@ -1991,7 +1994,7 @@ Postchunk::splitWordsAndBlanks(wstring const &chunk, vector<wstring *> &words,
         }
       }
       ref += chunk[i];
-      blanks.push_back(myblank);
+
       lastblank = true;
     }
     else if(chunk[i]== L' ')
