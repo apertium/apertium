@@ -22,6 +22,11 @@
     </format-rule> 
     
     <format-rule type="comment" eos="no" priority="2">
+      <begin regexp='"&lt;math"(" xmlns="[^&gt;]*)?"&gt;"'/>
+      <end regexp='"&lt;/math&gt;"'/>
+    </format-rule> 
+    
+    <format-rule type="comment" eos="no" priority="2">
       <begin regexp='"&amp;lt;apertium-notrans&amp;gt;"'/>
       <end regexp='"&amp;lt;/apertium-notrans&amp;gt;"'/>
     </format-rule>
