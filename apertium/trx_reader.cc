@@ -277,6 +277,14 @@ TRXReader::procRules()
           {
             td.getFinals()[*it] = count;
           }       
+          else
+          {
+            wcerr << L"Warning: (" << xmlTextReaderGetParserLineNumber(reader);
+            wcerr << L"): "
+              << L"Paths to rule " << count << " blocked by rule " << td.getFinals()[*it]
+              << L"." << endl;
+
+          }
         }
       }
     }

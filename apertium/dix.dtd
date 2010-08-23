@@ -84,9 +84,16 @@
 	
 <!ELEMENT l (#PCDATA | a | b | g | j | s)*>
 	<!-- left part of p -->
-	
+<!ATTLIST l
+	c CDATA  #IMPLIED
+>
+	<!-- c: symbol (tag) comment -->
+		
 <!ELEMENT r (#PCDATA | a | b | g | j | s)*>
 	<!-- right part of p -->
+<!ATTLIST r
+	c CDATA  #IMPLIED
+>
 	
 <!ELEMENT a EMPTY>
 	<!-- post-generator wake-up mark -->
