@@ -20,6 +20,11 @@
       <begin regexp='"&lt;pkg:binaryData"(" "[^&gt;]*)?"&gt;"'/>
       <end regexp='"&lt;/pkg:binaryData"(" "[^&gt;]*)?"&gt;"'/>
     </format-rule> 
+    
+    <format-rule type="comment" eos="yes" priority="2">
+      <begin regexp='"&lt;p:timing"(" "[^&gt;]*)?"&gt;"'/>
+      <end regexp='"&lt;/p:timing"(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
 
     <format-rule type="open" eos="yes" priority="3">
       <tag regexp='"&lt;a:p"(" "[^&gt;]*)?"&gt;"'/>
