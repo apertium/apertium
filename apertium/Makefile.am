@@ -24,7 +24,7 @@ cc_sources = collection.cc constant_manager.cc hmm.cc interchunk.cc \
              tmx_book_to_matrix.cc tmx_dictionary.cc \
              tmx_strings_and_streams.cc tmx_trail_postprocessors.cc \
              tmx_translate.cc
-
+             
 library_includedir = $(includedir)/$(GENERIC_LIBRARY_NAME)-$(GENERIC_API_VERSION)/$(GENERIC_LIBRARY_NAME)
 library_include_HEADERS = $(h_sources)
 
@@ -59,7 +59,9 @@ bin_PROGRAMS = apertium-pretransfer apertium-destxt apertium-retxt \
                apertium-gen-wlist-lextor-translation \
                apertium-interchunk apertium-postchunk \
                apertium-multiple-translations \
-               apertium-tagger-apply-new-rules apertium-tmxbuild
+               apertium-tagger-apply-new-rules \
+               apertium-tagger-readwords \
+               apertium-tmxbuild
                ###pruebas-lextor apertium-lextor-search apertium-lextor-eval
 
 bin_SCRIPTS =  $(GENERATEDSCRIPTS)
@@ -129,6 +131,9 @@ apertium_lextor_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
 
 apertium_tagger_apply_new_rules_SOURCES = apertium_tagger_apply_new_rules.cc
 apertium_tagger_apply_new_rules_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
+
+apertium_tagger_readwords_SOURCES = apertium_tagger_readwords.cc
+apertium_tagger_readwords_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
 
 ###apertium_lextor_search_SOURCES = apertium-lextor-search.C
 ###apertium_lextor_search_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
@@ -351,7 +356,7 @@ apertium-unformat: Makefile.am apertium-unformat-header.sh
 	@echo "DEFAULT_DIRECTORY=\"$(prefix)/share/apertium\"" >>$@
 	@cat apertium-unformat-header.sh >>$@
 	@chmod a+x $@
-	
+
 
 #apertium-translator-lextor: Makefile.am trans-lextor-header.sh
 #	@echo "Creating apertium-translator-lextor script"

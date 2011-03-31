@@ -47,20 +47,17 @@ using namespace Apertium;
 using namespace std;
 
 void
-Tagger::setShowSF(bool val) 
-{
+Tagger::setShowSF(bool val) {
   showSF = val;
 }
 
 bool
-Tagger::getShowSF()
-{
+Tagger::getShowSF() {
   return showSF;
 }
 
 int
-Tagger::getMode(int argc, char *argv[])
-{
+Tagger::getMode(int argc, char *argv[]) {
   int mode=UNKNOWN_MODE;
    
   int c;
@@ -71,8 +68,7 @@ Tagger::getMode(int argc, char *argv[])
 
   while (true) {
 #if HAVE_GETOPT_LONG
-    static struct option long_options[] =
-    {
+    static struct option long_options[] =  {
       {"train",      required_argument, 0, 't'},
       {"supervised", required_argument, 0, 's'},
       {"retrain",    required_argument, 0, 'r'},
@@ -95,8 +91,7 @@ Tagger::getMode(int argc, char *argv[])
     if (c==-1)
       break;
       
-    switch (c)
-    {
+    switch (c) {
       case 'm':
 	TaggerWord::generate_marks = true;
         break;
@@ -106,43 +101,35 @@ Tagger::getMode(int argc, char *argv[])
         break;
 
       case 't':  //Training
-        if(!isNumber(optarg))
-        {
+        if(!isNumber(optarg)) {
 	  wcerr <<L"Error: mandatory --train argument <n> must be zero or a positive integer\n";
 	  help();
         }
-        else 
-	{
+        else {
           nit = atoi(optarg); //Number of iterations
         }
-        if(mode==UNKNOWN_MODE) 
-        {
+        if(mode==UNKNOWN_MODE) {
           mode=TRAIN_MODE;
         }
-        else
-        {
+        else {
 	  wcerr<<L"Error: --train <n> argument cannot be mixed with --retrain or --tagger arguments\n";
 	  help();
 	}
 	break;
       
       case 's':
-        if(!isNumber(optarg))
-        {
+        if(!isNumber(optarg)) {
 	  wcerr<<L"Error: mandatory --supervised argument <n> must be zero or a positive integer\n";
 	  help();
         }
-        else 
-	{
+        else {
           nit = atoi(optarg); //Number of iterations
         }
 
-        if(mode==UNKNOWN_MODE) 
-        {
+        if(mode==UNKNOWN_MODE) {
           mode=TRAIN_SUPERVISED_MODE;
         }
-        else
-        {
+        else {
 	  wcerr<<L"Error: --supervised optional argument should only appear after --train <n> argument\n";
 	  help();
 	}
@@ -153,57 +140,47 @@ Tagger::getMode(int argc, char *argv[])
 	break;
 	
       case 'r':
-        if(!isNumber(optarg))
-        {
+        if(!isNumber(optarg)) {
 	  wcerr<<L"Error: mandatory --train argument <n> must be zero or a positive integer\n";
           help();
         } 
-        else
-        { 
+        else { 
 	  nit = atoi(optarg); //Number of iterations
         }
-        if(mode==UNKNOWN_MODE) 
-        {
+        if(mode==UNKNOWN_MODE) {
           mode=RETRAIN_MODE; 
         }
-        else
-        {
+        else {
 	  wcerr<<L"Error: --retrain argument cannot be mixed with --train or --tagger arguments\n";
 	  help();
 	}
         break;
         
       case 'g': 
-        if(mode==UNKNOWN_MODE)
-        {
+        if(mode==UNKNOWN_MODE) {
 	  mode=TAGGER_MODE;
         }
-        else 
-        {
+        else {
           wcerr<<L"Error: --tagger argument cannot be mixed with --train or --retrain arguments\n";
           help();
         }
         break;
          
       case 'e':
-        if(mode==TAGGER_MODE)
-        {
+        if(mode==TAGGER_MODE) {
 	  mode=TAGGER_EVAL_MODE;
         }
-        else
-        {
+        else {
           wcerr<<L"Error: --eval optional argument should only appear after --tagger argument\n";
 	  help();
 	}
 	break;
         
       case 'f': 
-        if(mode==TAGGER_MODE)
-        {
+        if(mode==TAGGER_MODE) {
           mode=TAGGER_FIRST_MODE;
         }
-        else
-        {
+        else {
           wcerr<<L"Error: --first optional argument should only appear after --tagger argument\n";
 	  help();
 	} 
@@ -224,44 +201,37 @@ Tagger::getMode(int argc, char *argv[])
     }    
   }
 
-  if(mode==UNKNOWN_MODE)
-  {
+  if(mode==UNKNOWN_MODE) {
     wcerr<<L"Error: Arguments missing\n";
     help();
   }   
   
-  switch(argc-optind)
-  {
+  switch(argc-optind) {
     case 6:
-      if(mode != TRAIN_SUPERVISED_MODE)
-      {
+      if(mode != TRAIN_SUPERVISED_MODE) {
         help();
       }
       break;
     
     case 4:
-      if(mode != TRAIN_MODE)
-      {
+      if(mode != TRAIN_MODE) {
         help();
       }
       break;
     case 3:
-      if ((mode != TAGGER_MODE) && (mode != TAGGER_FIRST_MODE))
-      {
+      if ((mode != TAGGER_MODE) && (mode != TAGGER_FIRST_MODE)) {
         help();
       }
       break;
       
     case 2:
-      if(mode != RETRAIN_MODE && mode != TAGGER_MODE)
-      {
+      if(mode != RETRAIN_MODE && mode != TAGGER_MODE) {
         help();
       }
       break;
     
     case 1:
-      if ((mode != TAGGER_MODE) && (mode != TAGGER_FIRST_MODE))
-      {
+      if ((mode != TAGGER_MODE) && (mode != TAGGER_FIRST_MODE))  {
         help();
       }
       break;
@@ -271,29 +241,25 @@ Tagger::getMode(int argc, char *argv[])
       break;
   }
 
-  for(int i = optind; i != argc; i++)
-  {
+  for(int i = optind; i != argc; i++) {
     filenames.push_back(argv[i]);
   }
   
   return mode;
 }
 
-Tagger::Tagger()
-{
+Tagger::Tagger() {
   debug = false;
   showSF = false;
   null_flush = false;
 }
 
 void
-Tagger::main(int argc, char *argv[])
-{
+Tagger::main(int argc, char *argv[]) {
   name = argv[0];
   int mode = getMode(argc, argv);
 
-  switch(mode)
-    {
+  switch(mode)  {
     case TRAIN_MODE:
       train();
       break;
@@ -318,12 +284,11 @@ Tagger::main(int argc, char *argv[])
       wcerr<<L"Error: Unknown working mode mode\n";
       help();
       break;
-    }
+  }
 }
 
 void
-Tagger::tagger(bool mode_first)
-{
+Tagger::tagger(bool mode_first) {
   FILE *ftdata = fopen(filenames[0].c_str(), "rb");
   if (!ftdata) {
     filerror(filenames[0]);
@@ -338,12 +303,10 @@ Tagger::tagger(bool mode_first)
   hmm.set_show_sf(showSF);
   hmm.setNullFlush(null_flush);
 
-  if(filenames.size() == 1)
-  {
+  if(filenames.size() == 1) {
     hmm.tagger(stdin, stdout, mode_first);
   }
-  else
-  {
+  else {
     FILE *finput = fopen(filenames[1].c_str(), "r");
     if (!finput) {
       filerror(filenames[1]);
@@ -351,12 +314,10 @@ Tagger::tagger(bool mode_first)
 #ifdef _MSC_VER
 	_setmode(_fileno(finput), _O_U8TEXT);
 #endif
-    if(filenames.size() == 2)
-    {
+    if(filenames.size() == 2) {
       hmm.tagger(finput, stdout, mode_first);
     }
-    else
-    {
+    else  {
       FILE *foutput = fopen(filenames[2].c_str(), "w");
       if (!foutput) {
         filerror(filenames[2]);
@@ -373,15 +334,13 @@ Tagger::tagger(bool mode_first)
 }
 
 void
-Tagger::filerror(string const &filename)
-{
+Tagger::filerror(string const &filename) {
   cerr << "Error: cannot open file '" << filenames[0] << "'\n\n";
   help();
 }
 
 void
-Tagger::train()
-{
+Tagger::train() {
   TSXReader treader;
   treader.read(filenames[2]);
   HMM hmm(&(treader.getTaggerData()));
@@ -391,25 +350,21 @@ Tagger::train()
   
   wcerr << L"Calculating ambiguity classes...\n";
   FILE *fdic = fopen(filenames[0].c_str(), "r");
-  if(fdic)
-  {
+  if(fdic) {
     hmm.read_dictionary(fdic);
   }
-  else
-  {
+  else {
     filerror(filenames[0]);
   }
   wcerr << L"Kupiec's initialization of transition and emission probabilities...\n";
   FILE *fcrp = fopen(filenames[1].c_str(), "r");
-  if(fcrp)
-  {
+  if(fcrp) {
 #ifdef _MSC_VER
     _setmode(_fileno(fcrp), _O_U8TEXT);
 #endif 
     hmm.init_probabilities_kupiec(fcrp);               
   }
-  else
-  {
+  else {
     filerror(filenames[1]);
   }
   
@@ -417,8 +372,7 @@ Tagger::train()
   hmm.apply_rules();
   
   wcerr << L"Training (Baum-Welch)...\n";
-  for(int i=0; i != nit; i++)
-  {
+  for(int i=0; i != nit; i++) {
     fseek(fcrp, 0, SEEK_SET);
     hmm.train(fcrp);
   }
@@ -431,8 +385,7 @@ Tagger::train()
 }
 
 void
-Tagger::trainSupervised()
-{
+Tagger::trainSupervised() {
   TSXReader treader;
   treader.read(filenames[2]);
   HMM hmm(&(treader.getTaggerData()));
@@ -442,19 +395,16 @@ Tagger::trainSupervised()
   
   wcerr << L"Calculating ambiguity classes...\n";
   FILE *fdic = fopen(filenames[0].c_str(), "r");
-  if(fdic)
-  {
+  if(fdic) {
     hmm.read_dictionary(fdic);
   }
-  else
-  {
+  else {
     filerror(filenames[0]);
   }
   wcerr << L"Kupiec's initialization of transition and emission probabilities...\n";
   FILE *ftagged = fopen(filenames[4].c_str(), "r");
   FILE *funtagged = fopen(filenames[5].c_str(), "r");
-  if(ftagged && funtagged)
-  {
+  if(ftagged && funtagged)  {
 #ifdef _MSC_VER
     _setmode(_fileno(ftagged), _O_U8TEXT);
     _setmode(_fileno(funtagged), _O_U8TEXT);
@@ -462,8 +412,7 @@ Tagger::trainSupervised()
     wcerr << L"Initializing transition and emission probabilities from a hand-tagged corpus...\n";
     hmm.init_probabilities_from_tagged_text(ftagged, funtagged);
   }
-  else
-  {
+  else {
     filerror(filenames[4]+ "' or '" + filenames[5]);
   }
   fclose(ftagged);
@@ -474,21 +423,18 @@ Tagger::trainSupervised()
   
   wcerr << L"Training (Baum-Welch)...\n";
   FILE *fcrp = fopen(filenames[1].c_str(), "r");
-  if(fcrp)
-  {
+  if(fcrp)  {
 #ifdef _MSC_VER
     _setmode(_fileno(fcrp), _O_U8TEXT);
 #endif 
-    for(int i=0; i != nit; i++)
-    {
+    for(int i=0; i != nit; i++)  {
       fseek(fcrp, 0, SEEK_SET);
       hmm.train(fcrp);
     }
     wcerr << L"Applying forbid and enforce rules...\n";
     hmm.apply_rules();
   }
-  else
-  {
+  else {
     filerror(filenames[1]);
   }
 
@@ -498,12 +444,10 @@ Tagger::trainSupervised()
 }
 
 void
-Tagger::retrain()
-{
+Tagger::retrain() {
   TaggerData td;
   FILE *ftdata = fopen(filenames[1].c_str(), "rb");
-  if(!ftdata)
-  {
+  if(!ftdata) {
     filerror(filenames[1]);
   }
   td.read(ftdata);
@@ -515,16 +459,14 @@ Tagger::retrain()
   TaggerWord::setArrayTags(td.getArrayTags());
 
   FILE *fcrp = fopen(filenames[0].c_str(), "r");
-  if(!fcrp)
-  {
+  if(!fcrp)  {
     filerror(filenames[0]);
   }
 #ifdef _MSC_VER
   _setmode(_fileno(fcrp), _O_U8TEXT);
 #endif 
   wcerr << L"Training (Baum-Welch)...\n";
-  for(int i=0; i != nit; i++)
-  {
+  for(int i=0; i != nit; i++)  {
     fseek(fcrp, 0, SEEK_SET);
     hmm.train(fcrp);
   }
@@ -533,8 +475,7 @@ Tagger::retrain()
   fclose(fcrp);
 
   ftdata = fopen(filenames[1].c_str(), "wb");
-  if(!ftdata)
-  {
+  if(!ftdata)  {
     filerror(filenames[1]);
   }
   td.write(ftdata);
@@ -542,8 +483,7 @@ Tagger::retrain()
 }
 
 void
-Tagger::help()
-{
+Tagger::help() {
   ostream &out = cerr;
   char* localname=new char[name.size()+1];
   strcpy(localname, name.c_str());
@@ -587,12 +527,9 @@ Tagger::help()
 }
 
 bool
-Tagger::isNumber(const char *str)
-{
-  for(unsigned int i = 0, limit = strlen(str); i != limit; i++)
-  {
-    if(!isdigit(str[i]))
-    {
+Tagger::isNumber(const char *str) {
+  for(unsigned int i = 0, limit = strlen(str); i != limit; i++) {
+    if(!isdigit(str[i]))  {
       return false;
     }
   }
