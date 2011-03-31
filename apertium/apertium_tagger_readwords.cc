@@ -169,7 +169,7 @@ int main(int argc, char* argv[]) {
   }
 
   if((tsxfile=="") && (probfile=="")) {
-    cerr<<"Error: You provide netiher a tagger specification file (.tsx) nor a tagger probability file (.prob). Use --tsxfile or --probfile to provide one of them\n";
+    cerr<<"Error: You have provided neither a tagger specification file (.tsx) nor a tagger probability file (.prob). Use --tsxfile or --probfile to provide one of them\n";
     help(argv[0]);
     exit(EXIT_FAILURE);
   }
