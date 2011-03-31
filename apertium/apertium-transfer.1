@@ -18,6 +18,9 @@ trules preproc biltrans [input [output]]
 .PP
 .B apertium-transfer
 -c trules preproc biltrans [input [output]]
+.PP
+.B apertium-transfer
+-t trules preproc biltrans [input [output]]
 .SH DESCRIPTION
 .BR apertium-transfer 
 is the program that performs the transfer from input language
@@ -51,6 +54,9 @@ extended mode with user dictionary
 .PP
 .B -c
 case-sensitiveness while accessing bilingual dictionary
+.PP
+.B -t
+trace mode: show rule numbers and matched content
 .PP
 .B -z
 null-flushing output on

@@ -80,6 +80,7 @@ private:
   bool useBilingual;
   bool null_flush;
   bool internal_null_flush;
+  bool trace;
   
   void copy(Transfer const &o);
   void destroy();
@@ -142,6 +143,7 @@ public:
   void setCaseSensitiveness(bool value);
   bool getNullFlush(void);
   void setNullFlush(bool null_flush);
+  void setTrace(bool trace);
 };
 
 #endif

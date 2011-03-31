@@ -41,6 +41,7 @@ void message(char *progname)
   cerr << "       " << basename(progname) << " -n trules preproc [input [output]]" << endl;
   cerr << "       " << basename(progname) << " -x extended trules preproc biltrans [input [output]]" << endl;
   cerr << "       " << basename(progname) << " -c trules preproc biltrans [input [output]]" << endl;
+  cerr << "       " << basename(progname) << " -t trules preproc biltrans [input [output]]" << endl;
   cerr << "  trules     transfer rules file" << endl;
   cerr << "  preproc    result of preprocess trules file" << endl;
   cerr << "  biltrans   bilingual letter transducer file" << endl;
@@ -49,6 +50,7 @@ void message(char *progname)
   cerr << "  -n         don't use bilingual dictionary" << endl;
   cerr << "  -x bindix  extended mode with user dictionary" << endl;
   cerr << "  -c         case-sensitiveness while accessing bilingual dictionary" << endl;
+  cerr << "  -t         trace (show rule numbers and patterns matched)" << endl;
   cerr << "  -z         null-flushing output on '\0'" << endl;
   cerr << "  -h         shows this message" << endl;
   
@@ -110,13 +112,14 @@ int main(int argc, char *argv[])
       {"extended",      required_argument, 0, 'x'},
       {"case-sensitive", no_argument, 0, 'c'},
       {"null-flush", no_argument, 0, 'z'},
+      {"trace", no_argument, 0, 't'},
       {"help", no_argument, 0, 'h'},
       {0, 0, 0, 0}
     };
 
-    int c=getopt_long(argc, argv, "nx:czh", long_options, &option_index);
+    int c=getopt_long(argc, argv, "nx:czth", long_options, &option_index);
 #else
-    int c=getopt(argc, argv, "nx:czh");
+    int c=getopt(argc, argv, "nx:czth");
 #endif
     if (c==-1)
       break;
@@ -133,6 +136,10 @@ int main(int argc, char *argv[])
         
       case 'c':
         t.setCaseSensitiveness(true);
+        break;
+      
+      case 't':
+        t.setTrace(true);
         break;
       
       case 'z':
