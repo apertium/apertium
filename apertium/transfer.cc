@@ -1847,7 +1847,7 @@ Transfer::transfer(FILE *in, FILE *out)
 
       if(trace)
       {
-        wcerr << endl << L"Rule " << val << L" ";
+        wcerr << endl << L"apertium-transfer: Rule " << val << L" ";
         for (unsigned int ind = 0; ind < tmpword.size(); ind++)
         {
           if (ind != 0)

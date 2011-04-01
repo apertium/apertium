@@ -1477,7 +1477,7 @@ Interchunk::interchunk(FILE *in, FILE *out)
 
       if(trace)
       {
-        wcerr << endl << L"Rule " << val << L" ";
+        wcerr << endl << L"apertium-interchunk: Rule " << val << L" ";
         for (unsigned int ind = 0; ind < tmpword.size(); ind++)
         {
           if (ind != 0)
