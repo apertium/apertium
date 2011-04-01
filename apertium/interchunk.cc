@@ -1399,6 +1399,12 @@ Interchunk::setNullFlush(bool null_flush)
 }
 
 void
+Interchunk::setTrace(bool trace)
+{
+  this->trace = trace;
+}
+
+void
 Interchunk::interchunk_wrapper_null_flush(FILE *in, FILE *out)
 {
   null_flush = false;
@@ -1468,6 +1474,20 @@ Interchunk::interchunk(FILE *in, FILE *out)
     {
       lastrule = rule_map[val-1];      
       last = input_buffer.getPos();
+
+      if(trace)
+      {
+        wcerr << endl << L"Rule " << val << L" ";
+        for (unsigned int ind = 0; ind < tmpword.size(); ind++)
+        {
+          if (ind != 0)
+          {
+            wcerr << L" ";
+          }
+          wcerr << *tmpword[ind];
+        }
+        wcerr << endl;
+      }
     }
 
     TransferToken &current = readToken(in);

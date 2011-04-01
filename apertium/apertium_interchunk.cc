@@ -38,12 +38,13 @@ using namespace std;
 
 void message(char *progname)
 {
-  cerr << "USAGE: " << basename(progname) << " [-z] t2x preproc [input [output]]" << endl;
+  cerr << "USAGE: " << basename(progname) << " [-tz] t2x preproc [input [output]]" << endl;
   cerr << "  t2x        t2x rules file" << endl;
   cerr << "  preproc    result of preprocess trules file" << endl;
   cerr << "  input      input file, standard input by default" << endl;
   cerr << "  output     output file, standard output by default" << endl;
   cerr << "OPTIONS" <<endl;
+  cerr << "  -t         trace mode" << endl;
   cerr << "  -z         flush buffer on '\0'" << endl;
 
   exit(EXIT_FAILURE);
@@ -100,13 +101,14 @@ int main(int argc, char *argv[])
     static struct option long_options[] =
     {
       {"null-flush", no_argument, 0, 'z'},
+      {"trace", no_argument, 0, 't'},
       {"help", no_argument, 0, 'h'},
       {0, 0, 0, 0}
     };
 
-    int c=getopt_long(argc, argv, "zh", long_options, &option_index);
+    int c=getopt_long(argc, argv, "zth", long_options, &option_index);
 #else
-    int c=getopt(argc, argv, "zh");
+    int c=getopt(argc, argv, "zth");
 #endif
     if (c == -1)
       break;
@@ -115,6 +117,10 @@ int main(int argc, char *argv[])
     {
       case 'z':
         i.setNullFlush(true);
+        break;
+
+      case 't':
+        i.setTrace(true);
         break;
 
       case 'h':

@@ -73,6 +73,7 @@ private:
   bool inword;
   bool null_flush;
   bool internal_null_flush;
+  bool trace;
   
   void copy(Interchunk const &o);
   void destroy();
@@ -130,6 +131,7 @@ public:
   void interchunk(FILE *in, FILE *out);
   bool getNullFlush(void);
   void setNullFlush(bool null_flush);
+  void setTrace(bool trace);
 
 };
 
