@@ -80,7 +80,7 @@ private:
   bool useBilingual;
   bool null_flush;
   bool internal_null_flush;
-  bool trace;
+  bool trace = false;
   
   void copy(Transfer const &o);
   void destroy();
