@@ -73,7 +73,7 @@ private:
   bool inword;
   bool null_flush;
   bool internal_null_flush;
-  bool trace = false;
+  bool trace;
   
   void copy(Interchunk const &o);
   void destroy();

@@ -100,6 +100,8 @@ int main(int argc, char *argv[])
  
   Transfer t;
   
+  t.setTrace(false);
+
 #if HAVE_GETOPT_LONG
   int option_index=0;
 #endif
