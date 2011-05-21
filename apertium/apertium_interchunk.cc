@@ -92,8 +92,6 @@ int main(int argc, char *argv[])
   
   Interchunk i;
 
-  i.setTrace(false);
-
 #if HAVE_GETOPT_LONG
   int option_index=0;
 #endif

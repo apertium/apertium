@@ -62,6 +62,7 @@ Transfer::Transfer()
   isExtended = false;
   null_flush = false;
   internal_null_flush = false;
+  trace = false;
 }
 
 Transfer::~Transfer()

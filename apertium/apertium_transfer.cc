@@ -99,8 +99,6 @@ int main(int argc, char *argv[])
   LtLocale::tryToSetLocale();
  
   Transfer t;
-  
-  t.setTrace(false);
 
 #if HAVE_GETOPT_LONG
   int option_index=0;

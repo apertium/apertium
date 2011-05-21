@@ -62,6 +62,7 @@ Interchunk::Interchunk()
   inword = false;
   null_flush = false;
   internal_null_flush = false;
+  trace = false;
 }
 
 Interchunk::~Interchunk()
