@@ -36,6 +36,8 @@
 using namespace Apertium;
 using namespace std;
 
+bool compound_sep = false;
+
 void readAndWriteUntil(FILE *input, FILE *output, int const charcode)
 {
   int mychar;
@@ -56,7 +58,7 @@ void readAndWriteUntil(FILE *input, FILE *output, int const charcode)
   }
 }
 
-void procWord(FILE *input, FILE *output)
+void procWord(FILE *input, FILE *output, bool surface_forms)
 {
   int mychar;
   wstring buffer = L"";
@@ -64,6 +66,12 @@ void procWord(FILE *input, FILE *output)
   bool buffer_mode = false;
   bool in_tag = false;
   bool queuing = false;
+
+  if(surface_forms)
+  {
+    while((mychar = fgetwc_unlocked(input)) != L'/') ;
+  } 
+
   while((mychar = fgetwc_unlocked(input)) != L'$')
   {
     if(feof(input))
@@ -97,13 +105,18 @@ void procWord(FILE *input, FILE *output)
 
     if(buffer_mode)
     { 
-      if(mychar != L'+' || (mychar == L'+' && in_tag == true))
+      if((mychar != L'+' || (mychar == L'+' && in_tag == true)) && 
+         (mychar != L'~' || (mychar == L'~' && in_tag == true)))
       {
         buffer += static_cast<wchar_t>(mychar);
       }
-      else if(in_tag == false)
+      else if(in_tag == false && mychar == L'+')
       {
         buffer.append(L"$ ^");
+      }
+      else if(in_tag == false && mychar == L'~' and compound_sep == true)
+      {
+        buffer.append(L"$^");
       }
     }
     else
@@ -123,7 +136,7 @@ void procWord(FILE *input, FILE *output)
   fputws_unlocked(buffer.c_str(), output);
 }
 
-void processStream(FILE *input, FILE *output, bool null_flush)
+void processStream(FILE *input, FILE *output, bool null_flush, bool surface_forms)
 {
   while(true)
   {
@@ -147,7 +160,7 @@ void processStream(FILE *input, FILE *output, bool null_flush)
  
       case L'^':
         fputwc_unlocked(mychar, output);
-        procWord(input, output);
+        procWord(input, output, surface_forms);
         fputwc_unlocked(L'$', output);
         break;
       
@@ -180,6 +193,7 @@ int main(int argc, char *argv[])
 { 
   LtLocale::tryToSetLocale();
   bool null_flush = false;
+  bool surface_forms = false;
   
 #if HAVE_GETOPT_LONG
   int option_index=0;
@@ -190,13 +204,15 @@ int main(int argc, char *argv[])
     static struct option long_options[] =
     {
       {"null-flush", no_argument, 0, 'z'},
+      {"no-surface-forms", no_argument, 0, 'n'},
+      {"compounds", no_argument, 0, 'e'},
       {"help", no_argument, 0, 'h'},
       {0, 0, 0, 0}
     };
 
-    int c=getopt_long(argc, argv, "zh", long_options, &option_index);
+    int c=getopt_long(argc, argv, "enzh", long_options, &option_index);
 #else
-    int c=getopt(argc, argv, "zh");
+    int c=getopt(argc, argv, "enzh");
 #endif
     if (c==-1)
       break;
@@ -206,7 +222,15 @@ int main(int argc, char *argv[])
       case 'z':
         null_flush = true;
         break;
-      
+
+      case 'e':
+        compound_sep = true;
+        break;
+     
+      case 'n':
+        surface_forms = true;
+        break;
+       
       case 'h':
       default:
         usage(argv[0]);
@@ -257,5 +281,5 @@ int main(int argc, char *argv[])
     _setmode(_fileno(output), _O_U8TEXT);
 #endif
 
-  processStream(input, output, null_flush);
+  processStream(input, output, null_flush, surface_forms);
 }
