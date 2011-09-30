@@ -119,6 +119,8 @@
 
 <xsl:template match="e">
   <xsl:choose>
+    <xsl:when test="./@i=string('yes')">
+    </xsl:when>
     <xsl:when test="not($r2l=string('yes'))">
       <xsl:if test="not(./@r=string('LR'))">
         <e><xsl:apply-templates select="./*"/></e>
