@@ -10,7 +10,7 @@ h_sources = collection.h constant_manager.h hmm.h interchunk.h \
             tmx_dictionary.h tmx_dic_tree.h tmx_quasi_diagonal.h \
             tmx_serialize_impl.h tmx_strings_and_streams.h \
             tmx_trail_postprocessors.h tmx_translate.h tmx_words.h \
-            tmx_align_parameters.h tmx_aligner_tool.h dictsel_comp.h
+            tmx_align_parameters.h tmx_aligner_tool.h 
 
 cc_sources = collection.cc constant_manager.cc hmm.cc interchunk.cc \
              interchunk_word.cc lextor.cc lextor_data.cc lextor_eval.cc \
@@ -23,7 +23,7 @@ cc_sources = collection.cc constant_manager.cc hmm.cc interchunk.cc \
              tmx_aligner_tool.cc tmx_alignment.cc tmx_arguments_parser.cc \
              tmx_book_to_matrix.cc tmx_dictionary.cc \
              tmx_strings_and_streams.cc tmx_trail_postprocessors.cc \
-             tmx_translate.cc dictsel_comp.cc
+             tmx_translate.cc
              
 library_includedir = $(includedir)/$(GENERIC_LIBRARY_NAME)-$(GENERIC_API_VERSION)/$(GENERIC_LIBRARY_NAME)
 library_include_HEADERS = $(h_sources)
