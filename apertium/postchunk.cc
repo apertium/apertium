@@ -1885,7 +1885,6 @@ Postchunk::splitWordsAndBlanks(wstring const &chunk, vector<wstring *> &words,
                                vector<wstring *> &blanks)
 {
   vector<wstring> vectags = getVecTags(chunk);
-  wstring result = L"";
   wstring case_info = caseOf(pseudolemma(chunk));
   bool uppercase_all = false;
   bool uppercase_first = false;
@@ -1902,18 +1901,11 @@ Postchunk::splitWordsAndBlanks(wstring const &chunk, vector<wstring *> &words,
   
   for(int i = beginChunk(chunk), limit = endChunk(chunk); i < limit; i++)
   {
-    if(chunk[i] == L'\\')
+    if(chunk[i] == L'^')
     {
-      result += L'\\';
-      result += chunk[++i];
-    }
-    else if(chunk[i] == L'^')
-    {
-      if(lastblank != true)
+      if(!lastblank)
       {
-        wstring * myblank = new wstring(result);
-        blanks.push_back(myblank);
-        result = L"";
+        blanks.push_back(new wstring(L""));
       }
       lastblank = false;
       wstring *myword = new wstring();
@@ -1932,7 +1924,7 @@ Postchunk::splitWordsAndBlanks(wstring const &chunk, vector<wstring *> &words,
           {
             // replace tag
             unsigned long value = wcstoul(chunk.c_str()+i+1, 
-					  NULL, 0) - 1;
+                                          NULL, 0) - 1;
             if(vectags.size() > value)
             {
               ref.append(vectags[value]);
@@ -1954,19 +1946,19 @@ Postchunk::splitWordsAndBlanks(wstring const &chunk, vector<wstring *> &words,
           }
           else if(uppercase_first)
           {
-	    if(iswalnum(chunk[i]))
-	    {
-	      ref += towupper(chunk[i]);
-	      uppercase_first = false;
-	    }
+            if(iswalnum(chunk[i]))
+            {
+              ref += towupper(chunk[i]);
+              uppercase_first = false;
+            }
             else
-	    {
-	      ref += chunk[i];
-	    }
+            {
+              ref += chunk[i];
+            }
           }
           else
           {
-	    ref += chunk[i];
+            ref += chunk[i];
           }
         }
       }
@@ -1977,7 +1969,7 @@ Postchunk::splitWordsAndBlanks(wstring const &chunk, vector<wstring *> &words,
     {
       if (!(lastblank && blanks.back())) 
       {
-	blanks.push_back(new wstring());
+        blanks.push_back(new wstring());
       }
       wstring &ref = *(blanks.back());
       ref += L'[';
@@ -1997,12 +1989,25 @@ Postchunk::splitWordsAndBlanks(wstring const &chunk, vector<wstring *> &words,
 
       lastblank = true;
     }
-    else if(chunk[i]== L' ')
+    else
     {
-      wstring *myblank = new wstring(L" ");
-      blanks.push_back(myblank);
+      if (!lastblank)
+      {
+        wstring *myblank = new wstring(L"");
+        blanks.push_back(myblank);
+      }
+      wstring &ref = *(blanks.back());
+      if(chunk[i] == L'\\')
+      {
+        ref += L'\\';
+        ref += chunk[++i];
+      }
+      else
+      {
+        ref += chunk[i];
+      }
       lastblank = true;
-    }    
+    }
   }
 }
 
