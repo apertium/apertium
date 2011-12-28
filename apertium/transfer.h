@@ -77,6 +77,7 @@ private:
   enum OutputType{lu,chunk};
   
   OutputType defaultAttrs;
+  bool preBilingual;
   bool useBilingual;
   bool null_flush;
   bool internal_null_flush;
@@ -139,6 +140,8 @@ public:
   void transfer(FILE *in, FILE *out);
   void setUseBilingual(bool value);
   bool getUseBilingual(void) const;
+  void setPreBilingual(bool value);
+  bool getPreBilingual(void) const;
   void setExtendedDictionary(string const &fstfile);
   void setCaseSensitiveness(bool value);
   bool getNullFlush(void);

@@ -38,6 +38,7 @@ using namespace std;
 void message(char *progname)
 {
   cerr << "USAGE: " << basename(progname) << " trules preproc biltrans [input [output]]" << endl;
+  cerr << "       " << basename(progname) << " -b trules preproc [input [output]]" << endl;
   cerr << "       " << basename(progname) << " -n trules preproc [input [output]]" << endl;
   cerr << "       " << basename(progname) << " -x extended trules preproc biltrans [input [output]]" << endl;
   cerr << "       " << basename(progname) << " -c trules preproc biltrans [input [output]]" << endl;
@@ -47,6 +48,7 @@ void message(char *progname)
   cerr << "  biltrans   bilingual letter transducer file" << endl;
   cerr << "  input      input file, standard input by default" << endl;
   cerr << "  output     output file, standard output by default" << endl;
+  cerr << "  -b         input from lexical transfer (single level transfer only)" << endl;
   cerr << "  -n         don't use bilingual dictionary" << endl;
   cerr << "  -x bindix  extended mode with user dictionary" << endl;
   cerr << "  -c         case-sensitiveness while accessing bilingual dictionary" << endl;
@@ -108,6 +110,7 @@ int main(int argc, char *argv[])
 #if HAVE_GETOPT_LONG
     static struct option long_options[] =
     {
+      {"from-bilingual",      no_argument, 0, 'b'},
       {"no-bilingual",      no_argument, 0, 'n'},
       {"extended",      required_argument, 0, 'x'},
       {"case-sensitive", no_argument, 0, 'c'},
@@ -117,15 +120,19 @@ int main(int argc, char *argv[])
       {0, 0, 0, 0}
     };
 
-    int c=getopt_long(argc, argv, "nx:czth", long_options, &option_index);
+    int c=getopt_long(argc, argv, "nbx:czth", long_options, &option_index);
 #else
-    int c=getopt(argc, argv, "nx:czth");
+    int c=getopt(argc, argv, "nbx:czth");
 #endif
     if (c==-1)
       break;
       
     switch (c)
     {
+      case 'b':
+        t.setPreBilingual(true);
+        break;
+
       case 'n':
         t.setUseBilingual(false);
         break;
@@ -167,7 +174,7 @@ int main(int argc, char *argv[])
       break;
       
     case 5:
-      if(t.getUseBilingual() == false)
+      if(t.getUseBilingual() == false || t.getPreBilingual() == true)
       {
         output = open_output(argv[argc-1]);
         input = open_input(argv[argc-2]);
@@ -186,7 +193,7 @@ int main(int argc, char *argv[])
       break;
       
     case 4:
-      if(t.getUseBilingual() == false)
+      if(t.getUseBilingual() == false || t.getPreBilingual() == true)
       {
         input = open_input(argv[argc-1]);
         testfile(argv[argc-2]);
@@ -202,7 +209,7 @@ int main(int argc, char *argv[])
       }
       break;
     case 3:
-      if(t.getUseBilingual() == false)
+      if(t.getUseBilingual() == false || t.getPreBilingual() == true)
       {
         testfile(argv[argc-1]);
         testfile(argv[argc-2]);

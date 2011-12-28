@@ -59,6 +59,7 @@ Transfer::Transfer()
   lastrule = NULL;
   defaultAttrs = lu;
   useBilingual = true;
+  preBilingual = false;
   isExtended = false;
   null_flush = false;
   internal_null_flush = false;
@@ -1779,7 +1780,7 @@ Transfer::transfer(FILE *in, FILE *out)
 	if(tmpword.size() != 0)
 	{
 	  pair<wstring, int> tr;
-	  if(useBilingual)
+	  if(useBilingual && preBilingual == false)
 	  {
 	    if(isExtended && (*tmpword[0])[0] == L'*')
 	    {
@@ -1797,6 +1798,35 @@ Transfer::transfer(FILE *in, FILE *out)
             {
 	      tr = fstp.biltransWithQueue(*tmpword[0], false);
             }
+          }
+          else if(preBilingual)
+          {
+            wstring sl = L"";
+            wstring tl = L"";
+            int seenParen = 0;
+            for(wstring::const_iterator it = tmpword[0]->begin(); it != tmpword[0]->end(); it++) 
+            {
+              if(*it == L'/') 
+              {
+                seenParen++;
+                continue;
+              }
+              if(seenParen == 0)
+              {
+                sl.push_back(*it);
+              }
+              else if(seenParen == 1)
+              {
+                tl.push_back(*it);
+              }
+              else if(seenParen > 1)
+              {
+                break;
+              }
+            } 
+            tmpword[0]->assign(sl); 
+            tr = pair<wstring, int>(tl, false);
+            //wcerr << L"pb: " << *tmpword[0] << L" :: " << sl << L" >> " << tl << endl ; 
           }
           else
           {
@@ -1923,9 +1953,37 @@ Transfer::applyRule()
     }
     
     pair<wstring, int> tr;
-    if(useBilingual)
+    if(useBilingual && preBilingual == false)
     {
       tr = fstp.biltransWithQueue(*tmpword[i], false);
+    }
+    else if(preBilingual)
+    {
+      wstring sl = L"";
+      wstring tl = L"";
+      int seenParen = 0;
+      for(wstring::const_iterator it = tmpword[i]->begin(); it != tmpword[i]->end(); it++) 
+      {
+        if(*it == L'/') 
+        {
+          seenParen++;
+          continue;
+        }
+        if(seenParen == 0)
+        {
+          sl.push_back(*it);
+        }
+        else if(seenParen == 1)
+        {
+          tl.push_back(*it);
+        }
+        else if(seenParen > 1)
+        {
+          break;
+        }
+      } 
+      tmpword[i]->assign(sl); 
+      tr = pair<wstring, int>(tl, false);
     }
     else
     {
@@ -1962,6 +2020,7 @@ Transfer::applyRule()
   ms.init(me->getInitial());
 }
 
+/* HERE */
 void
 Transfer::applyWord(wstring const &word_str)
 {
@@ -1974,6 +2033,10 @@ Transfer::applyWord(wstring const &word_str)
         i++;
 	ms.step(towlower(word_str[i]), any_char);
 	break;
+
+      case L'/':
+        i = limit;
+        break;
 
       case L'<':
 	for(unsigned int j = i+1; j != limit; j++)
@@ -2001,6 +2064,18 @@ Transfer::applyWord(wstring const &word_str)
     }
   }
   ms.step(L'$');
+}
+
+void 
+Transfer::setPreBilingual(bool value) 
+{
+  preBilingual = value;
+}
+
+bool
+Transfer::getPreBilingual(void) const
+{
+  return preBilingual;
 }
 
 void 
