@@ -1803,23 +1803,23 @@ Transfer::transfer(FILE *in, FILE *out)
           {
             wstring sl = L"";
             wstring tl = L"";
-            int seenParen = 0;
+            int seenSlash = 0;
             for(wstring::const_iterator it = tmpword[0]->begin(); it != tmpword[0]->end(); it++) 
             {
               if(*it == L'/') 
               {
-                seenParen++;
+                seenSlash++;
                 continue;
               }
-              if(seenParen == 0)
+              if(seenSlash == 0)
               {
                 sl.push_back(*it);
               }
-              else if(seenParen == 1)
+              else if(seenSlash == 1)
               {
                 tl.push_back(*it);
               }
-              else if(seenParen > 1)
+              else if(seenSlash > 1)
               {
                 break;
               }
@@ -1961,23 +1961,23 @@ Transfer::applyRule()
     {
       wstring sl = L"";
       wstring tl = L"";
-      int seenParen = 0;
+      int seenSlash = 0;
       for(wstring::const_iterator it = tmpword[i]->begin(); it != tmpword[i]->end(); it++) 
       {
         if(*it == L'/') 
         {
-          seenParen++;
+          seenSlash++;
           continue;
         }
-        if(seenParen == 0)
+        if(seenSlash == 0)
         {
           sl.push_back(*it);
         }
-        else if(seenParen == 1)
+        else if(seenSlash == 1)
         {
           tl.push_back(*it);
         }
-        else if(seenParen > 1)
+        else if(seenSlash > 1)
         {
           break;
         }
