@@ -48,7 +48,7 @@ void message(char *progname)
   cerr << "  biltrans   bilingual letter transducer file" << endl;
   cerr << "  input      input file, standard input by default" << endl;
   cerr << "  output     output file, standard output by default" << endl;
-  cerr << "  -b         input from lexical transfer (single level transfer only)" << endl;
+  cerr << "  -b         input from lexical transfer" << endl;
   cerr << "  -n         don't use bilingual dictionary" << endl;
   cerr << "  -x bindix  extended mode with user dictionary" << endl;
   cerr << "  -c         case-sensitiveness while accessing bilingual dictionary" << endl;
@@ -131,6 +131,7 @@ int main(int argc, char *argv[])
     {
       case 'b':
         t.setPreBilingual(true);
+        t.setUseBilingual(false);
         break;
 
       case 'n':

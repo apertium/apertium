@@ -1824,7 +1824,7 @@ Transfer::transfer(FILE *in, FILE *out)
                 break;
               }
             } 
-            tmpword[0]->assign(sl); 
+            //tmpword[0]->assign(sl); 
             tr = pair<wstring, int>(tl, false);
             //wcerr << L"pb: " << *tmpword[0] << L" :: " << sl << L" >> " << tl << endl ; 
           }
@@ -1929,6 +1929,7 @@ void
 Transfer::applyRule()
 {
   unsigned int limit = tmpword.size();
+  //wcerr << L"applyRule: " << tmpword.size() << endl;
   
   for(unsigned int i = 0; i != limit; i++)
   {
@@ -1959,6 +1960,7 @@ Transfer::applyRule()
     }
     else if(preBilingual)
     {
+      //wcerr << "applyRule: " << *tmpword[i] << endl;
       wstring sl = L"";
       wstring tl = L"";
       int seenSlash = 0;
@@ -1982,7 +1984,7 @@ Transfer::applyRule()
           break;
         }
       } 
-      tmpword[i]->assign(sl); 
+      //tmpword[i]->assign(sl); 
       tr = pair<wstring, int>(tl, false);
     }
     else
