@@ -83,6 +83,16 @@ Enable marking of disambiguated words with the '=' character.
 .SH FILES
 These are the two files that can be used with this command:
 .PP
+.B -m memory.tmx
+use a translation memory to recycle translations
+.PP
+.B -o direction 
+translation direction using the translation memory, by default 'direction' is used instead
+.PP
+.B -l
+lists the available translation directions and exits direction        
+typically, LANG1-LANG2, but see modes.xml in language data
+.PP
 .B infile
 Input file (stdin by default).
 .PP
