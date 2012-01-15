@@ -8,10 +8,10 @@ This tool is part of the apertium open-source machine translation
 toolbox: \fBhttp://www.apertium.org\fR.
 .SH SYNOPSIS
 .B apertium-transfer
-trules preproc biltrans [input [output]]
+[\-n] trules preproc biltrans [input [output]]
 .PP
 .B apertium-transfer
--n trules preproc [input [output]]
+trules preproc [input [output]]
 .PP
 .B apertium-transfer
 -x extended trules preproc biltrans [input [output]]
@@ -46,6 +46,12 @@ Input file (stdin by default).
 .B outfile
 Output file (stdout by default).
 .PP
+\-.B -b
+\-input from lexical transfer (single level transfer only)
+\-.PP
+\-.B -h
+\-shows this message
+\-.PP
 .B -n
 Do not use a bilingual dictionary to process the input.
 .PP
