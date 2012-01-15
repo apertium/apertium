@@ -8,8 +8,8 @@ apertium\-interchunk \- This application is part of
 This tool is part of the apertium machine translation
 architecture: \fBhttp://apertium.org\fR.
 .SH SYNOPSIS
-.B apertium\-interchunk
-trules preproc [input [output]]
+.B apertium\-interchunk 
+[\-tz] trules preproc [input [output]]
 .SH DESCRIPTION
 This is an intermediate tool from Apertium level 2 engine. You should
 never have to use it independently.
@@ -22,7 +22,8 @@ reordering, changes in the morphosyntactical features of chunks
 according to the information in neighboring chunks, or generating new
 chunks.
 .SH OPTIONS
-It has no options.
+  \-t         trace mode
+  \-z         flush buffer on the null character
 .SH FILES
 These are the kinds of files that can be used with this command:
 .PP
