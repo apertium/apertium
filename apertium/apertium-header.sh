@@ -7,7 +7,7 @@ message ()
   echo "USAGE: $(basename $0) [-d datadir] [-f format] [-u] <direction> [in [out]]"
   echo " -d datadir       directory of linguistic data"
   echo " -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx, pptx,"
-  echo "                  xpresstag";
+  echo "                  xpresstag, html-noent";
   echo " -a               display ambiguity"
   echo " -u               don't display marks '*' for unknown words" 
   echo " -m memory.tmx    use a translation memory to recycle translations"
@@ -251,6 +251,25 @@ translate_xlsx ()
   rm -Rf $TMCOMPFILE
 }
 
+translate_htmlnoent ()
+{
+  $APERTIUM_PATH/apertium-deshtml $FICHERO | \
+  if [ "$TRANSLATION_MEMORY_FILE" = "" ]; 
+  then cat;  
+  else $APERTIUM_PATH/lt-tmxproc $TMCOMPFILE;
+  fi | if [ ! -x $DATOS/modes/$PREFIJO.mode ]
+  then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
+  else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
+  fi | if [ "$FORMATADOR" = "none" ]
+  then cat >$SALIDA;
+  else $APERTIUM_PATH/apertium-rehtml-noent >$SALIDA;
+  fi
+
+  rm -Rf $TMCOMPFILE
+}
+
+
+
 
 ARGS=$(getopt "uahlf:d:m:o:" $*)
 set -- $ARGS
@@ -386,6 +405,13 @@ case "$FORMATADOR" in
 		else OPTION="-g";
 		fi;
 		translate_pptx
+		exit 0
+		;;
+	html-noent)
+		if [[ $UWORDS = "no" ]]; then OPTION="-n";
+		else OPTION="-g";
+		fi;
+		translate_htmlnoent
 		exit 0
 		;;
 		

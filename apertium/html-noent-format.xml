@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<format name="html">
+  <options>
+    <largeblocks size="8192"/>
+    <input encoding="ISO-8859-1"/>
+    <output encoding="ISO-8859-1"/>
+    <tag-name regexp="[a-zA-Z]+"/>
+    <escape-chars regexp='[][^@\\/${}]'/>
+    <space-chars regexp='[ \n\t\r&lt;&gt;{}]'/>
+    <case-sensitive value="no"/>
+  </options>
+
+  <rules>
+    <format-rule type="comment" eos="no" priority="1">
+      <begin regexp='"&lt;!--"'/>
+      <end regexp='"--&gt;"'/>
+    </format-rule>
+
+    <format-rule type="comment" eos="no" priority="2">
+      <begin regexp='"&lt;script"(" "[^&gt;]*)?"&gt;"'/>
+      <end regexp='"&lt;/script"(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+    <format-rule type="comment" eos="no" priority="2">
+      <begin regexp='"&lt;apertium-notrans&gt;"'/>
+      <end regexp='"&lt;/apertium-notrans&gt;"'/>
+    </format-rule>
+
+    <format-rule type="comment" eos="no" priority="2">
+      <begin regexp='"&lt;style"(" "[^&gt;]*)?"&gt;"'/>
+      <end regexp='"&lt;/style"(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+    <format-rule type="open" eos="yes" priority="3">
+      <tag regexp='"&lt;br"(" "[^&gt;]*)?"&gt;"|"&lt;hr"(" "[^&gt;]*)?"&gt;"|"&lt;p"(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+    <format-rule type="open" eos="yes" priority="3"> 
+      <tag regexp='"&lt;li"(" "[^&gt;]*)?"&gt;"|"&lt;ul"(" "[^&gt;]*)?"&gt;"|"&lt;ol"(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+    <format-rule type="open" eos="yes" priority="3"> 
+      <tag regexp='"&lt;tr"(" "[^&gt;]*)?"&gt;"|"&lt;td"(" "[^&gt;]*)?"&gt;"|"&lt;th"(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+    <format-rule type="close" eos="yes" priority="3">
+      <tag regexp='"&lt;/br"(" "[^&gt;]*)?"&gt;"|"&lt;/hr"(" "[^&gt;]*)?"&gt;"|"&lt;/p"(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+    <format-rule type="close" eos="yes" priority="3"> 
+      <tag regexp='"&lt;/li"(" "[^&gt;]*)?"&gt;"|"&lt;/ul"(" "[^&gt;]*)?"&gt;"|"&lt;/ol"(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+    <format-rule type="close" eos="yes" priority="3"> 
+      <tag regexp='"&lt;/tr"(" "[^&gt;]*)?"&gt;"|"&lt;/td"(" "[^&gt;]*)?"&gt;"|"&lt;/th"(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+<!-- Faltan algunas etiquetas de final de frase. -->
+
+    <format-rule type="open" eos="yes" priority="3"> 
+      <tag regexp='"&lt;title"(" "[^&gt;]*)?"&gt;"|"&lt;div"(" "[^&gt;]*)?"&gt;"|"&lt;option"(" "[^&gt;]*)?"&gt;"|"&lt;h"[1-6](" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+    <format-rule type="close" eos="yes" priority="3"> 
+      <tag regexp='"&lt;/title"(" "[^&gt;]*)?"&gt;"|"&lt;/div"(" "[^&gt;]*)?"&gt;"|"&lt;/option"(" "[^&gt;]*)?"&gt;"|"&lt;/h"[1-6](" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+<!-- La etiqueta DOCTYPE no la reconoce -->
+
+    <format-rule type="empty" eos="no" priority="4">
+      <tag regexp='"&lt;"("img"|"link")(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+    <format-rule type="empty" eos="no" priority="5">
+      <tag regexp='("&lt;!"|"&lt;?")[a-zA-Z][^&gt;]*"&gt;"'/>
+    </format-rule>
+
+<!-- End (Cambios hechos por Gorka L.)-->
+
+    <format-rule type="open" eos="no" priority="5">
+      <tag regexp='"&lt;"[a-zA-Z][^&gt;]*"&gt;"'/>
+    </format-rule>
+    
+    <format-rule type="close" eos="no" priority="5">
+      <tag regexp='"&lt;/"[a-zA-Z][^&gt;]*"&gt;"'/>
+    </format-rule>
+    
+  </rules>
+
+</format>

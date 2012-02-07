@@ -46,6 +46,7 @@ libapertium3_la_LDFLAGS = -version-info $(GENERIC_LIBRARY_VERSION) -release $(GE
 
 bin_PROGRAMS = apertium-pretransfer apertium-destxt apertium-retxt \
                apertium-deshtml apertium-rehtml \
+               apertium-rehtml-noent \
                apertium-desxpresstag apertium-rexpresstag \
                apertium-desodt apertium-reodt \
                apertium-desrtf apertium-rertf \
@@ -85,6 +86,7 @@ apertium_destxt_SOURCES = apertium_destxt.cc
 apertium_retxt_SOURCES = apertium_retxt.cc
 apertium_deshtml_SOURCES = apertium_deshtml.cc
 apertium_rehtml_SOURCES = apertium_rehtml.cc
+apertium_rehtml_noent_SOURCES = apertium_rehtml_noent.cc
 apertium_desxpresstag_SOURCES = apertium_desxpresstag.cc
 apertium_rexpresstag_SOURCES = apertium_rexpresstag.cc
 apertium_desodt_SOURCES = apertium_desodt.cc
@@ -147,6 +149,7 @@ apertium_gen_wlist_lextor_translation_LDADD = $(APERTIUM_LIBS) -lapertium$(GENER
 INCLUDES = -I$(top_srcdir) $(APERTIUM_CFLAGS)
 CLEANFILES = *~ apertium_destxt.cc apertium_retxt.cc apertium_deshtml.cc \
              apertium_rehtml.cc apertium_desrtf.cc apertium_rertf.cc \
+             apertium_rehtml_noent.cc \
              apertium_deswxml.cc apertium_rewxml.cc \
              apertium_desxlsx.cc apertium_rexlsx.cc \
              apertium_despptx.cc apertium_repptx.cc \
@@ -182,6 +185,11 @@ apertium_deshtml.cc: html-format.xml Makefile.am deformat.xsl
 
 apertium_rehtml.cc: html-format.xml Makefile.am reformat.xsl
 	$(XSLTPROC) reformat.xsl html-format.xml >$@tmp
+	$(FLEX) -Cfer -o$@ $@tmp
+	rm $@tmp
+
+apertium_rehtml_noent.cc: html-noent-format.xml Makefile.am reformat.xsl
+	$(XSLTPROC) reformat.xsl html-noent-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
@@ -443,6 +451,7 @@ EXTRA_DIST = gen-header.sh deformat-header.sh \
              reformat.xsl deformat.xsl new2old.xsl lexchoice.xsl lexchoicebil.xsl \
              tagger.dtd transfer.dtd format.dtd dix.dtd txt-format.xml \
              html-format.xml odt-format.xml rtf-format.xml wxml-format.xml \
+             html-noent-format.xml \
              xlsx-format.xml pptx-format.xml mediawiki-format.xml trans-header.sh \
              apertium-header.sh apertium-unformat-header.sh $(man_MANS) \
              xpresstag-format.xml \
