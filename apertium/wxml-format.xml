@@ -25,6 +25,17 @@
       <begin regexp='"&lt;pkg:binaryData"(" "[^&gt;]*)?"&gt;"'/>
       <end regexp='"&lt;/pkg:binaryData"(" "[^&gt;]*)?"&gt;"'/>
     </format-rule> 
+    
+    <format-rule type="comment" eos="yes" priority="3">
+      <begin regexp='"&lt;w:instrText"(" "[^&gt;]*)?"&gt;"'/>
+      <end regexp='"&lt;/w:instrText"(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>    
+
+    <format-rule type="comment" eos="yes" priority="3">
+      <begin regexp='"&lt;w:drawing"(" "[^&gt;]*)?"&gt;"'/>
+      <end regexp='"&lt;/w:drawing"(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>    
+
 
     <format-rule type="open" eos="yes" priority="4">
       <tag regexp='"&lt;w:p"(" "[^&gt;]*)?"&gt;"'/>
