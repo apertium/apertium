@@ -487,13 +487,14 @@ void
 TMXBuilder::generateTMX(FILE *f1, FILE *f2, FILE *output)
 {
   fprintf(output, "<?xml version=\"1.0\"?>\n");
-  fprintf(output, "<tmx version=\"version 1.1\">\n");
+  fprintf(output, "<tmx version=\"1.4b\">\n");
   fprintf(output, "<header creationtool=\"Apertium TMX Builder\"\n");
   fprintf(output, "        creationtoolversion=\"%s\"\n", PACKAGE_VERSION);
   fprintf(output, "        segtype=\"sentence\"\n");
   fprintf(output, "        srclang=\"%s\"\n", UtfConverter::toUtf8(lang1).c_str());
   fprintf(output, "        adminlang=\"%s\"\n", UtfConverter::toUtf8(lang2).c_str());
-  fprintf(output, "        datatype=\"plaintext\">\n");
+  fprintf(output, "        datatype=\"plaintext\"");
+  fprintf(output, "        o-tmf=\"none\">\n");
   fprintf(output, "</header>\n");
   fprintf(output, "<body>\n");
   outputTU(f1, f2, output);
