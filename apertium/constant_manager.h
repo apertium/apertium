@@ -19,6 +19,7 @@
 #ifndef _CONSTANTMANAGER_
 #define _CONSTANTMANAGER_
 
+#include <cstdio>
 #include <map>
 #include <string>
 
