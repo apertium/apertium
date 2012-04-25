@@ -31,6 +31,12 @@
       <end regexp='"&lt;/w:instrText"(" "[^&gt;]*)?"&gt;"'/>
     </format-rule>    
 
+    <format-rule type="comment" eos="no" priority="2">
+      <begin regexp='"&amp;lt;apertium-notrans&amp;gt;"'/>
+      <end regexp='"&amp;lt;/apertium-notrans&amp;gt;"'/>
+    </format-rule>
+
+
     <format-rule type="comment" eos="yes" priority="3">
       <begin regexp='"&lt;w:drawing"(" "[^&gt;]*)?"&gt;"'/>
       <end regexp='"&lt;/w:drawing"(" "[^&gt;]*)?"&gt;"'/>

@@ -35,6 +35,11 @@
       <tag regexp='("&lt;!"|"&lt;?")[a-zA-Z][^&gt;]*"&gt;"'/>
     </format-rule>
 
+    <format-rule type="comment" eos="no" priority="2">
+      <begin regexp='"&amp;lt;apertium-notrans&amp;gt;"'/>
+      <end regexp='"&amp;lt;/apertium-notrans&amp;gt;"'/>
+    </format-rule>
+
 
     <format-rule type="open" eos="no" priority="4">
       <tag regexp='"&lt;"[a-zA-Z][^&gt;]*"&gt;"'/>
