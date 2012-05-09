@@ -96,7 +96,7 @@ unformat_pptx ()
 
 unformat_xlsx ()
 {
-  INPUT_TMPDIR=$(mkdir -d)
+  INPUT_TMPDIR=$(mktemp -d /tmp/apertium.XXXXXXXX)
 
   locale_utf8
   test_zip
