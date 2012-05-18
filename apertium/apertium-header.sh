@@ -7,7 +7,7 @@ message ()
   echo "USAGE: $(basename $0) [-d datadir] [-f format] [-u] <direction> [in [out]]"
   echo " -d datadir       directory of linguistic data"
   echo " -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx, pptx,"
-  echo "                  xpresstag, html-noent";
+  echo "                  xpresstag, html-noent, latex, latex-raw";
   echo " -a               display ambiguity"
   echo " -u               don't display marks '*' for unknown words" 
   echo " -m memory.tmx    use a translation memory to recycle translations"
@@ -36,6 +36,15 @@ locale_utf8 ()
   fi
 }
 
+locale_latin1 ()
+{
+  export LC_CTYPE=$(locale -a|grep -i -e "8859-1" -e "@euro"|head -1);
+  if [[ LC_CTYPE = "" ]]
+  then echo "Error: Install a Latin-1 locale in your system";
+       exit 1;
+  fi
+}
+
 test_zip ()
 {
  if [[ $(which zip) = "" ]]
@@ -48,6 +57,84 @@ test_zip ()
        exit 1;
   fi 
 }
+
+test_gawk ()
+{
+  GAWK=$(which gawk)
+  if [[ "$GAWK" = "" ]]
+  then echo "Error: Install 'gawk' in your system"
+       exit 1
+  fi
+}
+
+
+translate_latex()
+{
+  test_gawk
+
+  if [[ $FICHERO = ""  || $FICHERO = /dev/stdin ]]
+  then FICHERO=$(mktemp /tmp/apertium.XXXXXXXX)
+       cat > $FICHERO
+       BORRAFICHERO="true"
+  fi
+
+  if [[ "$(file -b --mime-encoding $FICHERO)" == "utf-8" ]]
+  then locale_latin1
+  else locale_utf8
+  fi
+  
+  $APERTIUM_PATH/apertium-prelatex $FICHERO | \
+  $APERTIUM_PATH/apertium-utils-fixlatex | \
+  $APERTIUM_PATH/apertium-deslatex | \
+  if [ "$TRANSLATION_MEMORY_FILE" = "" ]; 
+  then cat;
+  else $APERTIUM_PATH/lt-tmxproc $TMCOMPFILE;
+  fi | \
+  if [ ! -x $DATOS/modes/$PREFIJO.mode ]
+  then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
+  else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
+  fi | \
+  $APERTIUM_PATH/apertium-relatex| \
+  awk '{gsub("</CONTENTS-noeos>", "</CONTENTS>"); print;}' | \
+  $APERTIUM_PATH/apertium-postlatex >$SALIDA
+  
+  if [[ $BORRAFICHERO = "true" ]]
+  then rm -Rf $FICHERO
+  fi
+}
+
+
+translate_latex_raw()
+{
+  test_gawk
+  
+  if [[ $FICHERO = "" || $FICHERO = /dev/stdin ]]
+  then FICHERO=$(mktemp /tmp/apertium.XXXXXXXX)
+       cat > $FICHERO
+       BORRAFICHERO="true"
+  fi
+
+  if [[ "$(file -b --mime-encoding $FICHERO)" == "utf-8" ]]
+  then locale_latin1
+  else locale_utf8
+  fi
+
+  $APERTIUM_PATH/apertium-prelatex $FICHERO | \
+  $APERTIUM_PATH/apertium-utils-fixlatex | \
+  $APERTIUM_PATH/apertium-deslatex | \
+  if [ "$TRANSLATION_MEMORY_FILE" = "" ]; 
+  then cat;  
+  else $APERTIUM_PATH/lt-tmxproc $TMCOMPFILE;
+  fi | \
+  if [ ! -x $DATOS/modes/$PREFIJO.mode ]
+  then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
+  else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
+  fi | \
+  $APERTIUM_PATH/apertium-relatex| \
+  awk '{gsub("</CONTENTS-noeos>", "</CONTENTS>"); print;}' | \
+  $APERTIUM_PATH/apertium-postlatex-raw >$SALIDA  
+}
+
 
 translate_odt ()
 {
@@ -67,15 +154,6 @@ translate_odt ()
   find $INPUT_TMPDIR | grep "content\\.xml\\|styles\\.xml" |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
   $APERTIUM_PATH/apertium-desodt |\
-  if [ "$TRANSLATION_MEMORY_FILE" = "" ]; 
-  then cat;  
-  else $APERTIUM_PATH/lt-tmxproc $TMCOMPFILE;
-  fi | \
-  if [ ! -x $DATOS/modes/$PREFIJO.mode ]
-  then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
-  else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
-  fi | \
-  $APERTIUM_PATH/apertium-reodt|\
   awk '{punto = index($0, "<?"); cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("[?]> ", "?>\n", cola); print cola > name;}'
   VUELVE=$(pwd)
   cd $INPUT_TMPDIR
@@ -386,6 +464,22 @@ case "$FORMATADOR" in
 		translate_odt
 		exit 0
 		;;
+        latex)
+		if [[ $UWORDS = "no" ]]; then OPTION="-n"; 
+		else OPTION="-g";
+		fi;
+		translate_latex
+		exit 0
+		;;
+        latex-raw)
+		if [[ $UWORDS = "no" ]]; then OPTION="-n"; 
+		else OPTION="-g";
+		fi;
+		translate_latex_raw
+		exit 0
+		;;
+		
+		
 	docx)
 		if [[ $UWORDS = "no" ]]; then OPTION="-n"; 
 		else OPTION="-g";

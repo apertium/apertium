@@ -33,6 +33,36 @@ test_zip ()
   fi 
 }
 
+test_gawk ()
+{
+  GAWK=$(which gawk)
+  if [[ "$GAWK" = "" ]]
+  then echo "Error: Install 'gawk' in your system"
+       exit 1
+  fi
+}
+
+
+unformat_latex()
+{
+  test_gawk
+  
+  if [[ $FICHERO = "" ]]
+  then FICHERO=$(mktemp /tmp/apertium.XXXXXXXX)
+       cat > $FICHERO
+       BORRAFICHERO="true"
+  fi
+
+  $APERTIUM_PATH/apertium-prelatex $FICHERO | \
+  $APERTIUM_PATH/apertium-utils-fixlatex | \
+  $APERTIUM_PATH/apertium-deslatex  >$SALIDA
+  
+  if [[ $BORRAFICHERO = "true" ]]
+  then rm -Rf $FICHERO
+  fi
+}
+
+
 unformat_odt ()
 {
   INPUT_TMPDIR=$(mktemp -d /tmp/apertium.XXXXXXXX)
@@ -160,6 +190,11 @@ case "$FORMATADOR" in
 	        export LC_CTYPE=$MILOCALE
 		;;
         
+        latex)
+                unformat_latex
+                exit 0
+                ;;
+                
         odt)
 		unformat_odt
 		exit 0
