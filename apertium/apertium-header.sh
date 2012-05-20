@@ -1,3 +1,4 @@
+PATH="${APERTIUM_PATH}:${PATH}"
 PAIR=""
 INPUT_FILE="/dev/stdin"
 OUTPUT_FILE="/dev/stdout"

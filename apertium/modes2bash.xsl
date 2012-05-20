@@ -48,12 +48,9 @@
   <xsl:choose>
     <xsl:when test="@prefix">
       <xsl:value-of select="@prefix"/>
+      <xsl:value-of select="string('/')"/>
     </xsl:when>
-    <xsl:otherwise>
-      <xsl:value-of select="$prefix"/>
-    </xsl:otherwise>
   </xsl:choose>
-  <xsl:value-of select="string('/')"/>
   <xsl:value-of select="./@name"/>
   <xsl:for-each select="./*">  
     <xsl:value-of select="string(' ')"/>
