@@ -155,14 +155,14 @@ translate_odt ()
   find $INPUT_TMPDIR | grep "content\\.xml\\|styles\\.xml" |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
   $APERTIUM_PATH/apertium-desodt |\
-  if [ "$TRANSLATION_MEMORY_FILE" = "" ];	 
-  then cat;	 
-  else $APERTIUM_PATH/lt-tmxproc $TMCOMPFILE;	 
-  fi | \	 
-  if [ ! -x $DATOS/modes/$PREFIJO.mode ]	 
-  then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER	 
+  if [ "$TRANSLATION_MEMORY_FILE" = "" ];
+  then cat;
+  else $APERTIUM_PATH/lt-tmxproc $TMCOMPFILE;
+  fi | \
+  if [ ! -x $DATOS/modes/$PREFIJO.mode ]
+  then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
   else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER	 
-  fi | \	 
+  fi | \
   $APERTIUM_PATH/apertium-reodt|\
   awk '{punto = index($0, "<?"); cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("[?]> ", "?>\n", cola); print cola > name;}'
   VUELVE=$(pwd)
