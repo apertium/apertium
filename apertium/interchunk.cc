@@ -386,7 +386,10 @@ Interchunk::evalString(xmlNode *element)
     }
     return value;
   }
-
+  else if(!xmlStrcmp(element->name, (const xmlChar *) "chunk"))
+  {
+    return processChunk(element);
+  }  
   else
   {
     cerr << "Error: unexpected rvalue expression '" << element->name << "'" << endl;
@@ -405,7 +408,7 @@ Interchunk::processOut(xmlNode *localroot)
     {
       if(!xmlStrcmp(i->name, (const xmlChar *) "chunk"))
       {
-        processChunk(i);
+        fputws_unlocked(UtfConverter::fromUtf8(processChunk(i)).c_str(), output);
       }
       else // 'b'
       {
@@ -415,41 +418,22 @@ Interchunk::processOut(xmlNode *localroot)
   }
 }
 
-void
+string
 Interchunk::processChunk(xmlNode *localroot)
 {
-  fputwc_unlocked(L'^', output);
+  string result = "";
+  result.append("^");
   
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE)
     {
-      fputws_unlocked(UtfConverter::fromUtf8(evalString(i)).c_str(), output);
+      result.append(evalString(i));
     }      
   }
   
-  fputwc_unlocked(L'$', output);
-}
-
-void
-Interchunk::processTags(xmlNode *localroot)
-{
-  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
-      if(!xmlStrcmp(i->name, (xmlChar const *) "tag"))
-      {
-        for(xmlNode *j = i->children; j != NULL; j = j->next)
-        {
-          if(j->type == XML_ELEMENT_NODE)
-          {
-            fputws_unlocked(UtfConverter::fromUtf8(evalString(j)).c_str(), output);
-          }
-        }
-      }
-    }
-  }
+  result.append("$");
+  return result;
 }
 
 void

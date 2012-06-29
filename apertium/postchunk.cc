@@ -384,6 +384,75 @@ Postchunk::evalString(xmlNode *element)
     }
     return value;
   }
+  else if(!xmlStrcmp(element->name, (const xmlChar *) "lu"))
+  {
+    string myword = "";
+    for(xmlNode *i = element->children; i != NULL; i = i->next)
+    {
+       if(i->type == XML_ELEMENT_NODE)
+       {
+         myword.append(evalString(i));
+       }
+    }
+    
+    if(myword != "")
+    {
+      return "^"+myword+"$";
+    }
+    else
+    {
+      return "";
+    }
+  }
+  else if(!xmlStrcmp(element->name, (const xmlChar *) "mlu"))
+  {
+    string value = "";
+     	  
+    bool first_time = true;
+    
+    for(xmlNode *i = element->children; i != NULL; i = i->next)
+    {
+      if(i->type == XML_ELEMENT_NODE)
+      {
+        string myword = "";
+	 
+        for(xmlNode *j = i->children; j != NULL; j = j->next)
+        {
+          if(j->type == XML_ELEMENT_NODE)
+	  {
+            myword.append(evalString(j));
+	  }
+        }
+	      
+	if(!first_time)
+	{
+	  if(myword != "" && myword[0] != '#')  //'+#' problem
+	  {
+	    value.append("+");
+          }
+	}
+	else
+	{
+	  if(myword != "")
+	  {
+	    first_time = false;
+          }
+	}
+	 
+	value.append(myword);
+      }
+    }
+
+    if(value != "")
+    {
+      return "^"+value+"$";
+    }
+    else
+    {
+      return "";
+    }
+  }
+  
   else
   {
     cerr << "Error: unexpected rvalue expression '" << element->name << "'" << endl;

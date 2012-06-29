@@ -9,7 +9,7 @@
 <!ENTITY % condition "(and|or|not|equal|begins-with|begins-with-list|ends-with|ends-with-list|contains-substring|in)">
 <!ENTITY % container "(var|clip)">
 <!ENTITY % sentence "(let|out|choose|modify-case|call-macro|append)">
-<!ENTITY % value "(b|clip|lit|lit-tag|var|get-case-from|case-of|concat)">
+<!ENTITY % value "(b|clip|lit|lit-tag|var|get-case-from|case-of|concat|chunk)">
 <!ENTITY % stringvalue "(clip|lit|var|get-case-from|case-of)">
 
 <!ELEMENT interchunk (section-def-cats, section-def-attrs, section-def-vars, section-def-lists?, section-def-macros?, section-rules)>
@@ -408,7 +408,7 @@ get-case-from -->
 
 <!ELEMENT chunk (%value;)+>
 <!-- 
-     Encloses a chunk inside an 'out' element.      
+     Encloses a chunk      
 -->
 
 <!ELEMENT pseudolemma (%value;)>

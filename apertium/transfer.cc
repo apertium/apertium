@@ -357,7 +357,7 @@ Transfer::evalString(xmlNode *element)
         if(checkIndex(element, ti.getPos(), lword))
         {
           return copycase(word[ti.getPos()]->source(attr_items[ti.getContent()]),
-                          evalString((xmlNode *) ti.getPointer()));
+                  evalString((xmlNode *) ti.getPointer()));
         }
         break;
         
@@ -516,6 +516,78 @@ Transfer::evalString(xmlNode *element)
     }
     return value;
   }
+  else if(!xmlStrcmp(element->name, (const xmlChar *) "lu"))
+  {
+    string myword = "";
+    for(xmlNode *i = element->children; i != NULL; i = i->next)
+    {
+       if(i->type == XML_ELEMENT_NODE)
+       {
+         myword.append(evalString(i));
+       }
+    }
+    
+    if(myword != "")
+    {
+      return "^"+myword+"$";
+    }
+    else
+    {
+      return "";
+    }
+  }
+  else if(!xmlStrcmp(element->name, (const xmlChar *) "mlu"))
+  {
+    string value = "";
+     	  
+    bool first_time = true;
+    
+    for(xmlNode *i = element->children; i != NULL; i = i->next)
+    {
+      if(i->type == XML_ELEMENT_NODE)
+      {
+        string myword = "";
+	 
+        for(xmlNode *j = i->children; j != NULL; j = j->next)
+        {
+          if(j->type == XML_ELEMENT_NODE)
+	  {
+            myword.append(evalString(j));
+	  }
+        }
+	      
+	if(!first_time)
+	{
+	  if(myword != "" && myword[0] != '#')  //'+#' problem
+	  {
+	    value.append("+");
+          }
+	}
+	else
+	{
+	  if(myword != "")
+	  {
+	    first_time = false;
+          }
+	}
+	 
+	value.append(myword);
+      }
+    }
+
+    if(value != "")
+    {
+      return "^"+value+"$";
+    }
+    else
+    {
+      return "";
+    }
+  }
+  else if(!xmlStrcmp(element->name, (const xmlChar *) "chunk"))
+  {
+    return processChunk(element);
+  }
   else
   {
     cerr << "Error: unexpected rvalue expression '" << element->name << "'" << endl;
@@ -597,7 +669,7 @@ Transfer::processOut(xmlNode *localroot)
       {
         if(!xmlStrcmp(i->name, (const xmlChar *) "chunk"))
         {
-          processChunk(i);
+          fputws_unlocked(UtfConverter::fromUtf8(processChunk(i)).c_str(), output);
         }
         else // 'b'
         {
@@ -608,11 +680,13 @@ Transfer::processOut(xmlNode *localroot)
   }
 }
 
-void
+string
 Transfer::processChunk(xmlNode *localroot)
 {
   string name = "", namefrom = "",
          caseofchunk = "aa";
+  string result = "";
+      
   
   for(xmlAttr *i = localroot->properties; i != NULL; i = i->next)
   {
@@ -630,16 +704,16 @@ Transfer::processChunk(xmlNode *localroot)
     }
   }
 
-  fputwc_unlocked(L'^', output);
+  result.append("^");
   if(caseofchunk != "")
   {
     if(name != "")
     {
-      fputws_unlocked(UtfConverter::fromUtf8(copycase(variables[caseofchunk], name)).c_str(), output);
+      result.append(copycase(variables[caseofchunk], name));
     }
     else if(namefrom != "")
     {
-      fputws_unlocked(UtfConverter::fromUtf8(copycase(variables[caseofchunk], variables[namefrom])).c_str(), output);
+      result.append(copycase(variables[caseofchunk], variables[namefrom]));
     }
     else
     {
@@ -651,11 +725,11 @@ Transfer::processChunk(xmlNode *localroot)
   {
     if(name != "")
     {
-      fputws_unlocked(UtfConverter::fromUtf8(name).c_str(), output);
+      result.append(name);
     }
     else if(namefrom != "")
     {
-      fputws_unlocked(UtfConverter::fromUtf8(variables[namefrom]).c_str(), output);
+      result.append(variables[namefrom]);
     }
     else
     {
@@ -670,8 +744,8 @@ Transfer::processChunk(xmlNode *localroot)
     {
       if(!xmlStrcmp(i->name, (const xmlChar *) "tags"))
       {
-        processTags(i);
-        fputwc_unlocked(L'{', output);
+        result.append(processTags(i));
+        result.append("{");
       }
       else if(!xmlStrcmp(i->name, (const xmlChar *) "lu"))
       {
@@ -685,9 +759,9 @@ Transfer::processChunk(xmlNode *localroot)
         }
         if(myword != "")
         { 
-          fputwc_unlocked(L'^', output);
-          fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
-          fputwc_unlocked(L'$', output);
+          result.append("^");
+          result.append(myword);
+          result.append("$");
         }
       }
       else if(!xmlStrcmp(i->name, (const xmlChar *) "mlu"))
@@ -723,23 +797,25 @@ Transfer::processChunk(xmlNode *localroot)
         }
         if(myword != "")
         {
-          fputwc_unlocked(L'^', output);
-          fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
-          fputwc_unlocked(L'$', output);
+          result.append("^");
+          result.append(myword);
+          result.append("$");
         }
       }
       else // 'b'
       {
-        fputws_unlocked(UtfConverter::fromUtf8(evalString(i)).c_str(), output);
+        result.append(evalString(i));
       }
     }
   }
-  fputws_unlocked(L"}$", output);
+  result.append("}$");
+  return result;
 }
 
-void
+string
 Transfer::processTags(xmlNode *localroot)
 {
+  string result = "";
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE)
@@ -750,12 +826,13 @@ Transfer::processTags(xmlNode *localroot)
         {
           if(j->type == XML_ELEMENT_NODE)
           {
-            fputws_unlocked(UtfConverter::fromUtf8(evalString(j)).c_str(), output);
+            result.append(evalString(j));
           }
         }
       }
     }
   }
+  return result;
 }
 
 void

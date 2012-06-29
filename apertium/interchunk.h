@@ -105,8 +105,7 @@ private:
   string evalString(xmlNode *localroot);
   void processInstruction(xmlNode *localroot);
   void processChoose(xmlNode *localroot);
-  void processChunk(xmlNode *localroot);
-  void processTags(xmlNode *localroot);
+  string processChunk(xmlNode *localroot);
 
   bool beginsWith(string const &str1, string const &str2) const;
   bool endsWith(string const &str1, string const &str2) const;
