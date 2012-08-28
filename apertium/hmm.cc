@@ -34,6 +34,10 @@
 #define isinf(n) (!_finite(n))
 #endif
 
+#ifdef __clang__
+#undef __GNUC__
+#endif
+
 #include <stdio.h>
 #include <unistd.h>
 #include <vector>
@@ -755,7 +759,7 @@ HMM::tagger(FILE *in, FILE *out, bool show_all_good_first) {
   vector<TTag> best[2][N];
 #else
   vector <vector <double> > alpha(2, vector<double>(N));
-  vector <vector <vector<TTag>> > best(2, vector<vector<TTag>>(N));
+  vector <vector <vector<TTag> > > best(2, vector <vector <TTag> >(N));
 #endif
   
   vector <TaggerWord> wpend; 
