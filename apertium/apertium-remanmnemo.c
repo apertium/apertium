@@ -28,6 +28,9 @@
 #include <ctype.h>
 
 
+/*
+ *  main and only function
+ */
 int main (int argc, char **argv)
 {
     int lastchar;   // last character read on input. Must be an int to test EOF

@@ -32,6 +32,10 @@
 #include <ctype.h>
 
 
+/*
+ *  returns 1 if a \ needs to be inserted before the character
+ *  0 otherwise
+ */
 int char_to_escape (int caract)
 {
     switch (caract)
@@ -54,6 +58,9 @@ int char_to_escape (int caract)
 }
 
 
+/*
+ *  main function
+ */
 int main (int argc, char **argv)
 {
     int lastchar;  // last character read on input. Must be an int to test EOF
