@@ -90,7 +90,7 @@ translate_latex()
 {
   test_gawk
 
-  if [ $FICHERO = ""  || $FICHERO = /dev/stdin ]
+  if [ "$FICHERO" = ""  -o "$FICHERO" = /dev/stdin ]
   then FICHERO=$(mktemp $TMPDIR/apertium.XXXXXXXX)
        cat > $FICHERO
        BORRAFICHERO="true"
@@ -126,7 +126,7 @@ translate_latex_raw()
 {
   test_gawk
   
-  if [ $FICHERO = "" -o $FICHERO = /dev/stdin ]
+  if [ "$FICHERO" = "" -o "$FICHERO" = /dev/stdin ]
   then FICHERO=$(mktemp $TMPDIR/apertium.XXXXXXXX)
        cat > $FICHERO
        BORRAFICHERO="true"
