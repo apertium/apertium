@@ -93,8 +93,9 @@ wstring convertir(char const *multibyte, int const length)
   {
     memconv = "";
     retval[l] = 0;
-	wstring ret = retval;
-	delete[] retval;
+    wstring ret = retval;
+    if (retval != NULL)
+      delete[] retval;
     return ret;
   }
 }
