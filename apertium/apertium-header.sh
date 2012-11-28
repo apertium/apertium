@@ -65,12 +65,12 @@ locale_latin1 ()
 
 test_zip ()
 {
- if [ $(which zip) = "" ]
+ if [ "$(which zip)" = "" ]
   then echo "Error: Install 'zip' command in your system";
        exit 1;
   fi
   
-  if [ $(which unzip) = "" ]
+  if [ "$(which unzip)" = "" ]
   then echo "Error: Install 'unzip' command in your system";
        exit 1;
   fi 

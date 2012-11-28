@@ -14,7 +14,7 @@ message ()
 locale_utf8 ()
 {
   export LC_CTYPE=$(locale -a|grep -i "utf[.]*8"|head -1);
-  if [[ LC_CTYPE = "" ]]
+  if [ "$LC_CTYPE" = "" ]
   then echo "Error: Install an UTF-8 locale in your system";
        exit 1;
   fi
@@ -22,12 +22,12 @@ locale_utf8 ()
 
 test_zip ()
 {
- if [[ $(which zip) = "" ]]
+ if [ "$(which zip)" = "" ]
   then echo "Error: Install 'zip' command in your system";
        exit 1;
   fi
   
-  if [[ $(which unzip) = "" ]]
+  if [ "$(which unzip)" = "" ]
   then echo "Error: Install 'unzip' command in your system";
        exit 1;
   fi 
@@ -36,7 +36,7 @@ test_zip ()
 test_gawk ()
 {
   GAWK=$(which gawk)
-  if [[ "$GAWK" = "" ]]
+  if [ "$GAWK" = "" ]
   then echo "Error: Install 'gawk' in your system"
        exit 1
   fi
@@ -47,7 +47,7 @@ unformat_latex()
 {
   test_gawk
   
-  if [[ $FICHERO = "" ]]
+  if [ "$FICHERO" = "" ]
   then FICHERO=$(mktemp $TMPDIR/apertium.XXXXXXXX)
        cat > $FICHERO
        BORRAFICHERO="true"
@@ -57,7 +57,7 @@ unformat_latex()
   $APERTIUM_PATH/apertium-utils-fixlatex | \
   $APERTIUM_PATH/apertium-deslatex  >$SALIDA
   
-  if [[ $BORRAFICHERO = "true" ]]
+  if [ "$BORRAFICHERO" = "true" ]
   then rm -Rf $FICHERO
   fi
 }
@@ -183,7 +183,7 @@ SALIDA=$OUTPUT_FILE;
 case "$FORMATADOR" in 
         rtf)
 		MILOCALE=$(locale -a|grep -i -v "utf\|^C$\|^POSIX$"|head -1);
-		if [[ $MILOCALE = "" ]]
+		if [ "$MILOCALE" = "" ]
 		then echo "Error: Install a ISO-8859-1 compatible locale in your system";
 	             exit 1;
 	        fi
