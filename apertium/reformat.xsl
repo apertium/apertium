@@ -76,6 +76,8 @@ wstring convertir(char const *multibyte, int const length)
 {
   memconv.append(multibyte, length); 
   int tam = memconv.size();
+  if (memconv == "")
+    return L"";
   wchar_t *retval = new wchar_t[tam];
   size_t l = mbstowcs(retval, memconv.c_str(), tam);
 
