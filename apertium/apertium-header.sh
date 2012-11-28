@@ -116,7 +116,7 @@ translate_latex()
   awk '{gsub("</CONTENTS-noeos>", "</CONTENTS>"); print;}' | \
   $APERTIUM_PATH/apertium-postlatex >$SALIDA
   
-  if [ $BORRAFICHERO = "true" ]
+  if [ "$BORRAFICHERO" = "true" ]
   then rm -Rf $FICHERO
   fi
 }
@@ -161,7 +161,7 @@ translate_odt ()
   locale_utf8
   test_zip
 
-  if [ $FICHERO = "" ]
+  if [ "$FICHERO" = "" ]
   then FICHERO=$(mktemp $TMPDIR/apertium.XXXXXXXX)
        cat > $FICHERO
        BORRAFICHERO="true"
@@ -189,7 +189,7 @@ translate_odt ()
   cd $VUELVE
   rm -Rf $INPUT_TMPDIR
 
-  if [ $BORRAFICHERO = "true" ]
+  if [ "$BORRAFICHERO" = "true" ]
   then rm -Rf $FICHERO;
   fi
   
@@ -205,14 +205,14 @@ translate_docx ()
   locale_utf8
   test_zip
   
-  if [ $FICHERO = "" ]
+  if [ "$FICHERO" = "" ]
   then FICHERO=$(mktemp $TMPDIR/apertium.XXXXXXXX)
        cat > $FICHERO
        BORRAFICHERO="true"
   fi
   OTRASALIDA=$(mktemp $TMPDIR/apertium.XXXXXXXX)
   
-  if [ $UWORDS = "no" ]
+  if [ "$UWORDS" = "no" ]
   then OPCIONU="-u";
   else OPCIONU="";
   fi
@@ -246,7 +246,7 @@ translate_docx ()
   cd $VUELVE
   rm -Rf $INPUT_TMPDIR
 
-  if [ $BORRAFICHERO = "true" ]
+  if [ "$BORRAFICHERO" = "true" ]
   then rm -Rf $FICHERO;
   fi
   
@@ -262,14 +262,14 @@ translate_pptx ()
   locale_utf8
   test_zip
   
-  if [ $FICHERO = "" ]
+  if [ "$FICHERO" = "" ]
   then FICHERO=$(mktemp $TMPDIR/apertium.XXXXXXXX)
        cat > $FICHERO
        BORRAFICHERO="true"
   fi
   OTRASALIDA=$(mktemp $TMPDIR/apertium.XXXXXXXX)
   
-  if [ $UWORDS = "no" ]
+  if [ "$UWORDS" = "no" ]
   then OPCIONU="-u";
   else OPCIONU="";
   fi
@@ -303,7 +303,7 @@ translate_pptx ()
   cd $VUELVE
   rm -Rf $INPUT_TMPDIR
 
-  if [ $BORRAFICHERO = "true" ]
+  if [ "$BORRAFICHERO" = "true" ]
   then rm -Rf $FICHERO;
   fi
   
@@ -320,7 +320,7 @@ translate_xlsx ()
   locale_utf8
   test_zip
   
-  if [ $FICHERO = "" ]
+  if [ "$FICHERO" = "" ]
   then FICHERO=$(mktemp $TMPDIR/apertium.XXXXXXXX)
        cat > $FICHERO
        BORRAFICHERO="true"
@@ -347,7 +347,7 @@ translate_xlsx ()
   cd $VUELVE
   rm -Rf $INPUT_TMPDIR
 
-  if [ $BORRAFICHERO = "true" ]
+  if [ "$BORRAFICHERO" = "true" ]
   then rm -Rf $FICHERO;
   fi
 
@@ -447,7 +447,7 @@ fi
 if [ ! -e $DATOS/modes/$PREFIJO.mode ];
   then echo -n "Error: Mode $PREFIJO does not exist";
        c=$(find $DATOS/modes|wc -l)
-       if [ $c -le 1 ];
+       if [ "$c" -le 1 ];
        then echo ".";
        else echo ". Try one of:";
          list_directions;
@@ -468,16 +468,16 @@ case "$FORMATADOR" in
         	fi
 	        ;;
 	txt|rtf|html|xpresstag)
-		if [ $UWORDS = "no" ]; then OPTION="-n"; 
+		if [ "$UWORDS" = "no" ]; then OPTION="-n"; 
 		else OPTION="-g";
 		fi;
 		;;
         rtf)
-		if [ $UWORDS = "no" ]; then OPTION="-n"; 
+		if [ "$UWORDS" = "no" ]; then OPTION="-n"; 
 		else OPTION="-g";
 		fi;
 		MILOCALE=$(locale -a|grep -i -v "utf\|^C$\|^POSIX$"|head -1);
-		if [ $MILOCALE = "" ]
+		if [ "$MILOCALE" = "" ]
 		then echo "Error: Install a ISO-8859-1 compatible locale in your system";
 	             exit 1;
 	        fi
@@ -485,21 +485,21 @@ case "$FORMATADOR" in
 		;;
         
         odt)
-		if [ $UWORDS = "no" ]; then OPTION="-n"; 
+		if [ "$UWORDS" = "no" ]; then OPTION="-n"; 
 		else OPTION="-g";
 		fi;
 		translate_odt
 		exit 0
 		;;
         latex)
-		if [ $UWORDS = "no" ]; then OPTION="-n"; 
+		if [ "$UWORDS" = "no" ]; then OPTION="-n"; 
 		else OPTION="-g";
 		fi;
 		translate_latex
 		exit 0
 		;;
         latex-raw)
-		if [ $UWORDS = "no" ]; then OPTION="-n"; 
+		if [ "$UWORDS" = "no" ]; then OPTION="-n"; 
 		else OPTION="-g";
 		fi;
 		translate_latex_raw
@@ -508,28 +508,28 @@ case "$FORMATADOR" in
 		
 		
 	docx)
-		if [ $UWORDS = "no" ]; then OPTION="-n"; 
+		if [ "$UWORDS" = "no" ]; then OPTION="-n"; 
 		else OPTION="-g";
 		fi;
 		translate_docx
 		exit 0
 		;;
 	xlsx)
-		if [ $UWORDS = "no" ]; then OPTION="-n"; 
+		if [ "$UWORDS" = "no" ]; then OPTION="-n"; 
 		else OPTION="-g";
 		fi;
 		translate_xlsx
 		exit 0
 		;;
 	pptx)
-		if [ $UWORDS = "no" ]; then OPTION="-n"; 
+		if [ "$UWORDS" = "no" ]; then OPTION="-n"; 
 		else OPTION="-g";
 		fi;
 		translate_pptx
 		exit 0
 		;;
 	html-noent)
-		if [ $UWORDS = "no" ]; then OPTION="-n";
+		if [ "$UWORDS" = "no" ]; then OPTION="-n";
 		else OPTION="-g";
 		fi;
 		translate_htmlnoent
@@ -537,7 +537,7 @@ case "$FORMATADOR" in
 		;;
 		
 	wxml)
-		if [ $UWORDS = "no" ]; then OPTION="-n";
+		if [ "$UWORDS" = "no" ]; then OPTION="-n";
 		else OPTION="-g";
 		fi;
 	        locale_utf8
@@ -559,7 +559,7 @@ case "$FORMATADOR" in
 		FORMATADOR="rtf";
 		OPTION="-n";
 		MILOCALE=$(locale -a|grep -i -v "utf\|^C$\|^POSIX$"|head -1);
-		if [ $MILOCALE = "" ]
+		if [ "$MILOCALE" = "" ]
 		then echo "Error: Install a ISO-8859-1 compatible locale in your system";
 	             exit 1;
 	        fi
