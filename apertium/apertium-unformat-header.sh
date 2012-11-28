@@ -48,7 +48,7 @@ unformat_latex()
   test_gawk
   
   if [[ $FICHERO = "" ]]
-  then FICHERO=$(mktemp /tmp/apertium.XXXXXXXX)
+  then FICHERO=$(mktemp $TMPDIR/apertium.XXXXXXXX)
        cat > $FICHERO
        BORRAFICHERO="true"
   fi
@@ -65,7 +65,7 @@ unformat_latex()
 
 unformat_odt ()
 {
-  INPUT_TMPDIR=$(mktemp -d /tmp/apertium.XXXXXXXX)
+  INPUT_TMPDIR=$(mktemp -d $TMPDIR/apertium.XXXXXXXX)
 
   locale_utf8
   test_zip
@@ -79,7 +79,7 @@ unformat_odt ()
 
 unformat_docx ()
 {
-  INPUT_TMPDIR=$(mktemp -d /tmp/apertium.XXXXXXXX)
+  INPUT_TMPDIR=$(mktemp -d $TMPDIR/apertium.XXXXXXXX)
 
   locale_utf8
   test_zip
@@ -87,7 +87,7 @@ unformat_docx ()
   unzip -q -o -d $INPUT_TMPDIR $FICHERO
   
   for i in $(find $INPUT_TMPDIR|grep "xlsx$");
-  do LOCALTEMP=$(mktemp /tmp/apertium.XXXXXXXX)
+  do LOCALTEMP=$(mktemp $TMPDIR/apertium.XXXXXXXX)
      $APERTIUM_PATH/apertium -f xlsx -d $DIRECTORY $OPCIONU $PREFIJO <$i >$LOCALTEMP;
      cp $LOCALTEMP $i;
      rm $LOCALTEMP;
@@ -102,7 +102,7 @@ unformat_docx ()
 
 unformat_pptx ()
 {
-  INPUT_TMPDIR=$(mktemp -d /tmp/apertium.XXXXXXXX)
+  INPUT_TMPDIR=$(mktemp -d $TMPDIR/apertium.XXXXXXXX)
 
   locale_utf8
   test_zip
@@ -110,7 +110,7 @@ unformat_pptx ()
   unzip -q -o -d $INPUT_TMPDIR $FICHERO
   
   for i in $(find $INPUT_TMPDIR|grep "xlsx$");
-  do LOCALTEMP=$(mktemp /tmp/apertium.XXXXXXXX)
+  do LOCALTEMP=$(mktemp $TMPDIR/apertium.XXXXXXXX)
      $APERTIUM_PATH/apertium -f xlsx -d $DIRECTORY $OPCIONU $PREFIJO <$i >$LOCALTEMP
      cp $LOCALTEMP $i
      rm $LOCALTEMP
@@ -126,7 +126,7 @@ unformat_pptx ()
 
 unformat_xlsx ()
 {
-  INPUT_TMPDIR=$(mktemp -d /tmp/apertium.XXXXXXXX)
+  INPUT_TMPDIR=$(mktemp -d $TMPDIR/apertium.XXXXXXXX)
 
   locale_utf8
   test_zip

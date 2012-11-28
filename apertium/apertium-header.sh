@@ -91,7 +91,7 @@ translate_latex()
   test_gawk
 
   if [[ $FICHERO = ""  || $FICHERO = /dev/stdin ]]
-  then FICHERO=$(mktemp /tmp/apertium.XXXXXXXX)
+  then FICHERO=$(mktemp $TMPDIR/apertium.XXXXXXXX)
        cat > $FICHERO
        BORRAFICHERO="true"
   fi
@@ -127,7 +127,7 @@ translate_latex_raw()
   test_gawk
   
   if [[ $FICHERO = "" || $FICHERO = /dev/stdin ]]
-  then FICHERO=$(mktemp /tmp/apertium.XXXXXXXX)
+  then FICHERO=$(mktemp $TMPDIR/apertium.XXXXXXXX)
        cat > $FICHERO
        BORRAFICHERO="true"
   fi
@@ -156,17 +156,17 @@ translate_latex_raw()
 
 translate_odt ()
 {
-  INPUT_TMPDIR=$(mktemp -d /tmp/apertium.XXXXXXXX)
+  INPUT_TMPDIR=$(mktemp -d $TMPDIR/apertium.XXXXXXXX)
 
   locale_utf8
   test_zip
 
   if [[ $FICHERO = "" ]]
-  then FICHERO=$(mktemp /tmp/apertium.XXXXXXXX)
+  then FICHERO=$(mktemp $TMPDIR/apertium.XXXXXXXX)
        cat > $FICHERO
        BORRAFICHERO="true"
   fi
-  OTRASALIDA=$(mktemp /tmp/apertium.XXXXXXXX)
+  OTRASALIDA=$(mktemp $TMPDIR/apertium.XXXXXXXX)
   
   unzip -q -o -d $INPUT_TMPDIR $FICHERO
   find $INPUT_TMPDIR | grep "content\\.xml\\|styles\\.xml" |\
@@ -200,17 +200,17 @@ translate_odt ()
 
 translate_docx ()
 {
-  INPUT_TMPDIR=$(mktemp -d /tmp/apertium.XXXXXXXX)
+  INPUT_TMPDIR=$(mktemp -d $TMPDIR/apertium.XXXXXXXX)
 
   locale_utf8
   test_zip
   
   if [[ $FICHERO = "" ]]
-  then FICHERO=$(mktemp /tmp/apertium.XXXXXXXX)
+  then FICHERO=$(mktemp $TMPDIR/apertium.XXXXXXXX)
        cat > $FICHERO
        BORRAFICHERO="true"
   fi
-  OTRASALIDA=$(mktemp /tmp/apertium.XXXXXXXX)
+  OTRASALIDA=$(mktemp $TMPDIR/apertium.XXXXXXXX)
   
   if [[ $UWORDS = "no" ]]
   then OPCIONU="-u";
@@ -220,7 +220,7 @@ translate_docx ()
   unzip -q -o -d $INPUT_TMPDIR $FICHERO
   
   for i in $(find $INPUT_TMPDIR|grep "xlsx$");
-  do LOCALTEMP=$(mktemp /tmp/apertium.XXXXXXXX);
+  do LOCALTEMP=$(mktemp $TMPDIR/apertium.XXXXXXXX);
      $APERTIUM_PATH/apertium -f xlsx -d $DIRECTORY $OPCIONU $PREFIJO <$i >$LOCALTEMP;
      cp $LOCALTEMP $i;
      rm $LOCALTEMP;
@@ -257,17 +257,17 @@ translate_docx ()
 
 translate_pptx ()
 {
-  INPUT_TMPDIR=$(mktemp -d /tmp/apertium.XXXXXXXX)
+  INPUT_TMPDIR=$(mktemp -d $TMPDIR/apertium.XXXXXXXX)
 
   locale_utf8
   test_zip
   
   if [[ $FICHERO = "" ]]
-  then FICHERO=$(mktemp /tmp/apertium.XXXXXXXX)
+  then FICHERO=$(mktemp $TMPDIR/apertium.XXXXXXXX)
        cat > $FICHERO
        BORRAFICHERO="true"
   fi
-  OTRASALIDA=$(mktemp /tmp/apertium.XXXXXXXX)
+  OTRASALIDA=$(mktemp $TMPDIR/apertium.XXXXXXXX)
   
   if [[ $UWORDS = "no" ]]
   then OPCIONU="-u";
@@ -277,7 +277,7 @@ translate_pptx ()
   unzip -q -o -d $INPUT_TMPDIR $FICHERO
   
   for i in $(find $INPUT_TMPDIR|grep "xlsx$");
-  do LOCALTEMP=$(mktemp /tmp/apertium.XXXXXXXX)
+  do LOCALTEMP=$(mktemp $TMPDIR/apertium.XXXXXXXX)
      $APERTIUM_PATH/apertium -f xlsx -d $DIRECTORY $OPCIONU $PREFIJO <$i >$LOCALTEMP;
      cp $LOCALTEMP $i
      rm $LOCALTEMP
@@ -315,17 +315,17 @@ translate_pptx ()
 
 translate_xlsx ()
 {
-  INPUT_TMPDIR=$(mktemp -d /tmp/apertium.XXXXXXXX)
+  INPUT_TMPDIR=$(mktemp -d $TMPDIR/apertium.XXXXXXXX)
 
   locale_utf8
   test_zip
   
   if [[ $FICHERO = "" ]]
-  then FICHERO=$(mktemp /tmp/apertium.XXXXXXXX)
+  then FICHERO=$(mktemp $TMPDIR/apertium.XXXXXXXX)
        cat > $FICHERO
        BORRAFICHERO="true"
   fi
-  OTRASALIDA=$(mktemp /tmp/apertium.XXXXXXXX)
+  OTRASALIDA=$(mktemp $TMPDIR/apertium.XXXXXXXX)
   
   unzip -q -o -d $INPUT_TMPDIR $FICHERO
   find $INPUT_TMPDIR | grep "sharedStrings.xml" |\
@@ -428,7 +428,7 @@ FORMATADOR=$FORMAT;
 DATOS=$DIRECTORY;
 FICHERO=$INPUT_FILE;
 SALIDA=$OUTPUT_FILE;
-TMCOMPFILE=$(mktemp /tmp/apertium.XXXXXXXX)
+TMCOMPFILE=$(mktemp $TMPDIR/apertium.XXXXXXXX)
 
 if [ "$TRANSLATION_MEMORY_FILE" != "" ]
 then $APERTIUM_PATH/lt-tmxcomp $TRANSLATION_MEMORY_DIRECTION $TRANSLATION_MEMORY_FILE $TMCOMPFILE >/dev/null
