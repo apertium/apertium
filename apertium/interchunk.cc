@@ -376,7 +376,7 @@ Interchunk::evalString(xmlNode *element)
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "concat"))
   { 
-    string value = "";
+    string value;
     for(xmlNode *i = element->children; i != NULL; i = i->next)
     {
       if(i->type == XML_ELEMENT_NODE)
@@ -421,7 +421,7 @@ Interchunk::processOut(xmlNode *localroot)
 string
 Interchunk::processChunk(xmlNode *localroot)
 {
-  string result = "";
+  string result;
   result.append("^");
   
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
@@ -539,7 +539,7 @@ Interchunk::processLet(xmlNode *localroot)
 void
 Interchunk::processAppend(xmlNode *localroot)
 {
-  string name = "";
+  string name;
   for(xmlAttr *i = localroot->properties; i != NULL; i = i->next)
   {
     if(!xmlStrcmp(i->name, (const xmlChar *) "n"))
@@ -1180,7 +1180,7 @@ Interchunk::processContainsSubstring(xmlNode *localroot)
 string
 Interchunk::copycase(string const &source_word, string const &target_word)
 {
-  wstring result = L"";
+  wstring result;
   wstring const s_word = UtfConverter::fromUtf8(source_word);
   wstring const t_word = UtfConverter::fromUtf8(target_word);
 
@@ -1291,7 +1291,7 @@ Interchunk::readToken(FILE *in)
     return input_buffer.next();
   }
 
-  wstring content = L"";
+  wstring content;
   while(true)
   {
     int val = fgetwc_unlocked(in);

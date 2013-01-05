@@ -358,7 +358,7 @@ TRXReader::write(string const &filename)
 void
 TRXReader::procDefAttrs()
 {
-  wstring attrname = L"";
+  wstring attrname;
 
   while(type != XML_READER_TYPE_END_ELEMENT || 
 	name != L"section-def-attrs")
@@ -416,7 +416,7 @@ TRXReader::procDefCats()
     }
   }
   
-  wstring catname = L"";
+  wstring catname;
 
   while(type != XML_READER_TYPE_END_ELEMENT || 
 	name != L"section-def-cats")
@@ -502,7 +502,7 @@ TRXReader::procDefVars()
 void
 TRXReader::procDefLists()
 {
-  wstring listname = L"";
+  wstring listname;
 
   while(type != XML_READER_TYPE_END_ELEMENT || 
 	name != L"section-def-lists")

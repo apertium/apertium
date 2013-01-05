@@ -70,7 +70,7 @@ using namespace std;
   <xsl:value-of select="string('&#xA;}&#xA;')"/>
 </xsl:for-each>
 
-string memconv = "";  
+string memconv;  
 
 wstring convertir(char const *multibyte, int const length)
 {

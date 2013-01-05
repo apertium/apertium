@@ -506,7 +506,7 @@ Transfer::evalString(xmlNode *element)
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "concat"))
   { 
-    string value = "";
+    string value;
     for(xmlNode *i = element->children; i != NULL; i = i->next)
     {
       if(i->type == XML_ELEMENT_NODE)
@@ -518,7 +518,7 @@ Transfer::evalString(xmlNode *element)
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "lu"))
   {
-    string myword = "";
+    string myword;
     for(xmlNode *i = element->children; i != NULL; i = i->next)
     {
        if(i->type == XML_ELEMENT_NODE)
@@ -538,7 +538,7 @@ Transfer::evalString(xmlNode *element)
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "mlu"))
   {
-    string value = "";
+    string value;
      	  
     bool first_time = true;
     
@@ -546,7 +546,7 @@ Transfer::evalString(xmlNode *element)
     {
       if(i->type == XML_ELEMENT_NODE)
       {
-        string myword = "";
+        string myword;
 	 
         for(xmlNode *j = i->children; j != NULL; j = j->next)
         {
@@ -608,7 +608,7 @@ Transfer::processOut(xmlNode *localroot)
       {
         if(!xmlStrcmp(i->name, (const xmlChar *) "lu"))
         {
-  	  string myword = "";
+  	  string myword;
 	  for(xmlNode *j = i->children; j != NULL; j = j->next)
 	  {
 	    if(j->type == XML_ELEMENT_NODE)
@@ -631,7 +631,7 @@ Transfer::processOut(xmlNode *localroot)
 	  {
 	    if(j->type == XML_ELEMENT_NODE)
 	    {
-              string myword = "";
+              string myword;
 	      for(xmlNode *k = j->children; k != NULL; k = k->next)
 	      {
 	        if(k->type == XML_ELEMENT_NODE)
@@ -683,9 +683,9 @@ Transfer::processOut(xmlNode *localroot)
 string
 Transfer::processChunk(xmlNode *localroot)
 {
-  string name = "", namefrom = "",
-         caseofchunk = "aa";
-  string result = "";
+  string name, namefrom;
+  string caseofchunk = "aa";
+  string result;
       
   
   for(xmlAttr *i = localroot->properties; i != NULL; i = i->next)
@@ -749,7 +749,7 @@ Transfer::processChunk(xmlNode *localroot)
       }
       else if(!xmlStrcmp(i->name, (const xmlChar *) "lu"))
       {
-        string myword = "";
+        string myword;
         for(xmlNode *j = i->children; j != NULL; j = j->next)
         {
           if(j->type == XML_ELEMENT_NODE)
@@ -767,10 +767,10 @@ Transfer::processChunk(xmlNode *localroot)
       else if(!xmlStrcmp(i->name, (const xmlChar *) "mlu"))
       {
         bool first_time = true;
-        string myword = "";
+        string myword;
         for(xmlNode *j = i->children; j != NULL; j = j->next)
         {
-          string mylocalword = "";
+          string mylocalword;
           if(j->type == XML_ELEMENT_NODE)
           {
             for(xmlNode *k = j->children; k != NULL; k = k->next)
@@ -815,7 +815,7 @@ Transfer::processChunk(xmlNode *localroot)
 string
 Transfer::processTags(xmlNode *localroot)
 {
-  string result = "";
+  string result;
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE)
@@ -962,7 +962,7 @@ Transfer::processLet(xmlNode *localroot)
 void
 Transfer::processAppend(xmlNode *localroot)
 {
-  string name = "";
+  string name;
   for(xmlAttr *i = localroot->properties; i != NULL; i = i->next)
   {
     if(!xmlStrcmp(i->name, (const xmlChar *) "n"))
@@ -1628,7 +1628,7 @@ Transfer::processContainsSubstring(xmlNode *localroot)
 string
 Transfer::copycase(string const &source_word, string const &target_word)
 {
-  wstring result = L"";
+  wstring result;
   wstring const s_word = UtfConverter::fromUtf8(source_word);
   wstring const t_word = UtfConverter::fromUtf8(target_word);
 
@@ -1741,7 +1741,7 @@ Transfer::readToken(FILE *in)
     return input_buffer.next();
   }
 
-  wstring content = L"";
+  wstring content;
   while(true)
   {
     int val = fgetwc_unlocked(in);
@@ -1878,8 +1878,8 @@ Transfer::transfer(FILE *in, FILE *out)
           }
           else if(preBilingual)
           {
-            wstring sl = L"";
-            wstring tl = L"";
+            wstring sl;
+            wstring tl;
             int seenSlash = 0;
             for(wstring::const_iterator it = tmpword[0]->begin(); it != tmpword[0]->end(); it++) 
             {
@@ -2038,8 +2038,8 @@ Transfer::applyRule()
     else if(preBilingual)
     {
       //wcerr << "applyRule: " << *tmpword[i] << endl;
-      wstring sl = L"";
-      wstring tl = L"";
+      wstring sl;
+      wstring tl;
       int seenSlash = 0;
       for(wstring::const_iterator it = tmpword[i]->begin(); it != tmpword[i]->end(); it++) 
       {

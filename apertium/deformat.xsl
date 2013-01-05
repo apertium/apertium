@@ -162,7 +162,7 @@ extern "C" {
 using namespace std;
 
 wstring buffer;
-string symbuf = "";
+string symbuf;
 bool isDot, hasWrite_dot, hasWrite_white;
 bool eosIncond;
 FILE *formatfile;
@@ -242,7 +242,7 @@ void init_tagNames()
 
 string backslash(string const &amp;str)
 {
-  string new_str = "";
+  string new_str;
 
   for(unsigned int i = 0; i &lt; str.size(); i++)
   {
@@ -263,7 +263,7 @@ wstring escape(string const &amp;str)
   
   char const *mystring = str.c_str();
   int base = 0;
-  wstring result = L"";
+  wstring result;
   
   while(!regexec(&amp;escape_chars, mystring + base, 1, &amp;pmatch, 0))
   {
@@ -288,7 +288,7 @@ wstring escape(string const &amp;str)
 
 wstring escape(wstring const &amp;str)
 {
-  string dest = "";
+  string dest;
   
   for(size_t i = 0, limit = str.size(); i &lt; limit; i++)
   {
@@ -314,7 +314,7 @@ string get_tagName(string tag){
   regmatch_t pmatch;
   
   char const *mystring = tag.c_str();
-  string result = "";
+  string result;
   if(!regexec(&amp;names_regexp, mystring, 1, &amp;pmatch, 0))
   {
     result=tag.substr(pmatch.rm_so, pmatch.rm_eo - pmatch.rm_so);

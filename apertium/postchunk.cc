@@ -374,7 +374,7 @@ Postchunk::evalString(xmlNode *element)
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "concat"))
   { 
-    string value = "";
+    string value;
     for(xmlNode *i = element->children; i != NULL; i = i->next)
     {
       if(i->type == XML_ELEMENT_NODE)
@@ -386,7 +386,7 @@ Postchunk::evalString(xmlNode *element)
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "lu"))
   {
-    string myword = "";
+    string myword;
     for(xmlNode *i = element->children; i != NULL; i = i->next)
     {
        if(i->type == XML_ELEMENT_NODE)
@@ -406,7 +406,7 @@ Postchunk::evalString(xmlNode *element)
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "mlu"))
   {
-    string value = "";
+    string value;
      	  
     bool first_time = true;
     
@@ -414,7 +414,7 @@ Postchunk::evalString(xmlNode *element)
     {
       if(i->type == XML_ELEMENT_NODE)
       {
-        string myword = "";
+        string myword;
 	 
         for(xmlNode *j = i->children; j != NULL; j = j->next)
         {
@@ -471,7 +471,7 @@ Postchunk::processOut(xmlNode *localroot)
     {
       if(!xmlStrcmp(i->name, (const xmlChar *) "lu"))
       {
-        string myword = "";
+        string myword;
         for(xmlNode *j = i->children; j != NULL; j = j->next)
         {
           if(j->type == XML_ELEMENT_NODE)
@@ -494,7 +494,7 @@ Postchunk::processOut(xmlNode *localroot)
         {
           if(j->type == XML_ELEMENT_NODE)
           {
-            string myword = "";
+            string myword;
             for(xmlNode *k = j->children; k != NULL; k = k->next)
             {
               if(k->type == XML_ELEMENT_NODE)
@@ -653,7 +653,7 @@ Postchunk::processLet(xmlNode *localroot)
 void
 Postchunk::processAppend(xmlNode *localroot)
 {
-  string name = "";
+  string name;
   for(xmlAttr *i = localroot->properties; i != NULL; i = i->next)
   {
     if(!xmlStrcmp(i->name, (const xmlChar *) "n"))
@@ -1299,7 +1299,7 @@ Postchunk::processContainsSubstring(xmlNode *localroot)
 string
 Postchunk::copycase(string const &source_word, string const &target_word)
 {
-  wstring result = L"";
+  wstring result;
   wstring const s_word = UtfConverter::fromUtf8(source_word);
   wstring const t_word = UtfConverter::fromUtf8(target_word);
 
@@ -1445,7 +1445,7 @@ Postchunk::readToken(FILE *in)
     return input_buffer.next();
   }
 
-  wstring content = L"";
+  wstring content;
   while(true)
   {
     int val = fgetwc_unlocked(in);
@@ -1768,7 +1768,7 @@ Postchunk::getVecTags(wstring const &chunk)
     }
     else if(chunk[i] == L'<')
     {
-      wstring mytag = L"";
+      wstring mytag;
       do
       {
         mytag += chunk[i++];
