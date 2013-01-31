@@ -1883,7 +1883,23 @@ Transfer::transfer(FILE *in, FILE *out)
             int seenSlash = 0;
             for(wstring::const_iterator it = tmpword[0]->begin(); it != tmpword[0]->end(); it++) 
             {
-              if(*it == L'/') 
+              if(*it == L'\\')
+              {
+                if(seenSlash == 0)
+                {
+                  sl.push_back(*it);
+                  it++;
+                  sl.push_back(*it);
+                }
+                else
+                {
+                  tl.push_back(*it);
+                  it++;
+                  tl.push_back(*it);
+                }
+                continue;
+              }
+              else if(*it == L'/') 
               {
                 seenSlash++;
                 continue;
@@ -1900,7 +1916,7 @@ Transfer::transfer(FILE *in, FILE *out)
               {
                 break;
               }
-            } 
+            }
             //tmpword[0]->assign(sl); 
             tr = pair<wstring, int>(tl, false);
             //wcerr << L"pb: " << *tmpword[0] << L" :: " << sl << L" >> " << tl << endl ; 
@@ -2043,6 +2059,23 @@ Transfer::applyRule()
       int seenSlash = 0;
       for(wstring::const_iterator it = tmpword[i]->begin(); it != tmpword[i]->end(); it++) 
       {
+        if(*it == L'\\')
+        {
+          if(seenSlash == 0)
+          {
+            sl.push_back(*it);
+            it++;
+            sl.push_back(*it);
+          }
+          else
+          {
+            tl.push_back(*it);
+            it++;
+            tl.push_back(*it);
+          }
+          continue;
+        }
+
         if(*it == L'/') 
         {
           seenSlash++;
