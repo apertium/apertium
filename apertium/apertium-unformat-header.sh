@@ -2,6 +2,9 @@ PAIR=""
 INPUT_FILE="/dev/stdin"
 OUTPUT_FILE="/dev/stdout"
 
+[ -z "$TMPDIR" ] && TMPDIR=/tmp
+
+
 message ()
 {
   echo "USAGE: $(basename $0) [-f format] [in [out]]"
