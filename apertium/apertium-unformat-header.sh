@@ -192,6 +192,9 @@ case "$FORMATADOR" in
 	        fi
 	        export LC_CTYPE=$MILOCALE
 		;;
+        html-noent)
+        	FORMATADOR="html"
+        	;;
         
         latex)
                 unformat_latex
