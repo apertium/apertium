@@ -73,6 +73,8 @@
 	i CDATA #IMPLIED
 	slr CDATA #IMPLIED
 	srl CDATA #IMPLIED
+	alt CDATA #IMPLIED
+	v CDATA #IMPLIED
 >
 	<!-- r: restriction LR: left-to-right,
 			    RL: right-to-left -->
@@ -82,6 +84,8 @@
 	<!-- i: ignore ('yes') means ignore, otherwise it is not ignored) -->
 	<!-- slr: translation sense when translating from left to right -->
 	<!-- srl: translation sense when translating from right to left --> 
+	<!-- v: variant sets direction restrictions based on language variant -->
+	<!-- alt: alternative entries are omitted if not selected -->
 <!ELEMENT par EMPTY>
 	<!-- reference to paradigm -->
 <!ATTLIST par
