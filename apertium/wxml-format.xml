@@ -6,7 +6,7 @@
     <output encoding="ISO-8859-1"/>
     <tag-name regexp="[a-zA-Z]+"/>
     <escape-chars regexp='[][^@\\/${}]'/>
-    <space-chars regexp='[ \n\t\r&lt;&gt;]'/>
+    <space-chars regexp='[ \n\t\r&lt;&gt;~]'/>
     <case-sensitive value="no"/>
   </options>
 

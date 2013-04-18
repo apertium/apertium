@@ -8,7 +8,7 @@
     <escape-chars regexp='(\\|[][&lt;&gt;@^$/{}])'/> 
 <!--    <escape-chars regexp='[]]^@&lt;&gt;/]'/>  -->
 
-    <space-chars regexp='[ \n\t\r$*]'/>
+    <space-chars regexp='[ \n\t\r$*~]'/>
     <case-sensitive value="no"/>
   </options>
 
