@@ -618,7 +618,7 @@ HMM::train (FILE *ftxt) {
        
 	       gamma[i] +=  alpha[len-t][i]*beta[t%2][i]/prob;		       
 	       if (isnan(gamma[i])) {
-	          wcerr<<L"NAN(3) gamma["<<i<<L"] = "<<gamma[i]<<L" alpha["<<len-t<<L"]["<<i<<L"]= "<<alpha[len-t][i]
+	          wcerr<<L"[nw: " << nw << L"] NAN(3) gamma["<<i<<L"] = "<<gamma[i]<<L" alpha["<<len-t<<L"]["<<i<<L"]= "<<alpha[len-t][i]
 	               <<L" beta["<<t%2<<L"]["<<i<<L"] = "<<beta[t%2][i]<<L" prob = "<<prob<<L" previous gamma = "<<previous_value<<L"\n";
 	          exit(1);	               
 	       }

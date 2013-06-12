@@ -410,7 +410,8 @@ TRXReader::procDefCats()
   {
     step();
     if(name != L"#text" && name != L"transfer" &&  name != L"interchunk" &&
-       name != L"postchunk" && name != L"section-def-cats" && name != L"#comment")
+       name != L"postchunk" && name != L"section-def-cats" && name != L"#comment" && 
+       name != L"DOCTYPE")
     {
       parseError(L"'<" + name + L">' tag unexpected");
     }

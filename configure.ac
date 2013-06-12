@@ -187,7 +187,7 @@ AC_CHECK_HEADER(pcreposix.h,
   AC_CHECK_LIB(pcre, pcre_fullinfo,[
     LIBS="$LIBS -lpcreposix -lpcre"
     no_comp_check=yes],
-    AC_CHECK_LIB(pcre, pcre_info,[ dnl info is deprecated in favor of fullinfo, but leave it in case old versions don't have fullinfo
+    AC_CHECK_LIB(pcre, pcre_info,[ # info is deprecated in favor of fullinfo, but leave it in case old versions don't have fullinfo
       LIBS="$LIBS -lpcreposix -lpcre"
       no_comp_check=yes],
       AC_MSG_ERROR([*** unable to locate pcre library ***]))),
@@ -202,9 +202,9 @@ AC_CHECK_HEADER(pcrecpp.h,
 fi
 
 
-PKG_CHECK_MODULES(APERTIUM, [dnl
-  lttoolbox-3.2 >= required_lttoolbox_version dnl
-  libxml-2.0 >= required_libxml_version dnl
+PKG_CHECK_MODULES(APERTIUM, [
+  lttoolbox-3.2 >= required_lttoolbox_version 
+  libxml-2.0 >= required_libxml_version 
   libpcre >= required_libpcre_version], CPPFLAGS="$CPPFLAGS $APERTIUM_CFLAGS"; LIBS="$LIBS $APERTIUM_LIBS")
 
 # Check for wide strings
