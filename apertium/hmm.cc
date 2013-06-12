@@ -20,7 +20,7 @@
 /*
  *  First order hidden Markov model (HMM) implementation (source)
  *
- *  @author	Felipe Sánchez-Martínez - fsanchez@dlsi.ua.es
+ *  @author	Felipe SÃ¡nchez-MartÃ­nez - fsanchez@dlsi.ua.es
  */
 
 #include <apertium/hmm.h>
@@ -618,7 +618,7 @@ HMM::train (FILE *ftxt) {
        
 	       gamma[i] +=  alpha[len-t][i]*beta[t%2][i]/prob;		       
 	       if (isnan(gamma[i])) {
-	          wcerr<<L"[nw: " << nw << L"] NAN(3) gamma["<<i<<L"] = "<<gamma[i]<<L" alpha["<<len-t<<L"]["<<i<<L"]= "<<alpha[len-t][i]
+	          wcerr<<L"NAN(3) gamma["<<i<<L"] = "<<gamma[i]<<L" alpha["<<len-t<<L"]["<<i<<L"]= "<<alpha[len-t][i]
 	               <<L" beta["<<t%2<<L"]["<<i<<L"] = "<<beta[t%2][i]<<L" prob = "<<prob<<L" previous gamma = "<<previous_value<<L"\n";
 	          exit(1);	               
 	       }
@@ -789,7 +789,7 @@ HMM::tagger(FILE *in, FILE *out, bool show_all_good_first) {
     if (tags.size()==0) // This is an unknown word
       tags = td->getOpenClass();
                        
-    if (output.has_not(tags)) {  // Encontrada una clase de ambigüedad desconocida hasta el momento      
+    if (output.has_not(tags)) {  // Encontrada una clase de ambigÃ¼edad desconocida hasta el momento      
       if (debug) {
         wstring errors;
 	errors = L"A new ambiguity class was found. \n";
@@ -917,7 +917,7 @@ void HMM::print_ambiguity_classes() {
 set<TTag>
 HMM::find_similar_ambiguity_class(set<TTag> c) {
   int size_ret = -1;
-  set<TTag> ret=td->getOpenClass(); //Se devolverá si no encontramos ninguna clase mejor
+  set<TTag> ret=td->getOpenClass(); //Se devolverÃ¡ si no encontramos ninguna clase mejor
   bool skeep_class;
   Collection &output = td->getOutput();
 
