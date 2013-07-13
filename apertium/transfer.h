@@ -82,6 +82,7 @@ private:
   bool null_flush;
   bool internal_null_flush;
   bool trace;
+  string emptyblank;
   
   void copy(Transfer const &o);
   void destroy();

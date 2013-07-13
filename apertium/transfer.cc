@@ -64,6 +64,7 @@ Transfer::Transfer()
   null_flush = false;
   internal_null_flush = false;
   trace = false;
+  emptyblank = "";
 }
 
 Transfer::~Transfer()
@@ -1077,9 +1078,10 @@ Transfer::processCallMacro(xmlNode *localroot)
     myword = new TransferWord *[npar];  
   }
   string **myblank = NULL;
-  if(npar > 1)
+  if(npar > 0)
   {
-    myblank = new string *[npar - 1];
+    myblank = new string *[npar];
+    myblank[npar-1] = &emptyblank;
   }
 
   int idx = 0;
