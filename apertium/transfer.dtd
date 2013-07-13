@@ -29,7 +29,7 @@
 <!ENTITY % value "(b|clip|lit|lit-tag|var|get-case-from|case-of|concat|lu|mlu|chunk)">
 <!ENTITY % stringvalue "(clip|lit|var|get-case-from|case-of)">
 
-<!ELEMENT transfer (section-def-cats, section-def-attrs, section-def-vars, section-def-lists?, section-def-macros?, section-rules)>
+<!ELEMENT transfer (section-def-cats, section-def-attrs?, section-def-vars?, section-def-lists?, section-def-macros?, section-rules)>
 <!ATTLIST transfer default (lu|chunk) #IMPLIED>
 <!-- 
      'transfer' is the root element containing the whole structural
