@@ -198,24 +198,18 @@ TRXReader::read(string const &filename)
     step();
   }
  
-  if(name == L"section-def-attrs")
+  procDefAttrs();
+  step();
+  while(name == L"#text" || name == L"#comment")
   {
-    procDefAttrs();
     step();
-    while(name == L"#text" || name == L"#comment")
-    {
-      step();
-    }
   }
   
-  if(name == L"section-def-vars")
+  procDefVars();
+  step();
+  while(name == L"#text" || name == L"#comment")
   {
-    procDefVars();
     step();
-    while(name == L"#text" || name == L"#comment")
-    {
-      step();
-    }
   }
 
   if(name == L"section-def-lists")
