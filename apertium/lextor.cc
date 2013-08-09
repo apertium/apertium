@@ -277,13 +277,8 @@ LexTor::trainlch(wistream& is, int left, int right, LexTorData& tlwordmodel,
 	    //Note: Words in the context can also be ambiguous (with more than one lexical choice)
 	    //In that case the count will come from all the possible
 	    //translations 
-#ifdef __GNUC__
-	    vector<wstring> translation_buffer[buffer_max_size];
-	    wstring reduced_buffer[buffer_max_size];
-#else
         vector <vector<wstring> > translation_buffer(buffer_max_size);
 		vector <wstring> reduced_buffer(buffer_max_size);
-#endif
 
 	    for (int i=0; i<(int)buffer_max_size; i++) {
 	      reduced_buffer[i]=lextor_data->reduce(buffer[i].get_word_string());	      
@@ -879,15 +874,9 @@ LexTor::estimate_winner_lch_votingtl(deque<LexTorWord>& window, int word_index, 
     exit(EXIT_FAILURE);
   }  
 
-#ifdef __GNUC__
-  double lexchoices_count[window[word_index].n_lexical_choices()];
-  vector<wstring> translation_window[window.size()];
-  wstring reduced_window[window.size()];
-#else
   vector <double> lexchoices_count(window[word_index].n_lexical_choices());
   vector <vector <wstring> > translation_window (window.size());
   vector <wstring> reduced_window(window.size());
-#endif
 
   for (unsigned i=0; i<window.size(); i++) 
     reduced_window[i]=lextor_data->reduce(window[i].get_word_string());	      

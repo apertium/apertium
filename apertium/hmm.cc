@@ -144,7 +144,7 @@ HMM::init_probabilities_kupiec (FILE *is)
 {
   int N = td->getN();
   int M = td->getM();
-  int i, j, k, k1, k2, nw=0;
+  int i=0, j=0, k=0, k1=0, k2=0, nw=0;
 #ifdef __GNUC__
   double classes_ocurrences[M]; //M = Number of ambiguity classes
   double classes_pair_ocurrences[M][M];
