@@ -174,7 +174,6 @@ HMM::init_probabilities_kupiec (FILE *is)
   set<TTag> tags;
   tags.insert(eos);  
   k1=output[tags]; //The first tag (ambiguity class) seen is the end-of-sentence
-  classes_ocurrences[k]++;
   
   //We count for each ambiguity class the number of ocurrences
   word = lexmorfo.get_next_word();
