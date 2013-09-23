@@ -1,7 +1,7 @@
-h_sources = collection.h constant_manager.h hmm.h interchunk.h \
+h_sources = collection.h constant_manager.h hmm.h lswpost.h interchunk.h \
             interchunk_word.h lextor_data.h lextor_eval.h lextor.h \
             lextor_word.h morpho_stream.h postchunk.h string_utils.h \
-            tagger_data.h tagger.h tagger_utils.h tagger_word.h \
+            tagger_data.h tagger_data_hmm.h tagger_data_lsw.h tagger.h tagger_utils.h tagger_word.h \
             transfer_data.h transfer.h transfer_instr.h transfer_token.h \
             transfer_word.h transfer_word_list.h trx_reader.h tsx_reader.h \
             ttag.h utf_converter.h apertium_re.h unlocked_cstdio.h \
@@ -12,10 +12,10 @@ h_sources = collection.h constant_manager.h hmm.h interchunk.h \
             tmx_trail_postprocessors.h tmx_translate.h tmx_words.h \
             tmx_align_parameters.h tmx_aligner_tool.h latex_accentsmap.h
 
-cc_sources = collection.cc constant_manager.cc hmm.cc interchunk.cc \
+cc_sources = collection.cc constant_manager.cc hmm.cc lswpost.cc interchunk.cc \
              interchunk_word.cc lextor.cc lextor_data.cc lextor_eval.cc \
              lextor_word.cc morpho_stream.cc postchunk.cc string_utils.cc \
-             tagger.cc tagger_data.cc tagger_utils.cc tagger_word.cc \
+             tagger.cc tagger_data.cc tagger_data_hmm.cc tagger_data_lsw.cc tagger_utils.cc tagger_word.cc \
              transfer.cc transfer_data.cc transfer_instr.cc \
              transfer_token.cc transfer_word.cc transfer_word_list.cc \
              trx_reader.cc tsx_reader.cc utf_converter.cc apertium_re.cc \

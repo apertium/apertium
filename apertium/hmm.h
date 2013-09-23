@@ -38,7 +38,7 @@
 #include <apertium/collection.h>
 #include <apertium/constant_manager.h>
 #include <apertium/morpho_stream.h>
-#include <apertium/tagger_data.h>
+#include <apertium/tagger_data_hmm.h>
 #include <apertium/tagger_utils.h>
 #include <apertium/tagger_word.h>
 
@@ -51,7 +51,7 @@ using namespace std;
  */
 class HMM {
 private:
-   TaggerData *td;
+   TaggerDataHMM *tdhmm;
    TTag eos; // end-of-sentence tag
    bool debug;  //If true, print error messages when tagging input text
    bool show_sf;  //If true, print superficial forms when tagging input text
@@ -77,7 +77,7 @@ public:
  
    /** Constructor
     */
-   HMM(TaggerData *t);
+   HMM(TaggerDataHMM *tdhmm);
 
    /** Destructor
     */

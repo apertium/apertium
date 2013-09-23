@@ -589,22 +589,6 @@ TSXReader::read(string const &filename)
   plist->buildTransducer();
 }
 
-void
-TSXReader::write(string const &filename)
-{
-  FILE *out = fopen(filename.c_str(), "wb");
-  if(!out)
-  {
-    cerr << "Error: cannot open '" << filename;
-    cerr << "' for writing" << endl;
-    exit(EXIT_FAILURE);
-  }
-
-  tdata.write(out);
-
-  fclose(out);
-}
-
 TaggerData &
 TSXReader::getTaggerData()
 {

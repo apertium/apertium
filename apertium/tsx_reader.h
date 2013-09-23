@@ -76,7 +76,6 @@ public:
   TSXReader & operator =(TSXReader const &o);
 
   void read(string const &filename);
-  void write(string const &filename);
   TaggerData & getTaggerData();
 };
 

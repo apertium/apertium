@@ -30,6 +30,7 @@
 #include <apertium/utf_converter.h>
 #include <apertium/morpho_stream.h>
 #include <apertium/tsx_reader.h>
+#include <apertium/tagger_data_hmm.h>
 #include <lttoolbox/lt_locale.h>
 #include <iostream>
 
@@ -40,7 +41,7 @@
 using namespace std;
 
 //Global vars
-TaggerData tagger_data;
+TaggerDataHMM tagger_data_hmm;
 bool check_ambclasses;
 
 void check_file(FILE *f, const string& path) {
@@ -51,7 +52,7 @@ void check_file(FILE *f, const string& path) {
 }
 
 void readwords (FILE *is, int corpus_length) {
-  MorphoStream lexmorfo(is, true, &tagger_data);
+  MorphoStream lexmorfo(is, true, &tagger_data_hmm);
   TaggerWord *word=NULL;
   int nwords=0;
 
@@ -62,9 +63,9 @@ void readwords (FILE *is, int corpus_length) {
     cout<<UtfConverter::toUtf8(word->get_superficial_form())<<" "<<UtfConverter::toUtf8(word->get_string_tags())<<"\n";
 
     if (check_ambclasses) {
-      int k=tagger_data.getOutput()[word->get_tags()];
+      int k=tagger_data_hmm.getOutput()[word->get_tags()];
     
-      if ((k>=tagger_data.getM())||(k<0)) {
+      if ((k>=tagger_data_hmm.getM())||(k<0)) {
 	cerr<<"Error: Ambiguity class number out of range: "<<k<<"\n";
 	cerr<<"Word: "<<UtfConverter::toUtf8(word->get_superficial_form())<<"\n";
 	cerr<<"Ambiguity class: "<<UtfConverter::toUtf8(word->get_string_tags())<<"\n";
@@ -184,7 +185,7 @@ int main(int argc, char* argv[]) {
     cerr<<"Reading tagger specification from file '"<<tsxfile<<"' ..."<<flush;
     TSXReader treader;
     treader.read(tsxfile);
-    tagger_data=treader.getTaggerData();
+    tagger_data_hmm=treader.getTaggerData();
     cerr<<"done.\n";
     check_ambclasses=false;
   }
@@ -194,13 +195,13 @@ int main(int argc, char* argv[]) {
     FILE* fin=NULL;
     fin=fopen(probfile.c_str(), "r");
     check_file(fin, probfile);
-    tagger_data.read(fin);
+    tagger_data_hmm.read(fin);
     cerr<<"done.\n";
     fclose(fin);
     check_ambclasses=true;
   }
 
-  TaggerWord::setArrayTags(tagger_data.getArrayTags());
+  TaggerWord::setArrayTags(tagger_data_hmm.getArrayTags());
 
   readwords(stdin, corpus_length);
 }

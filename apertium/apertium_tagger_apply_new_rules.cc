@@ -26,7 +26,7 @@
 #include <getopt.h>
 
 #include <apertium/hmm.h>
-#include <apertium/tagger_data.h>
+#include <apertium/tagger_data_hmm.h>
 #include <apertium/tsx_reader.h>
 #include <apertium/string_utils.h>
 
@@ -35,7 +35,7 @@ using namespace Apertium;
 using namespace std;
 
 //Global vars
-TaggerData tagger_data;
+TaggerDataHMM tagger_data_hmm;
 TTag eos; //End-of-sentence tag
 
 void check_file(FILE *f, const string& path) {
@@ -152,7 +152,7 @@ int main(int argc, char* argv[]) {
   check_file(fin, filein);
 
   cerr<<"Reading apertium-tagger data from file '"<<filein<<"' ... "<<flush;
-  tagger_data.read(fin);
+  tagger_data_hmm.read(fin);
   fclose(fin);
   cerr<<"done.\n";
 
@@ -161,17 +161,17 @@ int main(int argc, char* argv[]) {
   treader.read(filetsx);
   cerr<<"done.\n";
   
-  tagger_data.setForbidRules(treader.getTaggerData().getForbidRules());
-  tagger_data.setEnforceRules(treader.getTaggerData().getEnforceRules());
-  tagger_data.setPreferRules(treader.getTaggerData().getPreferRules());
+  tagger_data_hmm.setForbidRules(treader.getTaggerData().getForbidRules());
+  tagger_data_hmm.setEnforceRules(treader.getTaggerData().getEnforceRules());
+  tagger_data_hmm.setPreferRules(treader.getTaggerData().getPreferRules());
 
-  HMM hmm(&tagger_data);
+  HMM hmm(&tagger_data_hmm);
   hmm.apply_rules();
 
   fout=fopen(fileout.c_str(), "wb");
   check_file(fout, fileout);
   cerr<<"Writing apertium-tagger data to file '"<<fileout<<"' ... "<<flush;
-  tagger_data.write(fout);
+  tagger_data_hmm.write(fout);
   fclose(fout);
   cerr<<"done.\n";
 }

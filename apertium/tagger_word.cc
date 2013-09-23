@@ -135,7 +135,7 @@ TaggerWord::isAmbiguous() const
 wstring
 TaggerWord::get_string_tags() {
   wstring st;
-  set<TTag>::iterator itag;
+  set<TTag>::iterator itag = tags.begin();
   
   st=L"{";  
   for(itag=tags.begin(); itag!=tags.end(); itag++) {
