@@ -1786,6 +1786,10 @@ Transfer::readToken(FILE *in)
     {
       return input_buffer.add(TransferToken(content, tt_blank));
     }
+    else if(val == L'\0' && null_flush)
+    {
+      fflush(output);
+    }
     else
     {
       content += wchar_t(val);
