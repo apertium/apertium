@@ -203,7 +203,7 @@ fi
 
 
 PKG_CHECK_MODULES(APERTIUM, [
-  lttoolbox-3.2 >= required_lttoolbox_version 
+  lttoolbox >= required_lttoolbox_version
   libxml-2.0 >= required_libxml_version 
   libpcre >= required_libpcre_version], CPPFLAGS="$CPPFLAGS $APERTIUM_CFLAGS"; LIBS="$LIBS $APERTIUM_LIBS")
 
@@ -248,4 +248,4 @@ AC_CHECK_DECLS([fread_unlocked, fwrite_unlocked, fgetc_unlocked, fputc_unlocked,
 
 AC_CHECK_FUNCS([setlocale strdup getopt_long snprintf])
 
-AC_OUTPUT([Makefile apertium-3.2.pc apertium/Makefile])
+AC_OUTPUT([Makefile apertium.pc apertium/Makefile])
