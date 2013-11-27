@@ -285,7 +285,7 @@ TRXReader::procRules()
           }       
           else
           {
-            wcerr << L"Warning: (" << xmlTextReaderGetParserLineNumber(reader);
+            wcerr << L"Warning (" << xmlTextReaderGetParserLineNumber(reader);
             wcerr << L"): "
               << L"Paths to rule " << count << " blocked by rule " << td.getFinals()[*it]
               << L"." << endl;
@@ -341,6 +341,31 @@ TRXReader::procRules()
         // copy new alive states on alive_states set
         alive_states = alive_states_new;      
       }
+    }
+    else if(name == L"let")
+    {
+      int count = 0;
+      int lineno = xmlTextReaderGetParserLineNumber(reader); 
+      while(name != L"let" || type != XML_READER_TYPE_END_ELEMENT)
+      {
+        step();
+        if(type == XML_ELEMENT_NODE)
+        {
+          count++;
+          
+          if(name == L"clip" && attrib(L"side") == L"sl")
+          {
+            wcerr << L"Warning (" << lineno;
+            wcerr << L"): assignment to 'sl' side has no effect." << endl;
+          }    
+        }
+        
+        if(count != 0)
+        {
+          break;
+        }
+      }
+      
     }
   }
 }
