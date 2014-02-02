@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004-2006 Felipe Sánchez-Martínez
+ * Copyright (C) 2004-2006 Felipe SÃ¡nchez-MartÃ­nez
  * Copyright (C) 2006 Universitat d'Alacant
  *
  * This program is free software; you can redistribute it and/or
@@ -146,7 +146,7 @@ int main(int argc, char* argv[]) {
     case 'v':
       cerr<<"apertium-tagger-readwords\n";
       cerr<<"LICENSE:\n\n"
-	  <<"   Copyright (C) 2006 Felipe Sánchez Martínez\n\n"
+	  <<"   Copyright (C) 2006 Felipe SÃ¡nchez MartÃ­nez\n\n"
 	  <<"   This program is free software; you can redistribute it and/or\n"
 	  <<"   modify it under the terms of the GNU General Public License as\n"
 	  <<"   published by the Free Software Foundation; either version 2 of the\n"
