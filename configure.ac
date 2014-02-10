@@ -187,10 +187,7 @@ AC_CHECK_HEADER(pcreposix.h,
   AC_CHECK_LIB(pcre, pcre_fullinfo,[
     LIBS="$LIBS -lpcreposix -lpcre"
     no_comp_check=yes],
-    AC_CHECK_LIB(pcre, pcre_info,[ # info is deprecated in favor of fullinfo, but leave it in case old versions don't have fullinfo
-      LIBS="$LIBS -lpcreposix -lpcre"
-      no_comp_check=yes],
-      AC_MSG_ERROR([*** unable to locate pcre library ***]))),
+    AC_MSG_ERROR([*** unable to locate pcre library ***])),
   AC_MSG_ERROR([*** unable to locate pcreposix.h include file ***]))
 
 AC_CHECK_HEADER(pcrecpp.h,
