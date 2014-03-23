@@ -35,6 +35,7 @@ AC_DEFUN([AP_CHECK_LING],
 [
   AC_ARG_VAR([AP_SRC][$1], [Path to $2 sources, same as AP_LIB$1 if --with-lang$1 set])
   AC_ARG_VAR([AP_LIB][$1], [Path to $2 binaries, same as AP_SRC$1 if --with-lang$1 set])
+  AC_ARG_VAR([AP_SUBDIRS], [List of all --with-lang dirs; add it to SUBDIRS to make configure-specified dependencies recursively])
   AC_ARG_WITH([lang][$1],
     [dnl
 AS_HELP_STRING([--with-lang][$1],dnl
@@ -44,6 +45,7 @@ AS_HELP_STRING([--with-lang][$1],dnl
       AP_LIB$1=$withval
       AP_SRC$1=$withval
       echo "Using $2 from $withval"
+      AP_SUBDIRS="$AP_SUBDIRS $withval"
     ],
     [
       # TODO: PKG_CHECK_MODULES sets useless variables, while _EXISTS
