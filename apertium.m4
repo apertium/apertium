@@ -18,6 +18,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 
+
 # AP_CHECK_LING([ID], [MONOLINGUAL_PACKAGE])
 #
 # Check to see whether MONOLINGUAL_PACKAGE exists, and if so sets
@@ -61,4 +62,54 @@ AS_HELP_STRING([--with-lang][$1],dnl
   if test -z "$AP_SRC$1" || ! test -d "$AP_SRC$1"; then
     AC_MSG_ERROR([Could not find sources dir for $2 (AP_SRC$1="$AP_SRC$1")])
   fi
+])
+
+
+# AP_MKINCLUDE()
+#
+# Creates the file ap_include.am and sets the variable ap_include to
+# point to this path. Now in your Makefile.am you can include
+# ap_include.am by writing @ap_include@ on a line by itself.
+#
+# The file defines a pattern rule for making modes files, and a goal
+# for installing the ones that have install="yes" in modes.xml.
+# To generate modes, include a line like 
+#
+# noinst_DATA=modes/$(PREFIX1).mode
+#
+# in your Makefile.am with _at most one mode_ (the others will be
+# created even if you list only one, listing several will lead to
+# trouble with parallell make). 
+# 
+# Install the modes by making
+# install-data-local dependent on install-modes, ie.
+#
+# install-data-local: install-modes
+# 
+# ------------------------------------------
+AC_DEFUN([AP_MKINCLUDE],
+[
+  AC_SUBST_FILE(ap_include)
+  ap_include=$srcdir/ap_include.am
+
+  cat >$srcdir/ap_include.am <<EOF
+
+modes/%.mode: modes.xml
+	apertium-validate-modes modes.xml
+	apertium-gen-modes modes.xml
+	cp *.mode modes/
+
+apertium_modesdir=\$(prefix)/share/apertium/modes/
+install-modes:
+	mv modes modes.bak
+	apertium-gen-modes modes.xml \$(BASENAME)
+	rm -rf modes
+	mv modes.bak modes
+	test -d \$(DESTDIR)\$(apertium_modesdir) || mkdir \$(DESTDIR)\$(apertium_modesdir)
+	modes=\`xmllint --xpath '//mode@<:@@install="yes"@:>@/@name' modes.xml | sed 's/ *name="\(@<:@^"@:>@*\)"/\1.mode /g'\`; \\
+		\$(INSTALL_DATA) \$\$modes \$(DESTDIR)\$(apertium_modesdir); \\
+		rm \$\$modes
+
+EOF
+
 ])
