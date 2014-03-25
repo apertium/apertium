@@ -72,19 +72,25 @@ AS_HELP_STRING([--with-lang][$1],dnl
 # ap_include.am by writing @ap_include@ on a line by itself.
 #
 # The file defines a pattern rule for making modes files, and a goal
-# for installing the ones that have install="yes" in modes.xml.
-# To generate modes, include a line like 
+# for installing the ones that have install="yes" in modes.xml. To
+# generate modes, include a line like
 #
-# noinst_DATA=modes/$(PREFIX1).mode
+#     noinst_DATA=modes/$(PREFIX1).mode
 #
 # in your Makefile.am with _at most one mode_ (the others will be
 # created even if you list only one, listing several will lead to
-# trouble with parallell make). 
+# trouble with parallell make).
 # 
-# Install the modes by making
-# install-data-local dependent on install-modes, ie.
+# Install the modes by making install-data-local dependent on
+# install-modes, ie.
 #
-# install-data-local: install-modes
+#     install-data-local: install-modes
+#
+# Also defined is a goal for making the .deps folder. If you want some
+# file to be built in a folder named .deps, just make that goal
+# dependent on .deps/.d, e.g.
+#
+#     .deps/intermediate.dix: original.dix .deps/.d
 # 
 # ------------------------------------------
 AC_DEFUN([AP_MKINCLUDE],
@@ -109,6 +115,12 @@ install-modes:
 	modes=\`xmllint --xpath '//mode@<:@@install="yes"@:>@/@name' modes.xml | sed 's/ *name="\(@<:@^"@:>@*\)"/\1.mode /g'\`; \\
 		\$(INSTALL_DATA) \$\$modes \$(DESTDIR)\$(apertium_modesdir); \\
 		rm \$\$modes
+
+.deps/.d:
+	test -d .deps || mkdir .deps
+	touch \$[]@
+
+.PRECIOUS: .deps/.d
 
 EOF
 
