@@ -1,5 +1,5 @@
 # apertium.m4 - Macros to locate and utilise apertium libraries -*- Autoconf -*-
-# serial 1 (apertium-3.2.0)
+# serial 1 (apertium-3.3.0)
 #
 # Copyright (C) 2013 Universitat d'Alacant / Universidad de Alicante
 #

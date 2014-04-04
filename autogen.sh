@@ -1,48 +1,35 @@
 #! /bin/sh
 
-# $Id: autogen.sh,v 1.2 2006/02/07 18:05:01 sortiz Exp $
-#
-# Copyright (c) 2002  Daniel Elstner  <daniel.elstner@gmx.net>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License VERSION 2 as
-# published by the Free Software Foundation.  You are not allowed to
-# use any other version of the license; unless you got the explicit
-# permission from the author to do so.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# If the user specified a --prefix, take that, otherwise /usr/local/
+# is the default.
+PREFIX=/usr/local
+prefixnext=false
+for i in "$@"; do
+    case $i in
+        --prefix=*)		# equals separated:
+	    PREFIX="${i#*=}"
+	    ;;
+        --prefix)		# space separated:
+	    prefixnext=true
+	    ;;
+        *)
+	    $prefixnext && PREFIX="$i" && prefixnext=false
+	    ;;
+    esac
+done
+
+# Set the paths needed by libtool/pkg-config/aclocal etc. By inferring
+# them based on --prefix , users don't have to edit ~/.bashrc. We only
+# append, so if a user has some other preference, that will override.
+PATH="${PATH}:/usr/local/bin"
+export PATH
+LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${PREFIX}/lib"
+export LD_LIBRARY_PATH
+PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${PREFIX}/lib/pkgconfig"
+export PKG_CONFIG_PATH
+ACLOCAL_PATH="${ACLOCAL_PATH}:${PREFIX}/share/aclocal"
+export ACLOCAL_PATH
 
 
-dir=`echo "$0" | sed 's,[^/]*$,,'`
-test "x${dir}" = "x" && dir='.'
-
-if test "x`cd "${dir}" 2>/dev/null && pwd`" != "x`pwd`"
-then
-    echo "This script must be executed directly from the source directory."
-    exit 1
-fi
-
-rm -f config.cache acconfig.h
-
-echo "- libtoolize."		&& \
-if test x$(uname -s) = xDarwin; then glibtoolize --force; else libtoolize --force; fi && \
-echo "- aclocal."		&& \
-aclocal			&& \
-echo "- autoconf."		&& \
-autoconf			&& \
-echo "- autoheader."		&& \
-autoheader			&& \
-echo "- automake."		&& \
-automake --add-missing --gnu	&& \
-echo				&& \
-./configure "$@"		&& exit 0
-
-exit 1
-
+# Pass on all args to configure
+autoreconf -fi && ./configure "$@"
