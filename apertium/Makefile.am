@@ -24,7 +24,7 @@ cc_sources = collection.cc constant_manager.cc hmm.cc lswpost.cc interchunk.cc \
              tmx_book_to_matrix.cc tmx_dictionary.cc \
              tmx_strings_and_streams.cc tmx_trail_postprocessors.cc \
              tmx_translate.cc latex_accentsmap.cc
-             
+
 library_includedir = $(includedir)/$(GENERIC_LIBRARY_NAME)-$(GENERIC_API_VERSION)/$(GENERIC_LIBRARY_NAME)
 library_include_HEADERS = $(h_sources)
 
@@ -80,7 +80,7 @@ apertiumsysconf = $(prefix)/etc/apertium
 
 apertium_DATA = deformat.xsl reformat.xsl new2old.xsl lexchoice.xsl \
                 lexchoicebil.xsl tagger.dtd interchunk.dtd format.dtd \
-                transfer.dtd dix.dtd postchunk.dtd acx.rng modes.dtd modes2bash.xsl \
+                transfer.dtd postchunk.dtd modes.dtd modes2bash.xsl \
                 apertium-createmodes.awk
 
 apertium_pretransfer_SOURCES = apertium_pretransfer.cc
@@ -279,7 +279,7 @@ apertium_remediawiki.cc: mediawiki-format.xml Makefile.am reformat.xsl
 	$(XSLTPROC) reformat.xsl mediawiki-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
-	
+
 apertium_prelatex.cc: apertium-prelatex.l
 	$(FLEX) -Cfer -o$@ apertium-prelatex.l
 
@@ -288,7 +288,7 @@ apertium_postlatex.cc: apertium-postlatex.l
 
 apertium_postlatex_raw.cc: apertium-postlatex-raw.l
 	$(FLEX) -Cfer -o$@ apertium-postlatex-raw.l
-	
+
 apertium-validate-tagger: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-tagger script"
 	@echo "#!$(BASH)" > $@
@@ -325,7 +325,7 @@ apertium-validate-acx: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-acx script"
 	@echo "#!$(BASH)" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --relaxng $(apertiumdir)/acx.rng --noout \$$FILE1 && exit 0;" >>$@
+	@echo "$(XMLLINT) --relaxng $(prefix)/share/lttoolbox/acx.rng --noout \$$FILE1 && exit 0;" >>$@
 	@echo "exit 1;" >> $@
 	@chmod a+x $@
 
@@ -342,7 +342,7 @@ apertium-validate-dictionary: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-dictionary script"
 	@echo "#!$(BASH)" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid $(apertiumdir)/dix.dtd --noout \$$FILE1 && exit 0;" >> $@
+	@echo "$(XMLLINT) --dtdvalid $(prefix)/share/lttoolbox/dix.dtd --noout \$$FILE1 && exit 0;" >> $@
 	@echo "exit 1;" >> $@
 	@chmod a+x $@
 
@@ -493,7 +493,7 @@ man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
 
 EXTRA_DIST = gen-header.sh deformat-header.sh \
              reformat.xsl deformat.xsl new2old.xsl lexchoice.xsl lexchoicebil.xsl \
-             tagger.dtd transfer.dtd format.dtd dix.dtd txt-format.xml \
+             tagger.dtd transfer.dtd format.dtd txt-format.xml \
              html-format.xml odt-format.xml rtf-format.xml wxml-format.xml latex-format.xml\
              html-noent-format.xml \
              xlsx-format.xml pptx-format.xml mediawiki-format.xml trans-header.sh \
@@ -501,6 +501,6 @@ EXTRA_DIST = gen-header.sh deformat-header.sh \
              xpresstag-format.xml \
              validate-header.sh transformdic-header.sh transformdicbil-header.sh \
              gen-wlist-lextor-header.sh gen-stopwords-lextor.sh preprocess-corpus-lextor.sh \
-             interchunk.dtd postchunk.dtd modes.dtd acx.rng \
+             interchunk.dtd postchunk.dtd modes.dtd \
              utils-fixlatex-header.sh \
              modes-header.sh apertium-createmodes.awk modes2bash.xsl ###trans-lextor-header.sh 
