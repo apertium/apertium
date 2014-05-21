@@ -87,6 +87,8 @@ wstring convertir(char const *multibyte, int const length)
     {
       wcerr &lt;&lt; L"Warning: wrong encoding" &lt;&lt; endl;
     }
+    if (retval != NULL)
+      delete[] retval;
     return L"";
   }
   else
