@@ -22,7 +22,7 @@
     </format-rule>
 
     <format-rule type="comment" eos="no" priority="2">
-      <begin regexp='"&lt;apertium-notrans&gt;"'/>
+      <begin regexp='"&lt;apertium-notrans"(" "[^&gt;]*)?"&gt;"'/>
       <end regexp='"&lt;/apertium-notrans&gt;"'/>
     </format-rule>
 
