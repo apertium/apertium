@@ -25,7 +25,7 @@ PATH="${PATH}:/usr/local/bin"
 export PATH
 LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${PREFIX}/lib"
 export LD_LIBRARY_PATH
-PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${PREFIX}/lib/pkgconfig"
+PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${PREFIX}/share/pkgconfig:${PREFIX}/lib/pkgconfig"
 export PKG_CONFIG_PATH
 ACLOCAL_PATH="${ACLOCAL_PATH}:${PREFIX}/share/aclocal"
 export ACLOCAL_PATH
