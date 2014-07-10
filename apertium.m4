@@ -56,9 +56,6 @@ AS_HELP_STRING([--with-lang][$1],dnl
       AP_LIB$1=`pkg-config --variable=dir $2`
       AP_SRC$1=`pkg-config --variable=srcdir $2`
     ])
-  if test -z "$AP_LIB$1" || ! test -d "$AP_LIB$1"; then
-    AC_MSG_ERROR([Could not find binaries dir for $2 (AP_LIB$1="$AP_LIB$1")])
-  fi
   if test -z "$AP_SRC$1" || ! test -d "$AP_SRC$1"; then
     AC_MSG_ERROR([Could not find sources dir for $2 (AP_SRC$1="$AP_SRC$1")])
   fi
