@@ -579,7 +579,7 @@ Interchunk::processModifyCase(xmlNode *localroot)
     }
   }
 
-  if(!xmlStrcmp(leftSide->name, (const xmlChar *) "clip"))
+  if(leftSide->name != NULL && !xmlStrcmp(leftSide->name, (const xmlChar *) "clip"))
   {
     int pos = 0;
     xmlChar *part = NULL;
