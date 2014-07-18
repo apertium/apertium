@@ -908,7 +908,7 @@ Transfer::processLet(xmlNode *localroot)
         return;
     }
   }
-  if(!xmlStrcmp(leftSide->name, (const xmlChar *) "var"))
+  if(leftSide->name != NULL && !xmlStrcmp(leftSide->name, (const xmlChar *) "var"))
   {
     string const val = (const char *) leftSide->properties->children->content;
     variables[val] = evalString(rightSide);
@@ -1003,7 +1003,7 @@ Transfer::processModifyCase(xmlNode *localroot)
     }
   }
 
-  if(!xmlStrcmp(leftSide->name, (const xmlChar *) "clip"))
+  if(leftSide->name != NULL && !xmlStrcmp(leftSide->name, (const xmlChar *) "clip"))
   {
     int pos = 0;
     xmlChar *part = NULL, *side = NULL, *as = NULL;
