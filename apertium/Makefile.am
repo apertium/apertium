@@ -32,14 +32,15 @@ GENERATEDSCRIPTS = apertium-gen-deformat apertium-gen-reformat \
                    apertium-validate-tagger \
                    apertium-validate-transfer apertium-validate-dictionary \
                    apertium-validate-modes \
-                   apertium-gen-lextorbil \
-                   apertium-gen-lextormono apertium-gen-wlist-lextor \
-                   apertium-preprocess-corpus-lextor \
-                   apertium-gen-stopwords-lextor \
                    apertium-validate-interchunk \
                    apertium-validate-postchunk apertium apertium-unformat \
                    apertium-gen-modes apertium-validate-acx \
                    apertium-utils-fixlatex
+#DEPR.:
+                   #apertium-preprocess-corpus-lextor 
+                   #apertium-gen-stopwords-lextor 
+                   #apertium-gen-lextorbil 
+                   #apertium-gen-lextormono apertium-gen-wlist-lextor 
 
 lib_LTLIBRARIES = libapertium3.la
 libapertium3_la_SOURCES = $(h_sources) $(cc_sources)
@@ -60,14 +61,15 @@ bin_PROGRAMS = apertium-pretransfer apertium-destxt apertium-retxt \
                apertium-postlatex-raw \
                apertium-tagger \
                apertium-preprocess-transfer apertium-transfer \
-               apertium-filter-ambiguity apertium-lextor \
-               apertium-gen-wlist-lextor-translation \
+               apertium-filter-ambiguity  \
                apertium-interchunk apertium-postchunk \
                apertium-multiple-translations \
                apertium-tagger-apply-new-rules \
                apertium-tagger-readwords \
                apertium-tmxbuild
                ###pruebas-lextor apertium-lextor-search apertium-lextor-eval
+               ###apertium-gen-wlist-lextor-translation 
+               ###apertium-lextor 
 
 bin_SCRIPTS =  $(GENERATEDSCRIPTS)
 
@@ -137,8 +139,8 @@ apertium_interchunk_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
 apertium_postchunk_SOURCES = apertium_postchunk.cc
 apertium_postchunk_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
 
-apertium_lextor_SOURCES = apertium_lextor.cc
-apertium_lextor_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
+###apertium_lextor_SOURCES = apertium_lextor.cc
+###apertium_lextor_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
 
 #apertium_lextor_eval_SOURCES = apertium-lextor-eval.C
 #apertium_lextor_eval_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
@@ -155,8 +157,8 @@ apertium_tagger_readwords_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VER
 ###pruebas_lextor_SOURCES = pruebas-lextor.C
 ###pruebas_lextor_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
 
-apertium_gen_wlist_lextor_translation_SOURCES = apertium_gen_wlist_lextor_translation.cc
-apertium_gen_wlist_lextor_translation_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
+###apertium_gen_wlist_lextor_translation_SOURCES = apertium_gen_wlist_lextor_translation.cc
+###apertium_gen_wlist_lextor_translation_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
 
 
 INCLUDES = -I$(top_srcdir) $(APERTIUM_CFLAGS)
@@ -497,6 +499,7 @@ EXTRA_DIST = gen-header.sh deformat-header.sh \
              html-format.xml odt-format.xml rtf-format.xml wxml-format.xml latex-format.xml\
              html-noent-format.xml \
              xlsx-format.xml pptx-format.xml mediawiki-format.xml trans-header.sh \
+             apertium-postlatex.l  apertium-postlatex-raw.l  apertium-prelatex.l \
              apertium-header.sh apertium-unformat-header.sh $(man_MANS) \
              xpresstag-format.xml \
              validate-header.sh transformdic-header.sh transformdicbil-header.sh \
