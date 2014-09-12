@@ -6,6 +6,8 @@
 *                                                                        *
 *  Developed by Daniel Varga.                                            *
 *                                                                        *
+*  From hunalign; for license see ../AUTHORS and ../COPYING.hunalign     *
+*                                                                        *
 *************************************************************************/
 #ifndef __ARGUMENTSPARSER_H
 #define __ARGUMENTSPARSER_H

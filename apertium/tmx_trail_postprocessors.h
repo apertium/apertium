@@ -6,6 +6,8 @@
 *                                                                        *
 *  Developed by Daniel Varga.                                            *
 *                                                                        *
+*  From hunalign; for license see ../AUTHORS and ../COPYING.hunalign     *
+*                                                                        *
 *************************************************************************/
 #ifndef __TMXALIGNER_ALIGNMENT_TRAILPOSTPROCESSORS_H
 #define __TMXALIGNER_ALIGNMENT_TRAILPOSTPROCESSORS_H

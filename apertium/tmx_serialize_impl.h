@@ -6,6 +6,8 @@
 *                                                                        *
 *  Developed by Daniel Varga.                                            *
 *                                                                        *
+*  From hunalign; for license see ../AUTHORS and ../COPYING.hunalign     *
+*                                                                        *
 *************************************************************************/
 #ifndef __TMXALIGNER_INCLUDE_SERIALIZEIMPL_H
 #define __TMXALIGNER_INCLUDE_SERIALIZEIMPL_H
