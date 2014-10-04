@@ -18,7 +18,6 @@
 PATH="${APERTIUM_PATH}:${PATH}"
 PAIR=""
 INPUT_FILE="/dev/stdin"
-#OUTPUT_FILE="/dev/stdout"
 
 [ -z "$TMPDIR" ] && TMPDIR=/tmp
 
@@ -42,8 +41,8 @@ message ()
 
 list_directions ()
 {
-         for i in $DATOS/modes/*.mode;
-         do echo "  " $(basename $i) |awk '{gsub(".mode", ""); print;}'
+         for i in "$DATOS/modes/*.mode";
+         do echo "  " $(basename "$i") |awk '{gsub(".mode", ""); print;}'
          done;
 }
 
@@ -98,25 +97,25 @@ translate_latex()
        BORRAFICHERO="true"
   fi
 
-  if [ "$(file -b --mime-encoding $FICHERO)" == "utf-8" ]
+  if [ "$(file -b --mime-encoding "$FICHERO")" == "utf-8" ]
   then locale_latin1
   else locale_utf8
   fi
 
-  $APERTIUM_PATH/apertium-prelatex "$FICHERO" | \
-  $APERTIUM_PATH/apertium-utils-fixlatex | \
-  $APERTIUM_PATH/apertium-deslatex | \
+  "$APERTIUM_PATH/apertium-prelatex" "$FICHERO" | \
+  "$APERTIUM_PATH/apertium-utils-fixlatex" | \
+  "$APERTIUM_PATH/apertium-deslatex" | \
   if [ "$TRANSLATION_MEMORY_FILE" = "" ];
   then cat;
-  else $APERTIUM_PATH/lt-tmxproc $TMCOMPFILE;
+  else "$APERTIUM_PATH/lt-tmxproc" "$TMCOMPFILE";
   fi | \
-  if [ ! -x $DATOS/modes/$PREFIJO.mode ]
-  then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
-  else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
+  if [ ! -x "$DATOS/modes/$PREFIJO.mode" ]
+  then sh "$DATOS/modes/$PREFIJO.mode" "$OPTION" "$OPTION_TAGGER"
+  else "$DATOS/modes/$PREFIJO.mode" "$OPTION" "$OPTION_TAGGER"
   fi | \
-  $APERTIUM_PATH/apertium-relatex| \
+  "$APERTIUM_PATH/apertium-relatex"| \
   awk '{gsub("</CONTENTS-noeos>", "</CONTENTS>"); print;}' | \
-  $APERTIUM_PATH/apertium-postlatex $REDIR $SALIDA
+  if [ "$REDIR" == "" ]; then "$APERTIUM_PATH/apertium-postlatex-raw"; else "$APERTIUM_PATH/apertium-postlatex-raw" > "$SALIDA"; fi
 
   if [ "$BORRAFICHERO" = "true" ]
   then rm -Rf "$FICHERO"
@@ -134,31 +133,31 @@ translate_latex_raw()
        BORRAFICHERO="true"
   fi
 
-  if [ "$(file -b --mime-encoding $FICHERO)" = "utf-8" ]
+  if [ "$(file -b --mime-encoding "$FICHERO")" = "utf-8" ]
   then locale_latin1
   else locale_utf8
   fi
 
-  $APERTIUM_PATH/apertium-prelatex "$FICHERO" | \
-  $APERTIUM_PATH/apertium-utils-fixlatex | \
-  $APERTIUM_PATH/apertium-deslatex | \
+  "$APERTIUM_PATH/apertium-prelatex" "$FICHERO" | \
+  "$APERTIUM_PATH/apertium-utils-fixlatex" | \
+  "$APERTIUM_PATH/apertium-deslatex" | \
   if [ "$TRANSLATION_MEMORY_FILE" = "" ];
   then cat;
-  else $APERTIUM_PATH/lt-tmxproc $TMCOMPFILE;
+  else "$APERTIUM_PATH/lt-tmxproc" "$TMCOMPFILE";
   fi | \
-  if [ ! -x $DATOS/modes/$PREFIJO.mode ]
-  then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
-  else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
+  if [ ! -x "$DATOS/modes/$PREFIJO.mode" ]
+  then sh "$DATOS/modes/$PREFIJO.mode" "$OPTION" "$OPTION_TAGGER"
+  else "$DATOS/modes/$PREFIJO.mode" "$OPTION" "$OPTION_TAGGER"
   fi | \
-  $APERTIUM_PATH/apertium-relatex| \
+  "$APERTIUM_PATH/apertium-relatex"| \
   awk '{gsub("</CONTENTS-noeos>", "</CONTENTS>"); print;}' | \
-  $APERTIUM_PATH/apertium-postlatex-raw $REDIR $SALIDA
+  if [ "$REDIR" == "" ]; then "$APERTIUM_PATH/apertium-postlatex-raw"; else "$APERTIUM_PATH/apertium-postlatex-raw" > "$SALIDA"; fi
 }
 
 
 translate_odt ()
 {
-  INPUT_TMPDIR=$(mktemp -d $TMPDIR/apertium.XXXXXXXX)
+  INPUT_TMPDIR=$(mktemp -d "$TMPDIR/apertium.XXXXXXXX")
 
   locale_utf8
   test_zip
@@ -170,39 +169,39 @@ translate_odt ()
   fi
   OTRASALIDA=$(mktemp "$TMPDIR/apertium.XXXXXXXX")
 
-  unzip -q -o -d $INPUT_TMPDIR "$FICHERO"
-  find $INPUT_TMPDIR | grep "content\\.xml\\|styles\\.xml" |\
+  unzip -q -o -d "$INPUT_TMPDIR" "$FICHERO"
+  find "$INPUT_TMPDIR" | grep "content\\.xml\\|styles\\.xml" |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
-  $APERTIUM_PATH/apertium-desodt |\
+  "$APERTIUM_PATH/apertium-desodt" |\
   if [ "$TRANSLATION_MEMORY_FILE" = "" ];
   then cat;
-  else $APERTIUM_PATH/lt-tmxproc $TMCOMPFILE;
+  else "$APERTIUM_PATH/lt-tmxproc" "$TMCOMPFILE";
   fi | \
-  if [ ! -x $DATOS/modes/$PREFIJO.mode ]
-  then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
-  else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
+  if [ ! -x "$DATOS/modes/$PREFIJO.mode" ]
+  then sh "$DATOS/modes/$PREFIJO.mode" "$OPTION" "$OPTION_TAGGER"
+  else "$DATOS/modes/$PREFIJO.mode" "$OPTION" "$OPTION_TAGGER"
   fi | \
-  $APERTIUM_PATH/apertium-reodt|\
+  "$APERTIUM_PATH/apertium-reodt"|\
   awk '{punto = index($0, "/>") + 3; cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("[?]> ", "?>\n", cola); print cola > name;}'
   VUELVE=$(pwd)
-  cd $INPUT_TMPDIR
+  cd "$INPUT_TMPDIR"
   rm -Rf ObjectReplacements
-  zip -q -r - . >$OTRASALIDA
-  cd $VUELVE
-  rm -Rf $INPUT_TMPDIR
+  zip -q -r - . >"$OTRASALIDA"
+  cd "$VUELVE"
+  rm -Rf "$INPUT_TMPDIR"
 
   if [ "$BORRAFICHERO" = "true" ]
   then rm -Rf "$FICHERO";
   fi
 
-  cat $OTRASALIDA $REDIR $SALIDA
-  rm -Rf $OTRASALIDA
-  rm -Rf $TMCOMPFILE
+  if [ "$REDIR" == "" ]; then cat "$OTRASALIDA"; else cat "$OTRASALIDA" > "$SALIDA"; fi
+  rm -Rf "$OTRASALIDA"
+  rm -Rf "$TMCOMPFILE"
 }
 
 translate_docx ()
 {
-  INPUT_TMPDIR=$(mktemp -d $TMPDIR/apertium.XXXXXXXX)
+  INPUT_TMPDIR=$(mktemp -d "$TMPDIR/apertium.XXXXXXXX")
 
   locale_utf8
   test_zip
@@ -219,47 +218,47 @@ translate_docx ()
   else OPCIONU="";
   fi
 
-  unzip -q -o -d $INPUT_TMPDIR "$FICHERO"
+  unzip -q -o -d "$INPUT_TMPDIR" "$FICHERO"
 
-  for i in $(find $INPUT_TMPDIR|grep "xlsx$");
+  for i in $(find "$INPUT_TMPDIR"|grep "xlsx$");
   do LOCALTEMP=$(mktemp "$TMPDIR/apertium.XXXXXXXX");
-     $APERTIUM_PATH/apertium -f xlsx -d $DIRECTORY $OPCIONU $PREFIJO <$i >$LOCALTEMP;
-     cp $LOCALTEMP $i;
-     rm $LOCALTEMP;
+     "$APERTIUM_PATH/apertium" -f xlsx -d "$DIRECTORY" "$OPCIONU" "$PREFIJO" <"$i" >"$LOCALTEMP";
+     cp "$LOCALTEMP" "$i";
+     rm "$LOCALTEMP";
   done;
 
-  find $INPUT_TMPDIR | grep "xml" |\
+  find "$INPUT_TMPDIR" | grep "xml" |\
   grep -v -i \\\(settings\\\|theme\\\|styles\\\|font\\\|rels\\\|docProps\\\) |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
-  $APERTIUM_PATH/apertium-deswxml |\
+  "$APERTIUM_PATH/apertium-deswxml" |\
   if [ "$TRANSLATION_MEMORY_FILE" = "" ];
   then cat;
-  else $APERTIUM_PATH/lt-tmxproc $TMCOMPFILE;
+  else "$APERTIUM_PATH/lt-tmxproc" "$TMCOMPFILE";
   fi | \
-  if [ ! -x $DATOS/modes/$PREFIJO.mode ]
-  then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
-  else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
+  if [ ! -x "$DATOS/modes/$PREFIJO.mode" ]
+  then sh "$DATOS/modes/$PREFIJO.mode" "$OPTION" "$OPTION_TAGGER"
+  else "$DATOS/modes/$PREFIJO.mode" "$OPTION" "$OPTION_TAGGER"
   fi | \
-  $APERTIUM_PATH/apertium-rewxml|\
+  "$APERTIUM_PATH/apertium-rewxml"|\
   awk '{punto = index($0, "/>") + 3; cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("[?]> ", "?>\n", cola); print cola > name;}'
   VUELVE=$(pwd)
-  cd $INPUT_TMPDIR
-  zip -q -r - . >$OTRASALIDA
-  cd $VUELVE
-  rm -Rf $INPUT_TMPDIR
+  cd "$INPUT_TMPDIR"
+  zip -q -r - . >"$OTRASALIDA"
+  cd "$VUELVE"
+  rm -Rf "$INPUT_TMPDIR"
 
   if [ "$BORRAFICHERO" = "true" ]
   then rm -Rf "$FICHERO";
   fi
 
-  cat $OTRASALIDA $REDIR $SALIDA
-  rm -Rf $OTRASALIDA
-  rm -Rf $TMCOMPFILE
+  if [ "$REDIR" == "" ]; then cat "$OTRASALIDA"; else cat "$OTRASALIDA" > "$SALIDA"; fi
+  rm -Rf "$OTRASALIDA"
+  rm -Rf "$TMCOMPFILE"
 }
 
 translate_pptx ()
 {
-  INPUT_TMPDIR=$(mktemp -d $TMPDIR/apertium.XXXXXXXX)
+  INPUT_TMPDIR=$(mktemp -d "$TMPDIR/apertium.XXXXXXXX")
 
   locale_utf8
   test_zip
@@ -276,48 +275,48 @@ translate_pptx ()
   else OPCIONU="";
   fi
 
-  unzip -q -o -d $INPUT_TMPDIR "$FICHERO"
+  unzip -q -o -d "$INPUT_TMPDIR" "$FICHERO"
 
-  for i in $(find $INPUT_TMPDIR|grep "xlsx$");
+  for i in $(find "$INPUT_TMPDIR"|grep "xlsx$");
   do LOCALTEMP=$(mktemp "$TMPDIR/apertium.XXXXXXXX")
-     $APERTIUM_PATH/apertium -f xlsx -d $DIRECTORY $OPCIONU $PREFIJO <$i >$LOCALTEMP;
-     cp $LOCALTEMP $i
-     rm $LOCALTEMP
+     "$APERTIUM_PATH/apertium" -f xlsx -d "$DIRECTORY" "$OPCIONU" "$PREFIJO" <"$i" >"$LOCALTEMP";
+     cp "$LOCALTEMP" "$i"
+     rm "$LOCALTEMP"
   done;
 
-  find $INPUT_TMPDIR | grep "xml$" |\
+  find "$INPUT_TMPDIR" | grep "xml$" |\
   grep "slides\/slide" |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
-  $APERTIUM_PATH/apertium-despptx |\
+  "$APERTIUM_PATH/apertium-despptx" |\
   if [ "$TRANSLATION_MEMORY_FILE" = "" ];
   then cat;
-  else $APERTIUM_PATH/lt-tmxproc $TMCOMPFILE;
+  else "$APERTIUM_PATH/lt-tmxproc" "$TMCOMPFILE";
   fi | \
-  if [ ! -x $DATOS/modes/$PREFIJO.mode ]
-  then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
-  else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
+  if [ ! -x "$DATOS/modes/$PREFIJO.mode" ]
+  then sh "$DATOS/modes/$PREFIJO.mode" "$OPTION" "$OPTION_TAGGER"
+  else "$DATOS/modes/$PREFIJO.mode" "$OPTION" "$OPTION_TAGGER"
   fi | \
-  $APERTIUM_PATH/apertium-repptx |\
+  "$APERTIUM_PATH/apertium-repptx" |\
   awk '{punto = index($0, "/>") + 3; cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("[?]> ", "?>\n", cola); print cola > name;}'
   VUELVE=$(pwd)
-  cd $INPUT_TMPDIR
-  zip -q -r - . >$OTRASALIDA
-  cd $VUELVE
-  rm -Rf $INPUT_TMPDIR
+  cd "$INPUT_TMPDIR"
+  zip -q -r - . >"$OTRASALIDA"
+  cd "$VUELVE"
+  rm -Rf "$INPUT_TMPDIR"
 
   if [ "$BORRAFICHERO" = "true" ]
   then rm -Rf "$FICHERO";
   fi
 
-  cat $OTRASALIDA $REDIR $SALIDA
-  rm -Rf $OTRASALIDA
-  rm -Rf $TMCOMPFILE
+  if [ "$REDIR" == "" ]; then cat "$OTRASALIDA"; else cat "$OTRASALIDA" > "$SALIDA"; fi
+  rm -Rf "$OTRASALIDA"
+  rm -Rf "$TMCOMPFILE"
 }
 
 
 translate_xlsx ()
 {
-  INPUT_TMPDIR=$(mktemp -d $TMPDIR/apertium.XXXXXXXX)
+  INPUT_TMPDIR=$(mktemp -d "$TMPDIR/apertium.XXXXXXXX")
 
   locale_utf8
   test_zip
@@ -329,71 +328,68 @@ translate_xlsx ()
   fi
   OTRASALIDA=$(mktemp "$TMPDIR/apertium.XXXXXXXX")
 
-  unzip -q -o -d $INPUT_TMPDIR "$FICHERO"
-  find $INPUT_TMPDIR | grep "sharedStrings.xml" |\
+  unzip -q -o -d "$INPUT_TMPDIR" "$FICHERO"
+  find "$INPUT_TMPDIR" | grep "sharedStrings.xml" |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
-  $APERTIUM_PATH/apertium-desxlsx |\
+  "$APERTIUM_PATH/apertium-desxlsx" |\
   if [ "$TRANSLATION_MEMORY_FILE" = "" ];
   then cat;
-  else $APERTIUM_PATH/lt-tmxproc $TMCOMPFILE;
+  else "$APERTIUM_PATH/lt-tmxproc" "$TMCOMPFILE";
   fi | \
-  if [ ! -x $DATOS/modes/$PREFIJO.mode ]
-  then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
-  else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
+  if [ ! -x "$DATOS/modes/$PREFIJO.mode" ]
+  then sh "$DATOS/modes/$PREFIJO.mode" "$OPTION" "$OPTION_TAGGER"
+  else "$DATOS/modes/$PREFIJO.mode" "$OPTION" "$OPTION_TAGGER"
   fi | \
-  $APERTIUM_PATH/apertium-rexlsx |\
+  "$APERTIUM_PATH/apertium-rexlsx" |\
   awk '{punto = index($0, "/>") + 3; cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("[?]> ", "?>\n", cola); print cola > name;}'
   VUELVE=$(pwd)
-  cd $INPUT_TMPDIR
-  zip -q -r - . >$OTRASALIDA
-  cd $VUELVE
-  rm -Rf $INPUT_TMPDIR
+  cd "$INPUT_TMPDIR"
+  zip -q -r - . >"$OTRASALIDA"
+  cd "$VUELVE"
+  rm -Rf "$INPUT_TMPDIR"
 
   if [ "$BORRAFICHERO" = "true" ]
   then rm -Rf "$FICHERO";
   fi
 
-  cat $OTRASALIDA $REDIR $SALIDA
-  rm -Rf $OTRASALIDA
-  rm -Rf $TMCOMPFILE
+  if [ "$REDIR" == "" ]; then cat "$OTRASALIDA"; else cat "$OTRASALIDA" > "$SALIDA"; fi
+  rm -Rf "$OTRASALIDA"
+  rm -Rf "$TMCOMPFILE"
 }
 
 translate_htmlnoent ()
 {
-  $APERTIUM_PATH/apertium-deshtml "$FICHERO" | \
+  "$APERTIUM_PATH/apertium-deshtml" "$FICHERO" | \
   if [ "$TRANSLATION_MEMORY_FILE" = "" ];
   then cat;
-  else $APERTIUM_PATH/lt-tmxproc $TMCOMPFILE;
-  fi | if [ ! -x $DATOS/modes/$PREFIJO.mode ]
-  then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
-  else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
+  else "$APERTIUM_PATH/lt-tmxproc" "$TMCOMPFILE";
+  fi | if [ ! -x "$DATOS/modes/$PREFIJO.mode" ]
+  then sh "$DATOS/modes/$PREFIJO.mode" "$OPTION" "$OPTION_TAGGER"
+  else "$DATOS/modes/$PREFIJO.mode" "$OPTION" "$OPTION_TAGGER"
   fi | if [ "$FORMATADOR" = "none" ]
-  then cat $REDIR $SALIDA;
-  else $APERTIUM_PATH/apertium-rehtml-noent $REDIR $SALIDA;
+  then if [ "$REDIR" == "" ]; then cat; else cat > "$SALIDA"; fi
+  else if [ "$REDIR" == "" ]; then "$APERTIUM_PATH/apertium-rehtml-noent"; else "$APERTIUM_PATH/apertium-rehtml-noent" > "$SALIDA"; fi
   fi
 
-  rm -Rf $TMCOMPFILE
+  rm -Rf "$TMCOMPFILE"
 }
 
 
 
 
-ARGS=$(getopt "uahlf:d:m:o:" $*)
-set -- $ARGS
-for i
-do
-  case "$i" in
-    -f) shift; FORMAT=$1; shift;;
-    -d) shift; DIRECTORY=$1; shift;;
-    -m) shift; TRANSLATION_MEMORY_FILE=$1; shift;;
-    -o) shift; TRANSLATION_MEMORY_DIRECTION=$1 shift;;
-    -u) UWORDS="no"; shift;;
-    -a) OPTION_TAGGER="-m"; shift;;
-    -l) DATOS=$DEFAULT_DIRECTORY; list_directions; exit 0;;
-    -h) message;;
-    --) shift; break;;
+while getopts "uahlf:d:m:o:" opt; do
+  case "$opt" in
+    f) FORMAT=$OPTARG;;
+    d) DIRECTORY=$OPTARG;;
+    m) TRANSLATION_MEMORY_FILE=$OPTARG;;
+    o) TRANSLATION_MEMORY_DIRECTION=$OPTARG;;
+    u) UWORDS="no";;
+    a) OPTION_TAGGER="-m";;
+    l) DATOS=$DEFAULT_DIRECTORY; list_directions; exit 0;;
+    h) message;;
   esac
 done
+shift $(($OPTIND-1))
 
 case "$#" in
      3)
@@ -401,7 +397,7 @@ case "$#" in
        REDIR=">";
        INPUT_FILE=$2;
        PAIR=$1;
-       if [ ! -e $INPUT_FILE ];
+       if [ ! -e "$INPUT_FILE" ];
        then echo "Error: file '$INPUT_FILE' not found."
             message;
        fi
@@ -409,7 +405,7 @@ case "$#" in
      2)
        INPUT_FILE=$2;
        PAIR=$1;
-       if [ ! -e $INPUT_FILE ];
+       if [ ! -e "$INPUT_FILE" ];
        then echo "Error: file '$INPUT_FILE' not found."
             message;
        fi
@@ -422,40 +418,39 @@ case "$#" in
        ;;
 esac
 
-if [ x$FORMAT = x ]; then FORMAT="txt"; fi
-if [ x$DIRECTORY = x ]; then DIRECTORY=$DEFAULT_DIRECTORY; fi
-if [ x$TRANSLATION_MEMORY_DIRECTION = x ]; then TRANSLATION_MEMORY_DIRECTION=$PAIR; fi
+if [ "$FORMAT" = "" ]; then FORMAT="txt"; fi
+if [ "$DIRECTORY" = "" ]; then DIRECTORY=$DEFAULT_DIRECTORY; fi
+if [ "$TRANSLATION_MEMORY_DIRECTION" = "" ]; then TRANSLATION_MEMORY_DIRECTION=$PAIR; fi
 
 PREFIJO=$PAIR;
 FORMATADOR=$FORMAT;
 DATOS=$DIRECTORY;
 FICHERO=$INPUT_FILE;
-#SALIDA=$OUTPUT_FILE;  // must not be used to permit a correct >> on output
 TMCOMPFILE=$(mktemp "$TMPDIR/apertium.XXXXXXXX")
 
 if [ "$TRANSLATION_MEMORY_FILE" != "" ]
-then $APERTIUM_PATH/lt-tmxcomp $TRANSLATION_MEMORY_DIRECTION $TRANSLATION_MEMORY_FILE $TMCOMPFILE >/dev/null
+then "$APERTIUM_PATH/lt-tmxcomp" "$TRANSLATION_MEMORY_DIRECTION" "$TRANSLATION_MEMORY_FILE" "$TMCOMPFILE" >/dev/null
      if [ "$?" != "0" ]
-     then echo "Error: Cannot compile TM '" $TRANSLATION_MEMORY_FILE "'";
+     then echo "Error: Cannot compile TM '$TRANSLATION_MEMORY_FILE'";
           echo"   hint: use -o parameter";
           message;
      fi
 fi
 
-if [ ! -d $DATOS/modes ];
+if [ ! -d "$DATOS/modes" ];
 then echo "Error: Directory '$DATOS/modes' does not exist."
      message
 fi
 
-if [ ! -e $DATOS/modes/$PREFIJO.mode ];
+if [ ! -e "$DATOS/modes/$PREFIJO.mode" ];
   then echo -n "Error: Mode $PREFIJO does not exist";
-       c=$(find $DATOS/modes|wc -l)
+       c=$(find "$DATOS/modes"|wc -l)
        if [ "$c" -le 1 ];
        then echo ".";
        else echo ". Try one of:";
          list_directions;
-#         for i in $DATOS/modes/*.mode;
-#         do echo "  " $(basename $i) |awk '{gsub(".mode", ""); print;}'
+#         for i in "$DATOS/modes/*.mode";
+#         do echo "  " $(basename "$i") |awk '{gsub(".mode", ""); print;}'
 #         done;
        fi
        exit 1;
@@ -606,23 +601,23 @@ case "$FORMATADOR" in
 		;;	
 esac
 
-if [ -z $REF ]
+if [ -z "$REF" ]
 then
         REF=$FORMATADOR
 fi
 
 if [ "$FORMATADOR" = "none" ]
 then cat "$FICHERO";
-else $APERTIUM_PATH/apertium-des$FORMATADOR "$FICHERO"; fi| \
+else "$APERTIUM_PATH/apertium-des$FORMATADOR" "$FICHERO"; fi| \
 if [ "$TRANSLATION_MEMORY_FILE" = "" ];
 then cat;
-else $APERTIUM_PATH/lt-tmxproc $TMCOMPFILE;
-fi | if [ ! -x $DATOS/modes/$PREFIJO.mode ]
-then sh $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
-else $DATOS/modes/$PREFIJO.mode $OPTION $OPTION_TAGGER
+else "$APERTIUM_PATH/lt-tmxproc" "$TMCOMPFILE";
+fi | if [ ! -x "$DATOS/modes/$PREFIJO.mode" ]
+then sh "$DATOS/modes/$PREFIJO.mode" "$OPTION" "$OPTION_TAGGER"
+else "$DATOS/modes/$PREFIJO.mode" "$OPTION" "$OPTION_TAGGER"
 fi | if [ "$FORMATADOR" = "none" ]
-then cat $REDIR $SALIDA;
-else $APERTIUM_PATH/apertium-re$FORMATADOR $REDIR $SALIDA;
+then if [ "$REDIR" = "" ]; then cat; else cat > "$SALIDA"; fi
+else if [ "$REDIR" = "" ]; then "$APERTIUM_PATH/apertium-re$FORMATADOR"; else "$APERTIUM_PATH/apertium-re$FORMATADOR" > "$SALIDA"; fi
 fi
 
-rm -Rf $TMCOMPFILE
+rm -Rf "$TMCOMPFILE"
