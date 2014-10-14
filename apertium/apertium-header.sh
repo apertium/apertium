@@ -449,9 +449,6 @@ if [ ! -e "$DATOS/modes/$PREFIJO.mode" ];
        then echo ".";
        else echo ". Try one of:";
          list_directions;
-#         for i in "$DATOS/modes/*.mode";
-#         do echo "  " $(basename "$i") |awk '{gsub(".mode", ""); print;}'
-#         done;
        fi
        exit 1;
 fi
