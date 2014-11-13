@@ -856,6 +856,9 @@ HMM::tagger(FILE *in, FILE *out, bool show_all_good_first) {
       if(null_flush)
       { 
         fputwc_unlocked(L'\0', out);
+        tags.clear();
+        tags.insert(eos);
+        alpha[0][eos] = 1;
       }
       
       fflush(out);
