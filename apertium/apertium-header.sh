@@ -376,6 +376,7 @@ translate_htmlnoent ()
 
 
 
+LIST_MODES_AND_EXIT=0
 
 while getopts "uahlf:d:m:o:" opt; do
   case "$opt" in
@@ -385,11 +386,20 @@ while getopts "uahlf:d:m:o:" opt; do
     o) TRANSLATION_MEMORY_DIRECTION=$OPTARG;;
     u) UWORDS="no";;
     a) OPTION_TAGGER="-m";;
-    l) DATOS=$DEFAULT_DIRECTORY; list_directions; exit 0;;
+    l) LIST_MODES_AND_EXIT=1;;
     h) message;;
   esac
 done
 shift $(($OPTIND-1))
+
+if [ $LIST_MODES_AND_EXIT == 1 ]
+then if [ "$DIRECTORY" != "" ]
+     then DATOS=$DIRECTORY
+     else DATOS=$DEFAULT_DIRECTORY
+     fi
+     list_directions
+     exit 0
+fi
 
 case "$#" in
      3)
