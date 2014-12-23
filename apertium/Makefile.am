@@ -327,7 +327,7 @@ apertium-validate-acx: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-acx script"
 	@echo "#!$(BASH)" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --relaxng $(prefix)/share/lttoolbox/acx.rng --noout \$$FILE1 && exit 0;" >>$@
+	@echo "$(XMLLINT) --relaxng $(prefix)/share/lttoolbox/acx.rng --schema $(prefix)/share/lttoolbox/acx.xsd --noout \$$FILE1 && exit 0;" >>$@
 	@echo "exit 1;" >> $@
 	@chmod a+x $@
 
@@ -344,7 +344,7 @@ apertium-validate-dictionary: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-dictionary script"
 	@echo "#!$(BASH)" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid $(prefix)/share/lttoolbox/dix.dtd --noout \$$FILE1 && exit 0;" >> $@
+	@echo "$(XMLLINT) --dtdvalid $(prefix)/share/lttoolbox/dix.dtd --schema $(prefix)/share/lttoolbox/dix.xsd --noout \$$FILE1 && exit 0;" >> $@
 	@echo "exit 1;" >> $@
 	@chmod a+x $@
 
