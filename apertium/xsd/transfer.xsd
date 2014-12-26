@@ -66,7 +66,33 @@
     </xs:choice>
   </xs:group>
 
-  <xs:element name="transfer" type="transfer_t"/> <!-- the transfer_t is added for XSD code generation -->
+  <xs:element name="transfer" type="transfer_t"> <!-- the transfer_t is added for XSD code generation -->
+    <xs:keyref name="category_name_reference" refer="category_name">
+      <xs:selector xpath=".//pattern-item" />
+      <xs:field xpath="@n" />
+    </xs:keyref>
+    <xs:keyref name="list_name_reference" refer="list_name">
+      <xs:selector xpath=".//list" />
+      <xs:field xpath="@n" />
+    </xs:keyref>
+    <xs:keyref name="macro_name_reference" refer="macro_name">
+      <xs:selector xpath=".//call-macro" />
+      <xs:field xpath="@n" />
+    </xs:keyref>
+    <!--
+	TODO: So far cant' think of a way to express this constraint, since in
+	addition to a reference to an section-def-attrs/def-attr/@n the attribute can also be
+	"lemma","lemh","lemq","whole".
+    -->   
+    <!--xs:keyref name="attribute_name_reference" refer="attribute_name">
+      <xs:selector xpath=".//clip" />
+      <xs:field xpath="@part" />
+    </xs:keyref-->
+    <xs:keyref name="variable_name_reference" refer="variable_name">
+      <xs:selector xpath=".//var" />
+      <xs:field xpath="@n" />
+    </xs:keyref>
+  </xs:element>
   <xs:annotation>
     <xs:documentation>
       'transfer' is the root element containing the whole structural
@@ -93,6 +119,7 @@
       </xs:simpleType>
     </xs:attribute>
   </xs:complexType>
+  
 
   <xs:element name="section-def-cats">
     <xs:annotation>
@@ -106,6 +133,10 @@
         <xs:element ref="def-cat" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
+    <xs:unique name="category_name">
+      <xs:selector xpath="def-cat" />
+      <xs:field xpath="@n" />
+    </xs:unique>
   </xs:element>
 
   <xs:element name="def-cat">
@@ -119,13 +150,9 @@
       <xs:sequence>
         <xs:element ref="cat-item" maxOccurs="unbounded"/>
       </xs:sequence>
-      <xs:attribute name="n" type="xs:ID" use="required"/>
+      <xs:attribute name="n" type="xs:string" use="required"/>
       <xs:attribute name="c" type="xs:string" use="optional"/>
     </xs:complexType>
-    <xs:key name="category_name">
-      <xs:selector xpath="def-cat" />
-      <xs:field xpath="@n" />    
-    </xs:key>
   </xs:element>
 
   <xs:element name="cat-item">
@@ -161,6 +188,10 @@
         <xs:element ref="def-attr" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
+    <xs:unique name="attribute_name">
+      <xs:selector xpath="def-attr" />
+      <xs:field xpath="@n" />
+    </xs:unique>
   </xs:element>
   
   <xs:element name="def-attr">
@@ -174,13 +205,9 @@
       <xs:sequence>
         <xs:element ref="attr-item" maxOccurs="unbounded"/>
       </xs:sequence>
-      <xs:attribute name="n" type="xs:ID" use="required"/>
+      <xs:attribute name="n" type="xs:string" use="required"/>
       <xs:attribute name="c" type="xs:string" use="optional"/>
     </xs:complexType>
-    <xs:key name="attribute_name">
-      <xs:selector xpath="def-attr" />
-      <xs:field xpath="@n" />    
-    </xs:key>
   </xs:element>
 
   <xs:element name="attr-item">
@@ -208,6 +235,10 @@
         <xs:element ref="def-var" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
+    <xs:unique name="variable_name">
+      <xs:selector xpath="def-var" />
+      <xs:field xpath="@n" />    
+    </xs:unique>
   </xs:element>
 
   <xs:element name="def-var">
@@ -220,14 +251,10 @@
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
-      <xs:attribute name="n" type="xs:ID" use="required"/>
+      <xs:attribute name="n" type="xs:string" use="required"/>
       <xs:attribute name="v" type="xs:string" use="optional"/>
       <xs:attribute name="c" type="xs:string" use="optional"/>
     </xs:complexType>
-    <xs:key name="variable_name">
-      <xs:selector xpath="def-var" />
-      <xs:field xpath="@n" />    
-    </xs:key>
   </xs:element>
 
   <xs:element name="section-def-lists">
@@ -241,6 +268,10 @@
         <xs:element ref="def-list"/>
       </xs:sequence>
     </xs:complexType>
+    <xs:unique name="list_name">
+      <xs:selector xpath="def-list" />
+      <xs:field xpath="@n" />    
+    </xs:unique>
   </xs:element>
 
   <xs:element name="def-list">
@@ -254,13 +285,9 @@
       <xs:sequence>
         <xs:element ref="list-item" maxOccurs="unbounded"/>
       </xs:sequence>
-      <xs:attribute name="n" type="xs:ID" use="required"/>
+      <xs:attribute name="n" type="xs:string" use="required"/>
       <xs:attribute name="c" type="xs:string" use="optional"/>
     </xs:complexType>
-    <xs:key name="list_name">
-      <xs:selector xpath="def-list" />
-      <xs:field xpath="@n" />    
-    </xs:key>
   </xs:element>
 
   <xs:element name="list-item">
@@ -288,6 +315,10 @@
         <xs:element ref="def-macro"/>
       </xs:sequence>
     </xs:complexType>
+    <xs:unique name="macro_name">
+      <xs:selector xpath="def-macro" />
+      <xs:field xpath="@n" />    
+    </xs:unique>
   </xs:element>
 
   <xs:element name="def-macro">
@@ -303,14 +334,10 @@
       <xs:sequence minOccurs="1" maxOccurs="unbounded">
         <xs:group ref="sentence"/>
       </xs:sequence>
-      <xs:attribute name="n" type="xs:ID" use="required"/>
+      <xs:attribute name="n" type="xs:string" use="required"/>
       <xs:attribute name="npar" type="xs:string" use="required"/>
       <xs:attribute name="c" type="xs:string" use="optional"/>
     </xs:complexType>
-    <xs:key name="macro_name">
-      <xs:selector xpath="def-macro" />
-      <xs:field xpath="@n" />    
-    </xs:key>
   </xs:element>
   
   <xs:element name="section-rules">
@@ -364,12 +391,8 @@
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
-      <xs:attribute name="n" type="xs:IDREF" use="required"/>
+      <xs:attribute name="n" type="xs:string" use="required"/>
     </xs:complexType>
-    <xs:keyref name="category_name_reference" refer="category_name">
-      <xs:selector xpath="pattern-item" />
-      <xs:field xpath="@n" />
-    </xs:keyref>
   </xs:element>
 
   <xs:element name="action">
@@ -681,12 +704,8 @@
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
-      <xs:attribute name="n" type="xs:IDREF" use="required"/>
+      <xs:attribute name="n" type="xs:string" use="required"/>
     </xs:complexType>
-    <xs:keyref name="list_name_reference" refer="list_name">
-      <xs:selector xpath="list" />
-      <xs:field xpath="@n" />
-    </xs:keyref>
   </xs:element>
   
   <xs:element name="let">
@@ -719,7 +738,7 @@
       <xs:sequence>
         <xs:group ref="value" minOccurs="1" maxOccurs="unbounded"/>
       </xs:sequence>
-      <xs:attribute name="n" type="xs:IDREF" use="required"/>
+      <xs:attribute name="n" type="xs:string" use="required"/>
     </xs:complexType>
   </xs:element>
   
@@ -765,12 +784,8 @@
       <xs:sequence minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="with-param"/>
       </xs:sequence>
-      <xs:attribute name="n" type="xs:IDREF" use="required"/>
+      <xs:attribute name="n" type="xs:string" use="required"/>
     </xs:complexType>
-    <xs:keyref name="macro_name_reference" refer="macro_name">
-      <xs:selector xpath="call-macro" />
-      <xs:field xpath="@n" />
-    </xs:keyref>
   </xs:element>
   
   <xs:element name="with-param">
@@ -826,7 +841,7 @@
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
-      <xs:attribute name="part" type="xs:string" use="required"/>
+      <xs:attribute name="part" type="xs:string" use="optional"/>
       <xs:attribute name="queue" type="xs:string" use="optional"/>
       <xs:attribute name="link-to" type="xs:string" use="optional"/>
       <xs:attribute name="c" type="xs:string" use="optional"/>
@@ -868,7 +883,7 @@
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
-      <xs:attribute name="n" type="xs:IDREF" use="required"/>
+      <xs:attribute name="n" type="xs:string" use="required"/>
     </xs:complexType>
   </xs:element>
   
