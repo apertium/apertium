@@ -391,6 +391,7 @@ TRANSLATION_MEMORY_DIRECTION=$PAIR
 LIST_MODES_AND_EXIT=false
 
 # Skip (but store) non-option arguments that come before options:
+declare -a ARGS_PREOPT
 declare -i OPTIND=1
 while [[ $OPTIND -le $# ]]; do
   arg=${@:$OPTIND:1}
