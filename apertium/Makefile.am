@@ -295,48 +295,42 @@ apertium-validate-tagger: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-tagger script"
 	@echo "#!$(BASH)" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid $(apertiumdir)/tagger.dtd --noout \$$FILE1 && exit 0;" >>$@
-	@echo "exit 1;" >> $@
+	@echo "$(XMLLINT) --dtdvalid $(apertiumdir)/tagger.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-transfer: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-transfer script"
 	@echo "#!$(BASH)" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid $(apertiumdir)/transfer.dtd --noout \$$FILE1 && exit 0;" >>$@
-	@echo "exit 1;" >> $@
+	@echo "$(XMLLINT) --dtdvalid $(apertiumdir)/transfer.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-interchunk: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-interchunk script"
 	@echo "#!$(BASH)" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid $(apertiumdir)/interchunk.dtd --noout \$$FILE1 && exit 0;" >>$@
-	@echo "exit 1;" >> $@
+	@echo "$(XMLLINT) --dtdvalid $(apertiumdir)/interchunk.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-postchunk: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-postchunk script"
 	@echo "#!$(BASH)" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid $(apertiumdir)/postchunk.dtd --noout \$$FILE1 && exit 0;" >>$@
-	@echo "exit 1;" >> $@
+	@echo "$(XMLLINT) --dtdvalid $(apertiumdir)/postchunk.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-acx: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-acx script"
 	@echo "#!$(BASH)" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --relaxng $(prefix)/share/lttoolbox/acx.rng --schema $(prefix)/share/lttoolbox/acx.xsd --noout \$$FILE1 && exit 0;" >>$@
-	@echo "exit 1;" >> $@
+	@echo "$(XMLLINT) --relaxng $(prefix)/share/lttoolbox/acx.rng --schema $(prefix)/share/lttoolbox/acx.xsd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-modes: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-modes script"
 	@echo "#!$(BASH)" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid $(apertiumdir)/modes.dtd --noout \$$FILE1 && exit 0;" >>$@
-	@echo "exit 1;" >> $@
+	@echo "$(XMLLINT) --dtdvalid $(apertiumdir)/modes.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 
@@ -344,8 +338,7 @@ apertium-validate-dictionary: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-dictionary script"
 	@echo "#!$(BASH)" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid $(prefix)/share/lttoolbox/dix.dtd --schema $(prefix)/share/lttoolbox/dix.xsd --noout \$$FILE1 && exit 0;" >> $@
-	@echo "exit 1;" >> $@
+	@echo "$(XMLLINT) --dtdvalid $(prefix)/share/lttoolbox/dix.dtd --schema $(prefix)/share/lttoolbox/dix.xsd --noout \"\$$FILE1\"" >> $@
 	@chmod a+x $@
 
 apertium-gen-deformat: Makefile.am deformat-header.sh
