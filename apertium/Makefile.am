@@ -338,7 +338,9 @@ apertium-validate-dictionary: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-dictionary script"
 	@echo "#!$(BASH)" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid $(prefix)/share/lttoolbox/dix.dtd --schema $(prefix)/share/lttoolbox/dix.xsd --noout \"\$$FILE1\"" >> $@
+	@echo "# xsd is a non-final command, so just treated as a warning when compiling:" >> $@
+	@echo "$(XMLLINT) --schema $(prefix)/share/lttoolbox/dix.xsd --noout \"\$$FILE1\"" >> $@
+	@echo "$(XMLLINT) --dtdvalid $(prefix)/share/lttoolbox/dix.dtd --noout \"\$$FILE1\"" >> $@
 	@chmod a+x $@
 
 apertium-gen-deformat: Makefile.am deformat-header.sh
