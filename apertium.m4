@@ -122,6 +122,24 @@ install-modes:
 
 .PRECIOUS: .deps/.d
 
+langs:
+	@fail=; \
+	if \$(am__make_keepgoing); then \
+	  failcom='fail=yes'; \
+	else \
+	  failcom='exit 1'; \
+	fi; \
+	dot_seen=no; \
+	list='\$(AP_SUBDIRS)'; \
+	for subdir in \$\$list; do \
+	  echo "Making \$\$subdir"; \
+	  (\$(am__cd) \$\$subdir && \$(MAKE) \$(AM_MAKEFLAGS) all-am) \
+	  || eval \$\$failcom; \
+	done; \
+	\$(MAKE) \$(AM_MAKEFLAGS) all-am || exit 1; \
+	test -z "\$\$fail"
+.PHONY: langs
+
 EOF
 
 ])
