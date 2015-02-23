@@ -25,7 +25,7 @@ extern "C" {
 #include "apertium_config.h"
 #endif
 #include <apertium/unlocked_cstdio.h>
-#ifdef _MSC_VER
+#ifdef _WIN32
 #include <io.h>
 #include <fcntl.h>
 #endif
@@ -49,20 +49,20 @@ wstring convertir(string const &multibyte, int const length)
   {
     delete[] retval;
     if(memconv.size() >= 4)
-    { 
+    {
       wcerr << L"Warning: wrong encoding" << endl;
     }
     return L"";
   }
   else
-  {   
+  {
     memconv = "";
     retval[l] = 0;
     wstring ret = retval;
     delete[] retval;
     return ret;
   }
-}  
+}
 
 
 
@@ -184,15 +184,15 @@ wstring convertir(string const &multibyte, int const length)
 
 \\[`'\^\"H~ck=b.druv]((\{.\})|(.))	{
 	wstring ws = convertir(yytext,yyleng).c_str();
-	
+
 	wstring result = accentsMap.get(
 	  L""+ws.substr(1,1)+ (
 	    (yyleng==3)? ws.substr(2,1) : ws.substr(3,1)
 	  ));
-	  
+
         if(result == L"")
         {
-	  fputws((wstring(L"<")+convertir(yytext+1,yyleng)+wstring(L"/>")).c_str(),yyout);          
+	  fputws((wstring(L"<")+convertir(yytext+1,yyleng)+wstring(L"/>")).c_str(),yyout);
         }
         else
         {
@@ -207,7 +207,7 @@ wstring convertir(string const &multibyte, int const length)
 \%.*	{
 	if(yytext[yyleng-1]=='\r')
 		fputws((wstring(L"<COMMENT>")+convertir(yytext+1,yyleng-2)+wstring(L"</COMMENT>\r")).c_str(),yyout);
-	else		
+	else
 		fputws((wstring(L"<COMMENT>")+convertir(yytext+1,yyleng-1)+wstring(L"</COMMENT>")).c_str(),yyout);
 }
 
@@ -260,18 +260,18 @@ wstring convertir(string const &multibyte, int const length)
 }
 
 
-\\[A-Za-z]+\*	{ 
+\\[A-Za-z]+\*	{
 	fputws((wstring(L"<")+convertir(yytext+1,yyleng-2)+wstring(L"_STAR/>")).c_str(),yyout);
 }
 
-\\[A-Za-z]+	{ 
+\\[A-Za-z]+	{
 	fputws((wstring(L"<")+convertir(yytext+1,yyleng)+wstring(L"/>")).c_str(),yyout);
 }
 
 \\\{	{
         fputws(L"<LEFTESCAPEDBRACE/>", yyout);
         }
-       
+
 \\\{	{
         fputws(L"<RIGHTESCAPEDBRACE/>", yyout);
         }
@@ -317,42 +317,42 @@ wstring convertir(string const &multibyte, int const length)
         wstring ws = convertir(yytext, yyleng);
         fputws(ws.substr(5, ws.size()-5).c_str(), yyout);
         fputws(L"</VERB>", yyout);
-}        
+}
 
 \\verb[!][^!]+[!]	{
         fputws(L"<VERB>",yyout);
         wstring ws = convertir(yytext, yyleng);
         fputws(ws.substr(5, ws.size()-5).c_str(), yyout);
         fputws(L"</VERB>", yyout);
-}        
+}
 
 \\verb[?][^?]+[?]	{
         fputws(L"<VERB>",yyout);
         wstring ws = convertir(yytext, yyleng);
         fputws(ws.substr(5, ws.size()-5).c_str(), yyout);
         fputws(L"</VERB>", yyout);
-}        
+}
 
 \\verb[/][^/]+[/]	{
         fputws(L"<VERB>",yyout);
         wstring ws = convertir(yytext, yyleng);
         fputws(ws.substr(5, ws.size()-5).c_str(), yyout);
         fputws(L"</VERB>", yyout);
-}        
+}
 
 \\verb[#][^#]+[#]	{
         fputws(L"<VERB>",yyout);
         wstring ws = convertir(yytext, yyleng);
         fputws(ws.substr(5, ws.size()-5).c_str(), yyout);
         fputws(L"</VERB>", yyout);
-}        
+}
 
 \\verb[+][^+]+[+]	{
         fputws(L"<VERB>",yyout);
         wstring ws = convertir(yytext, yyleng);
         fputws(ws.substr(5, ws.size()-5).c_str(), yyout);
         fputws(L"</VERB>", yyout);
-}        
+}
 
 \\\(	{
 	fputws(L"<MATH_PAR>",yyout);
@@ -421,16 +421,16 @@ void usage(string const &progname)
 {
 
   cerr << "USAGE: " << progname << " [input_file [output_file]" << ']' << endl;
-  
+
   cerr << "LaTeX format preprocessor " << endl;
-  exit(EXIT_SUCCESS);  
+  exit(EXIT_SUCCESS);
 }
 
 int main(int argc, char *argv[])
 {
   LtLocale::tryToSetLocale();
   size_t base = 0;
-  
+
   if(argc >= 2 && !strcmp(argv[1],"-i"))
   {
     base++;
@@ -459,11 +459,11 @@ int main(int argc, char *argv[])
     default:
       break;
   }
-  
-#ifdef _MSC_VER
+
+#ifdef _WIN32
   _setmode(_fileno(yyin), _O_U8TEXT);
   _setmode(_fileno(yyout), _O_U8TEXT);
-#endif 
+#endif
   // prevent warning message
   yy_push_state(1);
   yy_top_state();

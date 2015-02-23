@@ -21,7 +21,6 @@
 #include <lttoolbox/compression.h>
 #include <apertium/utf_converter.h>
 #include <apertium/apertium_re.h>
-#include <pcre.h>
 #include <iostream>
 #include <apertium/string_utils.h>
 
@@ -49,12 +48,12 @@ TransferData::TransferData()
 {
   // adding fixed attr_items
   attr_items[L"lem"] = L"(([^<]|\"\\<\")+)";
-  attr_items[L"lemq"] = L"\\#[- _][^<]+"; 
+  attr_items[L"lemq"] = L"\\#[- _][^<]+";
   attr_items[L"lemh"] = L"(([^<#]|\"\\<\"|\"\\#\")+)";
   attr_items[L"whole"] = L"(.+)";
   attr_items[L"tags"] = L"((<[^>]+>)+)";
   attr_items[L"chname"] = L"({([^/]+)\\/)"; // includes delimiters { and / !!!
-  attr_items[L"chcontent"] = L"(\\{.+)";    
+  attr_items[L"chcontent"] = L"(\\{.+)";
   attr_items[L"content"] = L"(\\{.+)";
 }
 
@@ -85,13 +84,13 @@ TransferData::getAlphabet()
   return alphabet;
 }
 
-Transducer & 
+Transducer &
 TransferData::getTransducer()
 {
   return transducer;
 }
 
-map<int, int> & 
+map<int, int> &
 TransferData::getFinals()
 {
   return finals;
@@ -121,15 +120,15 @@ TransferData::getVariables()
   return variables;
 }
 
-void 
+void
 TransferData::write(FILE *output)
 {
   alphabet.write(output);
-  transducer.write(output, alphabet.size());  
+  transducer.write(output, alphabet.size());
 
   // finals
 
-  Compression::multibyte_write(finals.size(), output);  
+  Compression::multibyte_write(finals.size(), output);
   for(map<int, int>::const_iterator it = finals.begin(), limit = finals.end();
       it != limit; it++)
   {
@@ -138,7 +137,7 @@ TransferData::write(FILE *output)
   }
 
   // attr_items
-  
+
   // precompiled regexps
   writeRegexps(output);
 
@@ -167,7 +166,7 @@ TransferData::write(FILE *output)
   {
     Compression::wstring_write(it->first, output);
     Compression::multibyte_write(it->second.size(), output);
-   
+
     for(set<wstring, Ltstr>::const_iterator it2 = it->second.begin(), limit2 = it->second.end();
 	it2 != limit2; it2++)
     {
@@ -181,7 +180,7 @@ void
 TransferData::writeRegexps(FILE *output)
 {
   Compression::multibyte_write(attr_items.size(), output);
-  
+
   map<wstring, wstring, Ltstr>::iterator it, limit;
   for(it = attr_items.begin(), limit = attr_items.end(); it != limit; it++)
   {
@@ -190,5 +189,5 @@ TransferData::writeRegexps(FILE *output)
     //wcerr << it->second << endl;
     my_re.compile(UtfConverter::toUtf8(it->second));
     my_re.write(output);
-  }   
+  }
 }

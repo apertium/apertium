@@ -76,7 +76,7 @@ then
   CXXFLAGS="$CXXFLAGS -Wall -ansi -fomit-frame-pointer"
 else
   if test x$MinGW = xyes
-  then 
+  then
     AC_MSG_RESULT([MinGW])
     CFLAGS="$CFLAGS -Wall -march=i686 -O3 -DMINGW -fomit-frame-pointer \
 	        -funroll-loops -I/include -L/lib"
@@ -85,7 +85,7 @@ else
     CPPFLAGS="$CPPFLAGS -I/include"
   else
     if test x$Cygwin = xyes
-    then 
+    then
       AC_MSG_RESULT([Cygwin])
       CFLAGS="$CFLAGS -Wall -march=i686 -O3 -fomit-frame-pointer \
            -funroll-loops"
@@ -112,7 +112,7 @@ else
           CXXFLAGS="-Wall -ansi -O3 $CXXFLAGS"
         fi
       fi
-    fi    
+    fi
   fi
 fi
 
@@ -122,7 +122,7 @@ AM_SANITY_CHECK
 AC_LANG_CPLUSPLUS
 
 AC_ARG_ENABLE(debug,
-              [  --enable-debug    Enable "-g -Wall" compiler options], 
+              [  --enable-debug    Enable "-g -Wall" compiler options],
               [CXXFLAGS="-g -Wall"; CFLAGS="-g -Wall"])
 
 AC_ARG_ENABLE(profile,
@@ -138,7 +138,7 @@ if test x$ac_cv_path_XMLLINT = xno
 then
   AC_MSG_ERROR([You don't have xmllint installed.])
 fi
- 
+
   AC_PATH_PROG(XSLTPROC, xsltproc, no)
   if test x$ac_cv_path_XSLTPROC = x
   then
@@ -182,7 +182,7 @@ fi
 AC_CHECK_FUNCS(strcasecmp)
 
 if test x$(uname) != xDarwin;
-then 
+then
 AC_CHECK_HEADER(pcreposix.h,
   AC_CHECK_LIB(pcre, pcre_fullinfo,[
     LIBS="$LIBS -lpcreposix -lpcre"
@@ -195,13 +195,13 @@ AC_CHECK_HEADER(pcrecpp.h,
   LIBS="$LIBS -lpcrecpp"
   no_comp_check=yes],
   AC_MSG_ERROR([*** unable to locate pcrecpp library ***])),
-  AC_MSG_ERROR([*** unable to locate pcrecpp.h include file ***])) 
+  AC_MSG_ERROR([*** unable to locate pcrecpp.h include file ***]))
 fi
 
 
 PKG_CHECK_MODULES(APERTIUM, [
   lttoolbox >= required_lttoolbox_version
-  libxml-2.0 >= required_libxml_version 
+  libxml-2.0 >= required_libxml_version
   libpcre >= required_libpcre_version], CPPFLAGS="$CPPFLAGS $APERTIUM_CFLAGS"; LIBS="$LIBS $APERTIUM_LIBS")
 
 # Check for wide strings
@@ -221,12 +221,12 @@ std::wstring test = L"test";
 AC_CXX_WSTRING
 AC_C_BIGENDIAN
 
-if test "$ac_cv_cxx_wstring" = no 
+if test "$ac_cv_cxx_wstring" = no
 then
   AC_MSG_ERROR([Missing wide string support])
 fi
 
-  
+
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([stdlib.h string.h unistd.h stddef.h])
@@ -238,11 +238,12 @@ AC_TYPE_SIZE_T
 
 # Checks for library functions.
 AC_FUNC_ERROR_AT_LINE
-#AC_FUNC_MALLOC
-#AC_FUNC_REALLOC
 
 AC_CHECK_DECLS([fread_unlocked, fwrite_unlocked, fgetc_unlocked, fputc_unlocked, fputs_unlocked, getopt_long, fgetwc_unlocked, fputwc_unlocked, fgetws_unlocked, fputws_unlocked])
 
 AC_CHECK_FUNCS([setlocale strdup getopt_long snprintf])
+
+AM_CONDITIONAL([WINDOWS], [test x$version_type = xwindows])
+AS_IF([test x$version_type = xwindows], [AC_DEFINE(HAVE_GETOPT_LONG,0)], [])
 
 AC_OUTPUT([Makefile apertium.pc apertium/Makefile])

@@ -37,10 +37,10 @@ GENERATEDSCRIPTS = apertium-gen-deformat apertium-gen-reformat \
                    apertium-gen-modes apertium-validate-acx \
                    apertium-utils-fixlatex
 #DEPR.:
-                   #apertium-preprocess-corpus-lextor 
-                   #apertium-gen-stopwords-lextor 
-                   #apertium-gen-lextorbil 
-                   #apertium-gen-lextormono apertium-gen-wlist-lextor 
+                   #apertium-preprocess-corpus-lextor
+                   #apertium-gen-stopwords-lextor
+                   #apertium-gen-lextorbil
+                   #apertium-gen-lextormono apertium-gen-wlist-lextor
 
 lib_LTLIBRARIES = libapertium3.la
 libapertium3_la_SOURCES = $(h_sources) $(cc_sources)
@@ -68,8 +68,8 @@ bin_PROGRAMS = apertium-pretransfer apertium-destxt apertium-retxt \
                apertium-tagger-readwords \
                apertium-tmxbuild
                ###pruebas-lextor apertium-lextor-search apertium-lextor-eval
-               ###apertium-gen-wlist-lextor-translation 
-               ###apertium-lextor 
+               ###apertium-gen-wlist-lextor-translation
+               ###apertium-lextor
 
 bin_SCRIPTS =  $(GENERATEDSCRIPTS)
 
@@ -77,7 +77,7 @@ instdir = apertium
 
 apertiumdir = $(prefix)/share/apertium
 apertiuminclude = $(prefix)/include/apertium-$(GENERIC_API_VERSION)
-apertiumlib = $(prefix)/lib 
+apertiumlib = $(prefix)/lib
 apertiumsysconf = $(prefix)/etc/apertium
 
 apertium_DATA = deformat.xsl reformat.xsl new2old.xsl lexchoice.xsl \
@@ -161,7 +161,11 @@ apertium_tagger_readwords_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VER
 ###apertium_gen_wlist_lextor_translation_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
 
 
+if WINDOWS
+INCLUDES = -I$(top_srcdir)/apertium/win32 -I$(top_srcdir) $(APERTIUM_CFLAGS)
+else
 INCLUDES = -I$(top_srcdir) $(APERTIUM_CFLAGS)
+endif
 CLEANFILES = *~ apertium_destxt.cc apertium_retxt.cc apertium_deshtml.cc \
              apertium_rehtml.cc apertium_desrtf.cc apertium_rertf.cc \
              apertium_rehtml_noent.cc \
@@ -188,7 +192,7 @@ apertium_desxpresstag.cc: xpresstag-format.xml Makefile.am deformat.xsl
 apertium_rexpresstag.cc: xpresstag-format.xml Makefile.am reformat.xsl
 	$(XSLTPROC) reformat.xsl xpresstag-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
-	rm $@tmp	
+	rm $@tmp
 
 apertium_retxt.cc: txt-format.xml Makefile.am reformat.xsl
 	$(XSLTPROC) reformat.xsl txt-format.xml >$@tmp
@@ -351,7 +355,7 @@ apertium-gen-deformat: Makefile.am deformat-header.sh
 	@if [ `basename $(XSLTPROC)` == xsltproc ]; \
 	  then echo "$(XSLTPROC) --stringparam mode \$$MODE $(apertiumdir)/deformat.xsl \$$FILE1 >/tmp/\$$\$$.deformat.l && \\"; \
           else echo "$(XSLTPROC) $(apertiumdir)/deformat.xsl \$$FILE1 \"\\\$$mode=\$$MODE\" >/tmp/\$$\$$.deformat.l && \\"; \
-          fi >> $@ 
+          fi >> $@
 	@echo "$(FLEX) \$$FLEXOPTS -o/tmp/\$$\$$.lex.cc /tmp/\$$\$$.deformat.l && \\" >> $@
 	@echo "$(CXX) -DGENFORMAT $(CXXFLAGS) -w $(APERTIUM_CFLAGS) -I $(apertiuminclude) -o \$$FILE2 /tmp/\$$\$$.lex.cc $(APERTIUM_LIBS) 2>/dev/null && \\" >> $@
 	@echo "rm /tmp/\$$\$$.deformat.l /tmp/\$$\$$.lex.cc" >> $@
@@ -377,7 +381,7 @@ apertium-gen-modes: Makefile.am modes-header.sh
 	@if [ `basename $(XSLTPROC)` == xsltproc ]; \
 	  then echo "$(XSLTPROC) --stringparam prefix $(prefix)/bin --stringparam dataprefix \$$FULLDIRNAME  $(apertiumdir)/modes2bash.xsl \$$FILE1 | awk -f $(apertiumdir)/apertium-createmodes.awk PARAM=\$$FULLDIRNAME"; \
           else echo "$(XSLTPROC) $(apertiumdir)/modes2bash.xsl \$$FILE1 \\\$$prefix=$(prefix)/bin \\\$$dataprefix=\$$FULLDIRNAME| awk -f $(apertiumdir)/apertium-createmodes.awk PARAM=\$$FULLDIRNAME"; \
-          fi >> $@ 
+          fi >> $@
 	@chmod a+x $@
 
 apertium-utils-fixlatex: Makefile.am utils-fixlatex-header.sh
@@ -486,7 +490,7 @@ man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
          apertium-validate-postchunk.1 apertium-validate-modes.1 apertium-tagger-apply-new-rules.1 \
 	 apertium-validate-acx.1 apertium-multiple-translations.1 \
 	 apertium-unformat.1
-         ###apertium-lextor-eval.1 
+         ###apertium-lextor-eval.1
 
 EXTRA_DIST = gen-header.sh deformat-header.sh \
              reformat.xsl deformat.xsl new2old.xsl lexchoice.xsl lexchoicebil.xsl \
@@ -501,4 +505,4 @@ EXTRA_DIST = gen-header.sh deformat-header.sh \
              gen-wlist-lextor-header.sh gen-stopwords-lextor.sh preprocess-corpus-lextor.sh \
              interchunk.dtd postchunk.dtd modes.dtd \
              utils-fixlatex-header.sh \
-             modes-header.sh apertium-createmodes.awk modes2bash.xsl ###trans-lextor-header.sh 
+             modes-header.sh apertium-createmodes.awk modes2bash.xsl ###trans-lextor-header.sh

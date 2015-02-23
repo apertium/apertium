@@ -17,7 +17,7 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  02111-1307, USA.
 -->
-<xsl:stylesheet version="1.0" 
+<xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:output method="text" encoding="UTF-8"/>
 
@@ -39,7 +39,7 @@
 #include &lt;lttoolbox/lt_locale.h&gt;
 #include &lt;lttoolbox/ltstr.h&gt;
 #include &lt;wchar.h&gt;
-#ifdef _MSC_VER
+#ifdef _WIN32
 #include &lt;io.h&gt;
 #include &lt;fcntl.h&gt;
 #endif
@@ -47,7 +47,7 @@
 using namespace std;
 
 <xsl:for-each select="./rules/replacement-rule">
-  <xsl:variable name="varname" 
+  <xsl:variable name="varname"
 		select="concat(concat(string('S'),position()),string('_substitution'))"/>
   <xsl:value-of select="string('map&lt;wstring, wstring, Ltstr&gt; S')"/>
   <xsl:value-of select="position()"/>
@@ -70,11 +70,11 @@ using namespace std;
   <xsl:value-of select="string('&#xA;}&#xA;')"/>
 </xsl:for-each>
 
-string memconv;  
+string memconv;
 
 wstring convertir(char const *multibyte, int const length)
 {
-  memconv.append(multibyte, length); 
+  memconv.append(multibyte, length);
   int tam = memconv.size();
   if (memconv == "")
     return L"";
@@ -119,7 +119,7 @@ wstring convertir(char const *multibyte, int const length)
   filename = filename.substr(2, filename.size()-3);
   FILE *temp = fopen(filename.c_str(), "r");
   wint_t mychar;
-#ifdef _MSC_VER
+#ifdef _WIN32
   _setmode(_fileno(temp), _O_U8TEXT);
 #endif
 
@@ -148,12 +148,12 @@ wstring convertir(char const *multibyte, int const length)
   fputws_unlocked(convertir(yytext+1, yyleng-1).c_str(), yyout);
 }
 
- 
+
 
 .|\n&#x9;{
   wstring yytext_conv = convertir(yytext, yyleng);
 <xsl:for-each select="./rules/replacement-rule">
-  <xsl:variable name="varname" 
+  <xsl:variable name="varname"
 		select="concat(concat(string('S'),position()),string('_substitution'))"/>
 
   <xsl:value-of select="string('  ')"/>
@@ -169,7 +169,7 @@ wstring convertir(char const *multibyte, int const length)
   <xsl:value-of select="$varname"/>
   <xsl:value-of select="string('[yytext_conv].c_str(), yyout);')"/>
   <xsl:value-of select="string('&#xA;  }&#xA;')"/>
-</xsl:for-each>   
+</xsl:for-each>
 
 <xsl:if test="not(count(./rules/replacement-rule)=0)">
   <xsl:value-of select="string('  else&#xA;  {&#xA;  ')"/>
@@ -190,7 +190,7 @@ void usage(string const &amp;progname)
 {
   cerr &lt;&lt; "USAGE: " &lt;&lt; progname &lt;&lt; " [input_file [output_file]" &lt;&lt; ']' &lt;&lt; endl;
   cerr &lt;&lt; "<xsl:value-of select="./@name"/> format processor " &lt;&lt; endl;
-  exit(EXIT_SUCCESS);  
+  exit(EXIT_SUCCESS);
 }
 
 int main(int argc, char *argv[])
@@ -201,7 +201,7 @@ int main(int argc, char *argv[])
   {
     usage(argv[0]);
   }
- 
+
   switch(argc)
   {
     case 3:
@@ -220,10 +220,10 @@ int main(int argc, char *argv[])
     default:
       break;
   }
-#ifdef _MSC_VER
+#ifdef _WIN32
   _setmode(_fileno(yyin), _O_U8TEXT);
   _setmode(_fileno(yyout), _O_U8TEXT);
-#endif 
+#endif
 
 <xsl:for-each select="./rules/replacement-rule">
   <xsl:value-of select="string('  S')"/>

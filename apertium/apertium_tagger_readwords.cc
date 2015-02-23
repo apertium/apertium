@@ -64,7 +64,7 @@ void readwords (FILE *is, int corpus_length) {
 
     if (check_ambclasses) {
       int k=tagger_data_hmm.getOutput()[word->get_tags()];
-    
+
       if ((k>=tagger_data_hmm.getM())||(k<0)) {
 	cerr<<"Error: Ambiguity class number out of range: "<<k<<"\n";
 	cerr<<"Word: "<<UtfConverter::toUtf8(word->get_superficial_form())<<"\n";
@@ -100,7 +100,9 @@ int main(int argc, char* argv[]) {
   int corpus_length=-1;
 
   int c;
+#if HAVE_GETOPT_LONG
   int option_index=0;
+#endif
 
   cerr<<"LOCALE: "<<setlocale(LC_ALL,"")<<"\n";
 
@@ -110,6 +112,7 @@ int main(int argc, char* argv[]) {
   cerr<<"\n";
 
   while (true) {
+#if HAVE_GETOPT_LONG
     static struct option long_options[] =
       {
 	{"tsxfile",  required_argument, 0, 'x'},
@@ -121,11 +124,14 @@ int main(int argc, char* argv[]) {
       };
 
     c=getopt_long(argc, argv, "x:p:l:hv",long_options, &option_index);
+#else
+    int c=getopt(argc, argv, "x:p:l:hv");
+#endif
     if (c==-1)
       break;
-      
+
     switch (c) {
-    case 'l': 
+    case 'l':
       corpus_length=atoi(optarg);
       if(corpus_length<=0) {
 	cerr<<"Error: corpus length provided with --clength must be a positive integer\n";
@@ -133,13 +139,13 @@ int main(int argc, char* argv[]) {
 	exit(EXIT_FAILURE);
       }
       break;
-    case 'x': 
+    case 'x':
       tsxfile=optarg;
       break;
     case 'p':
       probfile=optarg;
       break;
-    case 'h': 
+    case 'h':
       help(argv[0]);
       exit(EXIT_SUCCESS);
       break;
@@ -161,7 +167,7 @@ int main(int argc, char* argv[]) {
 	  <<"   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA\n"
 	  <<"   02111-1307, USA.\n";
       exit(EXIT_SUCCESS);
-      break;    
+      break;
     default:
       help(argv[0]);
       exit(EXIT_FAILURE);

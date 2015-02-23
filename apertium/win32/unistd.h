@@ -5,7 +5,7 @@
 
 #define fileno _fileno
 
-#if defined(_MSCVER) && defined(isatty)
+#if defined(_WIN32) && defined(isatty)
 #undef isatty
 #define isatty _isatty
 #endif

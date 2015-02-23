@@ -25,7 +25,7 @@ extern "C" {
 #include "apertium_config.h"
 #endif
 #include <apertium/unlocked_cstdio.h>
-#ifdef _MSC_VER
+#ifdef _WIN32
 #include <io.h>
 #include <fcntl.h>
 #endif
@@ -47,20 +47,20 @@ wstring convertir(string const &multibyte, int const length)
   {
     delete[] retval;
     if(memconv.size() >= 4)
-    { 
+    {
       wcerr << L"Warning: wrong encoding" << endl;
     }
     return L"";
   }
   else
-  {   
+  {
     memconv = "";
     retval[l] = 0;
     wstring ret = retval;
     delete[] retval;
     return ret;
   }
-}  
+}
 
 
 
@@ -277,7 +277,7 @@ wstring convertir(string const &multibyte, int const length)
  \#	{
         fputws(L"\\#", yyout);
  }*/
- 
+
 
 [^A-Za-z\n]	{
 	wstring wt = convertir(yytext,yyleng);
@@ -309,16 +309,16 @@ void usage(string const &progname)
 {
 
   cerr << "USAGE: " << progname << " [input_file [output_file]" << ']' << endl;
-  
+
   cerr << "LaTeX format postprocessor " << endl;
-  exit(EXIT_SUCCESS);  
+  exit(EXIT_SUCCESS);
 }
 
 int main(int argc, char *argv[])
 {
   LtLocale::tryToSetLocale();
   size_t base = 0;
-  
+
   if(argc >= 2 && !strcmp(argv[1],"-i"))
   {
     base++;
@@ -347,11 +347,11 @@ int main(int argc, char *argv[])
     default:
       break;
   }
-  
-#ifdef _MSC_VER
+
+#ifdef _WIN32
   _setmode(_fileno(yyin), _O_U8TEXT);
   _setmode(_fileno(yyout), _O_U8TEXT);
-#endif 
+#endif
   // prevent warning message
   yy_push_state(1);
   yy_top_state();

@@ -17,7 +17,7 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  02111-1307, USA.
 -->
-<xsl:stylesheet version="1.0" 
+<xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:output method="text" encoding="UTF-8"/>
 
@@ -32,7 +32,7 @@
       <xsl:value-of select="substring-before($haystack, $needle)"/>
       <xsl:value-of select="$replacement"/>
       <xsl:call-template name="replaceString">
-	<xsl:with-param name="haystack" 
+	<xsl:with-param name="haystack"
 			select="substring-after($haystack, $needle)"/>
 	<xsl:with-param name="needle" select="$needle"/>
 	<xsl:with-param name="replacement" select="$replacement"/>
@@ -154,7 +154,7 @@ extern "C" {
 #include "apertium_config.h"
 #endif
 #include &lt;apertium/unlocked_cstdio.h&gt;
-#ifdef _MSC_VER
+#ifdef _WIN32
 #include &lt;io.h&gt;
 #include &lt;fcntl.h&gt;
 #endif
@@ -194,13 +194,13 @@ void bufferAppend(wstring &amp;buf, string const &amp;str)
         gap = 1;
       }
       else
-      { 
+      {
         symbuf = symbuf.substr(i);
         return;
       }
     }
-    else 
-    { 
+    else
+    {
       buf += symbol;
     }
 
@@ -213,9 +213,9 @@ void bufferAppend(wstring &amp;buf, string const &amp;str)
 
 
 void init_escape()
-{  
+{
   if(regcomp(&amp;escape_chars, "<xsl:call-template name="replaceString">
-      <xsl:with-param name="haystack" 
+      <xsl:with-param name="haystack"
 		      select="/format/options/escape-chars/@regexp"/>
       <xsl:with-param name="needle" select="string('\')"/>
       <xsl:with-param name="replacement" select="string('\\')"/>
@@ -227,9 +227,9 @@ void init_escape()
 }
 
 void init_tagNames()
-{  
+{
   if(regcomp(&amp;names_regexp, "<xsl:call-template name="replaceString">
-      <xsl:with-param name="haystack" 
+      <xsl:with-param name="haystack"
 		      select="/format/options/tag-name/@regexp"/>
       <xsl:with-param name="needle" select="string('\')"/>
       <xsl:with-param name="replacement" select="string('\\')"/>
@@ -260,11 +260,11 @@ string backslash(string const &amp;str)
 wstring escape(string const &amp;str)
 {
   regmatch_t pmatch;
-  
+
   char const *mystring = str.c_str();
   int base = 0;
   wstring result;
-  
+
   while(!regexec(&amp;escape_chars, mystring + base, 1, &amp;pmatch, 0))
   {
     bufferAppend(result, str.substr(base, pmatch.rm_so));
@@ -275,9 +275,9 @@ wstring escape(string const &amp;str)
     {
       wcerr &lt;&lt; L"Uno" &lt;&lt; endl;
       wcerr &lt;&lt; L"Encoding error." &lt;&lt; endl;
-      exit(EXIT_FAILURE);      
+      exit(EXIT_FAILURE);
     }
-    
+
     result += micaracter;
     base += pmatch.rm_eo;
   }
@@ -289,12 +289,12 @@ wstring escape(string const &amp;str)
 wstring escape(wstring const &amp;str)
 {
   string dest;
-  
+
   for(size_t i = 0, limit = str.size(); i &lt; limit; i++)
   {
 #ifdef __GNUC__
     char symbol[MB_CUR_MAX+1];
-#else 
+#else
     std::string _symbol(MB_CUR_MAX+1, 0);
     char *symbol = &amp;_symbol[0];
 #endif
@@ -312,7 +312,7 @@ wstring escape(wstring const &amp;str)
 
 string get_tagName(string tag){
   regmatch_t pmatch;
-  
+
   char const *mystring = tag.c_str();
   string result;
   if(!regexec(&amp;names_regexp, mystring, 1, &amp;pmatch, 0))
@@ -326,7 +326,7 @@ string get_tagName(string tag){
 
 
 <xsl:for-each select="./rules/replacement-rule">
-  <xsl:variable name="varname" 
+  <xsl:variable name="varname"
 		select="concat(concat(string('S'),position()),string('_substitution'))"/>
   <xsl:value-of select="string('map&lt;string, wstring, Ltstr&gt; S')"/>
   <xsl:value-of select="position()"/>
@@ -567,7 +567,7 @@ void printBuffer()
     fputws_unlocked(tmp.c_str(), yyout);
 
     fputwc_unlocked(L']', yyout);
-  }     
+  }
   else
   {
     fputws_unlocked(buffer.c_str(), yyout);
@@ -644,7 +644,7 @@ void printBuffer()
 
 
 <xsl:for-each select="./rules/replacement-rule">
-  <xsl:variable name="varname" 
+  <xsl:variable name="varname"
 		select="concat(concat(string('S'),position()),string('_substitution'))"/>
   <xsl:value-of select="string('&#xA;')"/>
   <xsl:value-of select="./@regexp"/>
@@ -658,15 +658,15 @@ void printBuffer()
   <xsl:value-of select="$varname"/>
   <xsl:value-of select="string('[yytext].size();&#xA;')"/>
   <xsl:value-of select="string('    hasWrite_dot = hasWrite_white = true;&#xA;  }&#xA;  else&#xA;  {&#xA;')"/>
-  <xsl:value-of select="string('    last=&quot;buffer&quot;;&#xA;    bufferAppend(buffer, yytext);&#xA;  }&#xA;}&#xA;')"/>  
+  <xsl:value-of select="string('    last=&quot;buffer&quot;;&#xA;    bufferAppend(buffer, yytext);&#xA;  }&#xA;}&#xA;')"/>
 </xsl:for-each>
 
 <xsl:value-of select="./options/space-chars/@regexp"/>&#x9;{
-  if (last == "open_tag") 
+  if (last == "open_tag")
     bufferAppend(tags.back(), yytext);
   else
     bufferAppend(buffer, yytext);
-    
+
 }
 
 <xsl:value-of select="./options/escape-chars/@regexp"/>&#x9;{
@@ -736,7 +736,7 @@ void usage(string const &amp;progname)
   </xsl:otherwise>
 </xsl:choose>
   cerr &lt;&lt; "<xsl:value-of select="./@name"/> format processor " &lt;&lt; endl;
-  exit(EXIT_SUCCESS);  
+  exit(EXIT_SUCCESS);
 }
 
 int main(int argc, char *argv[])
@@ -744,7 +744,7 @@ int main(int argc, char *argv[])
   LtLocale::tryToSetLocale();
   size_t base = 0;
   eosIncond = false;
-  
+
   if(argc &gt;= 2 &amp;&amp; !strcmp(argv[1],"-i"))
   {
     eosIncond = true;
@@ -756,7 +756,7 @@ int main(int argc, char *argv[])
   {
     usage(argv[0]);
   }
- 
+
   switch(argc-base)
   {
     case 4:
@@ -808,10 +808,10 @@ int main(int argc, char *argv[])
   }
   </xsl:otherwise>
 </xsl:choose>
-#ifdef _MSC_VER
+#ifdef _WIN32
   _setmode(_fileno(yyin), _O_U8TEXT);
   _setmode(_fileno(yyout), _O_U8TEXT);
-#endif 
+#endif
   // prevent warning message
   yy_push_state(1);
   yy_top_state();
