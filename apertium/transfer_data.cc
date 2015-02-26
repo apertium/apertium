@@ -179,6 +179,7 @@ TransferData::write(FILE *output)
 void
 TransferData::writeRegexps(FILE *output)
 {
+  Compression::string_write(string(pcre_version()), output);
   Compression::multibyte_write(attr_items.size(), output);
 
   map<wstring, wstring, Ltstr>::iterator it, limit;
@@ -186,8 +187,8 @@ TransferData::writeRegexps(FILE *output)
   {
     Compression::wstring_write(it->first, output);
     ApertiumRE my_re;
-    //wcerr << it->second << endl;
     my_re.compile(UtfConverter::toUtf8(it->second));
     my_re.write(output);
+    Compression::wstring_write(it->second, output);
   }
 }
