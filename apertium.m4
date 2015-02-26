@@ -1,7 +1,7 @@
 # apertium.m4 - Macros to locate and utilise apertium libraries -*- Autoconf -*-
-# serial 1 (apertium-3.3.0)
+# serial 1 (apertium-3.4.0)
 #
-# Copyright (C) 2013 Universitat d'Alacant / Universidad de Alicante
+# Copyright (C) 2013--2015 Universitat d'Alacant / Universidad de Alicante
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as

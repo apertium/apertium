@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-PROJECT (apertium-3.2)
+PROJECT (apertium-3.4)
 
 SET (CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 SET (PROGRAM_FILES_PATH "C:/Program\ Files")
@@ -62,9 +62,9 @@ FIND_PACKAGE (LibPcre    REQUIRED)
 
 SET (PACKAGE_BUGREPORT sortiz@users.sourceforge.net)
 SET (PACKAGE_NAME      apertium/apertium.h)
-SET (PACKAGE_STRING    apertium/apertium.h 3.3.0)
+SET (PACKAGE_STRING    apertium/apertium.h 3.4.0)
 SET (PACKAGE_TARNAME   lttoolbox-lttoolbox-h)
-SET (PACKAGE_VERSION   3.3.0)
+SET (PACKAGE_VERSION   3.4.0)
 
 MACRO (BOOL_CHECK_SYMBOL_EXISTS SYMBOL HEADER VAR)
         CHECK_SYMBOL_EXISTS (${SYMBOL} ${HEADER} ${VAR})
