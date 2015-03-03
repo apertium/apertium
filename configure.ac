@@ -3,7 +3,7 @@
 
 AC_PREREQ(2.52)
 
-m4_define([required_lttoolbox_version], [3.3.0])
+m4_define([required_lttoolbox_version], [3.3.1])
 m4_define([required_libxml_version], [2.6.17])
 m4_define([required_libpcre_version], [6.4])
 #m4_define([required_pkg_config_version], [0.15])
