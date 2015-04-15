@@ -803,6 +803,9 @@ HMM::tagger(FILE *in, FILE *out, bool show_all_good_first) {
 #ifdef __GNUC__
     clear_array_double(alpha[nwpend%2], N);    
     clear_array_vector(best[nwpend%2], N);
+#else
+    clear_array_double(&alpha[nwpend%2][0], N);    
+    clear_array_vector(&best[nwpend%2][0], N);
 #endif
     
     //Induction
@@ -832,9 +835,7 @@ HMM::tagger(FILE *in, FILE *out, bool show_all_good_first) {
         if (debug)
 	  wcerr<<L"Problem with word '"<<word->get_superficial_form()<<L"' "<<word->get_string_tags()<<L"\n";
       }
-      // On Mac, t sometimes ends up larger than wpend.size() which causes a segfault in wpend[t].
-      // Must be caused somewhere else, but that's for someone who knows this code to fix - for now, this works.
-      for (unsigned t=0; t<best[nwpend%2][tag].size() && t<wpend.size(); t++) {
+      for (unsigned t=0; t<best[nwpend%2][tag].size(); t++) {
 	if (show_all_good_first) {
 	  wstring const &micad = wpend[t].get_all_chosen_tag_first(best[nwpend%2][tag][t], (tdhmm->getTagIndex())[L"TAG_kEOF"]);
 	  fputws_unlocked(micad.c_str(), out); 
