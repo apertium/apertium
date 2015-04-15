@@ -129,10 +129,6 @@ AC_ARG_ENABLE(profile,
               [  --enable-profile  Enable "-pg -g -Wall" compiler options],
               [CXXFLAGS="-pg -g -Wall"; CFLAGS="-pg -g -Wall"; LDFLAGS="-pg"])
 
-if test "$CXX" = "clang++" ; then
-  CXXFLAGS="$CXXFLAGS -stdlib=libc++"
-  LDFLAGS="$LDFLAGS -stdlib=libc++"
-fi
 
 AC_PATH_PROG(XMLLINT, xmllint, no)
 if test x$ac_cv_path_XMLLINT = x
