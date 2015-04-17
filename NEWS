@@ -3,6 +3,13 @@
  NEWS for apertium
 ===================
 
+SVN
+---
+
+* fix a crash when apertium-tagger is compiled with with clang
+
+* new option -n to deformatters turns off dot-insertion
+
 
 Version 3.4, 2015-03-17 (-r59200)
 ---------------------------------
