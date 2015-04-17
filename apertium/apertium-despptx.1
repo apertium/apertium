@@ -8,6 +8,7 @@ This tool is part of the apertium open-source machine translation
 toolbox: \fBhttp://www.apertium.org\fR.
 .SH SYNOPSIS
 .B apertium-despptx
+[ -h ] [ -i ] [ -n ]
 [ <input file> [ <output file> ] ]
 .PP
 .SH DESCRIPTION
@@ -21,6 +22,11 @@ processing with lt-proc. PPTX tags and other format information are  enclosed in
 .TP
 .B \-h, \-\-help
 Display this help.
+.B \-i
+Makes the addition of trailing sentence terminator (".") unconditional, often
+leading to duplicates.
+.B \-n
+Suppresses the addition of a trailing sentence terminator.
 .PP
 .SH EXAMPLE
 .TP
