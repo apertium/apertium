@@ -165,6 +165,7 @@ wstring buffer;
 string symbuf;
 bool isDot, hasWrite_dot, hasWrite_white;
 bool eosIncond;
+bool noDot;
 FILE *formatfile;
 string last;
 int current;
@@ -510,7 +511,14 @@ void preDot()
 {
   if(eosIncond)
   {
-    fputws_unlocked(L".[]", yyout);
+    if(noDot)
+    {
+      fputws_unlocked(L"[]", yyout);
+    }
+    else
+    {
+      fputws_unlocked(L".[]", yyout);
+    }
   }
 }
 
@@ -518,7 +526,14 @@ void printBuffer()
 {
   if(isDot &amp;&amp; !eosIncond)
   {
-    fputws_unlocked(L".[]", yyout);
+    if(noDot)
+    {
+      fputws_unlocked(L"[]", yyout);
+    }
+    else
+    {
+      fputws_unlocked(L".[]", yyout);
+    }
     isDot = false;
   }
   if(buffer.size() &gt; <xsl:value-of select="/format/options/largeblocks/@size"/>)
@@ -745,10 +760,18 @@ int main(int argc, char *argv[])
   size_t base = 0;
   eosIncond = false;
 
-  if(argc &gt;= 2 &amp;&amp; !strcmp(argv[1],"-i"))
+  if(argc &gt;= 2)
   {
-    eosIncond = true;
-    base++;
+    if(!strcmp(argv[1],"-i"))
+    {
+      eosIncond = true;
+      base++;
+    }
+    else if(!strcmp(argv[1],"-n"))
+    {
+      noDot = true;
+      base++;
+    }
   }
 <xsl:choose>
   <xsl:when test="$mode=string('matxin')">
