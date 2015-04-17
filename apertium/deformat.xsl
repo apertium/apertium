@@ -747,7 +747,7 @@ void usage(string const &amp;progname)
   cerr &lt;&lt; "USAGE: " &lt;&lt; progname &lt;&lt; " format_file [input_file [output_file]" &lt;&lt; ']' &lt;&lt; endl;
   </xsl:when>
   <xsl:otherwise>
-  cerr &lt;&lt; "USAGE: " &lt;&lt; progname &lt;&lt; " [input_file [output_file]" &lt;&lt; ']' &lt;&lt; endl;
+  cerr &lt;&lt; "USAGE: " &lt;&lt; progname &lt;&lt; " [ -h | -i | -n ] [input_file [output_file]" &lt;&lt; ']' &lt;&lt; endl;
   </xsl:otherwise>
 </xsl:choose>
   cerr &lt;&lt; "<xsl:value-of select="./@name"/> format processor " &lt;&lt; endl;
