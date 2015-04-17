@@ -1,7 +1,94 @@
-Mon Jun  5 00:29:11 BST 2006
 
-Initial packaging.
+===================
+ NEWS for apertium
+===================
 
-Wed Oct  3 07:12:19 BST 2007
 
-Packaging version 3.0.
+Version 3.4, 2015-03-17 (-r59200)
+---------------------------------
+
+* transfer files now work even if they were compiled with a different
+  version of pcre
+
+* more explicit validation checks on .dix compilation
+
+* various fixes to driver script:
+
+  * `apertium -d . -l` behaves as expected now
+
+  * `>>` no longer empties out the destination file
+
+  * safer variable quoting
+
+* some Windows Unicode fixes
+
+* tagger now resets its state after a flush
+
+
+Version 3.3, 2014-08-20 (-r56825)
+---------------------------------
+
+* new Light Sliding Window Part-of-Speech Tagger (GsoC project merged)
+
+* new LaTeX format handler
+
+* new html-noent format handler (html without turning non-ASCII into entities)
+
+* bilingual lookup can now be separate from transfer
+
+  * see new -b options to lt-proc/apertium-transfer
+
+* apertium.m4 now available for language pairs to simplify build rules
+  and depend on monolingual data
+
+* some memory leaks and many minor bugs fixed
+
+  * pretransfer now allows '+' inside tags
+
+* --trace modes for transfer
+
+
+Version 3.2, 2010-09-21 (-r25741)
+---------------------------------
+
+* Fixed some bugs in pretransfer, allow '+' inside tags
+
+* Updated the DTDs to allow comments anywhere
+
+
+Version 3.1, 2008-09-29
+-----------------------
+
+
+Version 3.0, 2008-08-01
+-----------------------
+
+* Debian package
+
+
+Version 2.0, 2007-06-19
+-----------------------
+
+
+Version 1.9, 2006-12-15
+-----------------------
+
+
+Version 1.0, 2006-10-02
+-----------------------
+
+* Debian package
+
+
+Version 0.9, 2005-09-29
+-----------------------
+
+
+Version 0.8, 2005-08-01
+-----------------------
+
+
+
+# Local Variables:
+# mode: markdown
+# End:
