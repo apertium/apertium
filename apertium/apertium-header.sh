@@ -382,6 +382,7 @@ translate_htmlnoent ()
 PATH="${APERTIUM_PATH}:${PATH}"
 [[ -z $TMPDIR ]] && TMPDIR=/tmp
 TMCOMPFILE=$(mktemp "$TMPDIR/apertium.XXXXXXXX")
+trap 'rm -Rf "$TMCOMPFILE"' EXIT
 
 # Default values, may be overridden below:
 PAIR=""
@@ -630,6 +631,8 @@ then
     REF=$FORMAT
 fi
 
+set -e -o pipefail
+
 if [ "$FORMAT" = "none" ]; then
     cat "$INFILE"
 else
@@ -657,4 +660,3 @@ fi | if [ "$TRANSLATION_MEMORY_FILE" = "" ];
                  fi
                fi
 
-rm -Rf "$TMCOMPFILE"
