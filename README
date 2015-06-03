@@ -1,11 +1,14 @@
 REQUIREMENTS
 
-* This package needs lttoolbox-3.1 package  installed in the
-system.
+* This package needs the package lttoolbox-3.3.1 installed in the
+system, as well as libxml and libpcre.
+
+See www.apertium.org for more information on installing.
 
 DESCRIPTION
 
-When building, this package generates the following modules:
+When building, this package generates, among others, the following
+modules:
 
 * apertium-deshtml, apertium-desrtf, apertium-destxt
   Deformatters for html, rtf and txt document formats.
@@ -13,21 +16,15 @@ When building, this package generates the following modules:
 * apertium-rehtml, apertium-rertf, apertium-retxt
   Reformatters for html, rtf and txt document formats.
 
-* apertium-gen-tagger
-  Tagger modules generator.
-
-* apertium-gen-transfer
-  Transfer modules generator.
-
 * apertium
   Translator program.  Execute without parameters to see the usage.
 
 QUICK START
 
-1) Download the packages for lttoolbox-VERSION.tar.gz and 
-   apertium-VERSION.tar.gz and linguistic data	
+1) Download the packages for lttoolbox-VERSION.tar.gz and
+   apertium-VERSION.tar.gz and linguistic data
 
-   Note: If you are using the translator from SVN, run ./autogen.sh before 
+   Note: If you are using the translator from SVN, run ./autogen.sh before
          running ./configure in all cases.
 
 2) Unpack lttoolbox and do ('#' means 'do that with root privileges'):
@@ -44,20 +41,28 @@ QUICK START
 
 4) Unpack linguistic data (LING_DATA_DIR) and do:
    $ cd LING_DATA_DIR
+   $ ./configure
    $ make
-   and wait for a while (minutes).  
+   and wait for a while (minutes).
 
 5) Use the translator
-   
-   USAGE: apertium [-d datadir] [-f format] [-u] <translation> [in [out]]
+
+   USAGE: apertium [-d datadir] [-f format] [-u] <direction> [in [out]]
     -d datadir       directory of linguistic data
-    -f format        one of: txt (default), html, rtf
+    -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx, pptx,
+                     xpresstag, html-noent, latex, latex-raw
+    -a               display ambiguity
     -u               don't display marks '*' for unknown words
-    translation      typically, LANG1-LANG2, but see modes.xml in language data
+    -n               don't insert period before possible sentence-ends
+    -m memory.tmx    use a translation memory to recycle translations
+    -o direction     translation direction using the translation memory,
+                     by default 'direction' is used instead
+    -l               lists the available translation directions and exits
+    direction        typically, LANG1-LANG2, but see modes.xml in language data
     in               input file (stdin by default)
     out              output file (stdout by default)
 
 
    Sample:
 
-   $ apertium es-ca txt <input >output
+   $ apertium -f txt es-ca <input >output
