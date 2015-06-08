@@ -74,6 +74,7 @@ private:
   bool null_flush;
   bool internal_null_flush;
   bool trace;
+  string emptyblank;
   
   void copy(Interchunk const &o);
   void destroy();

@@ -63,6 +63,7 @@ Interchunk::Interchunk()
   null_flush = false;
   internal_null_flush = false;
   trace = false;
+  emptyblank = "";
 }
 
 Interchunk::~Interchunk()
@@ -632,12 +633,13 @@ Interchunk::processCallMacro(xmlNode *localroot)
   InterchunkWord **myword = NULL;
   if(npar > 0)
   {
-    myword = new InterchunkWord *[npar];  
+    myword = new InterchunkWord *[npar];
   }
   string **myblank = NULL;
-  if(npar > 1)
+  if(npar > 0)
   {
-    myblank = new string *[npar - 1];
+    myblank = new string *[npar];
+    myblank[npar-1] = &emptyblank;
   }
 
   int idx = 0;
@@ -660,7 +662,7 @@ Interchunk::processCallMacro(xmlNode *localroot)
   swap(myword, word);
   swap(myblank, blank);
   swap(npar, lword);
-  
+
   for(xmlNode *i = macro->children; i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE)
