@@ -46,7 +46,7 @@ void check_file(FILE *f, const string& path) {
 }
 
 void help(char *name) {
-  cerr<<"Forbid and enforce rules are applied to the given HMM paramters\n\n";
+  cerr<<"Forbid and enforce rules are applied to the given HMM parameters\n\n";
   cerr<<"USAGE:\n";
   cerr<<name<<" --filein filein.prob --fileout fileout.prob --tsxfile file.tsx\n\n";
 

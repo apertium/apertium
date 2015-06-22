@@ -726,7 +726,7 @@ Tagger::help() {
   out << "  -t, --train=n:          performs n iterations of training (unsupervised)" << endl;
   out << "  -s, --supervised=n:     initializes parameters against a hand-tagged text (supervised)," << endl;
   out << "                          and trains it with n iterations" << endl;
-  out << "  -r, --retrain=n:        retrains the model with n aditional iterations (unsupervised)" << endl;
+  out << "  -r, --retrain=n:        retrains the model with n additional iterations (unsupervised)" << endl;
   out << "  -g, --tagger:           tags input text" << endl;
   out << "  -p, --show-superficial: show superficial forms in the output stream" << endl;
   out << "  -f, --first:            used in conjuntion with -g (--tagger) makes the tagger"<< endl;

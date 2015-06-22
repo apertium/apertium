@@ -493,9 +493,9 @@ Arguments:\n\
 	starting rung is printed.\n\
 \n\
 -cautious\n\
-	In -bisent mode, only bisentences for which both the preceeding and the following\n\
+	In -bisent mode, only bisentences for which both the preceding and the following\n\
 	segments are one-to-one are printed. In the default non-bisent mode, only rungs\n\
-	for which both the preceeding and the following segments are one-to-one are printed.\n\
+	for which both the preceding and the following segments are one-to-one are printed.\n\
 \n\
 -hand=file\n\
 	When this argument is given, the precision and recall of the alignment is calculated\n\
