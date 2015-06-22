@@ -8,14 +8,14 @@ This tool is part of the apertium open-source machine translation
 toolbox: \fBhttp://www.apertium.org\fR.
 .SH SYNOPSIS
 .B apertium-tagger-apply-new-rules 
---filein [ <input file> ] --fileout [ <output file> ] --tsxfile [ <rule file> ]
+\-\-filein [ <input file> ] \-\-fileout [ <output file> ] \-\-tsxfile [ <rule file> ]
 
 .PP
 .SH DESCRIPTION
 .BR apertium-tagger-apply-new-rules
 is used to forbid and enforce rules which are applied to the given HMM parameters.
 
-Note that the TSX file provided with --tsxfile *must* be equal, in terms of label definitions, to the one used when training the HMM parameters that are to be modified.
+Note that the TSX file provided with \-\-tsxfile *must* be equal, in terms of label definitions, to the one used when training the HMM parameters that are to be modified.
 
 .SH OPTIONS
 .TP
