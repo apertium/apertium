@@ -140,6 +140,18 @@ langs:
 	test -z "\$\$fail"
 .PHONY: langs
 
+
+.deps/%.autobil.prefixes: %.autobil.bin .deps/.d
+	lt-print $< | sed 's/ /@_SPACE_@/g' > .deps/\@S|@*.autobil.att
+	hfst-txt2fst -e ε <  .deps/\@S|@*.autobil.att > .deps/\@S|@*.autobil.hfst
+	hfst-project -p upper .deps/\@S|@*.autobil.hfst > .deps/\@S|@*.autobil.upper                                   # bidix
+	echo ' @<:@ ? - %+ @:>@* ' | hfst-regexp2fst > .deps/\@S|@*.any-nonplus.hfst                                                        # [^+]*
+	hfst-concatenate -1 .deps/\@S|@*.autobil.upper -2 .deps/\@S|@*.any-nonplus.hfst -o .deps/\@S|@*.autobil.nonplussed    # bidix [^+]*
+	echo ' %+ ' | hfst-regexp2fst > .deps/\@S|@*.single-plus.hfst                                                                 # +
+	hfst-concatenate -1 .deps/\@S|@*.single-plus.hfst -2 .deps/\@S|@*.autobil.nonplussed -o .deps/\@S|@*.autobil.postplus # + bidix [^+]*
+	hfst-repeat -f0 -t1 -i .deps/\@S|@*.autobil.postplus -o .deps/\@S|@*.autobil.postplus.0,1                      # (+ bidix [^+]*){0,1} -- gives at most one +
+	hfst-concatenate -1 .deps/\@S|@*.autobil.nonplussed -2 .deps/\@S|@*.autobil.postplus.0,1 -o \@S|@@                 # bidix [^+]* (+ bidix [^+]*){0,1}
+
 EOF
 
 ])
