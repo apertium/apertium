@@ -14,9 +14,7 @@
  * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <iostream>
@@ -217,9 +215,7 @@ int main(int argc, char* argv[]) {
 	  <<L"   General Public License for more details.\n"
 	  <<L"\n"
 	  <<L"   You should have received a copy of the GNU General Public License\n"
-	  <<L"   along with this program; if not, write to the Free Software\n"
-	  <<L"   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA\n"
-	  <<L"   02111-1307, USA.\n";
+	  <<L"   along with this program; if not, see <http://www.gnu.org/licenses/>.\n";
       exit(EXIT_SUCCESS);
       break;    
     default:
