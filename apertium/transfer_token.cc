@@ -31,7 +31,8 @@ TransferToken::destroy()
 {
 }
 
-TransferToken::TransferToken()
+TransferToken::TransferToken() :
+type(tt_eof)
 {
 }
 

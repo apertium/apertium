@@ -31,11 +31,6 @@ using namespace Apertium;
 using namespace std;
 
 void
-Transfer::copy(Transfer const &o)
-{
-}
-
-void
 Transfer::destroy()
 {
   if(me)
@@ -50,7 +45,15 @@ Transfer::destroy()
   }  
 }
 
-Transfer::Transfer()
+Transfer::Transfer() :
+word(0),
+blank(0),
+lword(0),
+lblank(0),
+output(0),
+any_char(0),
+any_tag(0),
+nwords(0)
 {
   me = NULL;
   doc = NULL;
@@ -69,22 +72,6 @@ Transfer::Transfer()
 Transfer::~Transfer()
 {
   destroy();
-}
-
-Transfer::Transfer(Transfer const &o)
-{
-  copy(o);
-}
-
-Transfer &
-Transfer::operator =(Transfer const &o)
-{
-  if(this != &o)
-  {
-    destroy();
-    copy(o);
-  }
-  return *this;
 }
 
 void 
@@ -948,6 +935,7 @@ Transfer::processLet(xmlNode *localroot)
       else if(!xmlStrcmp(i->name, (const xmlChar *) "link-to"))
       {
         as = i->children->content;
+        (void)as; // ToDo, remove "as" and the whole else?
       }      
     }
     
@@ -1037,6 +1025,7 @@ Transfer::processModifyCase(xmlNode *localroot)
       else if(!xmlStrcmp(i->name, (const xmlChar *) "link-to"))
       {
         as = i->children->content;
+        (void)as; // ToDo, remove "as" and the whole else?
       }
     }
     if(!xmlStrcmp(side, (const xmlChar *) "sl"))
@@ -1075,6 +1064,8 @@ Transfer::processCallMacro(xmlNode *localroot)
       break;
     }
   }
+  
+  // ToDo: Is it at all valid if npar <= 0 ?
 
   TransferWord **myword = NULL;
   if(npar > 0)
@@ -1090,7 +1081,7 @@ Transfer::processCallMacro(xmlNode *localroot)
 
   int idx = 0;
   int lastpos = 0;
-  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
+  for(xmlNode *i = localroot->children; npar && i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE)
     {
@@ -1121,14 +1112,8 @@ Transfer::processCallMacro(xmlNode *localroot)
   swap(myblank, blank);
   swap(npar, lword);
   
-  if(myword)
-  {
-    delete[] myword;
-  }
-  if(myblank)
-  {
-    delete[] myblank;
-  }
+  delete[] myword;
+  delete[] myblank;
 }
 
 void

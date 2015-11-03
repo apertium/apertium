@@ -28,11 +28,6 @@
 using namespace std;
 
 void
-TransferMult::copy(TransferMult const &o)
-{
-}
-
-void
 TransferMult::destroy()
 {
   if(me)
@@ -42,7 +37,13 @@ TransferMult::destroy()
   }
 }
 
-TransferMult::TransferMult()
+TransferMult::TransferMult() :
+word(0),
+blank(0),
+output(0),
+any_char(0),
+any_tag(0),
+nwords(0)
 {
   me = NULL;
   isRule = false;
@@ -53,22 +54,6 @@ TransferMult::TransferMult()
 TransferMult::~TransferMult()
 {
   destroy();
-}
-
-TransferMult::TransferMult(TransferMult const &o)
-{
-  copy(o);
-}
-
-TransferMult &
-TransferMult::operator =(TransferMult const &o)
-{
-  if(this != &o)
-  {
-    destroy();
-    copy(o);
-  }
-  return *this;
 }
 
 string

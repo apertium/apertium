@@ -41,7 +41,8 @@
 using namespace Apertium;
 using namespace std;
 
-TMXBuilder::TMXBuilder(wstring const &l1, wstring const &l2)
+TMXBuilder::TMXBuilder(wstring const &l1, wstring const &l2):
+low_limit(0)
 {
   lang1 = l1;
   lang2 = l2;
@@ -158,8 +159,8 @@ TMXBuilder::compatible(FILE *f1, FILE *f2, bool lazy)
 bool
 TMXBuilder::check(string const &file1, string const &file2, bool lazy)
 {
-  FILE *f1 = fopen(file1.c_str(), "r");
-  FILE *f2 = fopen(file2.c_str(), "r");
+  FILE *f1 = fopen(file1.c_str(), "rb");
+  FILE *f2 = fopen(file2.c_str(), "rb");
   if(!f1 && !f2)
   {
     wcerr << L"Error: Cannot access files '" << UtfConverter::fromUtf8(file1);
@@ -171,6 +172,7 @@ TMXBuilder::check(string const &file1, string const &file2, bool lazy)
     wcerr << L"Error: Cannot access file '";
     wcerr << UtfConverter::fromUtf8(file2);
     wcerr << "'" << endl;
+    fclose(f2);
     return false;
   }
   else if(!f2)
@@ -178,6 +180,8 @@ TMXBuilder::check(string const &file1, string const &file2, bool lazy)
     wcerr << L"Error: Cannot access file '";
     wcerr << UtfConverter::fromUtf8(file2);
     wcerr << "'" << endl;
+    fclose(f1);
+    return false;
   }
      
   bool retval = compatible(f1, f2, lazy);
@@ -587,7 +591,7 @@ TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
       partes[1] = L"";
       conta = 0;
     }
-    if(conta != 2)
+    if(conta < 2)
     {
       partes[conta] += val;
     }

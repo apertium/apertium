@@ -32,11 +32,6 @@ using namespace Apertium;
 using namespace std;
 
 void
-Postchunk::copy(Postchunk const &o)
-{
-}
-
-void
 Postchunk::destroy()
 {
   if(me)
@@ -51,7 +46,15 @@ Postchunk::destroy()
   }  
 }
 
-Postchunk::Postchunk()
+Postchunk::Postchunk() :
+word(0),
+blank(0),
+lword(0),
+lblank(0),
+output(0),
+any_char(0),
+any_tag(0),
+nwords(0)
 {
   me = NULL;
   doc = NULL;
@@ -65,22 +68,6 @@ Postchunk::Postchunk()
 Postchunk::~Postchunk()
 {
   destroy();
-}
-
-Postchunk::Postchunk(Postchunk const &o)
-{
-  copy(o);
-}
-
-Postchunk &
-Postchunk::operator =(Postchunk const &o)
-{
-  if(this != &o)
-  {
-    destroy();
-    copy(o);
-  }
-  return *this;
 }
 
 void 
@@ -741,6 +728,11 @@ Postchunk::processCallMacro(xmlNode *localroot)
       break;
     }
   }
+  
+  if (npar <= 0)
+  {
+    throw "Postchunk::processCallMacro() assumes npar > 0, but got npar <= 0";
+  }
 
   InterchunkWord **myword = NULL;
   if(npar > 0)
@@ -789,14 +781,8 @@ Postchunk::processCallMacro(xmlNode *localroot)
   swap(myblank, blank);
   swap(npar, lword);
 
-  if(myword)
-  {
-    delete[] myword;
-  }
-  if(myblank)
-  {
-    delete[] myblank;
-  }
+  delete[] myword;
+  delete[] myblank;
 }
 
 void
@@ -1687,7 +1673,7 @@ Postchunk::applyRule()
     {
       delete word[i];
     }
-    delete word;
+    delete[] word;
   }
   if(blank)
   {
@@ -1695,7 +1681,7 @@ Postchunk::applyRule()
     {
       delete blank[i];
     }
-    delete blank;
+    delete[] blank;
   }
   word = NULL;
   blank = NULL;

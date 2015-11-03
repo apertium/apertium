@@ -74,7 +74,6 @@ private:
   bool trace;
   string emptyblank;
   
-  void copy(Interchunk const &o);
   void destroy();
   void readData(FILE *input);
   void readInterchunk(string const &input);
@@ -122,15 +121,12 @@ private:
 public:
   Interchunk();
   ~Interchunk();
-  Interchunk(Interchunk const &o);
-  Interchunk & operator =(Interchunk const &o);
   
   void read(string const &transferfile, string const &datafile);
   void interchunk(FILE *in, FILE *out);
   bool getNullFlush(void);
   void setNullFlush(bool null_flush);
   void setTrace(bool trace);
-
 };
 
 #endif

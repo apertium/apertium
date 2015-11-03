@@ -303,7 +303,10 @@ Tagger::getMode(int argc, char *argv[]) {
   return mode;
 }
 
-Tagger::Tagger() {
+Tagger::Tagger() :
+nit(0),
+is_sw(false)
+{
   debug = false;
   showSF = false;
   null_flush = false;

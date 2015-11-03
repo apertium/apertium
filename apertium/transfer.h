@@ -82,7 +82,6 @@ private:
   bool trace;
   string emptyblank;
   
-  void copy(Transfer const &o);
   void destroy();
   void readData(FILE *input);
   void readBil(string const &filename);
@@ -131,8 +130,6 @@ private:
 public:
   Transfer();
   ~Transfer();
-  Transfer(Transfer const &o);
-  Transfer & operator =(Transfer const &o);
   
   void read(string const &transferfile, string const &datafile,
 	    string const &fstfile = "");

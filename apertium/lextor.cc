@@ -32,12 +32,16 @@ using namespace Apertium;
 bool LexTor::debug;
 double LexTor::angleth;
 
-LexTor::LexTor() {
+LexTor::LexTor() :
+fstpbil(0)
+{
   lextor_data=NULL;
   tlmodel=NULL;
 }
   
-LexTor::LexTor(const LexTor& lt) {
+LexTor::LexTor(const LexTor& lt) :
+fstpbil(0)
+{
   lextor_data=lt.lextor_data;
   tlmodel=lt.tlmodel;
 }
@@ -334,7 +338,7 @@ LexTor::trainlch(wistream& is, int left, int right, LexTorData& tlwordmodel,
 		  //it will have more than one translation into TL, so we need to normalize using the frequency of words
 		  //in the TL
 #ifdef __GNUC__
-		  double translation_weighs[translation_buffer[i].size()];
+		  double translation_weighs[translation_buffer[i].size()] = {0};
 #else
 		  vector <double> translation_weighs(translation_buffer[i].size());
 #endif
@@ -680,7 +684,7 @@ LexTor::estimate_winner_lch(deque<LexTorWord>& window, int word_index, double we
 int 
 LexTor::estimate_winner_lch_voting(deque<LexTorWord>& window, int word_index, double weigth_exponent) {
 #ifdef __GNUC__
-  double lexchoices_count[window[word_index].n_lexical_choices()];
+  double lexchoices_count[window[word_index].n_lexical_choices()] = {0};
 #else
   vector <double> lexchoices_count(window[word_index].n_lexical_choices());
 #endif
@@ -923,7 +927,7 @@ LexTor::estimate_winner_lch_votingtl(deque<LexTorWord>& window, int word_index, 
 	//translation into TL, so we need to normalize using the
 	//frequency of words in the TL
 #ifdef __GNUC__
-	double translation_weighs[translation_window[k].size()];
+	double translation_weighs[translation_window[k].size()] = {0};
 #else
     vector <double> translation_weighs(translation_window[k].size());
 #endif

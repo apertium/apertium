@@ -41,7 +41,8 @@ AlignParameters() : justSentenceIds(true),
     qualityThreshold(-100000),
     postprocessTrailQualityThreshold(-1),
     postprocessTrailStartAndEndQualityThreshold(-1),
-    postprocessTrailByTopologyQualityThreshold(-1)
+    postprocessTrailByTopologyQualityThreshold(-1),
+    utfCharCountingMode(false)
       {}
 
 

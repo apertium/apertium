@@ -214,7 +214,7 @@ wstring convertir(string const &multibyte, int const length)
 \\usepackage\[[^\]]*\]	{
 	wstring ws = convertir(yytext+12,yyleng-13);
 	fputws((wstring(L"<usepackage/><PARAM>")+ws+wstring(L"</PARAM>")).c_str(), yyout);
-	if(ws.find(L"ngerman") >= 0)
+	if(ws.find(L"ngerman") != wstring::npos)
 		ngermanbabel = true;
 }
 

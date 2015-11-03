@@ -65,7 +65,6 @@ private:
   
   OutputType defaultAttrs;
   
-  void copy(TransferMult const &o);
   void destroy();
   void readData(FILE *input);
   void readBil(string const &filename);
@@ -91,8 +90,6 @@ private:
 public:
   TransferMult();
   ~TransferMult();
-  TransferMult(TransferMult const &o);
-  TransferMult & operator =(TransferMult const &o);
   
   void read(string const &datafile, string const &fstfile);
   void transfer(FILE *in, FILE *out);

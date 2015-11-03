@@ -33,7 +33,8 @@ TransferWord::destroy()
 {
 }
 
-TransferWord::TransferWord()
+TransferWord::TransferWord() :
+queue_length(0)
 {
 }
 

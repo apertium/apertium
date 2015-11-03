@@ -30,7 +30,9 @@ bool TaggerWord::show_ignored_string=true;
 
 map<wstring, ApertiumRE, Ltstr> TaggerWord::patterns;
 
-TaggerWord::TaggerWord(bool prev_plus_cut){
+TaggerWord::TaggerWord(bool prev_plus_cut) :
+show_sf(false)
+{
    ignored_string = L"";
    plus_cut=false;
    previous_plus_cut=prev_plus_cut;

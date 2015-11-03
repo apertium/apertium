@@ -23,7 +23,8 @@
 using namespace Apertium;
 using namespace std;
 
-ApertiumRE::ApertiumRE()
+ApertiumRE::ApertiumRE() :
+re(0)
 {
   empty = true;
 }

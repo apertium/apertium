@@ -49,7 +49,12 @@ private:
   void copy(TransferInstr const &o);
   void destroy();
 public:
-  TransferInstr(){};
+  TransferInstr() :
+  type(ti_clip_sl),
+  pos(0),
+  pointer(0),
+  condition(false)
+  {}
   TransferInstr(TransferInstrType t, string const &c, int const p, 
                 void *ptr=NULL, bool cond = true);
   ~TransferInstr();

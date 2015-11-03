@@ -34,7 +34,9 @@ TSXReader::destroy()
 {
 }
 
-TSXReader::TSXReader()
+TSXReader::TSXReader() :
+reader(0),
+type(0)
 {
   open_class = &(tdata.getOpenClass());
   forbid_rules = &(tdata.getForbidRules());

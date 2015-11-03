@@ -32,18 +32,11 @@ using namespace Apertium;
 using namespace std;
 
 void
-Interchunk::copy(Interchunk const &o)
-{
-}
-
-void
 Interchunk::destroy()
 {
-  if(me)
-  {
-    delete me;
-    me = NULL;
-  }
+  delete me;
+  me = NULL;
+
   if(doc)
   {
     xmlFreeDoc(doc);
@@ -51,7 +44,15 @@ Interchunk::destroy()
   }  
 }
 
-Interchunk::Interchunk()
+Interchunk::Interchunk() :
+word(0),
+blank(0),
+lword(0),
+lblank(0),
+output(0),
+any_char(0),
+any_tag(0),
+nwords(0)
 {
   me = NULL;
   doc = NULL;
@@ -67,22 +68,6 @@ Interchunk::Interchunk()
 Interchunk::~Interchunk()
 {
   destroy();
-}
-
-Interchunk::Interchunk(Interchunk const &o)
-{
-  copy(o);
-}
-
-Interchunk &
-Interchunk::operator =(Interchunk const &o)
-{
-  if(this != &o)
-  {
-    destroy();
-    copy(o);
-  }
-  return *this;
 }
 
 void 
@@ -239,6 +224,11 @@ Interchunk::checkIndex(xmlNode *element, int index, int limit)
 string 
 Interchunk::evalString(xmlNode *element)
 {
+  if (element == 0)
+  {
+    throw "Interchunk::evalString() was passed a NULL element";
+  }
+
   map<xmlNode *, TransferInstr>::iterator it;
   it = evalStringCache.find(element);
   if(it != evalStringCache.end())
@@ -628,6 +618,8 @@ Interchunk::processCallMacro(xmlNode *localroot)
     }
   }
 
+  // ToDo: Is it at all valid if npar <= 0 ?
+
   InterchunkWord **myword = NULL;
   if(npar > 0)
   {
@@ -642,7 +634,7 @@ Interchunk::processCallMacro(xmlNode *localroot)
 
   int idx = 0;
   int lastpos = 0;
-  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
+  for(xmlNode *i = localroot->children; npar && i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE)
     {
@@ -673,14 +665,8 @@ Interchunk::processCallMacro(xmlNode *localroot)
   swap(myblank, blank);
   swap(npar, lword);
 
-  if(myword)
-  {
-    delete[] myword;
-  }
-  if(myblank)
-  {
-    delete[] myblank;
-  }
+  delete[] myword;
+  delete[] myblank;
 }
 
 void

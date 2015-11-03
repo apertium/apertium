@@ -113,7 +113,7 @@ TaggerDataHMM::setProbabilities(int const myN, int const myM,
       a[i] = new double[N];
       if(myA != NULL)
       {
-        for(int j = 0; j != N; j++)
+        for(int j = 0; j != N; j++) // ToDo: N should be M? Check use of N and M in this function
         { 
           a[i][j] = myA[i][j];
         }

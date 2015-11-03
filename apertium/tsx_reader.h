@@ -62,7 +62,6 @@ private:
   void procLabelSequence();
   void procEnforce();
   void procPreferences();
-  void copy(TSXReader const &o);
   void destroy();
   void clearTagIndex();
 
@@ -70,11 +69,14 @@ private:
 public:
   TSXReader();
   ~TSXReader();
-  TSXReader(TSXReader const &o);
-  TSXReader & operator =(TSXReader const &o);
 
   void read(string const &filename);
   TaggerData & getTaggerData();
+
+private:
+  void copy(TSXReader const &o);
+  TSXReader(TSXReader const &o);
+  TSXReader & operator =(TSXReader const &o);
 };
 
 #endif

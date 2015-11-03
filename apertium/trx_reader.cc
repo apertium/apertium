@@ -30,17 +30,14 @@ wstring const
 TRXReader::ANY_CHAR = L"<ANY_CHAR>";
 
 void
-TRXReader::copy(TRXReader const &o)
-{
-}
-
-void
 TRXReader::destroy()
 {
   xmlFreeTextReader(reader);
 }
 
-TRXReader::TRXReader()
+TRXReader::TRXReader() :
+reader(0),
+type(0)
 {
   td.getAlphabet().includeSymbol(ANY_TAG);
   td.getAlphabet().includeSymbol(ANY_CHAR);
@@ -49,11 +46,6 @@ TRXReader::TRXReader()
 TRXReader::~TRXReader()
 {
   destroy();
-}
-
-TRXReader::TRXReader(TRXReader const &o)
-{
-  copy(o);
 }
 
 void
@@ -66,17 +58,6 @@ TRXReader::step()
   }
   name = XMLParseUtil::towstring(xmlTextReaderConstName(reader));
   type = xmlTextReaderNodeType(reader);
-}
-
-TRXReader &
-TRXReader::operator =(TRXReader const &o)
-{
-  if(this != &o)
-  {
-    destroy();
-    copy(o);
-  }
-  return *this;
 }
 
 wstring

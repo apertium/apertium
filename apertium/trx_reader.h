@@ -46,7 +46,6 @@ private:
   wstring attrib(wstring const &name);
 
   void parseError(wstring const &message);
-  void copy(TRXReader const &o);
   void destroy();
   void clearTagIndex();
   
@@ -76,8 +75,6 @@ public:
 
   TRXReader();
   ~TRXReader();
-  TRXReader(TRXReader const &o);
-  TRXReader & operator =(TRXReader const &o);
 
   void read(string const &filename);
   void write(string const &filename);
