@@ -337,11 +337,7 @@ LexTor::trainlch(wistream& is, int left, int right, LexTorData& tlwordmodel,
 		  //The counts of the TL co-occurrence model are transferred to the SL. If the SL word is ambiguous
 		  //it will have more than one translation into TL, so we need to normalize using the frequency of words
 		  //in the TL
-#ifdef __GNUC__
-		  double translation_weighs[translation_buffer[i].size()] = {0};
-#else
 		  vector <double> translation_weighs(translation_buffer[i].size());
-#endif
 		  double sum=0.0;
 		  if (translation_buffer[i].size()>1) {
 		    for(int j=0; j<(int)translation_buffer[i].size(); j++) {
@@ -683,11 +679,7 @@ LexTor::estimate_winner_lch(deque<LexTorWord>& window, int word_index, double we
 
 int 
 LexTor::estimate_winner_lch_voting(deque<LexTorWord>& window, int word_index, double weigth_exponent) {
-#ifdef __GNUC__
-  double lexchoices_count[window[word_index].n_lexical_choices()] = {0};
-#else
   vector <double> lexchoices_count(window[word_index].n_lexical_choices());
-#endif
 
   if (debug) {
     wcerr<<L"WINDOW: ";
@@ -926,11 +918,7 @@ LexTor::estimate_winner_lch_votingtl(deque<LexTorWord>& window, int word_index, 
 	//If the SL word is ambiguous it will have more than one
 	//translation into TL, so we need to normalize using the
 	//frequency of words in the TL
-#ifdef __GNUC__
-	double translation_weighs[translation_window[k].size()] = {0};
-#else
     vector <double> translation_weighs(translation_window[k].size());
-#endif
 	double sum=0.0;
 	if (translation_window[k].size()>1) {
 	  for(unsigned j=0; j<translation_window[k].size(); j++) {
