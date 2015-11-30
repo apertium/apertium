@@ -181,7 +181,7 @@ AC_FUNC_ERROR_AT_LINE
 
 AC_CHECK_DECLS([fread_unlocked, fwrite_unlocked, fgetc_unlocked, fputc_unlocked, fputs_unlocked, getopt_long, fgetwc_unlocked, fputwc_unlocked, fgetws_unlocked, fputws_unlocked])
 
-AC_CHECK_FUNCS([setlocale strdup getopt_long snprintf])
+AC_CHECK_FUNCS([setlocale strdup getopt_long snprintf mbtowc])
 
 AM_CONDITIONAL([WINDOWS], [test x$version_type = xwindows])
 AS_IF([test x$version_type = xwindows], [AC_DEFINE(HAVE_GETOPT_LONG,0)], [])

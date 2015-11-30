@@ -52,4 +52,10 @@
 #define fputws_unlocked fputws
 #endif
 
+#if !HAVE_MBTOWC
+#include <cwchar>
+inline int wctomb(char *s, wchar_t wc) { return wcrtomb(s,wc,NULL); }
+inline int mbtowc(wchar_t *pwc, const char *s, size_t n) { return mbrtowc(pwc, s, n, NULL); }
+#endif
+
 #endif
