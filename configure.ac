@@ -52,74 +52,13 @@ VERSION=$GENERIC_VERSION
 
 AM_INIT_AUTOMAKE(no-define)
 
-# Checks for programs.
-
-AC_MSG_CHECKING([Compilation architecture: PPC, i686, x86_64, Other])
-if test x$(which arch) = x
-then ARCH=$($(which uname) -m)
-else ARCH=$($(which arch))
-fi
-
-case "${target_os}" in
-  mingw*)
-    MinGW=yes
-  ;;
-  cygwin*)
-    Cygwin=yes
-  ;;
-esac
-
-if test x$ARCH = xppc
-then
-  AC_MSG_RESULT([PowerPC])
-  CFLAGS="$CFLAGS -Wall -ansi -fomit-frame-pointer"
-  CXXFLAGS="$CXXFLAGS -Wall -ansi -fomit-frame-pointer"
-else
-  if test x$MinGW = xyes
-  then
-    AC_MSG_RESULT([MinGW])
-    CFLAGS="$CFLAGS -Wall -march=i686 -O3 -DMINGW -fomit-frame-pointer \
-	        -funroll-loops -I/include -L/lib"
-    CXXFLAGS="$CXXFLAGS -Wall -march=i686 -O3 \
-            -fomit-frame-pointer -funroll-loops -I/include -L/lib"
-    CPPFLAGS="$CPPFLAGS -I/include"
-  else
-    if test x$Cygwin = xyes
-    then
-      AC_MSG_RESULT([Cygwin])
-      CFLAGS="$CFLAGS -Wall -march=i686 -O3 -fomit-frame-pointer \
-           -funroll-loops"
-      CXXFLAGS="$CXXFLAGS -Wall -march=i686 -O3 \
-              -fomit-frame-pointer -funroll-loops"
-      CPPFLAGS="$CPPFLAGS"
-    else
-      if test x$ARCH = xi686
-      then
-        AC_MSG_RESULT([i686])
-        CFLAGS="$CFLAGS -Wall -ansi -march=i686 -O3 -fomit-frame-pointer -funroll-loops"
-        CXXFLAGS="$CXXFLAGS -Wall -ansi -march=i686 -O3 \
-                -fomit-frame-pointer -funroll-loops"
-      else
-        if test x$ARCH = xx86_64
-        then
-          AC_MSG_RESULT([x86_64])
-          CFLAGS="-Wall -ansi -O3 -mtune=nocona -fomit-frame-pointer -funroll-loops $CFLAGS"
-          CXXFLAGS="-Wall -ansi -O3 -mtune=nocona \
-                  -fomit-frame-pointer -funroll-loops $CXXFLAGS"
-        else
-          AC_MSG_RESULT([Other])
-          CFLAGS="-Wall -ansi -O3 $CFLAGS"
-          CXXFLAGS="-Wall -ansi -O3 $CXXFLAGS"
-        fi
-      fi
-    fi
-  fi
-fi
-
 AC_PROG_CXX
 AC_PROG_LIBTOOL
 AM_SANITY_CHECK
 AC_LANG_CPLUSPLUS
+
+CFLAGS="-Wall -Wextra $CFLAGS"
+CXXFLAGS="-Wall -Wextra $CXXFLAGS"
 
 AC_ARG_ENABLE(debug,
               [  --enable-debug    Enable "-g -Wall" compiler options],
