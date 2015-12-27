@@ -754,6 +754,9 @@ Postchunk::processCallMacro(xmlNode *localroot)
     if(i->type == XML_ELEMENT_NODE)
     {
       int pos = atoi((const char *) i->properties->children->content);
+      if(!checkIndex(localroot, pos, lword)) {
+        pos=1; // for a rule to match, there has to be at least one word, so should be safe
+      }
       myword[idx] = word[pos];
       if(blank)
       {
@@ -1638,7 +1641,7 @@ Postchunk::applyRule()
   splitWordsAndBlanks(chunk, tmpword, tmpblank);
 
   word = new InterchunkWord *[tmpword.size()+1];
-  lword = tmpword.size()+1;
+  lword = tmpword.size();
   word[0] = new InterchunkWord(UtfConverter::toUtf8(wordzero(chunk)));
 
   for(unsigned int i = 1, limit = tmpword.size()+1; i != limit; i++)
@@ -1648,7 +1651,7 @@ Postchunk::applyRule()
       if(limit != 2)
       {
         blank = new string *[limit - 2];
-        lblank = limit - 2;
+        lblank = limit - 3;
       }
       else
       {
