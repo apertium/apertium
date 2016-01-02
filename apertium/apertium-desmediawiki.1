@@ -1,4 +1,4 @@
-.TH apertium-deswikimedia 1 2009-08-30 "" ""
+.TH apertium-desmediawiki 1 2009-08-30 "" ""
 .SH NAME
 apertium-desmediawiki \- This application is part of (
 .B apertium 
@@ -11,7 +11,7 @@ This tool is part of the apertium open-source machine translation toolbox: \fBht
 .PP
 .SH DESCRIPTION
 .BR apertium-desmediawiki
-is a processor for wikimedia XML dumps (i.e., those produced using 
+is a processor for mediawiki XML dumps (i.e., those produced using 
 Special:Export. Data should be passed through this 
 processor before being piped to lt-proc. The program takes input
 in the form of a text file and produces output suitable for
@@ -37,7 +37,7 @@ echo "gener" | apertium-destxt | lt-proc ca-es.automorf.bin
 Complicated links - [[page|alternative text]], [[link]]s, etc. are not
 supported.
 .PP
-The wikimedia parser has special support for mixing apostrophes and 
+The mediawiki parser has special support for mixing apostrophes and 
 apostrophes as formatting. This is not supported either.
 .SH AUTHOR
 Copyright (c) 2005, 2006 Universitat d'Alacant / Universidad de Alicante.

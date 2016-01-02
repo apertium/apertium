@@ -488,7 +488,7 @@ case "$FORMAT" in
     else OPTION="-g";
     fi
     ;;
-  txt|rtf|html|xpresstag)
+  txt|rtf|html|xpresstag|mediawiki)
     if [ "$UWORDS" = "no" ]; then OPTION="-n";
     else OPTION="-g";
     fi;
