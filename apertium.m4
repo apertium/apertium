@@ -147,8 +147,8 @@ langs:
 	hfst-concatenate -1 .deps/\@S|@*.autobil.upper -2 .deps/\@S|@*.any-nonplus.hfst -o .deps/\@S|@*.autobil.nonplussed    # bidix [^+]*
 	echo ' %+ ' | hfst-regexp2fst > .deps/\@S|@*.single-plus.hfst                                                                 # +
 	hfst-concatenate -1 .deps/\@S|@*.single-plus.hfst -2 .deps/\@S|@*.autobil.nonplussed -o .deps/\@S|@*.autobil.postplus # + bidix [^+]*
-	hfst-repeat -f0 -t1 -i .deps/\@S|@*.autobil.postplus -o .deps/\@S|@*.autobil.postplus.0,1                      # (+ bidix [^+]*){0,1} -- gives at most one +
-	hfst-concatenate -1 .deps/\@S|@*.autobil.nonplussed -2 .deps/\@S|@*.autobil.postplus.0,1 -o \@S|@@                 # bidix [^+]* (+ bidix [^+]*){0,1}
+	hfst-repeat -f0 -t3 -i .deps/\@S|@*.autobil.postplus -o .deps/\@S|@*.autobil.postplus.0,3                      # (+ bidix [^+]*){0,3} -- gives at most three +
+	hfst-concatenate -1 .deps/\@S|@*.autobil.nonplussed -2 .deps/\@S|@*.autobil.postplus.0,3 -o \@S|@@                 # bidix [^+]* (+ bidix [^+]*){0,3}
 
 EOF
 
