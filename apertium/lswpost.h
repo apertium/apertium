@@ -23,6 +23,8 @@
 #ifndef __LSWPOST_H
 #define __LSWPOST_H
 
+#include "file_tagger.h"
+
 #include <cstdio>
 #include <fstream>
 #include <math.h>
@@ -46,18 +48,27 @@
 /** LSWPoST
  *  Light Sliding-Window Part of Speech Tagger
  */
-class LSWPoST {
+class LSWPoST : public Apertium::FILE_Tagger {
 private:
-  TaggerDataLSW * tdlsw;
+  TaggerDataLSW tdlsw;
   TTag eos; // end-of-sentence tag
-  bool debug; //If true, print error messages when tagging input text
-  bool show_sf; //If true, print superficial forms when tagging input text
-  bool null_flush; //If true, flush on '\0'
 
 public:
+  void deserialise(FILE *Serialised_FILE_Tagger);
+  std::vector<std::wstring> &getArrayTags();
+  void train(FILE *Corpus, unsigned long Count);
+  void serialise(FILE *Stream_);
+  void deserialise(const TaggerData &Deserialised_FILE_Tagger);
+  void init_probabilities_from_tagged_text_(FILE *TaggedCorpus,
+                                            FILE *UntaggedCorpus);
+  void init_probabilities_kupiec_(FILE *Corpus);
+  void train_(FILE *Corpus, unsigned long Count);
+  LSWPoST();
+  LSWPoST(TaggerDataLSW *tdlsw);
+
    /** Constructor
     */
-   LSWPoST(TaggerDataLSW *t);
+   LSWPoST(TaggerDataLSW t);
 
    /** Destructor
     */
@@ -67,18 +78,6 @@ public:
     *  @param t the end-of-sentence tag
     */
    void set_eos(TTag t);
-   
-   /** Used to set the debug flag
-    */
-   void set_debug(bool d);
-
-   /** Used to set the show superficial forms flag 
-    */
-   void set_show_sf(bool sf);
-
-   /** Used to set the null_flush flag 
-    */
-   void setNullFlush(bool nf);
 
    /** It reads the expanded dictionary received as a parameter and calculates
     *  the set of ambiguity classes that the tagger will manage.
@@ -108,7 +107,7 @@ public:
 
    /** Do the tagging
     */
-   void tagger(FILE *in, FILE *out, bool show_all_good_first);
+   void tagger(FILE *Input, FILE *Output, const bool &First = false);
 
    /** This method returns a known ambiguity class that is a subset of 
     *  the one received as a parameter. This is useful when a new

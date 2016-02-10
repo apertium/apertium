@@ -62,7 +62,7 @@ CXXFLAGS="-Wall -Wextra $CXXFLAGS"
 
 AC_ARG_ENABLE(debug,
               [  --enable-debug    Enable "-g -Wall" compiler options],
-              [CXXFLAGS="-g -Wall"; CFLAGS="-g -Wall"])
+              [CXXFLAGS="-g -Wall"; CFLAGS="-g -Wall"; AC_DEFINE([ENABLE_DEBUG], [1], [ENABLE_DEBUG])])
 
 AC_ARG_ENABLE(profile,
               [  --enable-profile  Enable "-pg -g -Wall" compiler options],

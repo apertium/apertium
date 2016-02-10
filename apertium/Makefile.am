@@ -1,29 +1,151 @@
-h_sources = collection.h constant_manager.h hmm.h lswpost.h interchunk.h \
-            interchunk_word.h lextor_data.h lextor_eval.h lextor.h \
-            lextor_word.h morpho_stream.h postchunk.h string_utils.h \
-            tagger_data.h tagger_data_hmm.h tagger_data_lsw.h tagger.h tagger_utils.h tagger_word.h \
-            transfer_data.h transfer.h transfer_instr.h transfer_token.h \
-            transfer_word.h transfer_word_list.h trx_reader.h tsx_reader.h \
-            ttag.h utf_converter.h apertium_re.h unlocked_cstdio.h \
-            endian_double_util.h transfer_mult.h tmx_builder.h \
-            tmx_alignment.h tmx_arguments_parser.h tmx_book_to_matrix.h \
-            tmx_dictionary.h tmx_dic_tree.h tmx_quasi_diagonal.h \
-            tmx_serialize_impl.h tmx_strings_and_streams.h \
-            tmx_trail_postprocessors.h tmx_translate.h tmx_words.h \
-            tmx_align_parameters.h tmx_aligner_tool.h latex_accentsmap.h
+AUTOMAKE_OPTIONS = subdir-objects
 
-cc_sources = collection.cc constant_manager.cc hmm.cc lswpost.cc interchunk.cc \
-             interchunk_word.cc lextor.cc lextor_data.cc lextor_eval.cc \
-             lextor_word.cc morpho_stream.cc postchunk.cc string_utils.cc \
-             tagger.cc tagger_data.cc tagger_data_hmm.cc tagger_data_lsw.cc tagger_utils.cc tagger_word.cc \
-             transfer.cc transfer_data.cc transfer_instr.cc \
-             transfer_token.cc transfer_word.cc transfer_word_list.cc \
-             trx_reader.cc tsx_reader.cc utf_converter.cc apertium_re.cc \
-             endian_double_util.cc transfer_mult.cc tmx_builder.cc \
-             tmx_aligner_tool.cc tmx_alignment.cc tmx_arguments_parser.cc \
-             tmx_book_to_matrix.cc tmx_dictionary.cc \
-             tmx_strings_and_streams.cc tmx_trail_postprocessors.cc \
-             tmx_translate.cc latex_accentsmap.cc
+h_sources = a.h \
+	    align.h \
+	    analysis.h \
+	    apertium_re.h \
+	    basic_5_3_1_tagger.h \
+	    basic_5_3_2_tagger.h \
+	    basic_5_3_3_tagger.h \
+	    basic_exception_type.h \
+	    basic_stream_tagger.h \
+	    basic_stream_tagger_trainer.h \
+	    basic_tagger.h \
+	    collection.h \
+	    constant_manager.h \
+	    constructor_eq_delete.h \
+	    deserialiser.h \
+	    endian_double_util.h \
+	    err_exception.h \
+	    exception.h \
+	    exception_type.h \
+	    file_tagger.h \
+	    hmm.h \
+	    i.h \
+	    interchunk.h \
+	    interchunk_word.h \
+	    latex_accentsmap.h \
+	    lemma.h \
+	    lexical_unit.h \
+	    lextor_data.h \
+	    lextor_eval.h \
+	    lextor.h \
+	    lextor_word.h \
+	    linebreak.h \
+	    lswpost.h \
+	    morpheme.h \
+	    morpho_stream.h \
+	    optional.h \
+	    postchunk.h \
+	    serialiser.h \
+	    stream.h \
+	    stream_5_3_1_tagger.h \
+	    stream_5_3_2_tagger.h \
+	    stream_5_3_3_tagger.h \
+	    stream_5_3_1_tagger_trainer.h \
+	    stream_5_3_2_tagger_trainer.h \
+	    stream_5_3_3_tagger_trainer.h \
+	    streamed_type.h \
+	    string_utils.h \
+	    tag.h \
+	    tagger_data.h \
+	    tagger_data_hmm.h \
+	    tagger_data_lsw.h \
+	    tagger_utils.h \
+	    tagger_word.h \
+	    tmx_aligner_tool.h \
+	    tmx_alignment.h \
+	    tmx_align_parameters.h \
+	    tmx_arguments_parser.h \
+	    tmx_book_to_matrix.h \
+	    tmx_builder.h \
+	    tmx_dictionary.h \
+	    tmx_dic_tree.h \
+	    tmx_quasi_diagonal.h \
+	    tmx_serialize_impl.h \
+	    tmx_strings_and_streams.h \
+	    tmx_trail_postprocessors.h \
+	    tmx_translate.h \
+	    tmx_words.h \
+	    transfer_data.h \
+	    transfer.h \
+	    transfer_instr.h \
+	    transfer_mult.h \
+	    transfer_token.h \
+	    transfer_word.h \
+	    transfer_word_list.h \
+	    trx_reader.h \
+	    tsx_reader.h \
+	    ttag.h \
+	    unlocked_cstdio.h \
+	    utf_converter.h \
+	    wchar_t_exception.h
+	    wchar_t_exception_type.h
+
+cc_sources = a.cc \
+	     align.cc \
+	     analysis.cc \
+	     apertium_re.cc \
+	     basic_5_3_1_tagger.cc \
+	     basic_5_3_2_tagger.cc \
+	     basic_exception_type.cc \
+	     basic_stream_tagger.cc \
+	     basic_stream_tagger_trainer.cc \
+	     basic_tagger.cc \
+	     collection.cc \
+	     constant_manager.cc \
+	     endian_double_util.cc \
+	     exception_type.cc \
+	     file_tagger.cc \
+	     hmm.cc \
+	     i.cc \
+	     interchunk.cc \
+	     interchunk_word.cc \
+	     latex_accentsmap.cc \
+	     lemma.cc \
+	     lextor.cc \
+	     lextor_data.cc \
+	     lextor_eval.cc \
+	     lextor_word.cc \
+	     linebreak.cc \
+	     lswpost.cc \
+	     morpheme.cc \
+	     morpho_stream.cc \
+	     postchunk.cc \
+	     stream.cc \
+	     stream_5_3_1_tagger.cc \
+	     stream_5_3_2_tagger.cc \
+	     stream_5_3_3_tagger.cc \
+	     stream_5_3_1_tagger_trainer.cc \
+	     stream_5_3_2_tagger_trainer.cc \
+	     stream_5_3_3_tagger_trainer.cc \
+	     string_utils.cc \
+	     tag.cc \
+	     tagger_data.cc \
+	     tagger_data_hmm.cc \
+	     tagger_data_lsw.cc \
+	     tagger_utils.cc \
+	     tagger_word.cc \
+	     tmx_aligner_tool.cc \
+	     tmx_alignment.cc \
+	     tmx_arguments_parser.cc \
+	     tmx_book_to_matrix.cc \
+	     tmx_builder.cc \
+	     tmx_dictionary.cc \
+	     tmx_strings_and_streams.cc \
+	     tmx_trail_postprocessors.cc \
+	     tmx_translate.cc \
+	     transfer.cc \
+	     transfer_data.cc \
+	     transfer_instr.cc \
+	     transfer_mult.cc \
+	     transfer_token.cc \
+	     transfer_word.cc \
+	     transfer_word_list.cc \
+	     trx_reader.cc \
+	     tsx_reader.cc \
+	     utf_converter.cc \
+	     wchar_t_exception_type.cc
 
 library_includedir = $(includedir)/$(GENERIC_LIBRARY_NAME)-$(GENERIC_API_VERSION)/$(GENERIC_LIBRARY_NAME)
 library_include_HEADERS = $(h_sources)
@@ -46,30 +168,41 @@ lib_LTLIBRARIES = libapertium3.la
 libapertium3_la_SOURCES = $(h_sources) $(cc_sources)
 libapertium3_la_LDFLAGS = -version-info $(GENERIC_LIBRARY_VERSION) -release $(GENERIC_RELEASE)
 
-bin_PROGRAMS = apertium-pretransfer apertium-destxt apertium-retxt \
-               apertium-deshtml apertium-rehtml \
-               apertium-rehtml-noent \
-               apertium-desxpresstag apertium-rexpresstag \
-               apertium-desodt apertium-reodt \
-               apertium-desrtf apertium-rertf \
-               apertium-deswxml apertium-rewxml \
-               apertium-deslatex apertium-relatex \
-               apertium-desxlsx apertium-rexlsx \
-               apertium-despptx apertium-repptx \
-               apertium-desmediawiki apertium-remediawiki \
-               apertium-prelatex apertium-postlatex \
-               apertium-postlatex-raw \
-               apertium-tagger \
-               apertium-preprocess-transfer apertium-transfer \
-               apertium-filter-ambiguity  \
-               apertium-interchunk apertium-postchunk \
-               apertium-multiple-translations \
-               apertium-tagger-apply-new-rules \
-               apertium-tagger-readwords \
-               apertium-tmxbuild
-               ###pruebas-lextor apertium-lextor-search apertium-lextor-eval
-               ###apertium-gen-wlist-lextor-translation
-               ###apertium-lextor
+bin_PROGRAMS = apertium-deshtml \
+	       apertium-deslatex \
+	       apertium-desmediawiki \
+	       apertium-desodt \
+	       apertium-despptx \
+	       apertium-desrtf \
+	       apertium-destxt \
+	       apertium-deswxml \
+	       apertium-desxlsx \
+	       apertium-desxpresstag \
+	       apertium-filter-ambiguity \
+	       apertium-interchunk \
+	       apertium-multiple-translations \
+	       apertium-postchunk \
+	       apertium-postlatex \
+	       apertium-postlatex-raw \
+	       apertium-prelatex \
+	       apertium-preprocess-transfer \
+	       apertium-pretransfer \
+	       apertium-rehtml \
+	       apertium-rehtml-noent \
+	       apertium-relatex \
+	       apertium-remediawiki \
+	       apertium-reodt \
+	       apertium-repptx \
+	       apertium-rertf \
+	       apertium-retxt \
+	       apertium-rewxml \
+	       apertium-rexlsx \
+	       apertium-rexpresstag \
+	       apertium-tagger \
+	       apertium-tagger-apply-new-rules \
+	       apertium-tagger-readwords \
+	       apertium-tmxbuild \
+	       apertium-transfer
 
 bin_SCRIPTS =  $(GENERATEDSCRIPTS)
 

@@ -167,7 +167,7 @@ int main(int argc, char* argv[]) {
   fout=fopen(fileout.c_str(), "wb");
   check_file(fout, fileout);
   cerr<<"Writing apertium-tagger data to file '"<<fileout<<"' ... "<<flush;
-  tagger_data_hmm.write(fout);
+  hmm.serialise(fout);
   fclose(fout);
   cerr<<"done.\n";
 }
