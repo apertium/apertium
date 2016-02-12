@@ -48,6 +48,7 @@ h_sources = a.h \
 	    streamed_type.h \
 	    string_utils.h \
 	    tag.h \
+	    tagger.h \
 	    tagger_data.h \
 	    tagger_data_hmm.h \
 	    tagger_data_lsw.h \
