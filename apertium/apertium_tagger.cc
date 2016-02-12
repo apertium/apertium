@@ -182,6 +182,7 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
       if (!TheFunctionTypeType) {
         HMM HiddenMarkovModelTagger_;
         g_FILE_Tagger(HiddenMarkovModelTagger_);
+        break;
       }
 
       switch (*TheFunctionTypeType) {
@@ -216,7 +217,9 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
       if (!TheFunctionTypeType) {
         HMM HiddenMarkovModelTagger_;
         r_FILE_Tagger(HiddenMarkovModelTagger_);
+        break;
       }
+
       switch (*TheFunctionTypeType) {
       case Unigram: {
         std::stringstream what_;
@@ -236,7 +239,9 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
       if (!TheFunctionTypeType) {
         HMM HiddenMarkovModelTagger_;
         s_FILE_Tagger(HiddenMarkovModelTagger_);
+        break;
       }
+
       switch (*TheFunctionTypeType) {
       case Unigram: {
         switch (*TheUnigramType) {
@@ -270,7 +275,9 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
       if (!TheFunctionTypeType) {
         HMM HiddenMarkovModelTagger_;
         t_FILE_Tagger(HiddenMarkovModelTagger_);
+        break;
       }
+
       switch (*TheFunctionTypeType) {
       case Unigram: {
         std::stringstream what_;
