@@ -27,10 +27,6 @@ h_sources = a.h \
 	    latex_accentsmap.h \
 	    lemma.h \
 	    lexical_unit.h \
-	    lextor_data.h \
-	    lextor_eval.h \
-	    lextor.h \
-	    lextor_word.h \
 	    linebreak.h \
 	    lswpost.h \
 	    morpheme.h \
@@ -81,6 +77,11 @@ h_sources = a.h \
 	    utf_converter.h \
 	    wchar_t_exception.h
 	    wchar_t_exception_type.h
+#DEPR.:
+#	    lextor_data.h 
+#	    lextor_eval.h 
+#	    lextor.h 
+#	    lextor_word.h 
 
 cc_sources = a.cc \
 	     align.cc \
@@ -103,10 +104,6 @@ cc_sources = a.cc \
 	     interchunk_word.cc \
 	     latex_accentsmap.cc \
 	     lemma.cc \
-	     lextor.cc \
-	     lextor_data.cc \
-	     lextor_eval.cc \
-	     lextor_word.cc \
 	     linebreak.cc \
 	     lswpost.cc \
 	     morpheme.cc \
@@ -146,6 +143,11 @@ cc_sources = a.cc \
 	     tsx_reader.cc \
 	     utf_converter.cc \
 	     wchar_t_exception_type.cc
+#DEPR.:
+#	     lextor.cc 
+#	     lextor_data.cc 
+#	     lextor_eval.cc 
+#	     lextor_word.cc 
 
 library_includedir = $(includedir)/$(GENERIC_LIBRARY_NAME)-$(GENERIC_API_VERSION)/$(GENERIC_LIBRARY_NAME)
 library_include_HEADERS = $(h_sources)
