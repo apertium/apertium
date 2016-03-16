@@ -611,10 +611,8 @@ man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
          apertium-desxlsx.1 apertium-rexlsx.1 \
          apertium-despptx.1 apertium-repptx.1 \
          apertium-desmediawiki.1 apertium-remediawiki.1 \
-         apertium-filter-ambiguity.1 apertium-gen-deformat.1 apertium-gen-lextorbil.1 \
-         apertium-gen-lextormono.1 apertium-gen-reformat.1 apertium-gen-stopwords-lextor.1 \
-         apertium-gen-wlist-lextor.1 apertium-gen-wlist-lextor-translation.1 \
-         apertium-lextor.1 apertium-preprocess-corpus-lextor.1 \
+         apertium-filter-ambiguity.1 apertium-gen-deformat.1 \
+         apertium-gen-reformat.1 \
          apertium-preprocess-transfer.1 apertium-pretransfer.1 apertium-rehtml.1 \
          apertium-rertf.1 apertium-retxt.1 apertium-tagger.1 apertium-transfer.1 \
          apertium-validate-dictionary.1 apertium-validate-tagger.1 \
@@ -623,7 +621,12 @@ man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
          apertium-validate-postchunk.1 apertium-validate-modes.1 apertium-tagger-apply-new-rules.1 \
 	 apertium-validate-acx.1 apertium-multiple-translations.1 \
 	 apertium-unformat.1
-         ###apertium-lextor-eval.1
+#DEPR.:
+#         apertium-lextor-eval.1 
+#         apertium-gen-lextorbil.1 
+#         apertium-gen-lextormono.1 apertium-gen-stopwords-lextor.1 
+#         apertium-gen-wlist-lextor.1 apertium-gen-wlist-lextor-translation.1 
+#         apertium-lextor.1 apertium-preprocess-corpus-lextor.1 
 
 EXTRA_DIST = gen-header.sh deformat-header.sh \
              reformat.xsl deformat.xsl new2old.xsl lexchoice.xsl lexchoicebil.xsl \
@@ -635,7 +638,11 @@ EXTRA_DIST = gen-header.sh deformat-header.sh \
              apertium-header.sh apertium-unformat-header.sh $(man_MANS) \
              xpresstag-format.xml \
              validate-header.sh transformdic-header.sh transformdicbil-header.sh \
-             gen-wlist-lextor-header.sh gen-stopwords-lextor.sh preprocess-corpus-lextor.sh \
              interchunk.dtd postchunk.dtd modes.dtd \
              utils-fixlatex-header.sh \
-             modes-header.sh apertium-createmodes.awk modes2bash.xsl ###trans-lextor-header.sh
+             modes-header.sh apertium-createmodes.awk modes2bash.xsl 
+#DEPR.:
+# trans-lextor-header.sh
+# gen-wlist-lextor-header.sh 
+# gen-stopwords-lextor.sh 
+# preprocess-corpus-lextor.sh 
