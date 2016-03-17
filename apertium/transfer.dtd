@@ -23,7 +23,7 @@
 
 <!ENTITY % condition "(and|or|not|equal|begins-with|begins-with-list|ends-with|ends-with-list|contains-substring|in)">
 <!ENTITY % container "(var|clip)">
-<!ENTITY % sentence "(let|out|choose|modify-case|call-macro|append)">
+<!ENTITY % sentence "(let|out|choose|modify-case|call-macro|append|reject-current-rule)">
 <!ENTITY % value "(b|clip|lit|lit-tag|var|get-case-from|case-of|concat|lu|mlu|chunk)">
 <!ENTITY % stringvalue "(clip|lit|var|get-case-from|case-of)">
 
@@ -448,6 +448,16 @@ get-case-from -->
 
 <!ELEMENT lu (%value;)+>
 <!-- Encloses a word inside an 'out' element. -->
+
+<!ELEMENT reject-current-rule EMPTY>
+<!ATTLIST reject-current-rule shifting (yes|no) #IMPLIED>
+<!--
+      This instruction cancels the execution of the rule being processed.
+      If "shifting" is set to "yes" or is not specified, the matching process
+      consumes exactly one word at the input. If "shifting" is set to "no"
+      then marks the rule to not to be considered in the current matching 
+      until the input buffer advances at least one single word 
+-->
 
 <!ELEMENT chunk (tags,(mlu|lu|b|var)+)>
 <!ATTLIST chunk name CDATA #IMPLIED

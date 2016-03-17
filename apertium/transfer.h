@@ -40,7 +40,7 @@ using namespace std;
 class Transfer
 {
 private:
-  
+
   Alphabet alphabet;
   MatchExe *me;
   MatchState ms;
@@ -69,17 +69,18 @@ private:
 
   xmlNode *lastrule;
   unsigned int nwords;
-  
+
   map<xmlNode *, TransferInstr> evalStringCache;
 
   enum OutputType{lu,chunk};
-  
+
   OutputType defaultAttrs;
   bool preBilingual;
   bool useBilingual;
   bool null_flush;
   bool internal_null_flush;
   bool trace;
+  bool trace_att;
   string emptyblank;
   
   void destroy();
@@ -93,6 +94,7 @@ private:
 
   void processLet(xmlNode *localroot);
   void processAppend(xmlNode *localroot);
+  int processRejectCurrentRule(xmlNode *localroot);
   void processOut(xmlNode *localroot);
   void processCallMacro(xmlNode *localroot);
   void processModifyCase(xmlNode *localroot);
@@ -108,10 +110,10 @@ private:
   bool processContainsSubstring(xmlNode *localroot);
   bool processNot(xmlNode *localroot);
   bool processIn(xmlNode *localroot);
-  void processRule(xmlNode *localroot);
+  int processRule(xmlNode *localroot);
   string evalString(xmlNode *localroot);
-  void processInstruction(xmlNode *localroot);
-  void processChoose(xmlNode *localroot);
+  int processInstruction(xmlNode *localroot);
+  int processChoose(xmlNode *localroot);
   string processChunk(xmlNode *localroot);
   string processTags(xmlNode *localroot);
 
@@ -123,7 +125,7 @@ private:
   wstring readBlank(FILE *in);
   wstring readUntil(FILE *in, int const symbol) const;
   void applyWord(wstring const &word_str);
-  void applyRule();
+  int applyRule();
   TransferToken & readToken(FILE *in);
   bool checkIndex(xmlNode *element, int index, int limit);
   void transfer_wrapper_null_flush(FILE *in, FILE *out);
@@ -143,6 +145,7 @@ public:
   bool getNullFlush(void);
   void setNullFlush(bool null_flush);
   void setTrace(bool trace);
+  void setTraceATT(bool trace);
 };
 
 #endif

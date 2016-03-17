@@ -51,6 +51,7 @@ void message(char *progname)
   cerr << "  -x bindix  extended mode with user dictionary" << endl;
   cerr << "  -c         case-sensitiveness while accessing bilingual dictionary" << endl;
   cerr << "  -t         trace (show rule numbers and patterns matched)" << endl;
+  cerr << "  -T         trace, for apertium-transfer-tools (also sets -t)" << endl;
   cerr << "  -z         null-flushing output on '\0'" << endl;
   cerr << "  -h         shows this message" << endl;
   
@@ -114,13 +115,14 @@ int main(int argc, char *argv[])
       {"case-sensitive", no_argument, 0, 'c'},
       {"null-flush", no_argument, 0, 'z'},
       {"trace", no_argument, 0, 't'},
+      {"trace_att", no_argument, 0, 'T'},
       {"help", no_argument, 0, 'h'},
       {0, 0, 0, 0}
     };
 
-    int c=getopt_long(argc, argv, "nbx:czth", long_options, &option_index);
+    int c=getopt_long(argc, argv, "nbx:cztTh", long_options, &option_index);
 #else
-    int c=getopt(argc, argv, "nbx:czth");
+    int c=getopt(argc, argv, "nbx:cztTh");
 #endif
     if (c==-1)
       break;
@@ -146,6 +148,11 @@ int main(int argc, char *argv[])
       
       case 't':
         t.setTrace(true);
+        break;
+      
+      case 'T':
+        t.setTrace(true);
+        t.setTraceATT(true);
         break;
       
       case 'z':
