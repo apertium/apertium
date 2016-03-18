@@ -10,6 +10,10 @@ SVN
 
 * new option -n to deformatters turns off dot-insertion
 
+* new transfer instruction <reject-current-rule shifting="yes|no"/>;
+  see transfer.dtd for details (not implemented for
+  interchunk/postchunk)
+
 
 Version 3.4, 2015-03-17 (-r59200)
 ---------------------------------
