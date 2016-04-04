@@ -216,8 +216,10 @@ apertiumlib = $(prefix)/lib
 apertiumsysconf = $(prefix)/etc/apertium
 
 apertium_DATA = deformat.xsl reformat.xsl new2old.xsl lexchoice.xsl \
-                lexchoicebil.xsl tagger.dtd interchunk.dtd format.dtd \
-                transfer.dtd postchunk.dtd modes.dtd modes2bash.xsl \
+                lexchoicebil.xsl \
+				tagger.dtd interchunk.dtd format.dtd  transfer.dtd postchunk.dtd modes.dtd \
+				tagger.rnc interchunk.rnc format.rnc  transfer.rnc postchunk.rnc modes.rnc \
+				modes2bash.xsl \
                 apertium-createmodes.awk
 
 apertium_pretransfer_SOURCES = apertium_pretransfer.cc
@@ -632,7 +634,7 @@ man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
 
 EXTRA_DIST = gen-header.sh deformat-header.sh \
              reformat.xsl deformat.xsl new2old.xsl lexchoice.xsl lexchoicebil.xsl \
-             tagger.dtd transfer.dtd format.dtd txt-format.xml \
+             txt-format.xml \
              html-format.xml odt-format.xml rtf-format.xml wxml-format.xml latex-format.xml\
              html-noent-format.xml \
              xlsx-format.xml pptx-format.xml mediawiki-format.xml trans-header.sh \
@@ -640,7 +642,8 @@ EXTRA_DIST = gen-header.sh deformat-header.sh \
              apertium-header.sh apertium-unformat-header.sh $(man_MANS) \
              xpresstag-format.xml \
              validate-header.sh transformdic-header.sh transformdicbil-header.sh \
-             interchunk.dtd postchunk.dtd modes.dtd \
+			 tagger.dtd interchunk.dtd format.dtd  transfer.dtd postchunk.dtd modes.dtd \
+			 tagger.rnc interchunk.rnc format.rnc  transfer.rnc postchunk.rnc modes.rnc \
              utils-fixlatex-header.sh \
              modes-header.sh apertium-createmodes.awk modes2bash.xsl 
 #DEPR.:

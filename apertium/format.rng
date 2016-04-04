@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (C) 2005 Universitat d'Alacant / Universidad de Alicante
+  
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License as
+  published by the Free Software Foundation; either version 2 of the
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  General Public License for more details.
+  
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, see <http://www.gnu.org/licenses/>.
+  
+     DTD for the format specification files
+     Sergio Ortiz  2005.05.13
+-->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0">
+  <define name="format">
+    <element name="format">
+      <ref name="attlist.format"/>
+      <ref name="options"/>
+      <ref name="rules"/>
+    </element>
+  </define>
+  <define name="attlist.format" combine="interleave">
+    <attribute name="name"/>
+  </define>
+  <!--
+    'format' is the root element containing the whole format specification
+    file.  The attribute 'name' specifies the name of the format
+  -->
+  <define name="options">
+    <element name="options">
+      <ref name="attlist.options"/>
+      <ref name="largeblocks"/>
+      <ref name="input"/>
+      <ref name="output"/>
+      <ref name="tag-name"/>
+      <ref name="escape-chars"/>
+      <ref name="space-chars"/>
+      <ref name="case-sensitive"/>
+    </element>
+  </define>
+  <define name="attlist.options" combine="interleave">
+    <empty/>
+  </define>
+  <!-- General options of the format -->
+  <define name="largeblocks">
+    <element name="largeblocks">
+      <ref name="attlist.largeblocks"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.largeblocks" combine="interleave">
+    <attribute name="size"/>
+  </define>
+  <!--
+    The attribute size is used to define the maximal size in bytes of
+    inline format blocks
+  -->
+  <define name="input">
+    <element name="input">
+      <ref name="attlist.input"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.input" combine="interleave">
+    <optional>
+      <attribute name="zip-path"/>
+    </optional>
+  </define>
+  <define name="attlist.input" combine="interleave">
+    <attribute name="encoding"/>
+  </define>
+  <!-- Reserved for future extensions -->
+  <define name="output">
+    <element name="output">
+      <ref name="attlist.output"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.output" combine="interleave">
+    <optional>
+      <attribute name="zip-path"/>
+    </optional>
+  </define>
+  <define name="attlist.output" combine="interleave">
+    <attribute name="encoding"/>
+  </define>
+  <!-- Reserved for future extensions -->
+  <define name="tag-name">
+    <element name="tag-name">
+      <ref name="attlist.tag-name"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.tag-name" combine="interleave">
+    <attribute name="regexp"/>
+  </define>
+  <!--
+    The attribute regexp defines (whith a _flex_ regular expression) how 
+    take a tag name from a whole tag. '\'
+  -->
+  <define name="escape-chars">
+    <element name="escape-chars">
+      <ref name="attlist.escape-chars"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.escape-chars" combine="interleave">
+    <attribute name="regexp"/>
+  </define>
+  <!--
+    The attribute regexp defines (whith a _flex_ regular expression) the
+    set of characters to be escaped with preceding a backslash '\'
+  -->
+  <define name="space-chars">
+    <element name="space-chars">
+      <ref name="attlist.space-chars"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.space-chars" combine="interleave">
+    <attribute name="regexp"/>
+  </define>
+  <!--
+    Define the space characters (in regexp) with a _flex_ regular 
+    expression
+  -->
+  <define name="case-sensitive">
+    <element name="case-sensitive">
+      <ref name="attlist.case-sensitive"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.case-sensitive" combine="interleave">
+    <attribute name="value">
+      <choice>
+        <value>yes</value>
+        <value>no</value>
+      </choice>
+    </attribute>
+  </define>
+  <!--
+    The attribute 'value' is set to 'yes' if the case is relevant in the 
+    specification of the format.  Otherwise is set to 'no'
+  -->
+  <define name="rules">
+    <element name="rules">
+      <ref name="attlist.rules"/>
+      <oneOrMore>
+        <choice>
+          <ref name="format-rule"/>
+          <ref name="replacement-rule"/>
+        </choice>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.rules" combine="interleave">
+    <empty/>
+  </define>
+  <!--
+    Group the rules of processing format and the rules of substitute 
+    expressions by characters that are part of the text
+  -->
+  <define name="format-rule">
+    <element name="format-rule">
+      <ref name="attlist.format-rule"/>
+      <choice>
+        <ref name="tag"/>
+        <group>
+          <ref name="begin"/>
+          <ref name="end"/>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="attlist.format-rule" combine="interleave">
+    <optional>
+      <attribute name="type">
+        <choice>
+          <value>comment</value>
+          <value>empty</value>
+          <value>open</value>
+          <value>close</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <define name="attlist.format-rule" combine="interleave">
+    <optional>
+      <attribute name="eos">
+        <choice>
+          <value>yes</value>
+          <value>no</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <define name="attlist.format-rule" combine="interleave">
+    <attribute name="priority"/>
+  </define>
+  <!--
+    Format rule parent element.  It may include a 'tag' element or
+    a couple of elements 'begin', 'end'.  In the first case, this element is 
+    considered to be part of the format.  In the second case, the begin and 
+    the end element are considered to enclosing format.  The attribute
+    'eos' (end of sentence) is set to 'yes' if that rule defines a dot in
+    the text being processed (is no by default).  The attribute 'priority' 
+    marks the order of precedence of the rule
+  -->
+  <define name="tag">
+    <element name="tag">
+      <ref name="attlist.tag"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.tag" combine="interleave">
+    <attribute name="regexp"/>
+  </define>
+  <!--
+    Define an element that is part of the format by the pattern specified
+    as a value for the regexp attribute
+  -->
+  <define name="begin">
+    <element name="begin">
+      <ref name="attlist.begin"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.begin" combine="interleave">
+    <attribute name="regexp"/>
+  </define>
+  <!--
+    The attribute 'regexp' is the regular expression that detects the
+    begining delimiter of a block of format
+  -->
+  <define name="end">
+    <element name="end">
+      <ref name="attlist.end"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.end" combine="interleave">
+    <attribute name="regexp"/>
+  </define>
+  <!--
+    The attribute 'regexp' is the regular expression that detects the
+    ending delimiter of a block of format
+  -->
+  <define name="replacement-rule">
+    <element name="replacement-rule">
+      <ref name="attlist.replacement-rule"/>
+      <oneOrMore>
+        <ref name="replace"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.replacement-rule" combine="interleave">
+    <attribute name="regexp"/>
+  </define>
+  <!--
+    Root element for a replacement rule.  The attribute 'regexp' is the
+    general expression to detect the elements to replace
+  -->
+  <define name="replace">
+    <element name="replace">
+      <ref name="attlist.replace"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.replace" combine="interleave">
+    <attribute name="source"/>
+  </define>
+  <define name="attlist.replace" combine="interleave">
+    <attribute name="target"/>
+  </define>
+  <define name="attlist.replace" combine="interleave">
+    <optional>
+      <attribute name="prefer">
+        <choice>
+          <value>yes</value>
+          <value>no</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <start>
+    <choice>
+      <ref name="format"/>
+    </choice>
+  </start>
+</grammar>
+<!--
+  Replacement rule.  The 'source' is a string of one or more characters.
+  The 'target' MUST be a single character.  The 'prefer' attribute, when 
+  set to 'yes' defines the preferred reverse translation of the 
+  replacement.
+-->

@@ -49,7 +49,6 @@
       <ref name="modify-case"/>
       <ref name="call-macro"/>
       <ref name="append"/>
-      <ref name="reject-current-rule"/>
     </choice>
   </define>
   <define name="value">
@@ -62,9 +61,9 @@
       <ref name="get-case-from"/>
       <ref name="case-of"/>
       <ref name="concat"/>
+      <ref name="lu-count"/>
       <ref name="lu"/>
       <ref name="mlu"/>
-      <ref name="chunk"/>
     </choice>
   </define>
   <define name="stringvalue">
@@ -74,18 +73,15 @@
       <ref name="var"/>
       <ref name="get-case-from"/>
       <ref name="case-of"/>
+      <ref name="lu-count"/>
     </choice>
   </define>
-  <define name="transfer">
-    <element name="transfer">
-      <ref name="attlist.transfer"/>
+  <define name="postchunk">
+    <element name="postchunk">
+      <ref name="attlist.postchunk"/>
       <ref name="section-def-cats"/>
-      <optional>
-        <ref name="section-def-attrs"/>
-      </optional>
-      <optional>
-        <ref name="section-def-vars"/>
-      </optional>
+      <ref name="section-def-attrs"/>
+      <ref name="section-def-vars"/>
       <optional>
         <ref name="section-def-lists"/>
       </optional>
@@ -95,21 +91,12 @@
       <ref name="section-rules"/>
     </element>
   </define>
-  <define name="attlist.transfer" combine="interleave">
-    <optional>
-      <attribute name="default">
-        <choice>
-          <value>lu</value>
-          <value>chunk</value>
-        </choice>
-      </attribute>
-    </optional>
+  <define name="attlist.postchunk" combine="interleave">
+    <empty/>
   </define>
   <!--
-    'transfer' is the root element containing the whole structural
-    transfer rule file.  Attribute 'default' specifies if
-    unmatched words have to be written as lexical units ("lu", this is
-    the default value) or as chunks ("chunk").
+    'postchunk' is the root element containing the whole structural
+    postchunk rule file.  
   -->
   <define name="section-def-cats">
     <element name="section-def-cats">
@@ -153,24 +140,11 @@
     </element>
   </define>
   <define name="attlist.cat-item" combine="interleave">
-    <optional>
-      <attribute name="lemma"/>
-    </optional>
-    <attribute name="tags"/>
-    <optional>
-      <attribute name="c"/>
-    </optional>
+    <attribute name="name"/>
   </define>
   <!--
-         Each 'cat-item' (category item) represents a set of lexical forms
-    and has a mandatory attribute 'tags' whose value is a sequence of
-    dot-separated tag names; this sequence is a subsequence of the
-    tag sequence defining each possible lexical form. For example,
-    tags="n.f" would match all lexical forms containing this tag
-    sequence, such as "^casa<n><f><pl>$".
-    
-    In addition, an optional attribute, "lemma", may be used to
-    define lexical forms having a particular substring in their lemma
+    In addition, a required attribute, "name", is used to specify 
+    wich chunk name is detected by this cat-item
   -->
   <define name="section-def-attrs">
     <element name="section-def-attrs">
@@ -379,15 +353,12 @@
   </define>
   <!--
     Each rule has a pattern and an action 
-    * attribute 'comment' allows to put in comments about the purpose of
-      the rule being defined
+    * Attribute 'comment' allows to include a comment with the rule
   -->
   <define name="pattern">
     <element name="pattern">
       <ref name="attlist.pattern"/>
-      <oneOrMore>
-        <ref name="pattern-item"/>
-      </oneOrMore>
+      <ref name="pattern-item"/>
     </element>
   </define>
   <define name="attlist.pattern" combine="interleave">
@@ -752,10 +723,9 @@
       <ref name="attlist.out"/>
       <oneOrMore>
         <choice>
-          <ref name="mlu"/>
-          <ref name="lu"/>
           <ref name="b"/>
-          <ref name="chunk"/>
+          <ref name="lu"/>
+          <ref name="mlu"/>
           <ref name="var"/>
         </choice>
       </oneOrMore>
@@ -766,11 +736,7 @@
       <attribute name="c"/>
     </optional>
   </define>
-  <!--
-    'out' is an output statement; it may output any sequence of
-    clips, literal strings, literal tags, variables, and whitespace items 
-    (see below) 
-  -->
+  <!-- 'out' is an output statement; it may output blanks or chunks -->
   <define name="modify-case">
     <element name="modify-case">
       <ref name="attlist.modify-case"/>
@@ -828,19 +794,7 @@
   </define>
   <define name="attlist.clip" combine="interleave">
     <attribute name="pos"/>
-    <attribute name="side">
-      <choice>
-        <value>sl</value>
-        <value>tl</value>
-      </choice>
-    </attribute>
     <attribute name="part"/>
-    <optional>
-      <attribute name="queue"/>
-    </optional>
-    <optional>
-      <attribute name="link-to"/>
-    </optional>
     <optional>
       <attribute name="c"/>
     </optional>
@@ -852,21 +806,11 @@
     * 'pos' is an index (1, 2, 3...) used to select a lexical form
        inside the rule;
     
-    * 'side' is used to select a source-language ('sl') or a
-      target-language ('tl') clip
-    
     * the value of 'part' is the name of an attribute defined in
       def-attrs, but may take also the values 'lem' (referring to
       the lemma of the lexical form), 'lemh' (lemma head), 'lemq'
       (lemma queue) and 'whole' (referring to the whole lexical form).
     
-    * the value of 'queue' may be 'no' or 'yes'.  'yes' is assumed  by 
-      default.
-    
-    * 'link-to' causes the other attributes to be ignored in clip evaluation
-      when using 'clip' as a right hand side element (as value), and 
-      returns its value.  When using as a left hand side (as reference), 
-      the value of the 'as' attribute is ignored.
   -->
   <define name="lit">
     <element name="lit">
@@ -937,12 +881,6 @@
   </define>
   <define name="attlist.case-of" combine="interleave">
     <attribute name="pos"/>
-    <attribute name="side">
-      <choice>
-        <value>sl</value>
-        <value>tl</value>
-      </choice>
-    </attribute>
     <attribute name="part"/>
   </define>
   <!--
@@ -952,9 +890,6 @@
     
     * 'pos' is an index (1, 2, 3...) used to select a lexical form
        inside the rule;
-    
-    * 'side' is used to select a source-language ('sl') or a
-      target-language ('tl') clip
     
     * the value of 'part' is the name of an attribute defined in
       def-attrs, but may take also the values 'lem' (referring to
@@ -996,85 +931,7 @@
   <define name="attlist.lu" combine="interleave">
     <empty/>
   </define>
-  <!-- Encloses a word inside an 'out' element. -->
-  <define name="reject-current-rule">
-    <element name="reject-current-rule">
-      <ref name="attlist.reject-current-rule"/>
-      <empty/>
-    </element>
-  </define>
-  <define name="attlist.reject-current-rule" combine="interleave">
-    <optional>
-      <attribute name="shifting">
-        <choice>
-          <value>yes</value>
-          <value>no</value>
-        </choice>
-      </attribute>
-    </optional>
-  </define>
-  <!--
-    This instruction cancels the execution of the rule being processed.
-    If "shifting" is set to "yes" or is not specified, the matching process
-    consumes exactly one word at the input. If "shifting" is set to "no"
-    then marks the rule to not to be considered in the current matching 
-    until the input buffer advances at least one single word 
-  -->
-  <define name="chunk">
-    <element name="chunk">
-      <ref name="attlist.chunk"/>
-      <ref name="tags"/>
-      <oneOrMore>
-        <choice>
-          <ref name="mlu"/>
-          <ref name="lu"/>
-          <ref name="b"/>
-          <ref name="var"/>
-        </choice>
-      </oneOrMore>
-    </element>
-  </define>
-  <define name="attlist.chunk" combine="interleave">
-    <optional>
-      <attribute name="name"/>
-    </optional>
-    <optional>
-      <attribute name="namefrom"/>
-    </optional>
-    <optional>
-      <attribute name="case"/>
-    </optional>
-    <optional>
-      <attribute name="c"/>
-    </optional>
-  </define>
-  <!--
-    Encloses a chunk inside an 'out' element.      
-    * 'name' the pseudolemma of the chunk.
-    * 'namefrom' get the name from a variable.
-    * 'case' the variable to get the uppercase/lowercase policy
-       to apply it to the chunk name
-  -->
-  <define name="tags">
-    <element name="tags">
-      <ref name="attlist.tags"/>
-      <oneOrMore>
-        <ref name="tag"/>
-      </oneOrMore>
-    </element>
-  </define>
-  <define name="attlist.tags" combine="interleave">
-    <empty/>
-  </define>
-  <define name="tag">
-    <element name="tag">
-      <ref name="attlist.tag"/>
-      <ref name="value"/>
-    </element>
-  </define>
-  <define name="attlist.tag" combine="interleave">
-    <empty/>
-  </define>
+  <!-- Encloses a word -->
   <define name="b">
     <element name="b">
       <ref name="attlist.b"/>
@@ -1086,19 +943,29 @@
       <attribute name="pos"/>
     </optional>
   </define>
+  <!--
+    'b' is a [super]blanks item, indexed by pos; for example, a 'b'
+    with pos="2" refers to the [super]blanks (including format data
+    encapsulated by the de-formatter) between lexical form 2 and
+    lexical form 3. Managing [super]blanks explicitly allows for the
+    correct placement of format when the result of structural
+    transfer has more or less lexical items than the original or has
+    been reordered in some way.  If attribute "pos" is not specified, then
+    a single blank (ASCII 32) is generated.
+  -->
+  <define name="lu-count">
+    <element name="lu-count">
+      <ref name="attlist.lu-count"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.lu-count" combine="interleave">
+    <empty/>
+  </define>
   <start>
     <choice>
-      <ref name="transfer"/>
+      <ref name="postchunk"/>
     </choice>
   </start>
 </grammar>
-<!--
-  'b' is a [super]blanks item, indexed by pos; for example, a 'b'
-  with pos="2" refers to the [super]blanks (including format data
-  encapsulated by the de-formatter) between lexical form 2 and
-  lexical form 3. Managing [super]blanks explicitly allows for the
-  correct placement of format when the result of structural
-  transfer has more or less lexical items than the original or has
-  been reordered in some way.  If attribute "pos" is not specified, then
-  a single blank (ASCII 32) is generated.
--->
+<!-- Number of lexical units (words inside the chunk) in the rule -->

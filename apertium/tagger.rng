@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  Copyright (C) 2005 Universitat d'Alacant / Universidad de Alicante
+  
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License as
+  published by the Free Software Foundation; either version 2 of the
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  General Public License for more details.
+  
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, see <http://www.gnu.org/licenses/>.
+  
+    DTD for the tagset and the rules to enforce the state to state
+    transition probabilities used by the part-of-speech tagger. 
+    2005.07.29.
+-->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0">
+  <define name="tagger">
+    <element name="tagger">
+      <ref name="attlist.tagger"/>
+      <ref name="tagset"/>
+      <optional>
+        <ref name="forbid"/>
+      </optional>
+      <optional>
+        <ref name="enforce-rules"/>
+      </optional>
+      <optional>
+        <ref name="preferences"/>
+      </optional>
+      <optional>
+        <ref name="discard-on-ambiguity"/>
+      </optional>
+    </element>
+  </define>
+  <define name="attlist.tagger" combine="interleave">
+    <attribute name="name"/>
+  </define>
+  <!--
+        'tagger' is the root element containing the whole tagset for a given
+    language specified through the mandatory attribute 'name'
+  -->
+  <define name="tagset">
+    <element name="tagset">
+      <ref name="attlist.tagset"/>
+      <oneOrMore>
+        <ref name="def-label"/>
+      </oneOrMore>
+      <zeroOrMore>
+        <ref name="def-mult"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.tagset" combine="interleave">
+    <empty/>
+  </define>
+  <!--
+        The 'tagset' section defines the correspondance between simple 
+    or multiple morphological categories defining a lexical form and the coarser 
+    ones with which the part-of-speech tagger works
+  -->
+  <define name="def-label">
+    <element name="def-label">
+      <ref name="attlist.def-label"/>
+      <oneOrMore>
+        <ref name="tags-item"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.def-label" combine="interleave">
+    <attribute name="name"/>
+    <optional>
+      <attribute name="c"/>
+    </optional>
+    <optional>
+      <attribute name="closed"/>
+    </optional>
+  </define>
+  <!--
+        Each 'def-label' defines one coarse tag in terms of a list of fine tags 
+    and has a mandatory unique name. The optional attribute 'closed="true"' may be used
+    to specify if the defined fine tags belong to a closed list.
+    c is for comments and is ignored
+  -->
+  <define name="tags-item">
+    <element name="tags-item">
+      <ref name="attlist.tags-item"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.tags-item" combine="interleave">
+    <attribute name="tags"/>
+    <optional>
+      <attribute name="lemma"/>
+    </optional>
+  </define>
+  <!--
+        Each 'tags-item' may be a dot-separated subsequence of the morphological tags
+    corresponding to a coarse tag optionally in association with a given lemma 
+  -->
+  <define name="def-mult">
+    <element name="def-mult">
+      <ref name="attlist.def-mult"/>
+      <oneOrMore>
+        <ref name="sequence"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.def-mult" combine="interleave">
+    <attribute name="name"/>
+    <optional>
+      <attribute name="c"/>
+    </optional>
+    <optional>
+      <attribute name="closed"/>
+    </optional>
+  </define>
+  <!--
+        Each 'def-mult' defines one coarse tag in terms of a sequence of coarse
+    tags previously defined as 'def-labels' or a sequence of fine tags. A mandatory 
+    name is required for each 'def-mult' which may also has an optional attribute 
+    'closed="true"' if it belongs to a closed list
+    c is for comments and is ignored
+  -->
+  <define name="sequence">
+    <element name="sequence">
+      <ref name="attlist.sequence"/>
+      <oneOrMore>
+        <choice>
+          <ref name="tags-item"/>
+          <ref name="label-item"/>
+        </choice>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.sequence" combine="interleave">
+    <empty/>
+  </define>
+  <!--
+        Element 'sequence' encloses a set of tags or labels which defines 
+    a unit with more than one label
+  -->
+  <define name="label-item">
+    <element name="label-item">
+      <ref name="attlist.label-item"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.label-item" combine="interleave">
+    <attribute name="label"/>
+    <optional>
+      <attribute name="c"/>
+    </optional>
+  </define>
+  <!--
+        Each 'label' of the 'label-item' correspond to a coarse tag previously 
+    defined as a 'def-label' by a name.
+    c is for comments and is ignored
+  -->
+  <define name="forbid">
+    <element name="forbid">
+      <ref name="attlist.forbid"/>
+      <oneOrMore>
+        <ref name="label-sequence"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.forbid" combine="interleave">
+    <empty/>
+  </define>
+  <!--
+        Element 'forbid' contains sequences of morphological categories that are not 
+    allowed in a given language
+  -->
+  <define name="label-sequence">
+    <element name="label-sequence">
+      <ref name="attlist.label-sequence"/>
+      <oneOrMore>
+        <ref name="label-item"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.label-sequence" combine="interleave">
+    <optional>
+      <attribute name="c"/>
+    </optional>
+  </define>
+  <!--
+        Each 'label-sequence' is restricted to two 'label-items' 
+    c is for comments and is ignored
+  -->
+  <define name="enforce-rules">
+    <element name="enforce-rules">
+      <ref name="attlist.enforce-rules"/>
+      <oneOrMore>
+        <ref name="enforce-after"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.enforce-rules" combine="interleave">
+    <empty/>
+  </define>
+  <!-- Element 'enforce-rules' defines sets of coarse tags that must follow specified ones -->
+  <define name="enforce-after">
+    <element name="enforce-after">
+      <ref name="attlist.enforce-after"/>
+      <ref name="label-set"/>
+    </element>
+  </define>
+  <define name="attlist.enforce-after" combine="interleave">
+    <attribute name="label"/>
+    <optional>
+      <attribute name="c"/>
+    </optional>
+  </define>
+  <!--
+        Each 'enforce-after' encloses the set of coarse tags ('label-set') that must follow 
+    the one defined in 'label', as a mandatory attribute
+    c is for comments and is ignored
+  -->
+  <define name="label-set">
+    <element name="label-set">
+      <ref name="attlist.label-set"/>
+      <oneOrMore>
+        <ref name="label-item"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.label-set" combine="interleave">
+    <optional>
+      <attribute name="c"/>
+    </optional>
+  </define>
+  <!--
+        The set of 'label-items' enforced after a 'label' are enclosed inside element 'label-set'  
+    c is for comments and is ignored
+  -->
+  <define name="preferences">
+    <element name="preferences">
+      <ref name="attlist.preferences"/>
+      <oneOrMore>
+        <ref name="prefer"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.preferences" combine="interleave">
+    <empty/>
+  </define>
+  <!--
+        Element 'preferences' allows to decide amongst two or more fine tag sequences 
+    which are grouped in the same coarse tag. 
+  -->
+  <define name="prefer">
+    <element name="prefer">
+      <ref name="attlist.prefer"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.prefer" combine="interleave">
+    <attribute name="tags"/>
+    <optional>
+      <attribute name="c"/>
+    </optional>
+  </define>
+  <!--
+        Each 'prefer' element has a mandatory attribute 'tags' made of a sequence of fine tags 
+    c is for comments and is ignored
+  -->
+  <define name="discard-on-ambiguity">
+    <element name="discard-on-ambiguity">
+      <ref name="attlist.discard-on-ambiguity"/>
+      <oneOrMore>
+        <ref name="discard"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.discard-on-ambiguity" combine="interleave">
+    <empty/>
+  </define>
+  <!--
+    List of label-item or tags-item to be discarded when an ambiguity
+    occurs inside a word
+  -->
+  <define name="discard">
+    <element name="discard">
+      <ref name="attlist.discard"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.discard" combine="interleave">
+    <attribute name="tags"/>
+    <optional>
+      <attribute name="c"/>
+    </optional>
+  </define>
+  <start>
+    <choice>
+      <ref name="tagger"/>
+    </choice>
+  </start>
+</grammar>
+<!--
+      Each 'discard' element has a mandatory attribute 'tags' made of a sequence of fine tags 
+  c is for comments and is ignored
+-->

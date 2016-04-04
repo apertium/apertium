@@ -1,0 +1,111 @@
+# Copyright (C) 2005 Universitat d'Alacant / Universidad de Alicante
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
+# 
+#    DTD for the format specification files
+#    Sergio Ortiz  2005.05.13
+
+format = element format { attlist.format, options, rules }
+attlist.format &= attribute name { text }
+# 'format' is the root element containing the whole format specification
+# file.  The attribute 'name' specifies the name of the format
+options =
+  element options {
+    attlist.options,
+    largeblocks,
+    input,
+    output,
+    tag-name,
+    escape-chars,
+    space-chars,
+    case-sensitive
+  }
+attlist.options &= empty
+# General options of the format 
+largeblocks = element largeblocks { attlist.largeblocks, empty }
+attlist.largeblocks &= attribute size { text }
+# The attribute size is used to define the maximal size in bytes of
+# inline format blocks
+input = element input { attlist.input, empty }
+attlist.input &= attribute zip-path { text }?
+attlist.input &= attribute encoding { text }
+# Reserved for future extensions
+output = element output { attlist.output, empty }
+attlist.output &= attribute zip-path { text }?
+attlist.output &= attribute encoding { text }
+# Reserved for future extensions
+tag-name = element tag-name { attlist.tag-name, empty }
+attlist.tag-name &= attribute regexp { text }
+# The attribute regexp defines (whith a _flex_ regular expression) how 
+# take a tag name from a whole tag. '\'
+escape-chars = element escape-chars { attlist.escape-chars, empty }
+attlist.escape-chars &= attribute regexp { text }
+# The attribute regexp defines (whith a _flex_ regular expression) the
+# set of characters to be escaped with preceding a backslash '\'
+space-chars = element space-chars { attlist.space-chars, empty }
+attlist.space-chars &= attribute regexp { text }
+# Define the space characters (in regexp) with a _flex_ regular 
+# expression
+case-sensitive =
+  element case-sensitive { attlist.case-sensitive, empty }
+attlist.case-sensitive &= attribute value { "yes" | "no" }
+# The attribute 'value' is set to 'yes' if the case is relevant in the 
+# specification of the format.  Otherwise is set to 'no'
+rules =
+  element rules { attlist.rules, (format-rule | replacement-rule)+ }
+attlist.rules &= empty
+# Group the rules of processing format and the rules of substitute 
+# expressions by characters that are part of the text
+format-rule =
+  element format-rule {
+    attlist.format-rule,
+    (tag | (begin, end))
+  }
+attlist.format-rule &=
+  attribute type { "comment" | "empty" | "open" | "close" }?
+attlist.format-rule &= attribute eos { "yes" | "no" }?
+attlist.format-rule &= attribute priority { text }
+# Format rule parent element.  It may include a 'tag' element or
+# a couple of elements 'begin', 'end'.  In the first case, this element is 
+# considered to be part of the format.  In the second case, the begin and 
+# the end element are considered to enclosing format.  The attribute
+# 'eos' (end of sentence) is set to 'yes' if that rule defines a dot in
+# the text being processed (is no by default).  The attribute 'priority' 
+# marks the order of precedence of the rule
+tag = element tag { attlist.tag, empty }
+attlist.tag &= attribute regexp { text }
+# Define an element that is part of the format by the pattern specified
+# as a value for the regexp attribute
+begin = element begin { attlist.begin, empty }
+attlist.begin &= attribute regexp { text }
+# The attribute 'regexp' is the regular expression that detects the
+# begining delimiter of a block of format
+end = element end { attlist.end, empty }
+attlist.end &= attribute regexp { text }
+# The attribute 'regexp' is the regular expression that detects the
+# ending delimiter of a block of format
+replacement-rule =
+  element replacement-rule { attlist.replacement-rule, replace+ }
+attlist.replacement-rule &= attribute regexp { text }
+# Root element for a replacement rule.  The attribute 'regexp' is the
+# general expression to detect the elements to replace
+replace = element replace { attlist.replace, empty }
+attlist.replace &= attribute source { text }
+attlist.replace &= attribute target { text }
+attlist.replace &= attribute prefer { "yes" | "no" }?
+start = format
+# Replacement rule.  The 'source' is a string of one or more characters.
+# The 'target' MUST be a single character.  The 'prefer' attribute, when 
+# set to 'yes' defines the preferred reverse translation of the 
+# replacement.

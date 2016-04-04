@@ -1,0 +1,122 @@
+# Copyright (C) 2005 Universitat d'Alacant / Universidad de Alicante
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
+# 
+#   DTD for the tagset and the rules to enforce the state to state
+#   transition probabilities used by the part-of-speech tagger. 
+#   2005.07.29.
+
+tagger =
+  element tagger {
+    attlist.tagger,
+    tagset,
+    forbid?,
+    enforce-rules?,
+    preferences?,
+    discard-on-ambiguity?
+  }
+attlist.tagger &= attribute name { text }
+#     'tagger' is the root element containing the whole tagset for a given
+# language specified through the mandatory attribute 'name'
+tagset = element tagset { attlist.tagset, def-label+, def-mult* }
+attlist.tagset &= empty
+#     The 'tagset' section defines the correspondance between simple 
+# or multiple morphological categories defining a lexical form and the coarser 
+# ones with which the part-of-speech tagger works
+def-label = element def-label { attlist.def-label, tags-item+ }
+attlist.def-label &=
+  attribute name { text },
+  attribute c { text }?,
+  attribute closed { text }?
+#     Each 'def-label' defines one coarse tag in terms of a list of fine tags 
+# and has a mandatory unique name. The optional attribute 'closed="true"' may be used
+# to specify if the defined fine tags belong to a closed list.
+# c is for comments and is ignored
+tags-item = element tags-item { attlist.tags-item, empty }
+attlist.tags-item &=
+  attribute tags { text },
+  attribute lemma { text }?
+#     Each 'tags-item' may be a dot-separated subsequence of the morphological tags
+# corresponding to a coarse tag optionally in association with a given lemma 
+def-mult = element def-mult { attlist.def-mult, sequence+ }
+attlist.def-mult &=
+  attribute name { text },
+  attribute c { text }?,
+  attribute closed { text }?
+#     Each 'def-mult' defines one coarse tag in terms of a sequence of coarse
+# tags previously defined as 'def-labels' or a sequence of fine tags. A mandatory 
+# name is required for each 'def-mult' which may also has an optional attribute 
+# 'closed="true"' if it belongs to a closed list
+# c is for comments and is ignored
+sequence =
+  element sequence { attlist.sequence, (tags-item | label-item)+ }
+attlist.sequence &= empty
+#     Element 'sequence' encloses a set of tags or labels which defines 
+# a unit with more than one label
+label-item = element label-item { attlist.label-item, empty }
+attlist.label-item &=
+  attribute label { text },
+  attribute c { text }?
+#     Each 'label' of the 'label-item' correspond to a coarse tag previously 
+# defined as a 'def-label' by a name.
+# c is for comments and is ignored
+forbid = element forbid { attlist.forbid, label-sequence+ }
+attlist.forbid &= empty
+#     Element 'forbid' contains sequences of morphological categories that are not 
+# allowed in a given language
+label-sequence =
+  element label-sequence { attlist.label-sequence, label-item+ }
+attlist.label-sequence &= attribute c { text }?
+#     Each 'label-sequence' is restricted to two 'label-items' 
+# c is for comments and is ignored
+enforce-rules =
+  element enforce-rules { attlist.enforce-rules, enforce-after+ }
+attlist.enforce-rules &= empty
+# Element 'enforce-rules' defines sets of coarse tags that must follow specified ones
+enforce-after =
+  element enforce-after { attlist.enforce-after, label-set }
+attlist.enforce-after &=
+  attribute label { text },
+  attribute c { text }?
+#     Each 'enforce-after' encloses the set of coarse tags ('label-set') that must follow 
+# the one defined in 'label', as a mandatory attribute
+# c is for comments and is ignored
+label-set = element label-set { attlist.label-set, label-item+ }
+attlist.label-set &= attribute c { text }?
+#     The set of 'label-items' enforced after a 'label' are enclosed inside element 'label-set'  
+# c is for comments and is ignored
+preferences = element preferences { attlist.preferences, prefer+ }
+attlist.preferences &= empty
+#     Element 'preferences' allows to decide amongst two or more fine tag sequences 
+# which are grouped in the same coarse tag. 
+prefer = element prefer { attlist.prefer, empty }
+attlist.prefer &=
+  attribute tags { text },
+  attribute c { text }?
+#     Each 'prefer' element has a mandatory attribute 'tags' made of a sequence of fine tags 
+# c is for comments and is ignored
+discard-on-ambiguity =
+  element discard-on-ambiguity {
+    attlist.discard-on-ambiguity, discard+
+  }
+attlist.discard-on-ambiguity &= empty
+# List of label-item or tags-item to be discarded when an ambiguity
+# occurs inside a word
+discard = element discard { attlist.discard, empty }
+attlist.discard &=
+  attribute tags { text },
+  attribute c { text }?
+start = tagger
+#     Each 'discard' element has a mandatory attribute 'tags' made of a sequence of fine tags 
+# c is for comments and is ignored
