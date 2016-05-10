@@ -108,17 +108,19 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
           <xsl:with-param name="progname" select="./@name"/>
         </xsl:call-template>
       </xsl:attribute>
-      <xsl:copy-of select="./preceding-sibling::*"/>
-      <program>
-        <xsl:attribute name="name">
-          <xsl:call-template name="replaceString">
-            <xsl:with-param name="haystack" select="./@name"/>
-            <xsl:with-param name="needle" select="'$1'"/>
-            <xsl:with-param name="replacement" select="'-d'"/>
-          </xsl:call-template>
-        </xsl:attribute>
-        <xsl:copy-of select="./*"/>
-      </program>
+      <pipeline>
+        <xsl:copy-of select="./preceding-sibling::*"/>
+        <program>
+          <xsl:attribute name="name">
+            <xsl:call-template name="replaceString">
+              <xsl:with-param name="haystack" select="./@name"/>
+              <xsl:with-param name="needle" select="'$1'"/>
+              <xsl:with-param name="replacement" select="'-d'"/>
+            </xsl:call-template>
+          </xsl:attribute>
+          <xsl:copy-of select="./*"/>
+        </program>
+      </pipeline>
     </mode>
   </xsl:template>
 
