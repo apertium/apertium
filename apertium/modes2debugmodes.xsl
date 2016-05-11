@@ -100,6 +100,28 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
     </xsl:choose>
   </xsl:template>
 
+  <xsl:template name="traceOpt">
+    <xsl:param name="progname"/>
+    <xsl:variable name="p" select="normalize-space($progname)"/>
+    <xsl:choose>
+      <xsl:when test="starts-with($p, 'cg-proc')">
+        <xsl:text> -t</xsl:text>
+      </xsl:when>
+      <xsl:when test="starts-with($p, 'lrx-proc')">
+        <xsl:text> -t</xsl:text>
+      </xsl:when>
+      <xsl:when test="starts-with($p, 'apertium-transfer')">
+        <xsl:text> -t</xsl:text>
+      </xsl:when>
+      <xsl:when test="starts-with($p, 'apertium-interchunk')">
+        <xsl:text> -t</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text></xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
   <xsl:template match="program">
     <mode install="no">
       <xsl:attribute name="name">
@@ -116,6 +138,9 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
               <xsl:with-param name="haystack" select="./@name"/>
               <xsl:with-param name="needle" select="'$1'"/>
               <xsl:with-param name="replacement" select="'-d'"/>
+            </xsl:call-template>
+            <xsl:call-template name="traceOpt">
+              <xsl:with-param name="progname" select="./@name"/>
             </xsl:call-template>
           </xsl:attribute>
           <xsl:copy-of select="./*"/>
