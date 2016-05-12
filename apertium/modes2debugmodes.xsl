@@ -39,12 +39,12 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template match="mode[@install='no']">
+  <xsl:template match="mode[not(@gendebug='yes')]">
     <!-- Output these unchanged; don't apply templates here -->
     <xsl:copy-of select="."/>
   </xsl:template>
 
-  <xsl:template match="mode[@install='yes']">
+  <xsl:template match="mode[@gendebug='yes']">
     <xsl:comment>
       <xsl:text> **************** </xsl:text>
       <xsl:value-of select="./@name"/>

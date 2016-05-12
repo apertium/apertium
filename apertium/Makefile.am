@@ -78,10 +78,10 @@ h_sources = a.h \
 	    wchar_t_exception.h
 	    wchar_t_exception_type.h
 #DEPR.:
-#	    lextor_data.h 
-#	    lextor_eval.h 
-#	    lextor.h 
-#	    lextor_word.h 
+#	    lextor_data.h
+#	    lextor_eval.h
+#	    lextor.h
+#	    lextor_word.h
 
 cc_sources = a.cc \
 	     align.cc \
@@ -144,10 +144,10 @@ cc_sources = a.cc \
 	     utf_converter.cc \
 	     wchar_t_exception_type.cc
 #DEPR.:
-#	     lextor.cc 
-#	     lextor_data.cc 
-#	     lextor_eval.cc 
-#	     lextor_word.cc 
+#	     lextor.cc
+#	     lextor_data.cc
+#	     lextor_eval.cc
+#	     lextor_word.cc
 
 library_includedir = $(includedir)/$(GENERIC_LIBRARY_NAME)-$(GENERIC_API_VERSION)/$(GENERIC_LIBRARY_NAME)
 library_include_HEADERS = $(h_sources)
@@ -219,7 +219,7 @@ apertium_DATA = deformat.xsl reformat.xsl new2old.xsl lexchoice.xsl \
                 lexchoicebil.xsl \
 				tagger.dtd interchunk.dtd format.dtd  transfer.dtd postchunk.dtd modes.dtd \
 				tagger.rnc interchunk.rnc format.rnc  transfer.rnc postchunk.rnc modes.rnc \
-				modes2bash.xsl \
+				modes2bash.xsl modes2debugmodes.xsl \
                 apertium-createmodes.awk
 
 apertium_pretransfer_SOURCES = apertium_pretransfer.cc
@@ -509,16 +509,12 @@ apertium-gen-reformat: Makefile.am gen-header.sh
 	@echo "rm /tmp/\$$\$$.reformat.l /tmp/\$$\$$.lex.cc" >> $@
 	@chmod a+x $@
 
-apertium-gen-modes: Makefile.am modes-header.sh
-	@echo "Creating apertium-gen-modes script"
+apertium-gen-modes: apertium-gen-modes.in
 	@echo "#!$(BASH)" > $@
-	@echo "APERTIUMDIR="$(apertiumdir) >> $@
-	@cat modes-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid $(apertiumdir)/modes.dtd --noout \$$FILE1 && \\" >> $@
-	@if [ `basename $(XSLTPROC)` == xsltproc ]; \
-	  then echo "$(XSLTPROC) --stringparam prefix $(prefix)/bin --stringparam dataprefix \$$FULLDIRNAME  $(apertiumdir)/modes2bash.xsl \$$FILE1 | awk -f $(apertiumdir)/apertium-createmodes.awk PARAM=\$$FULLDIRNAME"; \
-          else echo "$(XSLTPROC) $(apertiumdir)/modes2bash.xsl \$$FILE1 \\\$$prefix=$(prefix)/bin \\\$$dataprefix=\$$FULLDIRNAME| awk -f $(apertiumdir)/apertium-createmodes.awk PARAM=\$$FULLDIRNAME"; \
-          fi >> $@
+	@echo "APERTIUMDIR=$(apertiumdir)" >> $@
+	@echo "XMLLINT=$(XMLLINT)" >> $@
+	@echo "XSLTPROC=$(XSLTPROC)" >> $@
+	cat $< >> $@
 	@chmod a+x $@
 
 apertium-utils-fixlatex: Makefile.am utils-fixlatex-header.sh
@@ -626,11 +622,11 @@ man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
 	 apertium-validate-acx.1 apertium-multiple-translations.1 \
 	 apertium-unformat.1
 #DEPR.:
-#         apertium-lextor-eval.1 
-#         apertium-gen-lextorbil.1 
-#         apertium-gen-lextormono.1 apertium-gen-stopwords-lextor.1 
-#         apertium-gen-wlist-lextor.1 apertium-gen-wlist-lextor-translation.1 
-#         apertium-lextor.1 apertium-preprocess-corpus-lextor.1 
+#         apertium-lextor-eval.1
+#         apertium-gen-lextorbil.1
+#         apertium-gen-lextormono.1 apertium-gen-stopwords-lextor.1
+#         apertium-gen-wlist-lextor.1 apertium-gen-wlist-lextor-translation.1
+#         apertium-lextor.1 apertium-preprocess-corpus-lextor.1
 
 EXTRA_DIST = gen-header.sh deformat-header.sh \
              reformat.xsl deformat.xsl new2old.xsl lexchoice.xsl lexchoicebil.xsl \
@@ -645,9 +641,9 @@ EXTRA_DIST = gen-header.sh deformat-header.sh \
 			 tagger.dtd interchunk.dtd format.dtd  transfer.dtd postchunk.dtd modes.dtd \
 			 tagger.rnc interchunk.rnc format.rnc  transfer.rnc postchunk.rnc modes.rnc \
              utils-fixlatex-header.sh \
-             modes-header.sh apertium-createmodes.awk modes2bash.xsl 
+             modes-header.sh apertium-createmodes.awk modes2bash.xsl modes2debugmodes.xsl
 #DEPR.:
 # trans-lextor-header.sh
-# gen-wlist-lextor-header.sh 
-# gen-stopwords-lextor.sh 
-# preprocess-corpus-lextor.sh 
+# gen-wlist-lextor-header.sh
+# gen-stopwords-lextor.sh
+# preprocess-corpus-lextor.sh

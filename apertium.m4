@@ -104,7 +104,7 @@ modes/%.mode: modes.xml
 apertium_modesdir=\$(prefix)/share/apertium/modes/
 install-modes:
 	mv modes modes.bak
-	apertium-gen-modes modes.xml \$(BASENAME)
+	apertium-gen-modes -f modes.xml \$(prefix)/share/apertium/\$(BASENAME)
 	rm -rf modes
 	mv modes.bak modes
 	test -d \$(DESTDIR)\$(apertium_modesdir) || mkdir \$(DESTDIR)\$(apertium_modesdir)

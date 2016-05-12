@@ -23,6 +23,7 @@
 <!ELEMENT mode (pipeline)>
 <!ATTLIST mode name ID #REQUIRED>
 <!ATTLIST mode install CDATA #IMPLIED>
+<!ATTLIST mode gendebug CDATA #IMPLIED>
 
 <!ELEMENT pipeline (program+)>
 
