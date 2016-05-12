@@ -79,7 +79,6 @@ public:
    void init_probabilities_from_tagged_text_(FILE *TaggedCorpus,
                                             FILE *UntaggedCorpus);
    void init_probabilities_kupiec_(FILE *Corpus);
-   void train_(FILE *Corpus, unsigned long Count);
    HMM();
    HMM(TaggerDataHMM *tdhmm);
  

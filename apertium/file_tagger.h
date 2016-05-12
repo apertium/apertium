@@ -40,7 +40,6 @@ public:
   virtual void init_probabilities_from_tagged_text_(FILE *TaggedCorpus,
                                                     FILE *Corpus) = 0;
   virtual void init_probabilities_kupiec_(FILE *Corpus) = 0;
-  virtual void train_(FILE *Corpus, unsigned long Count) = 0;
 
 protected:
   virtual void deserialise(const TaggerData &Deserialised_FILE_Tagger) = 0;

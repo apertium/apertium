@@ -54,18 +54,6 @@ std::vector<std::wstring> &HMM::getArrayTags() {
   return tdhmm.getArrayTags();
 }
 
-void HMM::train(FILE *Corpus, unsigned long Count) {
-  train(Corpus);
-  --Count;
-
-  for (; Count > 0; --Count) {
-    std::fseek(Corpus, 0, SEEK_SET);
-    train(Corpus);
-  }
-
-  apply_rules();
-}
-
 void HMM::serialise(FILE *Stream_) { tdhmm.write(Stream_); }
 
 void HMM::deserialise(const TaggerData &Deserialised_FILE_Tagger) {
@@ -84,7 +72,7 @@ void HMM::init_probabilities_kupiec_(FILE *Corpus) {
   apply_rules();
 }
 
-void HMM::train_(FILE *Corpus, unsigned long Count) {
+void HMM::train(FILE *Corpus, unsigned long Count) {
   for (; Count > 0; --Count) {
     std::fseek(Corpus, 0, SEEK_SET);
     train(Corpus);

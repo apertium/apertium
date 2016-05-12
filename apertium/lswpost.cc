@@ -56,16 +56,6 @@ std::vector<std::wstring> &LSWPoST::getArrayTags() {
   return tdlsw.getArrayTags();
 }
 
-void LSWPoST::train(FILE *Corpus, unsigned long Count) {
-  train(Corpus);
-  --Count;
-
-  for (; Count > 0; --Count) {
-    std::fseek(Corpus, 0, SEEK_SET);
-    train(Corpus);
-  }
-}
-
 void LSWPoST::serialise(FILE *Stream_) { tdlsw.write(Stream_); }
 
 void LSWPoST::deserialise(const TaggerData &Deserialised_FILE_Tagger) {
@@ -82,7 +72,7 @@ void LSWPoST::init_probabilities_kupiec_(FILE *Corpus) {
   init_probabilities(Corpus);
 }
 
-void LSWPoST::train_(FILE *Corpus, unsigned long Count) {
+void LSWPoST::train(FILE *Corpus, unsigned long Count) {
   for (; Count > 0; --Count) {
     std::fseek(Corpus, 0, SEEK_SET);
     train(Corpus);

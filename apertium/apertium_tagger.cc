@@ -1019,7 +1019,7 @@ void apertium_tagger::t_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
 #endif // _MSC_VER
 
   FILE_Tagger_.init_probabilities_kupiec_(Corpus);
-  FILE_Tagger_.train_(Corpus, TheFunctionTypeOptionArgument);
+  FILE_Tagger_.train(Corpus, TheFunctionTypeOptionArgument);
 
   if (std::fclose(Corpus) != 0) {
     std::stringstream what_;
