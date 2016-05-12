@@ -88,6 +88,9 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
       <xsl:when test="starts-with($p, 'lt-proc') and contains($p, '-b')">
         <xsl:text>-biltrans</xsl:text>
       </xsl:when>
+      <xsl:when test="starts-with($p, 'lt-proc') and contains($p, '-p')">
+        <xsl:text>-pgen</xsl:text>
+      </xsl:when>
       <xsl:when test="starts-with($p, 'lt-proc')">
         <xsl:text>-morph</xsl:text>
       </xsl:when>
