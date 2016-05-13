@@ -204,14 +204,9 @@ HMM::init_probabilities_kupiec (FILE *is)
     if (tags.size()==0) { //This is an unknown word
       tags = tdhmm.getOpenClass();
     }
-    else if (output.has_not(tags)) { 
-      wstring errors;
-      errors = L"A new ambiguity class was found. I cannot continue.\n";
-      errors+= L"Word '"+word->get_superficial_form()+L"' not found in the dictionary.\n";
-      errors+= L"New ambiguity class: "+word->get_string_tags()+L"\n";
-      errors+= L"Take a look at the dictionary and at the training corpus. Then, retrain.";      
-      fatal_error(errors);      
-    }    
+    else {
+      require_ambiguity_class(tdhmm, tags, *word);
+    }
 
     k2=output[tags];
 
@@ -366,15 +361,8 @@ HMM::init_probabilities_from_tagged_text(FILE *ftagged, FILE *funtagged) {
     if (word_untagged->get_tags().size()==0) { // Unknown word
       tags = tdhmm.getOpenClass();
     }
-    else if (output.has_not(word_untagged->get_tags())) { //We are training, there is no problem
-      wstring errors;
-      errors = L"A new ambiguity class was found. I cannot continue.\n";
-      errors+= L"Word '"+word_untagged->get_superficial_form()+L"' not found in the dictionary.\n";
-      errors+= L"New ambiguity class: "+word_untagged->get_string_tags()+L"\n";
-      errors+= L"Take a look at the dictionary, then retrain.";
-      fatal_error(errors);      
-    }    
     else {
+      require_ambiguity_class(tdhmm, word_untagged->get_tags(), *word_untagged);
       tags = word_untagged->get_tags();
     }
 
@@ -460,49 +448,12 @@ HMM::apply_rules()
 }
 
 void 
-HMM::read_dictionary (FILE *fdic) {
-  int i, k, nw=0;
-  TaggerWord *word=NULL;
-  set <TTag> tags;
-  Collection &output = tdhmm.getOutput();
-  
-  MorphoStream morpho_stream(fdic, true, &tdhmm);
-  
-  // In the input dictionary there must be all punctuation marks, including the end-of-sentece mark
-   
-  word = morpho_stream.get_next_word();
-  
-  while (word) {
-    if (++nw%10000==0) wcerr<<L'.'<<flush;
-    
-    tags = word->get_tags();
+HMM::read_dictionary(FILE *fdic) {
+  tagger_utils::read_dictionary(fdic, tdhmm);
+  int N = (tdhmm.getTagIndex()).size();
+  int M = (tdhmm.getOutput()).size();
+  wcerr << N << L" states and " << M <<L" ambiguity classes\n";
 
-    if (tags.size()>0)
-      k = output[tags];
-
-    delete word;
-    word = morpho_stream.get_next_word();
-  }
-  wcerr<<L"\n";
-  
-  // OPEN AMBIGUITY CLASS
-  // It contains all tags that are not closed.
-  // Unknown words are assigned the open ambiguity class
-  k=output[tdhmm.getOpenClass()];
-
-  int N = (tdhmm.getTagIndex()).size();  
-  
-  // Create ambiguity class holding one single tag for each tag.
-  // If not created yet
-  for(i = 0; i != N; i++) {
-    set<TTag> amb_class;
-    amb_class.insert(i);
-    k=output[amb_class];
-  }
-
-  int M = output.size();
-  
-  wcerr<< N <<L" states and "<< M <<L" ambiguity classes\n";
   tdhmm.setProbabilities(N, M);
 }
 
@@ -577,14 +528,7 @@ HMM::train (FILE *ftxt) {
       ndesconocidas++;
     }
     
-    if (output.has_not(tags)) {
-      wstring errors;
-      errors = L"A new ambiguity class was found. I cannot continue.\n";
-      errors+= L"Word '"+word->get_superficial_form()+L"' not found in the dictionary.\n";
-      errors+= L"New ambiguity class: "+word->get_string_tags()+L"\n";
-      errors+= L"Take a look at the dictionary, then retrain.";
-      fatal_error(errors);      
-    }
+    require_ambiguity_class(tdhmm, tags, *word);
     
     k = output[tags];    
     len = pending.size();
@@ -806,17 +750,7 @@ HMM::tagger(FILE *Input, FILE *Output, const bool &First) {
     if (tags.size()==0) // This is an unknown word
       tags = tdhmm.getOpenClass();
                        
-    if (output.has_not(tags)) {  // Encontrada una clase de ambigÃ¼edad desconocida hasta el momento      
-      if (debug) {
-        wstring errors;
-	errors = L"A new ambiguity class was found. \n";
-	errors+= L"Retraining the tagger is necessary so as to take it into account.\n";
-	errors+= L"Word '"+word->get_superficial_form()+L"'.\n";
-	errors+= L"New ambiguity class: "+word->get_string_tags()+L"\n";
-	wcerr<<L"Error: "<<errors;
-      }
-      tags = find_similar_ambiguity_class(tags);
-    } 
+    tags = require_similar_ambiguity_class(tdhmm, tags, *word, debug);
          
     k = output[tags];  //Ambiguity class the word belongs to
     
@@ -936,29 +870,3 @@ void HMM::print_ambiguity_classes() {
     cout << "\n";
   }
 }   
-
-set<TTag>
-HMM::find_similar_ambiguity_class(set<TTag> c) {
-  int size_ret = -1;
-  set<TTag> ret=tdhmm.getOpenClass(); //Se devolverá si no encontramos ninguna clase mejor
-  bool skeep_class;
-  Collection &output = tdhmm.getOutput();
-
-  for(int k=0; k<output.size(); k++) {
-    if ((((int)output[k].size())>((int)size_ret)) && (((int)output[k].size())<((int)c.size()))) {
-      skeep_class=false;
-      // Test if output[k] is a subset of class
-      for(set<TTag>::const_iterator it=output[k].begin(); it!=output[k].end(); it++) {
-        if (c.find(*it)==c.end()) { 
-	   skeep_class=true; //output[k] is not a subset of class
-	   break;
-	}
-      }
-      if (!skeep_class) {
-        size_ret = output[k].size();
-	     ret = output[k];
-      }
-    }
-  }
-  return ret;
-}

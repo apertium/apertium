@@ -60,16 +60,6 @@ private:
     *  @see: read_ambiguity_classes, read_dictionary
     */
    void init(); 
-   
-   /** This method returns a known ambiguity class that is a subset of
-    *  the one received as a parameter. This is useful when a new
-    *  ambiguity class is found because of changes in the morphological
-    *  dictionary used by the MT system.
-    *  @param c set of tags (ambiguity class)
-    *  @return a known ambiguity class 
-    */
-   set<TTag> find_similar_ambiguity_class(set<TTag> c);
-   
 public:  
    void deserialise(FILE *Serialised_FILE_Tagger);
    std::vector<std::wstring> &getArrayTags();

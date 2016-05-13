@@ -14,7 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
+
 #include <apertium/tagger_utils.h>
+#include <apertium/morpho_stream.h>
 
 #include <stdio.h>
 #include <apertium/string_utils.h>
@@ -119,7 +121,103 @@ wstring tagger_utils::trim(wstring s)
 
   return s;
 }
-  
+
+void
+tagger_utils::read_dictionary(FILE *fdic, TaggerData &td) {
+  int i, k, nw = 0;
+  TaggerWord *word = NULL;
+  set <TTag> tags;
+  Collection &output = td.getOutput();
+
+  MorphoStream morpho_stream(fdic, true, &td);
+
+  // In the input dictionary there must be all punctuation marks, including the end-of-sentece mark
+
+  word = morpho_stream.get_next_word();
+
+  while (word) {
+    if (++nw % 10000 == 0)
+      wcerr << L'.' << flush;
+
+    tags = word->get_tags();
+
+    if (tags.size() > 0)
+      k = output[tags];
+
+    delete word;
+    word = morpho_stream.get_next_word();
+  }
+  wcerr << L"\n";
+
+  // OPEN AMBIGUITY CLASS
+  // It contains all tags that are not closed.
+  // Unknown words are assigned the open ambiguity class
+  k = output[td.getOpenClass()];
+
+  // Create ambiguity class holding one single tag for each tag.
+  // If not created yet
+  int N = (td.getTagIndex()).size();
+  for(i = 0; i != N; i++) {
+    set<TTag> amb_class;
+    amb_class.insert(i);
+    k = output[amb_class];
+  }
+}
+
+set<TTag>
+tagger_utils::find_similar_ambiguity_class(TaggerData &td, set<TTag> &c) {
+  int size_ret = -1;
+  set<TTag> ret = td.getOpenClass(); // return open-class as default, if no better is found.
+  bool skip_class;
+  Collection &output = td.getOutput();
+
+  for(int k=0; k<output.size(); k++) {
+    if ((((int)output[k].size())>((int)size_ret)) && (((int)output[k].size())<((int)c.size()))) {
+      skip_class = false;
+      // Test if output[k] is a subset of class
+      for(set<TTag>::const_iterator it=output[k].begin(); it!=output[k].end(); it++) {
+        if (c.find(*it)==c.end()) {
+           skip_class = true; //output[k] is not a subset of class
+           break;
+        }
+      }
+      if (!skip_class) {
+        size_ret = output[k].size();
+             ret = output[k];
+      }
+    }
+  }
+  return ret;
+}
+
+void
+tagger_utils::require_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word) {
+  if (td.getOutput().has_not(tags)) {
+    wstring errors;
+    errors = L"A new ambiguity class was found. I cannot continue.\n";
+    errors+= L"Word '" + word.get_superficial_form() + L"' not found in the dictionary.\n";
+    errors+= L"New ambiguity class: " + word.get_string_tags() + L"\n";
+    errors+= L"Take a look at the dictionary, then retrain.";
+    fatal_error(errors);
+  }
+}
+
+set<TTag>
+tagger_utils::require_similar_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, bool debug) {
+  if (td.getOutput().has_not(tags)) {
+    if (debug) {
+      wstring errors;
+      errors = L"A new ambiguity class was found. \n";
+      errors += L"Retraining the tagger is necessary so as to take it into account.\n";
+      errors += L"Word '" + word.get_superficial_form() + L"'.\n";
+      errors += L"New ambiguity class: " + word.get_string_tags() + L"\n";
+      wcerr << L"Error: " << errors;
+    }
+    return find_similar_ambiguity_class(td, tags);
+  }
+  return tags;
+}
+
 template <class T>
 ostream& operator<< (ostream& os, const map <int, T> & f){
   typename map <int, T>::const_iterator it;

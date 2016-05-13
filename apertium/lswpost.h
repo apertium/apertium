@@ -107,14 +107,5 @@ public:
    /** Do the tagging
     */
    void tagger(FILE *Input, FILE *Output, const bool &First = false);
-
-   /** This method returns a known ambiguity class that is a subset of 
-    *  the one received as a parameter. This is useful when a new
-    *  ambiguity class is found because of changes in the morphological
-    *  dictionary used by the MT system.
-    *  @param c set of tags (ambiguity class) 
-    *  @return a known ambiguity class    
-    */ 
-   set<TTag> find_similar_ambiguity_class(set<TTag> c);
 };
 #endif

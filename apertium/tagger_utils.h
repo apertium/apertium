@@ -25,6 +25,8 @@
 #include <vector>
 #include <apertium/ttag.h>
 #include <cstdlib>
+#include <apertium/tagger_data.h>
+#include <apertium/tagger_word.h>
 
 using namespace std;
 
@@ -65,6 +67,29 @@ void clear_array_vector(vector<TTag> v[], int l);
 /** Devuelve el nº de guiones que contiene la cadena pasada como argumento
   */
 int nguiones_fs(wstring const &cadena);
+
+/** Reads the expanded dictionary received as a parameter puts the resulting
+ *  ambiguity classes that the tagger will manage.
+ *  @param fdic the input stream with the expanded dictionary to read
+ *  @param td the tagger data instance to mutate
+ */
+void read_dictionary(FILE *fdic, TaggerData &td);
+
+/** This method returns a known ambiguity class that is a subset of
+*  the one received as a parameter. This is useful when a new
+*  ambiguity class is found because of changes in the morphological
+*  dictionary used by the MT system.
+*  @param c set of tags (ambiguity class)
+*  @return a known ambiguity class
+*/
+set<TTag> find_similar_ambiguity_class(TaggerData &td, set<TTag> &c);
+
+/** Dies with an error message if the tags aren't in the tagger data */
+void require_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word);
+
+/** As with find_similar_ambiguity_class, but returns tags if it's already fine
+ * & prints a warning if debug */
+set<TTag> require_similar_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, bool debug);
 
 wstring trim(wstring s);
 

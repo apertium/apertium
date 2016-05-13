@@ -104,7 +104,6 @@ LSWPoST::init_probabilities(FILE *ftxt) {
   set<TTag> tags_left, tags_mid, tags_right;
   set<TTag>::iterator iter_left, iter_mid, iter_right;
   vector<vector<vector<double> > > para_matrix(N, vector<vector<double> >(N, vector<double>(N, 0)));
-  Collection &output = tdlsw.getOutput();
   MorphoStream morpho_stream(ftxt, true, &tdlsw);
   int num_valid_seq = 0;
   
@@ -114,14 +113,8 @@ LSWPoST::init_probabilities(FILE *ftxt) {
   if (tags_left.size()==0) { //This is an unknown word
     tags_left = tdlsw.getOpenClass();
   }
-  if (output.has_not(tags_left)) {
-    wstring errors;
-    errors = L"A new ambiguity class was found. I cannot continue.\n";
-    errors += L"Word '" + word->get_superficial_form() + L"' not found in the dictionary.\n";
-    errors += L"New ambiguity class: " + word->get_string_tags() + L"\n";
-    errors += L"Take a look at the dictionary and at the training corpus. Then, retrain.";
-    fatal_error(errors);
-  }
+
+  require_ambiguity_class(tdlsw, tags_left, *word);
   ++nw;
   delete word;
   word = morpho_stream.get_next_word();  // word for tags mid
@@ -129,14 +122,7 @@ LSWPoST::init_probabilities(FILE *ftxt) {
   if (tags_mid.size()==0) { //This is an unknown word
     tags_mid = tdlsw.getOpenClass();
   }
-  if (output.has_not(tags_mid)) {
-    wstring errors;
-    errors = L"A new ambiguity class was found. I cannot continue.\n";
-    errors += L"Word '" + word->get_superficial_form() + L"' not found in the dictionary.\n";
-    errors += L"New ambiguity class: " + word->get_string_tags() + L"\n";
-    errors += L"Take a look at the dictionary and at the training corpus. Then, retrain.";
-    fatal_error(errors);
-  }
+  require_ambiguity_class(tdlsw, tags_mid, *word);
   ++nw;
   delete word;
   if (morpho_stream.getEndOfFile()) {
@@ -155,14 +141,7 @@ LSWPoST::init_probabilities(FILE *ftxt) {
     if (tags_right.size()==0) { //This is an unknown word
       tags_right = tdlsw.getOpenClass();
     }
-    if (output.has_not(tags_right)) {
-      wstring errors;
-      errors = L"A new ambiguity class was found. I cannot continue.\n";
-      errors += L"Word '" + word->get_superficial_form() + L"' not found in the dictionary.\n";
-      errors += L"New ambiguity class: " + word->get_string_tags() + L"\n";
-      errors += L"Take a look at the dictionary and at the training corpus. Then, retrain.";
-      fatal_error(errors);
-    }
+    require_ambiguity_class(tdlsw, tags_right, *word);
 
     num_valid_seq = tags_left.size() * tags_mid.size() * tags_right.size();
     for (iter_left = tags_left.begin(); iter_left != tags_left.end(); ++iter_left) {
@@ -247,47 +226,10 @@ bool LSWPoST::is_valid_seq(TTag left, TTag mid, TTag right) {
 
 void
 LSWPoST::read_dictionary(FILE *fdic) {
-  int i, k, nw = 0;
-  TaggerWord *word = NULL;
-  set<TTag> tags;
-  Collection &output = tdlsw.getOutput();
-
-  MorphoStream morpho_stream(fdic, true, &tdlsw);
-
-  // In the input dictionary there must be all punctuation marks, including the end-of-sentece mark
-
-  word = morpho_stream.get_next_word();
-
-  while (word) {
-    if (++nw % 10000 == 0)
-      wcerr << L'.' << flush;
-
-    tags = word->get_tags();
-
-    if (tags.size() > 0)
-      k = output[tags];
-
-    delete word;
-    word = morpho_stream.get_next_word();
-  }
-  wcerr << L"\n";
-
-  // OPEN AMBIGUITY CLASS
-  // It contains all tags that are not closed.
-  // Unknown words are assigned the open ambiguity class
-  k = output[tdlsw.getOpenClass()];
-
+  tagger_utils::read_dictionary(fdic, tdlsw);
   int N = (tdlsw.getTagIndex()).size();
-
-  // Create ambiguity class holding one single tag for each tag.
-  // If not created yet
-  for (i = 0; i != N; i++) {
-    set < TTag > amb_class;
-    amb_class.insert(i);
-    k = output[amb_class];
-  }
-
-  wcerr << N << L" states\n";
+  int M = (tdlsw.getOutput()).size();
+  wcerr << N << L" states and " << M <<L" ambiguity classes\n";
 
   // set up the probability matrix of tdlsw, the pointer to the TaggerDataLSW object
   tdlsw.setProbabilities(N);
@@ -302,7 +244,6 @@ LSWPoST::train(FILE *ftxt) {
   set<TTag> tags_left, tags_mid, tags_right;
   set<TTag>::iterator iter_left, iter_mid, iter_right;
   vector<vector<vector<double> > > para_matrix_new(N, vector<vector<double> >(N, vector<double>(N, 0)));
-  Collection &output = tdlsw.getOutput();
   MorphoStream morpho_stream(ftxt, true, &tdlsw);
 
   word = new TaggerWord();          // word for tags left
@@ -311,14 +252,7 @@ LSWPoST::train(FILE *ftxt) {
   if (tags_left.size()==0) { //This is an unknown word
     tags_left = tdlsw.getOpenClass();
   }
-  if (output.has_not(tags_left)) {
-    wstring errors;
-    errors = L"A new ambiguity class was found. I cannot continue.\n";
-    errors += L"Word '" + word->get_superficial_form() + L"' not found in the dictionary.\n";
-    errors += L"New ambiguity class: " + word->get_string_tags() + L"\n";
-    errors += L"Take a look at the dictionary and at the training corpus. Then, retrain.";
-    fatal_error(errors);
-  }
+  require_ambiguity_class(tdlsw, tags_left, *word);
   ++nw;
   delete word;
   word = morpho_stream.get_next_word();  // word for tags mid
@@ -326,14 +260,7 @@ LSWPoST::train(FILE *ftxt) {
   if (tags_mid.size()==0) { //This is an unknown word
     tags_mid = tdlsw.getOpenClass();
   }
-  if (output.has_not(tags_mid)) {
-    wstring errors;
-    errors = L"A new ambiguity class was found. I cannot continue.\n";
-    errors += L"Word '" + word->get_superficial_form() + L"' not found in the dictionary.\n";
-    errors += L"New ambiguity class: " + word->get_string_tags() + L"\n";
-    errors += L"Take a look at the dictionary and at the training corpus. Then, retrain.";
-    fatal_error(errors);
-  }
+  require_ambiguity_class(tdlsw, tags_mid, *word);
   ++nw;
   delete word;
   if (morpho_stream.getEndOfFile()) {
@@ -351,14 +278,7 @@ LSWPoST::train(FILE *ftxt) {
     if (tags_right.size()==0) { //This is an unknown word
       tags_right = tdlsw.getOpenClass();
     }
-    if (output.has_not(tags_right)) {
-      wstring errors;
-      errors = L"A new ambiguity class was found. I cannot continue.\n";
-      errors += L"Word '" + word->get_superficial_form() + L"' not found in the dictionary.\n";
-      errors += L"New ambiguity class: " + word->get_string_tags() + L"\n";
-      errors += L"Take a look at the dictionary and at the training corpus. Then, retrain.";
-      fatal_error(errors);
-    }
+    require_ambiguity_class(tdlsw, tags_right, *word);
 
     double normalization = 0;
 
@@ -416,38 +336,20 @@ LSWPoST::tagger(FILE *Input, FILE *Output, const bool &First) {
   set<TTag>::iterator iter_left, iter_mid, iter_right;
   MorphoStream morpho_stream(Input, debug, &tdlsw);
   morpho_stream.setNullFlush(null_flush);                      
-  Collection &output = tdlsw.getOutput();
  
   word_left = new TaggerWord();          // word left
   word_left->add_tag(eos, L"sent", tdlsw.getPreferRules());
   word_left->set_show_sf(show_sf);
   tags_left = word_left->get_tags();          // tags left
-  if (output.has_not(tags_left)) {
-    if (debug) {
-      wstring errors;
-      errors = L"A new ambiguity class was found. I cannot continue.\n";
-      errors += L"Word '" + word_left->get_superficial_form() + L"' not found Input the dictionary.\n";
-      errors += L"New ambiguity class: " + word_left->get_string_tags() + L"\n";
-      errors += L"Take a look at the dictionary and at the training corpus. Then, retrain.";
-      fatal_error(errors);
-    }
-    tags_left = find_similar_ambiguity_class(tags_left);
-  }
+
+  tags_left = require_similar_ambiguity_class(tdlsw, tags_left, *word_left, debug);
   
   word_mid = morpho_stream.get_next_word(); // word mid
   word_mid->set_show_sf(show_sf);
   tags_mid = word_mid->get_tags();          // tags mid
-  if (output.has_not(tags_mid)) {
-    if (debug) {
-      wstring errors;
-      errors = L"A new ambiguity class was found. I cannot continue.\n";
-      errors += L"Word '" + word_mid->get_superficial_form() + L"' not found Input the dictionary.\n";
-      errors += L"New ambiguity class: " + word_mid->get_string_tags() + L"\n";
-      errors += L"Take a look at the dictionary and at the training corpus. Then, retrain.";
-      fatal_error(errors);
-    }
-    tags_mid = find_similar_ambiguity_class(tags_mid);
-  }
+
+  tags_mid = require_similar_ambiguity_class(tdlsw, tags_mid, *word_mid, debug);
+
   if (morpho_stream.getEndOfFile()) {
     delete word_left;
     delete word_mid;
@@ -461,17 +363,7 @@ LSWPoST::tagger(FILE *Input, FILE *Output, const bool &First) {
   while (word_right) {
 
     tags_right = word_right->get_tags();
-    if (output.has_not(tags_right)) {
-      if (debug) {
-        wstring errors;
-        errors = L"A new ambiguity class was found. \n";
-        errors+= L"Retraining the tagger is necessary so as to take it into account.\n";
-        errors+= L"Word '"+word_right->get_superficial_form()+L"'.\n";
-        errors+= L"New ambiguity class: "+word_right->get_string_tags()+L"\n";
-        fatal_error(errors);
-      }
-      tags_right = find_similar_ambiguity_class(tags_right);
-    }
+    tags_right = require_similar_ambiguity_class(tdlsw, tags_right, *word_right, debug);
 
     double max = -1;
     TTag tag_max = *tags_mid.begin();
@@ -511,30 +403,3 @@ LSWPoST::tagger(FILE *Input, FILE *Output, const bool &First) {
   delete word_left;
   delete word_mid;
 }
-
-set<TTag>                                                                                     
-LSWPoST::find_similar_ambiguity_class(set<TTag> c) {
-  int size_ret = -1;                                                                          
-  set<TTag> ret=tdlsw.getOpenClass(); // return open-class as default, if no better is found.
-  bool skip_class;                                                                           
-  Collection &output = tdlsw.getOutput();                                                       
-                                                                                              
-  for(int k=0; k<output.size(); k++) {                                                           
-    if ((((int)output[k].size())>((int)size_ret)) && (((int)output[k].size())<((int)c.size()))) {    
-      skip_class=false;                                                                      
-      // Test if output[k] is a subset of class                                               
-      for(set<TTag>::const_iterator it=output[k].begin(); it!=output[k].end(); it++) {        
-        if (c.find(*it)==c.end()) { 
-           skip_class=true; //output[k] is not a subset of class                             
-           break;
-        }  
-      } 
-      if (!skip_class) {                                                                     
-        size_ret = output[k].size();                                                          
-             ret = output[k];
-      }      
-    } 
-  } 
-  return ret;                                                                                 
-} 
-
