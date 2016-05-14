@@ -51,6 +51,12 @@ done
 shift $((OPTIND-1))
 
 xmlfile="$1"
+if [[ ! -e "${xmlfile}" ]]; then
+    echo "ERROR: '${xmlfile}' file not found"
+    exit 1
+fi
+xmldir=$(cd "$(dirname "${xmlfile}")"; pwd)
+
 case $# in
     1) installdir="${xmldir}";;
     2) if ${fullpath}; then
@@ -63,12 +69,6 @@ case $# in
        exit 1
        ;;
 esac
-
-if [[ ! -e "${xmlfile}" ]]; then
-    echo "ERROR: '${xmlfile}' file not found"
-    exit 1
-fi
-xmldir=$(cd "$(dirname "${xmlfile}")"; pwd)
 
 $verbose && set -x
 set -o pipefail # introduced in bash 3; available in OSX>=10.5; should be safe
