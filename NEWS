@@ -9,20 +9,32 @@ SVN
 Version 3.4.2, 2016-05-15 (-r68437)
 ---------------------------------
 
-* some bugfixes to apertium-tagger 
+* some bugfixes to apertium-tagger, e.g.
+  https://sourceforge.net/p/apertium/tickets/94/
 
 * bugfixes to modes: now accept dirs with spaces, and allow installing apertium
-  itself and language data to different prefixes, as well as auto-generating 
+  itself and language data to different prefixes, as well as auto-generating
   debug modes
 
 * fix a crash when apertium-tagger is compiled with with clang
 
 * new option -n to deformatters turns off dot-insertion
+  http://sourceforge.net/p/apertium/tickets/68
 
 * new transfer instruction <reject-current-rule shifting="yes|no"/>;
   see transfer.dtd for details (not implemented for
   interchunk/postchunk)
 
+* apertium-transfer-tools-generalisation-dev branch merged
+
+* apertium-tagger: supervised training and tagging for unigram models
+  based on http://coltekin.net/cagri/papers/trmorph-tools.pdf
+
+* fix some off-by-one/out-of-bounds segfaults in transfer
+  https://sourceforge.net/p/apertium/tickets/89/
+
+* various distribution-related fixes, static analysis fixes,
+  documentation
 
 Version 3.4.0, 2015-03-17 (-r59200)
 ---------------------------------
