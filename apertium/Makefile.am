@@ -75,8 +75,9 @@ h_sources = a.h \
 	    ttag.h \
 	    unlocked_cstdio.h \
 	    utf_converter.h \
-	    wchar_t_exception.h
+	    wchar_t_exception.h \
 	    wchar_t_exception_type.h
+
 #DEPR.:
 #	    lextor_data.h
 #	    lextor_eval.h
