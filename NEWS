@@ -6,6 +6,15 @@
 SVN
 ---
 
+Version 3.4.1, 2016-05-15 (-r68436)
+---------------------------------
+
+* some bugfixes to apertium-tagger 
+
+* bugfixes to modes: now accept dirs with spaces, and allow installing apertium
+  itself and language data to different prefixes, as well as auto-generating 
+  debug modes
+
 * fix a crash when apertium-tagger is compiled with with clang
 
 * new option -n to deformatters turns off dot-insertion
@@ -15,7 +24,7 @@ SVN
   interchunk/postchunk)
 
 
-Version 3.4, 2015-03-17 (-r59200)
+Version 3.4.0, 2015-03-17 (-r59200)
 ---------------------------------
 
 * transfer files now work even if they were compiled with a different
