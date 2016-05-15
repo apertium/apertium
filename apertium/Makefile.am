@@ -4,6 +4,7 @@ h_sources = a.h \
 	    align.h \
 	    analysis.h \
 	    apertium_re.h \
+	    apertium_tagger.h \
 	    basic_5_3_1_tagger.h \
 	    basic_5_3_2_tagger.h \
 	    basic_5_3_3_tagger.h \
