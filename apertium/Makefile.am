@@ -641,7 +641,7 @@ EXTRA_DIST = gen-header.sh deformat-header.sh \
 			 tagger.dtd interchunk.dtd format.dtd  transfer.dtd postchunk.dtd modes.dtd \
 			 tagger.rnc interchunk.rnc format.rnc  transfer.rnc postchunk.rnc modes.rnc \
              utils-fixlatex-header.sh \
-             modes-header.sh apertium-createmodes.awk modes2bash.xsl modes2debugmodes.xsl
+             apertium-gen-modes.in apertium-createmodes.awk modes2bash.xsl modes2debugmodes.xsl
 #DEPR.:
 # trans-lextor-header.sh
 # gen-wlist-lextor-header.sh
