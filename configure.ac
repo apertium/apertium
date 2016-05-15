@@ -3,12 +3,12 @@
 
 AC_PREREQ(2.52)
 
-m4_define([required_lttoolbox_version], [3.3.1])
+m4_define([required_lttoolbox_version], [3.3.3])
 m4_define([required_libxml_version], [2.6.17])
 m4_define([required_libpcre_version], [6.4])
 #m4_define([required_pkg_config_version], [0.15])
 
-AC_INIT([apertium], [3.4.1], [sortiz@users.sourceforge.net])
+AC_INIT([apertium], [3.4.2], [sortiz@users.sourceforge.net])
 AC_CONFIG_HEADER([apertium/apertium_config.h])
 
 AC_CANONICAL_SYSTEM
