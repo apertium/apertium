@@ -25,7 +25,9 @@ Version 3.4.2, 2016-05-15 (-r68437)
   see transfer.dtd for details (not implemented for
   interchunk/postchunk)
 
-* apertium-transfer-tools-generalisation-dev branch merged
+* apertium-transfer-tools-generalisation-dev branch merged; outputs
+  extra trace information from transfer for generalising
+  corpus-generated transfer rules
 
 * apertium-tagger: supervised training and tagging for unigram models
   based on http://coltekin.net/cagri/papers/trmorph-tools.pdf
