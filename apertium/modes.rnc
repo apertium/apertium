@@ -1,4 +1,4 @@
-#  Copyright (C) 2005 Universitat d'Alacant / Universidad de Alicante
+#  Copyright (C) 2005-2016 Universitat d'Alacant / Universidad de Alicante
 # 
 #  This program is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License as
@@ -13,13 +13,14 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program; if not, see <http://www.gnu.org/licenses/>.
 # 
-# DTD for the modes.xml file     
+# DTD for the modes.xml file
 
 modes = element modes { attlist.modes, mode+ }
 attlist.modes &= empty
 mode = element mode { attlist.mode, pipeline }
 attlist.mode &= attribute name { xsd:ID }
 attlist.mode &= attribute install { text }?
+attlist.mode &= attribute gendebug { text }?
 pipeline = element pipeline { attlist.pipeline, program+ }
 attlist.pipeline &= empty
 program = element program { attlist.program, file* }

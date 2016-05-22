@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
-   Copyright (C) 2005 Universitat d'Alacant / Universidad de Alicante
+   Copyright (C) 2005-2016 Universitat d'Alacant / Universidad de Alicante
   
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License as
@@ -15,7 +15,7 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, see <http://www.gnu.org/licenses/>.
   
-  DTD for the modes.xml file     
+  DTD for the modes.xml file
 -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <define name="modes">
@@ -43,6 +43,11 @@
   <define name="attlist.mode" combine="interleave">
     <optional>
       <attribute name="install"/>
+    </optional>
+  </define>
+  <define name="attlist.mode" combine="interleave">
+    <optional>
+      <attribute name="gendebug"/>
     </optional>
   </define>
   <define name="pipeline">
