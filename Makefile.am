@@ -14,3 +14,6 @@ EXTRA_DIST=autogen.sh README-MODES apertium.m4
 install-data-local:
 	mkdir -p $(DESTDIR)$(modesdir)
 	$(INSTALL_DATA) README-MODES  $(DESTDIR)$(modesdir)/README
+
+test: tests/run_tests.py
+	$<

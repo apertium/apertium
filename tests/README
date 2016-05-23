@@ -1,0 +1,7 @@
+Tests require python3, run like
+
+    python3 tests/run_tests.py
+
+You may have to do "(sudo) make install" once before running the tests.
+
+They should all pass.
