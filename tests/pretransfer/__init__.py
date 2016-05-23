@@ -77,11 +77,18 @@ stuff) to create new pretransfer tests."""
 
 
 class BasicPretransferTest(PretransferTest):
-    flags = ["-z"]
     inputs =          ["^a<n>$", "^a<n>+c<po>$",   "^a<vblex><pres># b$", "[<div>]^a<n>$", "[<div>]^a<vblex><pres># b$"]
     expectedOutputs = ["^a<n>$", "^a<n>$ ^c<po>$", "^a# b<vblex><pres>$", "[<div>]^a<n>$", "[<div>]^a# b<vblex><pres>$"]
 
 class JoinGroupPretransferTest(PretransferTest):
-    flags = ["-z"]
     inputs =          ["[<div>]^a<vblex><pres>+c<po># b$",   "[<div>]^a<vblex><pres>+c<po>+d<po># b$"]
     expectedOutputs = ["[<div>]^a# b<vblex><pres>$ ^c<po>$", "[<div>]^a# b<vblex><pres>$ ^c<po>$ ^d<po>$"]
+
+
+# Proposed inline blank format:
+class InlineBlankPretransferTest(PretransferTest):
+    inputs =          ["[{<i>}]^a<vblex><pres>+c<po># b$",          "[{<i>}]^a<vblex><pres>+c<po>+d<po># b$"]
+    expectedOutputs = ["[{<i>}]^a# b<vblex><pres>$ [{<i>}]^c<po>$", "[{<i>}]^a# b<vblex><pres>$ [{<i>}]^c<po>$ [{<i>}]^d<po>$"]
+    @unittest.expectedFailure
+    def runTest(self):
+        super().runTest(self)
