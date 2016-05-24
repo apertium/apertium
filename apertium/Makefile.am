@@ -438,42 +438,42 @@ apertium-validate-tagger: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-tagger script"
 	@echo "#!$(BASH)" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid $(apertiumdir)/tagger.dtd --noout \"\$$FILE1\"" >>$@
+	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/tagger.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-transfer: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-transfer script"
 	@echo "#!$(BASH)" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid $(apertiumdir)/transfer.dtd --noout \"\$$FILE1\"" >>$@
+	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/transfer.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-interchunk: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-interchunk script"
 	@echo "#!$(BASH)" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid $(apertiumdir)/interchunk.dtd --noout \"\$$FILE1\"" >>$@
+	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/interchunk.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-postchunk: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-postchunk script"
 	@echo "#!$(BASH)" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid $(apertiumdir)/postchunk.dtd --noout \"\$$FILE1\"" >>$@
+	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/postchunk.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-acx: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-acx script"
 	@echo "#!$(BASH)" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --relaxng $(prefix)/share/lttoolbox/acx.rng --schema $(prefix)/share/lttoolbox/acx.xsd --noout \"\$$FILE1\"" >>$@
+	@echo "$(XMLLINT) --relaxng \"$(prefix)\"/share/lttoolbox/acx.rng --schema \"$(prefix)\"/share/lttoolbox/acx.xsd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-modes: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-modes script"
 	@echo "#!$(BASH)" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid $(apertiumdir)/modes.dtd --noout \"\$$FILE1\"" >>$@
+	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/modes.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 
@@ -482,18 +482,18 @@ apertium-validate-dictionary: Makefile.am validate-header.sh
 	@echo "#!$(BASH)" > $@
 	@cat validate-header.sh >> $@
 	@echo "# xsd is a non-final command, so just treated as a warning when compiling:" >> $@
-	@echo "$(XMLLINT) --schema $(prefix)/share/lttoolbox/dix.xsd --noout \"\$$FILE1\"" >> $@
-	@echo "$(XMLLINT) --dtdvalid $(prefix)/share/lttoolbox/dix.dtd --noout \"\$$FILE1\"" >> $@
+	@echo "$(XMLLINT) --schema \"$(prefix)\"/share/lttoolbox/dix.xsd --noout \"\$$FILE1\" | grep -vF ' fails to validate'" >> $@
+	@echo "$(XMLLINT) --dtdvalid \"$(prefix)\"/share/lttoolbox/dix.dtd --noout \"\$$FILE1\"" >> $@
 	@chmod a+x $@
 
 apertium-gen-deformat: Makefile.am deformat-header.sh
 	@echo "Creating apertium-gen-deformat script"
 	@echo "#!$(BASH)" > $@
 	@cat deformat-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid $(apertiumdir)/format.dtd --noout \$$FILE1 && \\" >> $@
+	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/format.dtd --noout \$$FILE1 && \\" >> $@
 	@if [ `basename $(XSLTPROC)` == xsltproc ]; \
-	  then echo "$(XSLTPROC) --stringparam mode \$$MODE $(apertiumdir)/deformat.xsl \$$FILE1 >/tmp/\$$\$$.deformat.l && \\"; \
-          else echo "$(XSLTPROC) $(apertiumdir)/deformat.xsl \$$FILE1 \"\\\$$mode=\$$MODE\" >/tmp/\$$\$$.deformat.l && \\"; \
+	  then echo "$(XSLTPROC) --stringparam mode \$$MODE \"$(apertiumdir)\"/deformat.xsl \$$FILE1 >/tmp/\$$\$$.deformat.l && \\"; \
+          else echo "$(XSLTPROC) \"$(apertiumdir)\"/deformat.xsl \$$FILE1 \"\\\$$mode=\$$MODE\" >/tmp/\$$\$$.deformat.l && \\"; \
           fi >> $@
 	@echo "$(FLEX) \$$FLEXOPTS -o/tmp/\$$\$$.lex.cc /tmp/\$$\$$.deformat.l && \\" >> $@
 	@echo "$(CXX) -DGENFORMAT $(CXXFLAGS) -w $(APERTIUM_CFLAGS) -I $(apertiuminclude) -o \$$FILE2 /tmp/\$$\$$.lex.cc $(APERTIUM_LIBS) 2>/dev/null && \\" >> $@
@@ -504,19 +504,19 @@ apertium-gen-reformat: Makefile.am gen-header.sh
 	@echo "Creating apertium-gen-reformat script"
 	@echo "#!$(BASH)" > $@
 	@cat gen-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid $(apertiumdir)/format.dtd --noout \$$FILE1 && \\" >> $@
-	@echo "$(XSLTPROC) $(apertiumdir)/reformat.xsl \$$FILE1 >/tmp/\$$\$$.reformat.l && \\" >> $@
+	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/format.dtd --noout \$$FILE1 && \\" >> $@
+	@echo "$(XSLTPROC) \"$(apertiumdir)\"/reformat.xsl \$$FILE1 >/tmp/\$$\$$.reformat.l && \\" >> $@
 	@echo "$(FLEX) \$$FLEXOPTS -o/tmp/\$$\$$.lex.cc /tmp/\$$\$$.reformat.l && \\" >> $@
 	@echo "$(CXX) -DGENFORMAT $(CXXFLAGS) -w $(APERTIUM_CFLAGS) -I $(apertiuminclude) -o \$$FILE2 /tmp/\$$\$$.lex.cc $(APERTIUM_LIBS) 2>/dev/null &&\\" >> $@
 	@echo "rm /tmp/\$$\$$.reformat.l /tmp/\$$\$$.lex.cc" >> $@
 	@chmod a+x $@
 
-apertium-gen-modes: apertium-gen-modes.in
+apertium-gen-modes: apertium-gen-modes.in Makefile.am
 	@echo "#!$(BASH)" > $@
 	@echo "APERTIUMDIR=$(apertiumdir)" >> $@
 	@echo "XMLLINT=$(XMLLINT)" >> $@
 	@echo "XSLTPROC=$(XSLTPROC)" >> $@
-	cat $< >> $@
+	@cat $< >> $@
 	@chmod a+x $@
 
 apertium-utils-fixlatex: Makefile.am utils-fixlatex-header.sh
