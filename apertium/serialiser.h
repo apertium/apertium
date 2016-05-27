@@ -41,9 +41,8 @@ template <typename SerialisedType>
 static unsigned char compressedSize(const SerialisedType &SerialisedType_) {
   unsigned char compressedSize_ = 0;
 
-  for (; static_cast<unsigned char>(SerialisedType_ >>
-                                    std::numeric_limits<unsigned char>::digits *
-                                        compressedSize_) != 0;
+  for (; (SerialisedType_ >>
+          std::numeric_limits<unsigned char>::digits * compressedSize_) != 0;
        ++compressedSize_) {
   }
 
