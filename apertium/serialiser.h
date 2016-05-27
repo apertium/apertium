@@ -36,6 +36,7 @@
 #include <vector>
 
 namespace Apertium {
+namespace {
 template <typename SerialisedType>
 static unsigned char compressedSize(const SerialisedType &SerialisedType_) {
   unsigned char compressedSize_ = 0;
@@ -276,6 +277,7 @@ void Serialiser<wchar_t>::serialise(const wchar_t &SerialisedType_,
           << basic_ExceptionType_.what();
     throw Exception::Serialiser::wchar_t_(what_);
   }
+}
 }
 }
 
