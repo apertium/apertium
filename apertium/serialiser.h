@@ -136,49 +136,47 @@ inline void serialise(const SerialisedType &SerialisedType_,
 }
 
 void Serialiser<a>::serialise(const a &SerialisedType_, std::ostream &Output) {
-  Serialiser<std::vector<Tag> >::serialise(SerialisedType_.TheTags, Output);
-  Serialiser<std::vector<Morpheme> >::serialise(SerialisedType_.TheMorphemes,
-                                                Output);
+  ::Apertium::serialise(SerialisedType_.TheTags, Output);
+  ::Apertium::serialise(SerialisedType_.TheMorphemes, Output);
 }
 
 void Serialiser<Analysis>::serialise(const Analysis &SerialisedType_,
                                      std::ostream &Output) {
-  Serialiser<std::vector<Morpheme> >::serialise(SerialisedType_.TheMorphemes,
-                                                Output);
+  ::Apertium::serialise(SerialisedType_.TheMorphemes, Output);
 }
 
 void Serialiser<i>::serialise(const i &SerialisedType_, std::ostream &Output) {
-  Serialiser<std::vector<Tag> >::serialise(SerialisedType_.TheTags, Output);
+  ::Apertium::serialise(SerialisedType_.TheTags, Output);
 }
 
 void Serialiser<Lemma>::serialise(const Lemma &SerialisedType_,
                                   std::ostream &Output) {
-  serialise(SerialisedType_.TheLemma, Output);
+  ::Apertium::serialise(SerialisedType_.TheLemma, Output);
 }
 
 void Serialiser<Morpheme>::serialise(const Morpheme &SerialisedType_,
                                      std::ostream &Output) {
-  serialise(SerialisedType_.TheLemma, Output);
-  Serialiser<std::vector<Tag> >::serialise(SerialisedType_.TheTags, Output);
+  ::Apertium::serialise(SerialisedType_.TheLemma, Output);
+  ::Apertium::serialise(SerialisedType_.TheTags, Output);
 }
 
 void Serialiser<Tag>::serialise(const Tag &SerialisedType_,
                                 std::ostream &Output) {
-  serialise(SerialisedType_.TheTag, Output);
+  ::Apertium::serialise(SerialisedType_.TheTag, Output);
 }
 
 template <typename value_type>
 void Serialiser<std::basic_string<value_type> >::serialise(
     const std::basic_string<value_type> &SerialisedType_,
     std::ostream &Output) {
-  serialise(SerialisedType_.size(), Output);
+  ::Apertium::serialise(SerialisedType_.size(), Output);
 
   for (typename std::basic_string<value_type>::const_iterator
            SerialisedType_iterator = SerialisedType_.begin();
        // Call .end() each iteration to save memory.
        SerialisedType_iterator != SerialisedType_.end();
        ++SerialisedType_iterator) {
-    serialise(*SerialisedType_iterator, Output);
+    ::Apertium::serialise(*SerialisedType_iterator, Output);
   }
 }
 
@@ -186,15 +184,14 @@ template <typename key_type, typename mapped_type>
 void Serialiser<std::map<key_type, mapped_type> >::serialise(
     const std::map<key_type, mapped_type> &SerialisedType_,
     std::ostream &Output) {
-  serialise(SerialisedType_.size(), Output);
+  ::Apertium::serialise(SerialisedType_.size(), Output);
 
   for (typename std::map<key_type, mapped_type>::const_iterator
            SerialisedType_iterator = SerialisedType_.begin();
        // Call .end() each iteration to save memory.
        SerialisedType_iterator != SerialisedType_.end();
        ++SerialisedType_iterator) {
-    Serialiser<std::pair<key_type, mapped_type> >::serialise(
-        *SerialisedType_iterator, Output);
+    ::Apertium::serialise(*SerialisedType_iterator, Output);
   }
 }
 
@@ -202,8 +199,8 @@ template <typename first_type, typename second_type>
 void Serialiser<std::pair<first_type, second_type> >::serialise(
     const std::pair<first_type, second_type> &SerialisedType_,
     std::ostream &Output) {
-  serialise(SerialisedType_.first, Output);
-  serialise(SerialisedType_.second, Output);
+  ::Apertium::serialise(SerialisedType_.first, Output);
+  ::Apertium::serialise(SerialisedType_.second, Output);
 }
 
 void Serialiser<std::size_t>::serialise(const std::size_t &SerialisedType_,
@@ -243,13 +240,13 @@ void Serialiser<std::size_t>::serialise(const std::size_t &SerialisedType_,
 template <typename value_type>
 void Serialiser<std::vector<value_type> >::serialise(
     const std::vector<value_type> &SerialisedType_, std::ostream &Output) {
-  serialise(SerialisedType_.size(), Output);
+  ::Apertium::serialise(SerialisedType_.size(), Output);
 
   for (typename std::vector<value_type>::const_iterator value_type_ =
            SerialisedType_.begin();
        // Call .end() each iteration to save memory.
        value_type_ != SerialisedType_.end(); ++value_type_) {
-    serialise(*value_type_, Output);
+    ::Apertium::serialise(*value_type_, Output);
   }
 }
 
