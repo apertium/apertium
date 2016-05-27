@@ -30,8 +30,7 @@ Stream_5_3_2_TaggerTrainer::Stream_5_3_2_TaggerTrainer(const Flags &Flags_)
 
 void Stream_5_3_2_TaggerTrainer::serialise(
     std::ostream &Serialised_basic_Tagger) const {
-  Serialiser<std::map<a, std::map<Lemma, std::size_t> > >::serialise(
-      Model, Serialised_basic_Tagger);
+  ::Apertium::serialise(Model, Serialised_basic_Tagger);
 }
 
 void
