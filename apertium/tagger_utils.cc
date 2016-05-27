@@ -19,6 +19,7 @@
 #include <apertium/morpho_stream.h>
 
 #include <stdio.h>
+#include <sstream>
 #include <apertium/string_utils.h>
 #ifdef _MSC_VER
 #define wcstok wcstok_s
@@ -191,12 +192,17 @@ tagger_utils::find_similar_ambiguity_class(TaggerData &td, set<TTag> &c) {
 }
 
 void
-tagger_utils::require_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word) {
+tagger_utils::require_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, int nw) {
   if (td.getOutput().has_not(tags)) {
     wstring errors;
     errors = L"A new ambiguity class was found. I cannot continue.\n";
     errors+= L"Word '" + word.get_superficial_form() + L"' not found in the dictionary.\n";
     errors+= L"New ambiguity class: " + word.get_string_tags() + L"\n";
+    if (nw >= 0) {
+      std::wostringstream ws;
+      ws << (nw + 1);
+      errors+= L"Line number: " + ws.str() + L"\n";
+    }
     errors+= L"Take a look at the dictionary, then retrain.";
     fatal_error(errors);
   }

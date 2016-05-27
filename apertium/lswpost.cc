@@ -114,7 +114,7 @@ LSWPoST::init_probabilities(FILE *ftxt) {
     tags_left = tdlsw.getOpenClass();
   }
 
-  require_ambiguity_class(tdlsw, tags_left, *word);
+  require_ambiguity_class(tdlsw, tags_left, *word, nw);
   ++nw;
   delete word;
   word = morpho_stream.get_next_word();  // word for tags mid
@@ -122,7 +122,7 @@ LSWPoST::init_probabilities(FILE *ftxt) {
   if (tags_mid.size()==0) { //This is an unknown word
     tags_mid = tdlsw.getOpenClass();
   }
-  require_ambiguity_class(tdlsw, tags_mid, *word);
+  require_ambiguity_class(tdlsw, tags_mid, *word, nw);
   ++nw;
   delete word;
   if (morpho_stream.getEndOfFile()) {
@@ -141,7 +141,7 @@ LSWPoST::init_probabilities(FILE *ftxt) {
     if (tags_right.size()==0) { //This is an unknown word
       tags_right = tdlsw.getOpenClass();
     }
-    require_ambiguity_class(tdlsw, tags_right, *word);
+    require_ambiguity_class(tdlsw, tags_right, *word, nw);
 
     num_valid_seq = tags_left.size() * tags_mid.size() * tags_right.size();
     for (iter_left = tags_left.begin(); iter_left != tags_left.end(); ++iter_left) {
@@ -252,7 +252,7 @@ LSWPoST::train(FILE *ftxt) {
   if (tags_left.size()==0) { //This is an unknown word
     tags_left = tdlsw.getOpenClass();
   }
-  require_ambiguity_class(tdlsw, tags_left, *word);
+  require_ambiguity_class(tdlsw, tags_left, *word, nw);
   ++nw;
   delete word;
   word = morpho_stream.get_next_word();  // word for tags mid
@@ -260,7 +260,7 @@ LSWPoST::train(FILE *ftxt) {
   if (tags_mid.size()==0) { //This is an unknown word
     tags_mid = tdlsw.getOpenClass();
   }
-  require_ambiguity_class(tdlsw, tags_mid, *word);
+  require_ambiguity_class(tdlsw, tags_mid, *word, nw);
   ++nw;
   delete word;
   if (morpho_stream.getEndOfFile()) {
@@ -278,7 +278,7 @@ LSWPoST::train(FILE *ftxt) {
     if (tags_right.size()==0) { //This is an unknown word
       tags_right = tdlsw.getOpenClass();
     }
-    require_ambiguity_class(tdlsw, tags_right, *word);
+    require_ambiguity_class(tdlsw, tags_right, *word, nw);
 
     double normalization = 0;
 

@@ -205,7 +205,7 @@ HMM::init_probabilities_kupiec (FILE *is)
       tags = tdhmm.getOpenClass();
     }
     else {
-      require_ambiguity_class(tdhmm, tags, *word);
+      require_ambiguity_class(tdhmm, tags, *word, nw);
     }
 
     k2=output[tags];
@@ -362,7 +362,7 @@ HMM::init_probabilities_from_tagged_text(FILE *ftagged, FILE *funtagged) {
       tags = tdhmm.getOpenClass();
     }
     else {
-      require_ambiguity_class(tdhmm, word_untagged->get_tags(), *word_untagged);
+      require_ambiguity_class(tdhmm, word_untagged->get_tags(), *word_untagged, nw);
       tags = word_untagged->get_tags();
     }
 
@@ -528,7 +528,7 @@ HMM::train (FILE *ftxt) {
       ndesconocidas++;
     }
     
-    require_ambiguity_class(tdhmm, tags, *word);
+    require_ambiguity_class(tdhmm, tags, *word, nw);
     
     k = output[tags];    
     len = pending.size();

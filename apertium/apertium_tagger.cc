@@ -630,7 +630,7 @@ void apertium_tagger::g_StreamTagger(basic_StreamTagger &StreamTagger_) {
   } catch (const basic_ExceptionType &basic_ExceptionType_) {
     std::stringstream what_;
     what_ << "can't deserialise SERIALISED_BASIC_TAGGER file \"" << argv[optind]
-          << "\"";
+          << "\" Reason: " << basic_ExceptionType_.what();
     throw Exception::apertium_tagger::deserialise(what_);
   }
 

@@ -85,7 +85,7 @@ void read_dictionary(FILE *fdic, TaggerData &td);
 set<TTag> find_similar_ambiguity_class(TaggerData &td, set<TTag> &c);
 
 /** Dies with an error message if the tags aren't in the tagger data */
-void require_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word);
+void require_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, int nw);
 
 /** As with find_similar_ambiguity_class, but returns tags if it's already fine
  * & prints a warning if debug */
