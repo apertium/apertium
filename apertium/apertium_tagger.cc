@@ -734,6 +734,7 @@ void apertium_tagger::g_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
   }
 
   FILE_Tagger_.set_debug(TheFlags.getDebug());
+  TaggerWord::setArrayTags(FILE_Tagger_.getArrayTags());
   TaggerWord::generate_marks = TheFlags.getMark();
   FILE_Tagger_.set_show_sf(TheFlags.getShowSuperficial());
   FILE_Tagger_.setNullFlush(TheFlags.getNullFlush());
