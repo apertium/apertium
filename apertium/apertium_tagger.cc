@@ -425,7 +425,7 @@ const struct option apertium_tagger::longopts[] = {
     {"mark", no_argument, 0, 'm'},
     {"show-superficial", no_argument, 0, 'p'},
     {"null-flush", no_argument, 0, 'z'},
-    {"unigram", no_argument, 0, 'u'},
+    {"unigram", required_argument, 0, 'u'},
     {"sliding-window", no_argument, 0, 'w'},
     {"tagger", no_argument, 0, 'g'},
     {"retrain", required_argument, 0, 'r'},
