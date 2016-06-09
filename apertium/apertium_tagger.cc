@@ -22,28 +22,28 @@
 #include "basic_stream_tagger.h"
 #include "basic_stream_tagger_trainer.h"
 #include "basic_tagger.h"
+#include "err_exception.h"
 #include "exception.h"
 #include "file_tagger.h"
-#include "err_exception.h"
-#include <apertium/hmm.cc>
 #include "linebreak.h"
-#include <apertium/lswpost.h>
 #include "stream_5_3_1_tagger.h"
 #include "stream_5_3_1_tagger_trainer.h"
 #include "stream_5_3_2_tagger.h"
 #include "stream_5_3_2_tagger_trainer.h"
 #include "stream_5_3_3_tagger.h"
 #include "stream_5_3_3_tagger_trainer.h"
+#include <apertium/hmm.cc>
+#include <apertium/lswpost.h>
 #include <apertium/tagger_word.h>
 
 #include <lttoolbox/lt_locale.h>
 
+#include "getopt_long.h"
 #include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
-#include "getopt_long.h"
 #include <iomanip>
 #include <ios>
 #include <iostream>
@@ -61,27 +61,19 @@ namespace Apertium {
 apertium_tagger::apertium_tagger(int &argc, char **&argv)
     : argc(argc), argv(argv), The_val(),
 
-
       The_indexptr(), FunctionTypeTypeOption_indexptr(),
       FunctionTypeOption_indexptr(),
-
 
       TheFunctionTypeType(), TheUnigramType(), TheFunctionType(),
       TheFunctionTypeOptionArgument(0), TheFlags() {
   try {
     while (true) {
-      The_val =
-
-
-          getopt_long(argc, argv, "dfgmpr:s:t:u:wz", longopts, &The_indexptr);
-
+      The_val = getopt_long(argc, argv, "dfgmpr:s:t:u:wz", longopts, &The_indexptr);
 
       if (The_val == -1)
         break;
 
-
       set_indexptr();
-
 
       switch (The_val) {
       case 'd':
@@ -125,10 +117,10 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
         {
           std::stringstream what_;
           what_ << "invalid argument '" << optarg << "' for '--unigram'\n"
-"Valid arguments are:\n"
-"  - '1'\n"
-"  - '2'\n"
-"  - '3'";
+                                                     "Valid arguments are:\n"
+                                                     "  - '1'\n"
+                                                     "  - '2'\n"
+                                                     "  - '3'";
           throw Exception::apertium_tagger::InvalidArgument(what_);
         }
         break;
@@ -291,32 +283,32 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
 void apertium_tagger::help() {
 
   std::cerr <<
-"Usage: apertium-tagger [OPTION]... -g SERIALISED_BASIC_TAGGER                  \\\n"
+"Usage: apertium-tagger [OPTION]... -g SERIALISED_TAGGER                        \\\n"
 "                                      [INPUT                                   \\\n"
 "                                      [OUTPUT]]\n"
 "\n"
 "  or:  apertium-tagger [OPTION]... -r ITERATIONS                               \\\n"
 "                                      CORPUS                                   \\\n"
-"                                      SERIALISED_BASIC_TAGGER\n"
+"                                      SERIALISED_TAGGER\n"
 "\n"
 "  or:  apertium-tagger [OPTION]... -s ITERATIONS                               \\\n"
 "                                      DICTIONARY                               \\\n"
 "                                      CORPUS                                   \\\n"
 "                                      TAGGER_SPECIFICATION                     \\\n"
-"                                      SERIALISED_BASIC_TAGGER                  \\\n"
+"                                      SERIALISED_TAGGER                        \\\n"
 "                                      TAGGED_CORPUS                            \\\n"
 "                                      UNTAGGED_CORPUS\n"
 "\n"
 "  or:  apertium-tagger [OPTION]... -s 0                                        \\\n"
 "                                   -u MODEL                                    \\\n"
-"                                      SERIALISED_BASIC_TAGGER                  \\\n"
+"                                      SERIALISED_TAGGER                        \\\n"
 "                                      TAGGED_CORPUS\n"
 "\n"
 "  or:  apertium-tagger [OPTION]... -t ITERATIONS                               \\\n"
 "                                      DICTIONARY                               \\\n"
 "                                      CORPUS                                   \\\n"
 "                                      TAGGER_SPECIFICATION                     \\\n"
-"                                      SERIALISED_BASIC_TAGGER\n"
+"                                      SERIALISED_TAGGER\n"
 "\n"
 "\n"
 "Mandatory arguments to long options are mandatory for short options too.\n"
@@ -353,7 +345,6 @@ void apertium_tagger::help() {
   align::align_(options_description_);
 }
 
-
 std::string apertium_tagger::option_string(const int &indexptr_) {
   return option_string(longopts[indexptr_]);
 }
@@ -363,7 +354,6 @@ std::string apertium_tagger::option_string(const struct option &option_) {
   option_string_ << "--" << option_.name;
   return option_string_.str();
 }
-
 
 void apertium_tagger::locale_global_() {
 
@@ -384,7 +374,6 @@ void apertium_tagger::locale_global_() {
 #endif // defined __clang__
 }
 
-
 const struct option apertium_tagger::longopts[] = {
     {"help", no_argument, 0, 'h'},
     {"debug", no_argument, 0, 'd'},
@@ -400,8 +389,6 @@ const struct option apertium_tagger::longopts[] = {
     {"train", required_argument, 0, 't'},
     {0, 0, 0, 0}};
 
-
-
 void apertium_tagger::set_indexptr() {
   if (The_val == longopts[The_indexptr].val)
     return;
@@ -414,7 +401,6 @@ void apertium_tagger::set_indexptr() {
     }
   }
 }
-
 
 void apertium_tagger::flagOptionCase(
     bool (basic_Tagger::Flags::*GetFlag)() const,
@@ -430,66 +416,35 @@ void apertium_tagger::flagOptionCase(
 }
 
 std::string apertium_tagger::option_string() {
-
-
   return option_string(The_indexptr);
-
 }
 
 void apertium_tagger::functionTypeTypeOptionCase(
     const FunctionTypeType &FunctionTypeType_) {
-  if (
-
-
-      FunctionTypeTypeOption_indexptr
-
-
-      ) {
+  if (FunctionTypeTypeOption_indexptr) {
     std::stringstream what_;
     what_ << "unexpected '" << option_string() << "' following '"
-          << option_string(
-
-
-                 *FunctionTypeTypeOption_indexptr
-
-
-                 ) << '\'';
+          << option_string(*FunctionTypeTypeOption_indexptr)
+          << '\'';
     throw Exception::apertium_tagger::UnexpectedFunctionTypeTypeOption(what_);
   }
 
   TheFunctionTypeType = FunctionTypeType_;
-
-
   FunctionTypeTypeOption_indexptr = The_indexptr;
-
 }
 
-void
-apertium_tagger::functionTypeOptionCase(const FunctionType &FunctionType_) {
-  if (
-
-
-      FunctionTypeOption_indexptr
-
-
-      ) {
+void apertium_tagger::functionTypeOptionCase(
+    const FunctionType &FunctionType_) {
+  if (FunctionTypeOption_indexptr) {
     std::stringstream what_;
     what_ << "unexpected '" << option_string() << "' following '"
-          << option_string(
-
-
-                 *FunctionTypeOption_indexptr
-
-
-                 ) << '\'';
+          << option_string(*FunctionTypeOption_indexptr)
+          << '\'';
     throw Exception::apertium_tagger::UnexpectedFunctionTypeOption(what_);
   }
 
   TheFunctionType = FunctionType_;
-
-
   FunctionTypeOption_indexptr = The_indexptr;
-
 }
 
 void apertium_tagger::getIterationsArgument() {
@@ -530,6 +485,45 @@ unsigned long apertium_tagger::optarg_unsigned_long() const {
   return N_0;
 }
 
+template <typename T>
+static void try_open_fstream(const char *metavar, const char *filename,
+                             T &stream) {
+  stream.open(filename);
+  if (stream.fail()) {
+    std::stringstream what_;
+    what_ << "can't open " << metavar << " file \"" << filename << "\"";
+    throw Exception::apertium_tagger::open_stream_fail(what_);
+  }
+}
+
+static FILE *try_open_file(const char *metavar, const char *filename,
+                           const char *flags) {
+  FILE *f = std::fopen(filename, flags);
+  if (f == NULL) {
+    std::stringstream what_;
+    what_ << "can't open " << metavar << " file \"" << filename << "\"";
+    throw Exception::apertium_tagger::fopen(what_);
+  }
+  return f;
+}
+
+static inline FILE *try_open_file_utf8(const char *metavar, const char *filename,
+                                       const char *flags) {
+  FILE *f = try_open_file(metavar, filename, flags);
+#ifdef _MSC_VER
+  _setmode(_fileno(f), _O_U8TEXT);
+#endif // _MSC_VER
+  return f;
+}
+
+static void try_close_file(const char *metavar, const char *filename, FILE *file) {
+  if (std::fclose(file) != 0) {
+    std::stringstream what_;
+    what_ << "can't close " << metavar << " file \"" << filename << "\"";
+    throw Exception::apertium_tagger::fclose(what_);
+  }
+}
+
 void apertium_tagger::g_StreamTagger(basic_StreamTagger &StreamTagger_) {
   locale_global_();
 
@@ -539,20 +533,15 @@ void apertium_tagger::g_StreamTagger(basic_StreamTagger &StreamTagger_) {
     throw Exception::apertium_tagger::UnexpectedFileArgumentCount(what_);
   }
 
-  std::ifstream SerialisedAnalysisFrequencies(argv[optind]);
-
-  if (SerialisedAnalysisFrequencies.fail()) {
-    std::stringstream what_;
-    what_ << "can't open SERIALISED_BASIC_TAGGER file \"" << argv[optind]
-          << "\"";
-    throw Exception::apertium_tagger::ifstream_fail(what_);
-  }
+  std::ifstream SerialisedAnalysisFrequencies;
+  try_open_fstream("SERIALISED_TAGGER", argv[optind],
+                   SerialisedAnalysisFrequencies);
 
   try {
     StreamTagger_.deserialise(SerialisedAnalysisFrequencies);
   } catch (const basic_ExceptionType &basic_ExceptionType_) {
     std::stringstream what_;
-    what_ << "can't deserialise SERIALISED_BASIC_TAGGER file \"" << argv[optind]
+    what_ << "can't deserialise SERIALISED_TAGGER file \"" << argv[optind]
           << "\" Reason: " << basic_ExceptionType_.what();
     throw Exception::apertium_tagger::deserialise(what_);
   }
@@ -563,13 +552,8 @@ void apertium_tagger::g_StreamTagger(basic_StreamTagger &StreamTagger_) {
     return;
   }
 
-  std::wifstream Input_stream(argv[optind + 1]);
-
-  if (Input_stream.fail()) {
-    std::stringstream what_;
-    what_ << "can't open INPUT file \"" << argv[optind + 1] << "\"";
-    throw Exception::apertium_tagger::wifstream_fail(what_);
-  }
+  std::wifstream Input_stream;
+  try_open_fstream("INPUT", argv[optind + 1], Input_stream);
 
   if (argc - optind < 3) {
     Stream Input(TheFlags, Input_stream, argv[optind + 1]);
@@ -577,13 +561,8 @@ void apertium_tagger::g_StreamTagger(basic_StreamTagger &StreamTagger_) {
     return;
   }
 
-  std::wofstream Output_stream(argv[optind + 2]);
-
-  if (Output_stream.fail()) {
-    std::stringstream what_;
-    what_ << "can't open OUTPUT file \"" << argv[optind + 2] << "\"";
-    throw Exception::apertium_tagger::wofstream_fail(what_);
-  }
+  std::wofstream Output_stream;
+  try_open_fstream("OUTPUT", argv[optind + 2], Input_stream);
 
   Stream Input(TheFlags, Input_stream, argv[optind + 1]);
   StreamTagger_.tag(Input, Output_stream);
@@ -606,25 +585,15 @@ void apertium_tagger::s_StreamTaggerTrainer(
     throw Exception::apertium_tagger::UnexpectedFileArgumentCount(what_);
   }
 
-  std::wifstream TaggedCorpus_stream(argv[optind + 1]);
-
-  if (TaggedCorpus_stream.fail()) {
-    std::stringstream what_;
-    what_ << "can't open TAGGED_CORPUS file \"" << argv[optind + 1] << "\"";
-    throw Exception::apertium_tagger::wifstream_fail(what_);
-  }
+  std::wifstream TaggedCorpus_stream;
+  try_open_fstream("TAGGED_CORPUS", argv[optind + 1], TaggedCorpus_stream);
 
   Stream TaggedCorpus(TheFlags, TaggedCorpus_stream, argv[optind]);
   StreamTaggerTrainer_.train(TaggedCorpus);
 
-  std::ofstream Serialised_basic_Tagger(argv[optind]);
-
-  if (Serialised_basic_Tagger.fail()) {
-    std::stringstream what_;
-    what_ << "can't open SERIALISED_BASIC_TAGGER file \"" << argv[optind]
-          << "\"";
-    throw Exception::apertium_tagger::ofstream_fail(what_);
-  }
+  std::ofstream Serialised_basic_Tagger;
+  try_open_fstream("SERIALISED_TAGGER", argv[optind],
+                   Serialised_basic_Tagger);
 
   StreamTaggerTrainer_.serialise(Serialised_basic_Tagger);
 }
@@ -638,23 +607,10 @@ void apertium_tagger::g_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
     throw Exception::apertium_tagger::UnexpectedFileArgumentCount(what_);
   }
 
-  FILE *Serialised_FILE_Tagger = std::fopen(argv[optind], "rb");
-
-  if (Serialised_FILE_Tagger == NULL) {
-    std::stringstream what_;
-    what_ << "can't open SERIALISED_BASIC_TAGGER file \"" << argv[optind]
-          << "\" for reading in binary mode";
-    throw Exception::apertium_tagger::fopen(what_);
-  }
-
+  FILE *Serialised_FILE_Tagger =
+      try_open_file("SERIALISED_TAGGER", argv[optind], "rb");
   FILE_Tagger_.deserialise(Serialised_FILE_Tagger);
-
-  if (std::fclose(Serialised_FILE_Tagger) != 0) {
-    std::stringstream what_;
-    what_ << "can't close SERIALISED_BASIC_TAGGER file \"" << argv[optind]
-          << "\"";
-    throw Exception::apertium_tagger::fclose(what_);
-  }
+  try_close_file("SERIALISED_TAGGER", argv[optind], Serialised_FILE_Tagger);
 
   FILE_Tagger_.set_debug(TheFlags.getDebug());
   TaggerWord::setArrayTags(FILE_Tagger_.getArrayTags());
@@ -665,53 +621,17 @@ void apertium_tagger::g_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
   if (argc - optind < 2)
     FILE_Tagger_.tagger(stdin, stdout, TheFlags.getFirst());
   else {
-    FILE *Input = std::fopen(argv[optind + 1], "r");
-
-    if (Input == NULL) {
-      std::stringstream what_;
-      what_ << "can't open INPUT file \"" << argv[optind + 1]
-            << "\" for reading";
-      throw Exception::apertium_tagger::fopen(what_);
-    }
-
-#ifdef _MSC_VER
-
-    _setmode(_fileno(Input), _O_U8TEXT);
-
-#endif // _MSC_VER
+    FILE *Input = try_open_file("INPUT", argv[optind + 1], "r");
 
     if (argc - optind < 3)
       FILE_Tagger_.tagger(Input, stdout, TheFlags.getFirst());
     else {
-      FILE *Output = std::fopen(argv[optind + 2], "w");
-
-      if (Output == NULL) {
-        std::stringstream what_;
-        what_ << "can't open OUTPUT file \"" << argv[optind + 2]
-              << "\" for writing";
-        throw Exception::apertium_tagger::fopen(what_);
-      }
-
-#ifdef _MSC_VER
-
-      _setmode(_fileno(Output), _O_U8TEXT);
-
-#endif // _MSC_VER
-
+      FILE *Output = try_open_file_utf8("OUTPUT", argv[optind + 2], "w");
       FILE_Tagger_.tagger(Input, Output, TheFlags.getFirst());
-
-      if (std::fclose(Output) != 0) {
-        std::stringstream what_;
-        what_ << "can't close OUTPUT file \"" << argv[optind + 2] << "\"";
-        throw Exception::apertium_tagger::fclose(what_);
-      }
+      try_close_file("OUTPUT", argv[optind + 2], Output);
     }
 
-    if (std::fclose(Input) != 0) {
-      std::stringstream what_;
-      what_ << "can't close INPUT file \"" << argv[optind + 1] << "\"";
-      throw Exception::apertium_tagger::fclose(what_);
-    }
+    try_close_file("INPUT", argv[optind + 1], Input);
   }
 }
 
@@ -724,66 +644,22 @@ void apertium_tagger::r_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
     throw Exception::apertium_tagger::UnexpectedFileArgumentCount(what_);
   }
 
-  FILE *Serialised_FILE_Tagger = std::fopen(argv[optind + 1], "rb");
-
-  if (Serialised_FILE_Tagger == NULL) {
-    std::stringstream what_;
-    what_ << "can't open SERIALISED_BASIC_TAGGER file \"" << argv[optind + 1]
-          << "\" for reading in binary mode";
-    throw Exception::apertium_tagger::fopen(what_);
-  }
-
+  FILE *Serialised_FILE_Tagger =
+      try_open_file("SERIALISED_TAGGER", argv[optind + 1], "rb");
   FILE_Tagger_.deserialise(Serialised_FILE_Tagger);
-
-  if (std::fclose(Serialised_FILE_Tagger) != 0) {
-    std::stringstream what_;
-    what_ << "can't close SERIALISED_BASIC_TAGGER file \"" << argv[optind + 1]
-          << "\"";
-    throw Exception::apertium_tagger::fclose(what_);
-  }
+  try_close_file("SERIALISED_TAGGER", argv[optind + 1], Serialised_FILE_Tagger);
 
   FILE_Tagger_.set_debug(TheFlags.getDebug());
   TaggerWord::setArrayTags(FILE_Tagger_.getArrayTags());
 
-  FILE *Corpus = std::fopen(argv[optind], "r");
-
-  if (Corpus == NULL) {
-    std::stringstream what_;
-    what_ << "can't open CORPUS file \"" << argv[optind] << "\" for reading";
-    throw Exception::apertium_tagger::fopen(what_);
-  }
-
-#ifdef _MSC_VER
-
-  _setmode(_fileno(Corpus), _O_U8TEXT);
-
-#endif // _MSC_VER
-
+  FILE *Corpus = try_open_file_utf8("CORPUS", argv[optind], "r");
   FILE_Tagger_.train(Corpus, TheFunctionTypeOptionArgument);
+  try_close_file("CORPUS", argv[optind], Corpus);
 
-  if (std::fclose(Corpus) != 0) {
-    std::stringstream what_;
-    what_ << "can't close CORPUS file \"" << argv[optind] << "\"";
-    throw Exception::apertium_tagger::fclose(what_);
-  }
-
-  Serialised_FILE_Tagger = std::fopen(argv[optind + 1], "wb");
-
-  if (Serialised_FILE_Tagger == NULL) {
-    std::stringstream what_;
-    what_ << "can't open SERIALISED_BASIC_TAGGER file \"" << argv[optind + 1]
-          << "\" for writing in binary mode";
-    throw Exception::apertium_tagger::fopen(what_);
-  }
-
+  Serialised_FILE_Tagger =
+      try_open_file("SERIALISED_TAGGER", argv[optind + 1], "wb");
   FILE_Tagger_.serialise(Serialised_FILE_Tagger);
-
-  if (std::fclose(Serialised_FILE_Tagger) != 0) {
-    std::stringstream what_;
-    what_ << "can't close SERIALISED_BASIC_TAGGER file \"" << argv[optind + 1]
-          << "\"";
-    throw Exception::apertium_tagger::fclose(what_);
-  }
+  try_close_file("SERIALISED_TAGGER", argv[optind + 1], Serialised_FILE_Tagger);
 }
 
 void apertium_tagger::s_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
@@ -799,102 +675,25 @@ void apertium_tagger::s_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
   FILE_Tagger_.set_debug(TheFlags.getDebug());
   TaggerWord::setArrayTags(FILE_Tagger_.getArrayTags());
 
-  FILE *Dictionary = std::fopen(argv[optind], "r");
-
-  if (Dictionary == NULL) {
-    std::stringstream what_;
-    what_ << "can't open DICTIONARY file \"" << argv[optind]
-          << "\" for reading";
-    throw Exception::apertium_tagger::fopen(what_);
-  }
-
+  FILE *Dictionary = try_open_file("DICTIONARY", argv[optind], "r");
   FILE_Tagger_.read_dictionary(Dictionary);
+  try_close_file("DICTIONARY", argv[optind], Dictionary);
 
-  if (std::fclose(Dictionary) != 0) {
-    std::stringstream what_;
-    what_ << "can't close DICTIONARY file \"" << argv[optind] << "\"";
-    throw Exception::apertium_tagger::fclose(what_);
-  }
-
-  FILE *TaggedCorpus = std::fopen(argv[optind + 4], "r");
-
-  if (TaggedCorpus == NULL) {
-    std::stringstream what_;
-    what_ << "can't open TAGGED_CORPUS file \"" << argv[optind + 4]
-          << "\" for reading";
-    throw Exception::apertium_tagger::fopen(what_);
-  }
-
-  FILE *UntaggedCorpus = std::fopen(argv[optind + 5], "r");
-
-  if (UntaggedCorpus == NULL) {
-    std::stringstream what_;
-    what_ << "can't open UNTAGGED_CORPUS file \"" << argv[optind + 5]
-          << "\" for reading";
-    throw Exception::apertium_tagger::fopen(what_);
-  }
-
-#ifdef _MSC_VER
-
-  _setmode(_fileno(TaggedCorpus), _O_U8TEXT);
-  _setmode(_fileno(UntaggedCorpus), _O_U8TEXT);
-
-#endif // _MSC_VER
-
+  FILE *TaggedCorpus = try_open_file_utf8("TAGGED_CORPUS", argv[optind + 4], "r");
+  FILE *UntaggedCorpus = try_open_file_utf8("UNTAGGED_CORPUS", argv[optind + 5], "r");
   FILE_Tagger_.init_probabilities_from_tagged_text_(TaggedCorpus,
                                                     UntaggedCorpus);
+  try_close_file("TAGGED_CORPUS", argv[optind + 4], TaggedCorpus);
+  try_close_file("UNTAGGED_CORPUS", argv[optind + 5], UntaggedCorpus);
 
-  if (std::fclose(TaggedCorpus) != 0) {
-    std::stringstream what_;
-    what_ << "can't close TAGGED_CORPUS file \"" << argv[optind + 4] << "\"";
-    throw Exception::apertium_tagger::fclose(what_);
-  }
-
-  if (std::fclose(UntaggedCorpus) != 0) {
-    std::stringstream what_;
-    what_ << "can't close UNTAGGED_CORPUS file \"" << argv[optind + 5] << "\"";
-    throw Exception::apertium_tagger::fclose(what_);
-  }
-
-  FILE *Corpus = std::fopen(argv[optind + 1], "r");
-
-  if (Corpus == NULL) {
-    std::stringstream what_;
-    what_ << "can't open CORPUS file \"" << argv[optind + 1]
-          << "\" for reading";
-    throw Exception::apertium_tagger::fopen(what_);
-  }
-
-#ifdef _MSC_VER
-
-  _setmode(_fileno(Corpus), _O_U8TEXT);
-
-#endif // _MSC_VER
-
+  FILE *Corpus = try_open_file_utf8("CORPUS", argv[optind + 1], "r");
   FILE_Tagger_.train(Corpus, TheFunctionTypeOptionArgument);
+  try_close_file("CORPUS", argv[optind + 1], UntaggedCorpus);
 
-  if (std::fclose(Corpus) != 0) {
-    std::stringstream what_;
-    what_ << "can't close CORPUS file \"" << argv[optind + 1] << "\"";
-    throw Exception::apertium_tagger::fclose(what_);
-  }
-
-  FILE *Stream_ = std::fopen(argv[optind + 3], "wb");
-
-  if (Stream_ == NULL) {
-    std::stringstream what_;
-    what_ << "can't open STREAM file \"" << argv[optind + 3]
-          << "\" for writing in binary mode";
-    throw Exception::apertium_tagger::fopen(what_);
-  }
-
-  FILE_Tagger_.serialise(Stream_);
-
-  if (std::fclose(Stream_) != 0) {
-    std::stringstream what_;
-    what_ << "can't close STREAM file \"" << argv[optind + 3] << "\"";
-    throw Exception::apertium_tagger::fclose(what_);
-  }
+  FILE *Serialised_FILE_Tagger =
+      try_open_file("SERIALISED_TAGGER", argv[optind + 3], "wb");
+  FILE_Tagger_.serialise(Serialised_FILE_Tagger);
+  try_close_file("SERIALISED_TAGGER", argv[optind + 3], UntaggedCorpus);
 }
 
 void apertium_tagger::t_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
@@ -910,63 +709,19 @@ void apertium_tagger::t_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
   FILE_Tagger_.set_debug(TheFlags.getDebug());
   TaggerWord::setArrayTags(FILE_Tagger_.getArrayTags());
 
-  FILE *Dictionary = std::fopen(argv[optind], "r");
-
-  if (Dictionary == NULL) {
-    std::stringstream what_;
-    what_ << "can't open DICTIONARY file \"" << argv[optind]
-          << "\" for reading";
-    throw Exception::apertium_tagger::fopen(what_);
-  }
-
+  FILE *Dictionary = try_open_file("DICTIONARY", argv[optind], "r");
   FILE_Tagger_.read_dictionary(Dictionary);
+  try_close_file("DICTIONARY", argv[optind], Dictionary);
 
-  if (std::fclose(Dictionary) != 0) {
-    std::stringstream what_;
-    what_ << "can't close DICTIONARY file \"" << argv[optind] << "\"";
-    throw Exception::apertium_tagger::fclose(what_);
-  }
-
-  FILE *Corpus = std::fopen(argv[optind + 1], "r");
-
-  if (Corpus == NULL) {
-    std::stringstream what_;
-    what_ << "can't open CORPUS file \"" << argv[optind + 1]
-          << "\" for reading";
-    throw Exception::apertium_tagger::fopen(what_);
-  }
-
-#ifdef _MSC_VER
-
-  _setmode(_fileno(Corpus), _O_U8TEXT);
-
-#endif // _MSC_VER
-
+  FILE *Corpus = try_open_file_utf8("CORPUS", argv[optind + 1], "r");
   FILE_Tagger_.init_probabilities_kupiec_(Corpus);
   FILE_Tagger_.train(Corpus, TheFunctionTypeOptionArgument);
+  try_close_file("CORPUS", argv[optind + 1], Corpus);
 
-  if (std::fclose(Corpus) != 0) {
-    std::stringstream what_;
-    what_ << "can't close CORPUS file \"" << argv[optind + 1] << "\"";
-    throw Exception::apertium_tagger::fclose(what_);
-  }
-
-  FILE *Stream_ = std::fopen(argv[optind + 3], "wb");
-
-  if (Stream_ == NULL) {
-    std::stringstream what_;
-    what_ << "can't open STREAM file \"" << argv[optind + 3]
-          << "\" for writing in binary mode";
-    throw Exception::apertium_tagger::fopen(what_);
-  }
-
-  FILE_Tagger_.serialise(Stream_);
-
-  if (std::fclose(Stream_) != 0) {
-    std::stringstream what_;
-    what_ << "can't close STREAM file \"" << argv[optind + 3] << "\"";
-    throw Exception::apertium_tagger::fclose(what_);
-  }
+  FILE *Serialised_FILE_Tagger =
+      try_open_file("SERIALISED_TAGGER", argv[optind + 3], "wb");
+  FILE_Tagger_.serialise(Serialised_FILE_Tagger);
+  try_close_file("SERIALISED_TAGGER", argv[optind + 3], Serialised_FILE_Tagger);
 }
 }
 
