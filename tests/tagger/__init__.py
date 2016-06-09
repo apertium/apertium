@@ -6,11 +6,13 @@ import unittest
 import tempfile
 from os.path import join as pjoin
 from os.path import abspath, dirname
-from subprocess import check_call, check_output, run, PIPE, DEVNULL
+from subprocess import (check_call, check_output, Popen, PIPE, DEVNULL,
+                        TimeoutExpired, CalledProcessError)
 
 from . import streamparser
 
-## Utilities
+
+# Utilities
 def tmp(contents):
     t = tempfile.NamedTemporaryFile(mode='w', delete=False)
     t.write(contents)
@@ -25,8 +27,34 @@ APERTIUM_TAGGER = rel("../../apertium/apertium-tagger")
 
 
 def check_stderr(*popenargs, timeout=None, **kwargs):
-    return run(*popenargs, stderr=PIPE, timeout=timeout, check=True,
-               **kwargs).stderr
+    # Essentially a copypasted version of check_output.
+    # Can be significantly abridged with Python 3.5's run(...)
+    if 'stderr' in kwargs:
+        raise ValueError('stderr argument not allowed, it will be overridden.')
+    if 'input' in kwargs:
+        if 'stdin' in kwargs:
+            raise ValueError('stdin and input arguments may not both be used.')
+        inputdata = kwargs['input']
+        del kwargs['input']
+        kwargs['stdin'] = PIPE
+    else:
+        inputdata = None
+    with Popen(*popenargs, stderr=PIPE, **kwargs) as process:
+        try:
+            unused_output, err = process.communicate(inputdata,
+                                                     timeout=timeout)
+        except TimeoutExpired:
+            process.kill()
+            unused_output, err = process.communicate()
+            raise TimeoutExpired(process.args, timeout, output=err)
+        except:
+            process.kill()
+            process.wait()
+            raise
+        retcode = process.poll()
+        if retcode:
+            raise CalledProcessError(retcode, process.args, output=err)
+    return err
 
 
 def trace_dec(f):
@@ -37,11 +65,15 @@ def trace_dec(f):
         return f(*args, **kwargs)
     return inner
 
-check_call = functools.partial(trace_dec(check_call), universal_newlines=True)
-check_output = functools.partial(trace_dec(check_output), universal_newlines=True)
-check_stderr = functools.partial(trace_dec(check_stderr), universal_newlines=True)
 
-## Test files
+def trace_plus_unicode(f):
+    return functools.partial(trace_dec(f), universal_newlines=True)
+
+check_call = trace_plus_unicode(check_call)
+check_output = trace_plus_unicode(check_output)
+check_stderr = trace_plus_unicode(check_stderr)
+
+# Test files
 DIC = """
 ^the/the<det><def><sp>$
 ^books/book<n><pl>/book<vblex><pri><p3><sg>$
@@ -61,18 +93,18 @@ TSX = """
     <def-label name="DET" closed="true">
       <tags-item tags="det.*"/>
       <tags-item tags="det.*.*"/>
-    </def-label> 
+    </def-label>
     <def-label name="VERB">
       <tags-item tags="vblex.*"/>
       <tags-item tags="vbhaver.*"/>
-    </def-label> 
+    </def-label>
     <def-label name="NOUN">
       <tags-item tags="n.*"/>
-    </def-label> 
+    </def-label>
     <def-label name="ADJ">
       <tags-item tags="adj.*"/>
       <tags-item tags="adj"/>
-    </def-label> 
+    </def-label>
   </tagset>
 </tagger>
 """.strip()
@@ -187,15 +219,16 @@ TEST_NEW_AMBG_CLASS = """
 ^./.<sent>$
 """.strip()
 
-## Expected strings
+# Expected strings
 EXPECTED_SUBST = """
-Error: A new ambiguity class was found. 
+Error: A new ambiguity class was found.
 Retraining the tagger is necessary so as to take it into account.
 Word 'cat'.
 New ambiguity class: {NOUN,ADJ}
-""".strip()
+""".strip().split("\n")
 
-## Tests
+
+# Tests
 class AmbiguityClassTest(unittest.TestCase):
     def setUp(self):
         self.tsx_fn = tmp(TSX)
@@ -213,7 +246,9 @@ class AmbiguityClassTest(unittest.TestCase):
             [APERTIUM_TAGGER, '-d'] + flags +
             ['-g', model_fn, test2],
             stdout=DEVNULL)
-        self.assertEqual(subst_stderr.strip(), EXPECTED_SUBST)
+        subst_stderr = [line.strip()
+                        for line in subst_stderr.strip().split("\n")]
+        self.assertEqual(subst_stderr, EXPECTED_SUBST)
         ambg_class = check_output(
            [rel('test-find-similar-ambiguity-class'), model_fn],
            input="NOUN ADJ\n")
@@ -255,7 +290,8 @@ class AmbiguityClassTest(unittest.TestCase):
             [APERTIUM_TAGGER, '-s', '0', self.dic_fn, untagged, self.tsx_fn,
              model_fn, tagged, untagged])
         subst_stdout = check_output(
-            [APERTIUM_TAGGER, '-d', '-g', model_fn, new_ambg_class], stderr=DEVNULL)
+            [APERTIUM_TAGGER, '-d', '-g', model_fn, new_ambg_class],
+            stderr=DEVNULL)
         lexical_units = streamparser.parse(subst_stdout)
         acceptable = False
         for lexical_unit in lexical_units:
