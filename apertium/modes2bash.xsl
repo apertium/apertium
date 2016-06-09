@@ -82,6 +82,10 @@
   </xsl:for-each>
 </xsl:template>
 
+<xsl:template match="arg">
+  <xsl:value-of select="./@name"/>
+</xsl:template>
+
 <xsl:template match="file">
   <xsl:param name="dir" />
   <xsl:text>'</xsl:text>

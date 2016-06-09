@@ -65,7 +65,10 @@
     <element name="program">
       <ref name="attlist.program"/>
       <zeroOrMore>
-        <ref name="file"/>
+        <choice>
+          <ref name="file"/>
+          <ref name="arg"/>
+        </choice>
       </zeroOrMore>
     </element>
   </define>
@@ -74,7 +77,7 @@
   </define>
   <define name="attlist.program" combine="interleave">
     <optional>
-      <attribute name="prefix"/>
+      <attribute name="debug-suff"/>
     </optional>
   </define>
   <define name="file">
@@ -84,6 +87,15 @@
     </element>
   </define>
   <define name="attlist.file" combine="interleave">
+    <attribute name="name"/>
+  </define>
+  <define name="arg">
+    <element name="arg">
+      <ref name="attlist.arg"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.arg" combine="interleave">
     <attribute name="name"/>
   </define>
   <start>

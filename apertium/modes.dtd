@@ -27,9 +27,12 @@
 
 <!ELEMENT pipeline (program+)>
 
-<!ELEMENT program (file*)>
+<!ELEMENT program (file|arg)*>
 <!ATTLIST program name CDATA #REQUIRED>
-<!ATTLIST program prefix CDATA #IMPLIED>
+<!ATTLIST program debug-suff CDATA #IMPLIED>
 
 <!ELEMENT file EMPTY>
 <!ATTLIST file name CDATA #REQUIRED>
+
+<!ELEMENT arg EMPTY>
+<!ATTLIST arg name CDATA #REQUIRED>

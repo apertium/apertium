@@ -56,11 +56,15 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 
   <xsl:template name="debugSuffix">
     <xsl:param name="progname"/>
+    <xsl:param name="suff-attr"/>
     <xsl:variable name="p" select="normalize-space($progname)"/>
     <!-- TODO: We also need to know what names have been used already
          to make them unique! Might be easier to do uniquifying
          outside XSLT -->
     <xsl:choose>
+      <xsl:when test="$suff-attr != ''">
+        <xsl:text>-</xsl:text><xsl:value-of select="$suff-attr"/>
+      </xsl:when>
       <xsl:when test="starts-with($p, 'cg-proc')">
         <xsl:text>-disam</xsl:text>
       </xsl:when>
@@ -131,6 +135,7 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
         <xsl:value-of select="../../@name"/>
         <xsl:call-template name="debugSuffix">
           <xsl:with-param name="progname" select="./@name"/>
+          <xsl:with-param name="suff-attr" select="./@debug-suff"/>
         </xsl:call-template>
       </xsl:attribute>
       <pipeline>
