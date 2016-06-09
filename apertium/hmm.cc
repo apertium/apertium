@@ -710,7 +710,7 @@ HMM::tagger(FILE *Input, FILE *Output, const bool &First) {
   TaggerWord *word=NULL;
   TTag tag;
   
-  set <TTag> tags, pretags;
+  set <TTag> ambg_class_tags, tags, pretags;
   set <TTag>::iterator itag, jtag;
   
   double prob, loli, x;
@@ -750,9 +750,9 @@ HMM::tagger(FILE *Input, FILE *Output, const bool &First) {
     if (tags.size()==0) // This is an unknown word
       tags = tdhmm.getOpenClass();
                        
-    tags = require_similar_ambiguity_class(tdhmm, tags, *word, debug);
+    ambg_class_tags = require_similar_ambiguity_class(tdhmm, tags, *word, debug);
          
-    k = output[tags];  //Ambiguity class the word belongs to
+    k = output[ambg_class_tags];  //Ambiguity class the word belongs to
     
 #ifdef __GNUC__
     clear_array_double(alpha[nwpend%2], N);    
