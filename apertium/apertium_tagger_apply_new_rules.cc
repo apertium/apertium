@@ -61,9 +61,7 @@ int main(int argc, char* argv[]) {
   string filetsx="";
 
   int c;
-#if HAVE_GETOPT_LONG
   int option_index=0;
-#endif
 
   cerr<<"Command line: ";
   for(int i=0; i<argc; i++)
@@ -71,7 +69,6 @@ int main(int argc, char* argv[]) {
   cerr<<"\n";
 
   while (true) {
-#if HAVE_GETOPT_LONG
     static struct option long_options[] =
       {
 	{"filein",    required_argument, 0, 'i'},
@@ -81,9 +78,6 @@ int main(int argc, char* argv[]) {
       };
 
     c=getopt_long(argc, argv, "i:o:x:hv",long_options, &option_index);
-#else
-    c=getopt(argc, argv, "i:o:x:hv");
-#endif
     if (c==-1)
       break;
       

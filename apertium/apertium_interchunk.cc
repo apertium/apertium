@@ -90,12 +90,9 @@ int main(int argc, char *argv[])
   
   Interchunk i;
 
-#if HAVE_GETOPT_LONG
   int option_index=0;
-#endif
 
   while (true) {
-#if HAVE_GETOPT_LONG
     static struct option long_options[] =
     {
       {"null-flush", no_argument, 0, 'z'},
@@ -105,9 +102,6 @@ int main(int argc, char *argv[])
     };
 
     int c=getopt_long(argc, argv, "zth", long_options, &option_index);
-#else
-    int c=getopt(argc, argv, "zth");
-#endif
     if (c == -1)
       break;
       

@@ -101,12 +101,9 @@ int main(int argc, char *argv[])
  
   Transfer t;
 
-#if HAVE_GETOPT_LONG
   int option_index=0;
-#endif
 
   while (true) {
-#if HAVE_GETOPT_LONG
     static struct option long_options[] =
     {
       {"from-bilingual",      no_argument, 0, 'b'},
@@ -121,9 +118,6 @@ int main(int argc, char *argv[])
     };
 
     int c=getopt_long(argc, argv, "nbx:cztTh", long_options, &option_index);
-#else
-    int c=getopt(argc, argv, "nbx:cztTh");
-#endif
     if (c==-1)
       break;
       

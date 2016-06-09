@@ -90,7 +90,6 @@ int main(int argc, char* argv[]) {
   cerr<<"\n";
 
   while (true) {
-#if HAVE_GETOPT_LONG
     static struct option long_options[] =
       {
 	//{"input",       required_argument, 0, 'i'},
@@ -106,9 +105,6 @@ int main(int argc, char* argv[]) {
       };
 
     c=getopt_long(argc, argv, "r:p:w:a:e:dhv",long_options, &option_index);
-#else
-    c=getopt(argc, argv, "r:p:w:a:e:dhv");
-#endif
     if (c==-1)
       break;
       

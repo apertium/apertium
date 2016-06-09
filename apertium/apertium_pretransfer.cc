@@ -193,12 +193,9 @@ int main(int argc, char *argv[])
   bool null_flush = false;
   bool surface_forms = false;
   
-#if HAVE_GETOPT_LONG
   int option_index=0;
-#endif
 
   while (true) {
-#if HAVE_GETOPT_LONG
     static struct option long_options[] =
     {
       {"null-flush", no_argument, 0, 'z'},
@@ -209,9 +206,6 @@ int main(int argc, char *argv[])
     };
 
     int c=getopt_long(argc, argv, "enzh", long_options, &option_index);
-#else
-    int c=getopt(argc, argv, "enzh");
-#endif
     if (c==-1)
       break;
       

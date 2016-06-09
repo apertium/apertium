@@ -47,15 +47,12 @@ void help(char *name) {
 int main(int argc, char* argv[]) {
   int c;
   
-#if HAVE_GETOPT_LONG
   int option_index=0;
-#endif
   string monodic_file="";
   string bildic_file="";
   string wlist_file="";
 
   while (true) {
-#if HAVE_GETOPT_LONG
     static struct option long_options[] =
       {
 	{"mono",    required_argument, 0, 'm'},
@@ -67,9 +64,6 @@ int main(int argc, char* argv[]) {
       };
 
     c=getopt_long(argc, argv, "m:b:w:hv",long_options, &option_index);
-#else
-    c=getopt(argc, argv, "m:b:w:hv");
-#endif
     if (c==-1)
       break;
       

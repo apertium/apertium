@@ -76,12 +76,9 @@ int main(int argc, char *argv[])
   string translation = "";
 
 
-#if HAVE_GETOPT_LONG
   int option_index=0;
-#endif
 
   while (true) {
-#if HAVE_GETOPT_LONG
     static struct option long_options[] =
     {
       {"percent",      required_argument, 0, 'p'},
@@ -97,9 +94,6 @@ int main(int argc, char *argv[])
     };
 
     int c=getopt_long(argc, argv, "p:e:l:m:d:w:s:t:h", long_options, &option_index);
-#else
-    int c=getopt(argc, argv, "p:e:l:m:d:w:s:t:h");
-#endif
     if (c==-1)
       break;
       

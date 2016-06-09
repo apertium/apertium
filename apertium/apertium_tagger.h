@@ -39,30 +39,20 @@ private:
   enum FunctionType { Tagger, Retrain, Supervised, Train };
   static void help();
 
-#if HAVE_GETOPT_LONG
 
   static std::string option_string(const int &indexptr_);
   static std::string option_string(const struct option &option_);
 
-#else
-
-  static std::string option_string(const int &val_);
-
-#endif // HAVE_GETOPT_LONG
 
   static void locale_global_();
 
-#if HAVE_GETOPT_LONG
 
   static const struct option longopts[];
 
-#endif // HAVE_GETOPT_LONG
 
-#if HAVE_GETOPT_LONG
 
   void set_indexptr();
 
-#endif // HAVE_GETOPT_LONG
 
   void flagOptionCase(bool (basic_Tagger::Flags::*GetFlag)() const,
                       void (basic_Tagger::Flags::*SetFlag)(const bool &));
@@ -81,18 +71,11 @@ private:
   char **&argv;
   int The_val;
 
-#if HAVE_GETOPT_LONG
 
   int The_indexptr;
   Optional<int> FunctionTypeTypeOption_indexptr;
   Optional<int> FunctionTypeOption_indexptr;
 
-#else
-
-  Optional<int> FunctionTypeTypeOption_val;
-  Optional<int> FunctionTypeOptiona_val;
-
-#endif // HAVE_GETOPT_LONG
 
   Optional<FunctionTypeType> TheFunctionTypeType;
   Optional<UnigramType> TheUnigramType;

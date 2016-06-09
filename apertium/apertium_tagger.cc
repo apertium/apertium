@@ -61,16 +61,10 @@ namespace Apertium {
 apertium_tagger::apertium_tagger(int &argc, char **&argv)
     : argc(argc), argv(argv), The_val(),
 
-#if HAVE_GETOPT_LONG
 
       The_indexptr(), FunctionTypeTypeOption_indexptr(),
       FunctionTypeOption_indexptr(),
 
-#else
-
-      FunctionTypeTypeOption_val(), FunctionTypeOptiona_val(),
-
-#endif // HAVE_GETOPT_LONG
 
       TheFunctionTypeType(), TheUnigramType(), TheFunctionType(),
       TheFunctionTypeOptionArgument(0), TheFlags() {
@@ -78,24 +72,16 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
     while (true) {
       The_val =
 
-#if HAVE_GETOPT_LONG
 
           getopt_long(argc, argv, "dfgmpr:s:t:u:wz", longopts, &The_indexptr);
 
-#else
-
-          getopt(argc, argv, "dfgmpr:s:t:u:wz");
-
-#endif // HAVE_GETOPT_LONG
 
       if (The_val == -1)
         break;
 
-#if HAVE_GETOPT_LONG
 
       set_indexptr();
 
-#endif // HAVE_GETOPT_LONG
 
       switch (The_val) {
       case 'd':
@@ -304,13 +290,8 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
 
 void apertium_tagger::help() {
 
-#if HAVE_GETOPT_LONG
 #define NAME(NAME_) ", --" #NAME_
 #define ARGUMENT(ARGUMENT_) "=" #ARGUMENT_
-#else
-#define NAME(NAME_)
-#define ARGUMENT(ARGUMENT_) " " #ARGUMENT_
-#endif // HAVE_GETOPT_LONG
 
   std::cerr <<
 "Usage: apertium-tagger [OPTION]... -g SERIALISED_BASIC_TAGGER                  \\\n"
@@ -375,7 +356,6 @@ void apertium_tagger::help() {
   align::align_(options_description_);
 }
 
-#if HAVE_GETOPT_LONG
 
 std::string apertium_tagger::option_string(const int &indexptr_) {
   return option_string(longopts[indexptr_]);
@@ -387,15 +367,6 @@ std::string apertium_tagger::option_string(const struct option &option_) {
   return option_string_.str();
 }
 
-#else
-
-std::string apertium_tagger::option_string(const int &val_) {
-  std::stringstream option_string_;
-  option_string_ << '-' << static_cast<char>(val_);
-  return option_string_.str();
-}
-
-#endif // HAVE_GETOPT_LONG
 
 void apertium_tagger::locale_global_() {
 
@@ -416,7 +387,6 @@ void apertium_tagger::locale_global_() {
 #endif // defined __clang__
 }
 
-#if HAVE_GETOPT_LONG
 
 const struct option apertium_tagger::longopts[] = {
     {"help", no_argument, 0, 'h'},
@@ -433,9 +403,7 @@ const struct option apertium_tagger::longopts[] = {
     {"train", required_argument, 0, 't'},
     {0, 0, 0, 0}};
 
-#endif // HAVE_GETOPT_LONG
 
-#if HAVE_GETOPT_LONG
 
 void apertium_tagger::set_indexptr() {
   if (The_val == longopts[The_indexptr].val)
@@ -450,7 +418,6 @@ void apertium_tagger::set_indexptr() {
   }
 }
 
-#endif // HAVE_GETOPT_LONG
 
 void apertium_tagger::flagOptionCase(
     bool (basic_Tagger::Flags::*GetFlag)() const,
@@ -467,44 +434,27 @@ void apertium_tagger::flagOptionCase(
 
 std::string apertium_tagger::option_string() {
 
-#if HAVE_GETOPT_LONG
 
   return option_string(The_indexptr);
 
-#else
-
-  return option_string(The_val);
-
-#endif // HAVE_GETOPT_LONG
 }
 
 void apertium_tagger::functionTypeTypeOptionCase(
     const FunctionTypeType &FunctionTypeType_) {
   if (
 
-#if HAVE_GETOPT_LONG
 
       FunctionTypeTypeOption_indexptr
 
-#else
-
-      FunctionTypeTypeOption_val
-
-#endif // HAVE_GETOPT_LONG
 
       ) {
     std::stringstream what_;
     what_ << "unexpected '" << option_string() << "' following '"
           << option_string(
 
-#if HAVE_GETOPT_LONG
 
                  *FunctionTypeTypeOption_indexptr
 
-#else
-                 *FunctionTypeTypeOption_val
-
-#endif // HAVE_GETOPT_LONG
 
                  ) << '\'';
     throw Exception::apertium_tagger::UnexpectedFunctionTypeTypeOption(what_);
@@ -512,45 +462,27 @@ void apertium_tagger::functionTypeTypeOptionCase(
 
   TheFunctionTypeType = FunctionTypeType_;
 
-#if HAVE_GETOPT_LONG
 
   FunctionTypeTypeOption_indexptr = The_indexptr;
 
-#else
-
-  FunctionTypeTypeOption_val = The_val;
-
-#endif // HAVE_GETOPT_LONG
 }
 
 void
 apertium_tagger::functionTypeOptionCase(const FunctionType &FunctionType_) {
   if (
 
-#if HAVE_GETOPT_LONG
 
       FunctionTypeOption_indexptr
 
-#else
-
-      FunctionTypeOptiona_val
-
-#endif // HAVE_GETOPT_LONG
 
       ) {
     std::stringstream what_;
     what_ << "unexpected '" << option_string() << "' following '"
           << option_string(
 
-#if HAVE_GETOPT_LONG
 
                  *FunctionTypeOption_indexptr
 
-#else
-
-                 *FunctionTypeOptiona_val
-
-#endif // HAVE_GETOPT_LONG
 
                  ) << '\'';
     throw Exception::apertium_tagger::UnexpectedFunctionTypeOption(what_);
@@ -558,15 +490,9 @@ apertium_tagger::functionTypeOptionCase(const FunctionType &FunctionType_) {
 
   TheFunctionType = FunctionType_;
 
-#if HAVE_GETOPT_LONG
 
   FunctionTypeOption_indexptr = The_indexptr;
 
-#else
-
-  FunctionTypeOptiona_val = The_val;
-
-#endif // HAVE_GETOPT_LONG
 }
 
 void apertium_tagger::getIterationsArgument() {
