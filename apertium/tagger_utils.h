@@ -91,9 +91,6 @@ void require_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, 
  * & prints a warning if debug */
 set<TTag> require_similar_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, bool debug);
 
-/** Just prints a warning if debug */
-void warn_absent_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, bool debug);
-
 wstring trim(wstring s);
 
 };

@@ -342,12 +342,14 @@ LSWPoST::tagger(FILE *Input, FILE *Output, const bool &First) {
   word_left->set_show_sf(show_sf);
   tags_left = word_left->get_tags();          // tags left
 
-  warn_absent_ambiguity_class(tdlsw, tags_left, *word_left, debug);
+  tags_left = require_similar_ambiguity_class(tdlsw, tags_left, *word_left, debug);
+  
   word_mid = morpho_stream.get_next_word(); // word mid
   word_mid->set_show_sf(show_sf);
   tags_mid = word_mid->get_tags();          // tags mid
 
-  warn_absent_ambiguity_class(tdlsw, tags_mid, *word_mid, debug);
+  tags_mid = require_similar_ambiguity_class(tdlsw, tags_mid, *word_mid, debug);
+
   if (morpho_stream.getEndOfFile()) {
     delete word_left;
     delete word_mid;
@@ -359,8 +361,9 @@ LSWPoST::tagger(FILE *Input, FILE *Output, const bool &First) {
   wstring micad;
 
   while (word_right) {
+
     tags_right = word_right->get_tags();
-    warn_absent_ambiguity_class(tdlsw, tags_right, *word_right, debug);
+    tags_right = require_similar_ambiguity_class(tdlsw, tags_right, *word_right, debug);
 
     double max = -1;
     TTag tag_max = *tags_mid.begin();

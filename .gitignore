@@ -28,7 +28,7 @@
 
 /*.pc
 
-# /apertium/wildcard
+# /apertium/
 /apertium/.libs
 
 /apertium/apertium
@@ -79,10 +79,3 @@
 /apertium/transfer.rnc
 
 /apertium/stamp-*
-
-# Tests
-/tests/**/Makefile.in
-/tests/**/Makefile
-/tests/**/.libs
-
-/tests/tagger/test-find-similar-ambiguity-class

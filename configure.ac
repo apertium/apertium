@@ -186,4 +186,4 @@ AC_REPLACE_FUNCS(getopt_long)
 AM_CONDITIONAL([WINDOWS], [test x$version_type = xwindows])
 AS_IF([test x$version_type = xwindows], [AC_DEFINE(HAVE_GETOPT_LONG,0)], [])
 
-AC_OUTPUT([Makefile apertium.pc apertium/Makefile tests/Makefile tests/tagger/Makefile])
+AC_OUTPUT([Makefile apertium.pc apertium/Makefile])

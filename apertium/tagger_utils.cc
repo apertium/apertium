@@ -20,8 +20,6 @@
 
 #include <stdio.h>
 #include <sstream>
-#include <algorithm>
-#include <climits>
 #include <apertium/string_utils.h>
 #ifdef _MSC_VER
 #define wcstok wcstok_s
@@ -169,16 +167,25 @@ tagger_utils::read_dictionary(FILE *fdic, TaggerData &td) {
 
 set<TTag>
 tagger_utils::find_similar_ambiguity_class(TaggerData &td, set<TTag> &c) {
-  set<TTag> &ret = td.getOpenClass();
+  int size_ret = -1;
+  set<TTag> ret = td.getOpenClass(); // return open-class as default, if no better is found.
+  bool skip_class;
   Collection &output = td.getOutput();
 
-  for (int k=0; k<output.size(); k++) {
-    const set<TTag> &ambg_class = output[k];
-    if (ambg_class.size() >= ret.size()) {
-      continue;
-    }
-    if (includes(ambg_class.begin(), ambg_class.end(), c.begin(), c.end())) {
-      ret = ambg_class;
+  for(int k=0; k<output.size(); k++) {
+    if ((((int)output[k].size())>((int)size_ret)) && (((int)output[k].size())<((int)c.size()))) {
+      skip_class = false;
+      // Test if output[k] is a subset of class
+      for(set<TTag>::const_iterator it=output[k].begin(); it!=output[k].end(); it++) {
+        if (c.find(*it)==c.end()) {
+           skip_class = true; //output[k] is not a subset of class
+           break;
+        }
+      }
+      if (!skip_class) {
+        size_ret = output[k].size();
+             ret = output[k];
+      }
     }
   }
   return ret;
@@ -201,31 +208,20 @@ tagger_utils::require_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWor
   }
 }
 
-static void _warn_absent_ambiguity_class(TaggerWord &word) {
-  wstring errors;
-  errors = L"A new ambiguity class was found. \n";
-  errors += L"Retraining the tagger is necessary so as to take it into account.\n";
-  errors += L"Word '" + word.get_superficial_form() + L"'.\n";
-  errors += L"New ambiguity class: " + word.get_string_tags() + L"\n";
-  wcerr << L"Error: " << errors;
-}
-
 set<TTag>
 tagger_utils::require_similar_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, bool debug) {
   if (td.getOutput().has_not(tags)) {
     if (debug) {
-      _warn_absent_ambiguity_class(word);
+      wstring errors;
+      errors = L"A new ambiguity class was found. \n";
+      errors += L"Retraining the tagger is necessary so as to take it into account.\n";
+      errors += L"Word '" + word.get_superficial_form() + L"'.\n";
+      errors += L"New ambiguity class: " + word.get_string_tags() + L"\n";
+      wcerr << L"Error: " << errors;
     }
     return find_similar_ambiguity_class(td, tags);
   }
   return tags;
-}
-
-void
-tagger_utils::warn_absent_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, bool debug) {
-  if (td.getOutput().has_not(tags) && debug) {
-    _warn_absent_ambiguity_class(word);
-  }
 }
 
 template <class T>
