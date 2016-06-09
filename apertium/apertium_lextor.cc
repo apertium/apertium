@@ -19,7 +19,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <getopt.h>
+#include "getopt_long.h"
 
 #include <lttoolbox/fst_processor.h>
 

@@ -43,7 +43,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
-#include <getopt.h>
+#include "getopt_long.h"
 #include <iomanip>
 #include <ios>
 #include <iostream>

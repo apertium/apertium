@@ -24,7 +24,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <apertium/string_utils.h>
-#include <getopt.h>
+#include "getopt_long.h"
 
 #ifdef _MSC_VER
 #include <io.h>

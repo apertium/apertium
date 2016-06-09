@@ -19,7 +19,7 @@
 #include <iostream>
 #include <libgen.h>
 #include <string>
-#include <getopt.h>
+#include "getopt_long.h"
 
 #include <lttoolbox/lt_locale.h>
 #include "apertium_config.h"

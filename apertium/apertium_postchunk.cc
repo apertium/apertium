@@ -18,7 +18,7 @@
 #include <lttoolbox/lt_locale.h>
 
 #include <cstdlib>
-#include <getopt.h>
+#include "getopt_long.h"
 #include <iostream>
 #include <libgen.h>
 #include <sys/types.h>
