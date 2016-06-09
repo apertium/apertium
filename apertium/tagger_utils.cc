@@ -201,20 +201,31 @@ tagger_utils::require_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWor
   }
 }
 
+static void _warn_absent_ambiguity_class(TaggerWord &word) {
+  wstring errors;
+  errors = L"A new ambiguity class was found. \n";
+  errors += L"Retraining the tagger is necessary so as to take it into account.\n";
+  errors += L"Word '" + word.get_superficial_form() + L"'.\n";
+  errors += L"New ambiguity class: " + word.get_string_tags() + L"\n";
+  wcerr << L"Error: " << errors;
+}
+
 set<TTag>
 tagger_utils::require_similar_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, bool debug) {
   if (td.getOutput().has_not(tags)) {
     if (debug) {
-      wstring errors;
-      errors = L"A new ambiguity class was found. \n";
-      errors += L"Retraining the tagger is necessary so as to take it into account.\n";
-      errors += L"Word '" + word.get_superficial_form() + L"'.\n";
-      errors += L"New ambiguity class: " + word.get_string_tags() + L"\n";
-      wcerr << L"Error: " << errors;
+      _warn_absent_ambiguity_class(word);
     }
     return find_similar_ambiguity_class(td, tags);
   }
   return tags;
+}
+
+void
+tagger_utils::warn_absent_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, bool debug) {
+  if (td.getOutput().has_not(tags) && debug) {
+    _warn_absent_ambiguity_class(word);
+  }
 }
 
 template <class T>
