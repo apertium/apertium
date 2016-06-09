@@ -290,9 +290,6 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
 
 void apertium_tagger::help() {
 
-#define NAME(NAME_) ", --" #NAME_
-#define ARGUMENT(ARGUMENT_) "=" #ARGUMENT_
-
   std::cerr <<
 "Usage: apertium-tagger [OPTION]... -g SERIALISED_BASIC_TAGGER                  \\\n"
 "                                      [INPUT                                   \\\n"
@@ -326,33 +323,33 @@ void apertium_tagger::help() {
 "\n";
 
   std::vector<std::pair<std::string, std::string> > options_description_;
-  options_description_.push_back(std::make_pair("-d" NAME(debug),            "with -g, print error messages about the input"));
-  options_description_.push_back(std::make_pair("-f" NAME(first),            "with -g, reorder each lexical unit's analyses so that the chosen one is first"));
-  options_description_.push_back(std::make_pair("-m" NAME(mark),             "with -g, mark disambiguated lexical units"));
-  options_description_.push_back(std::make_pair("-p" NAME(show-superficial), "with -g, output each lexical unit's surface form"));
-  options_description_.push_back(std::make_pair("-z" NAME(null-flush),       "with -g, flush the output after getting each null character"));
+  options_description_.push_back(std::make_pair("-d, --debug",            "with -g, print error messages about the input"));
+  options_description_.push_back(std::make_pair("-f, --first",            "with -g, reorder each lexical unit's analyses so that the chosen one is first"));
+  options_description_.push_back(std::make_pair("-m, --mark",             "with -g, mark disambiguated lexical units"));
+  options_description_.push_back(std::make_pair("-p, --show-superficial", "with -g, output each lexical unit's surface form"));
+  options_description_.push_back(std::make_pair("-z, --null-flush",       "with -g, flush the output after getting each null character"));
   align::align_(options_description_);
   std::cerr << '\n';
   options_description_.clear();
-  options_description_.push_back(std::make_pair("-u" NAME(unigram) ARGUMENT(MODEL), "use unigram algorithm MODEL from <http://coltekin.net/cagri/papers/trmorph-tools.pdf>"));
+  options_description_.push_back(std::make_pair("-u, --unigram=MODEL", "use unigram algorithm MODEL from <http://coltekin.net/cagri/papers/trmorph-tools.pdf>"));
   align::align_(options_description_);
   std::cerr << '\n';
   options_description_.clear();
-  options_description_.push_back(std::make_pair("-w" NAME(sliding-window), "use the Light Sliding Window algorithm"));
+  options_description_.push_back(std::make_pair("-w, --sliding-window", "use the Light Sliding Window algorithm"));
   align::align_(options_description_);
   std::cerr << '\n';
   options_description_.clear();
-  options_description_.push_back(std::make_pair("-g" NAME(tagger), "disambiguate the input"));
+  options_description_.push_back(std::make_pair("-g, --tagger", "disambiguate the input"));
   align::align_(options_description_);
   std::cerr << '\n';
   options_description_.clear();
-  options_description_.push_back(std::make_pair("-r" NAME(retrain) ARGUMENT(ITERATIONS), "with -u: exit;\notherwise: retrain the tagger with ITERATIONS unsupervised iterations"));
-  options_description_.push_back(std::make_pair("-s" NAME(supervised) ARGUMENT(ITERATIONS), "with -u: train the tagger with a hand-tagged corpus;\nwith -w: exit;\notherwise: initialise the tagger with a hand-tagged corpus and retrain it with ITERATIONS unsupervised iterations"));
-  options_description_.push_back(std::make_pair("-t" NAME(train) ARGUMENT(ITERATIONS), "with -u: exit;\notherwise: train the tagger with ITERATIONS unsupervised iterations"));
+  options_description_.push_back(std::make_pair("-r, --retrain=ITERATIONS", "with -u: exit;\notherwise: retrain the tagger with ITERATIONS unsupervised iterations"));
+  options_description_.push_back(std::make_pair("-s, --supervised=ITERATIONS", "with -u: train the tagger with a hand-tagged corpus;\nwith -w: exit;\notherwise: initialise the tagger with a hand-tagged corpus and retrain it with ITERATIONS unsupervised iterations"));
+  options_description_.push_back(std::make_pair("-t, --train=ITERATIONS", "with -u: exit;\notherwise: train the tagger with ITERATIONS unsupervised iterations"));
   align::align_(options_description_);
   std::cerr << '\n';
   options_description_.clear();
-  options_description_.push_back(std::make_pair("-h" NAME(help), "display this help and exit"));
+  options_description_.push_back(std::make_pair("-h, --help", "display this help and exit"));
   align::align_(options_description_);
 }
 
