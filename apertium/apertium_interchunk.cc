@@ -36,14 +36,14 @@ using namespace std;
 
 void message(char *progname)
 {
-  wcerr << "USAGE: " << basename(progname) << " [-tz] t2x preproc [input [output]]" << endl;
-  wcerr << "  t2x        t2x rules file" << endl;
-  wcerr << "  preproc    result of preprocess trules file" << endl;
-  wcerr << "  input      input file, standard input by default" << endl;
-  wcerr << "  output     output file, standard output by default" << endl;
-  wcerr << "OPTIONS" <<endl;
-  wcerr << "  -t         trace mode" << endl;
-  wcerr << "  -z         flush buffer on '\0'" << endl;
+  cerr << "USAGE: " << basename(progname) << " [-tz] t2x preproc [input [output]]" << endl;
+  cerr << "  t2x        t2x rules file" << endl;
+  cerr << "  preproc    result of preprocess trules file" << endl;
+  cerr << "  input      input file, standard input by default" << endl;
+  cerr << "  output     output file, standard output by default" << endl;
+  cerr << "OPTIONS" <<endl;
+  cerr << "  -t         trace mode" << endl;
+  cerr << "  -z         flush buffer on '\0'" << endl;
 
   exit(EXIT_FAILURE);
 }
@@ -53,8 +53,8 @@ void testfile(string const &filename)
   struct stat mybuf;
   if(stat(filename.c_str(), &mybuf) == -1)
   {
-    wcerr << "Error: can't stat file '";
-    wcerr << filename << "'." << endl;
+    cerr << "Error: can't stat file '";
+    cerr << filename << "'." << endl;
     exit(EXIT_FAILURE);
   }
 }
@@ -64,8 +64,8 @@ FILE * open_input(string const &filename)
   FILE *input = fopen(filename.c_str(), "r");
   if(!input)
   {
-    wcerr << "Error: can't open input file '";
-    wcerr << filename.c_str() << "'." << endl;
+    cerr << "Error: can't open input file '";
+    cerr << filename.c_str() << "'." << endl;
     exit(EXIT_FAILURE);
   }
   
@@ -77,8 +77,8 @@ FILE * open_output(string const &filename)
   FILE *output = fopen(filename.c_str(), "w");
   if(!output)
   {
-    wcerr << "Error: can't open output file '";
-    wcerr << filename.c_str() << "'." << endl;
+    cerr << "Error: can't open output file '";
+    cerr << filename.c_str() << "'." << endl;
     exit(EXIT_FAILURE);
   }
   return output;

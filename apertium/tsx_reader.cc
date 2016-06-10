@@ -518,7 +518,7 @@ TSXReader::read(string const &filename)
   reader = xmlReaderForFile(filename.c_str(), NULL, 0);
   if(reader == NULL)
   {
-    wcerr << "Error: Cannot open '" << filename << "'." << endl;
+    cerr << "Error: Cannot open '" << filename << "'." << endl;
     exit(EXIT_FAILURE);
   }
 

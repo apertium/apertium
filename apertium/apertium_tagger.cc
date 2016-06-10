@@ -275,14 +275,14 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
       std::abort();
     }
   } catch (const basic_ExceptionType &basic_ExceptionType_) {
-    std::wcerr << "apertium-tagger: " << basic_ExceptionType_.what() << std::endl;
+    std::cerr << "apertium-tagger: " << basic_ExceptionType_.what() << '\n';
     throw err_Exception();
   }
 }
 
 void apertium_tagger::help() {
 
-  std::wcerr <<
+  std::cerr <<
 "Usage: apertium-tagger [OPTION]... -g SERIALISED_TAGGER                        \\\n"
 "                                      [INPUT                                   \\\n"
 "                                      [OUTPUT]]\n"
@@ -321,25 +321,25 @@ void apertium_tagger::help() {
   options_description_.push_back(std::make_pair("-p, --show-superficial", "with -g, output each lexical unit's surface form"));
   options_description_.push_back(std::make_pair("-z, --null-flush",       "with -g, flush the output after getting each null character"));
   align::align_(options_description_);
-  std::wcerr << '\n';
+  std::cerr << '\n';
   options_description_.clear();
   options_description_.push_back(std::make_pair("-u, --unigram=MODEL", "use unigram algorithm MODEL from <http://coltekin.net/cagri/papers/trmorph-tools.pdf>"));
   align::align_(options_description_);
-  std::wcerr << '\n';
+  std::cerr << '\n';
   options_description_.clear();
   options_description_.push_back(std::make_pair("-w, --sliding-window", "use the Light Sliding Window algorithm"));
   align::align_(options_description_);
-  std::wcerr << '\n';
+  std::cerr << '\n';
   options_description_.clear();
   options_description_.push_back(std::make_pair("-g, --tagger", "disambiguate the input"));
   align::align_(options_description_);
-  std::wcerr << '\n';
+  std::cerr << '\n';
   options_description_.clear();
   options_description_.push_back(std::make_pair("-r, --retrain=ITERATIONS", "with -u: exit;\notherwise: retrain the tagger with ITERATIONS unsupervised iterations"));
   options_description_.push_back(std::make_pair("-s, --supervised=ITERATIONS", "with -u: train the tagger with a hand-tagged corpus;\nwith -w: exit;\notherwise: initialise the tagger with a hand-tagged corpus and retrain it with ITERATIONS unsupervised iterations"));
   options_description_.push_back(std::make_pair("-t, --train=ITERATIONS", "with -u: exit;\notherwise: train the tagger with ITERATIONS unsupervised iterations"));
   align::align_(options_description_);
-  std::wcerr << '\n';
+  std::cerr << '\n';
   options_description_.clear();
   options_description_.push_back(std::make_pair("-h, --help", "display this help and exit"));
   align::align_(options_description_);
@@ -679,8 +679,8 @@ void apertium_tagger::s_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
   FILE_Tagger_.read_dictionary(Dictionary);
   try_close_file("DICTIONARY", argv[optind], Dictionary);
 
-  FILE *TaggedCorpus = try_open_file("TAGGED_CORPUS", argv[optind + 4], "r");
-  FILE *UntaggedCorpus = try_open_file("UNTAGGED_CORPUS", argv[optind + 5], "r");
+  FILE *TaggedCorpus = try_open_file_utf8("TAGGED_CORPUS", argv[optind + 4], "r");
+  FILE *UntaggedCorpus = try_open_file_utf8("UNTAGGED_CORPUS", argv[optind + 5], "r");
   FILE_Tagger_.init_probabilities_from_tagged_text_(TaggedCorpus,
                                                     UntaggedCorpus);
   try_close_file("TAGGED_CORPUS", argv[optind + 4], TaggedCorpus);
@@ -729,7 +729,7 @@ int main(int argc, char **argv) {
   try {
     apertium_tagger(argc, argv);
   } catch (const err_Exception &err_Exception_) {
-    std::wcerr << "Try 'apertium-tagger --help' for more information." << std::endl;
+    std::cerr << "Try 'apertium-tagger --help' for more information.\n";
     return 1;
   } catch (...) {
     throw;

@@ -166,7 +166,7 @@ TRXReader::read(string const &filename)
   reader = xmlReaderForFile(filename.c_str(), NULL, 0);
   if(reader == NULL)
   {
-    wcerr << "Error: Cannot open '" << filename << "'." << endl;
+    cerr << "Error: Cannot open '" << filename << "'." << endl;
     exit(EXIT_FAILURE);
   }
 
@@ -355,8 +355,8 @@ TRXReader::write(string const &filename)
   FILE *out = fopen(filename.c_str(), "wb");
   if(!out)
   {
-    wcerr << "Error: cannot open '" << filename;
-    wcerr << "' for writing" << endl;
+    cerr << "Error: cannot open '" << filename;
+    cerr << "' for writing" << endl;
     exit(EXIT_FAILURE);
   }
   

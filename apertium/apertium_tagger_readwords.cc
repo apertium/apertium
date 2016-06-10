@@ -44,7 +44,7 @@ bool check_ambclasses;
 
 void check_file(FILE *f, const string& path) {
   if (!f) {
-    wcerr<<"Error: cannot open file '"<<path<<"'\n";
+    cerr<<"Error: cannot open file '"<<path<<"'\n";
     exit(EXIT_FAILURE);
   }
 }
@@ -64,9 +64,9 @@ void readwords (FILE *is, int corpus_length) {
       int k=tagger_data_hmm.getOutput()[word->get_tags()];
 
       if ((k>=tagger_data_hmm.getM())||(k<0)) {
-	wcerr<<"Error: Ambiguity class number out of range: "<<k<<"\n";
-	wcerr<<"Word: "<<UtfConverter::toUtf8(word->get_superficial_form())<<"\n";
-	wcerr<<"Ambiguity class: "<<UtfConverter::toUtf8(word->get_string_tags())<<"\n";
+	cerr<<"Error: Ambiguity class number out of range: "<<k<<"\n";
+	cerr<<"Word: "<<UtfConverter::toUtf8(word->get_superficial_form())<<"\n";
+	cerr<<"Ambiguity class: "<<UtfConverter::toUtf8(word->get_string_tags())<<"\n";
       }
     }
 
@@ -77,15 +77,15 @@ void readwords (FILE *is, int corpus_length) {
 
     word=lexmorfo.get_next_word();
   }
-  wcerr<<nwords<<" were readed\n";
+  cerr<<nwords<<" were readed\n";
 }
 
 
 void help(char *name) {
-  wcerr<<"USAGE:\n";
-  wcerr<<name<<" {--tsxfile file.tsx | --probfile file.prob} [--clength <corpus_length>] < file.crp \n\n";
+  cerr<<"USAGE:\n";
+  cerr<<name<<" {--tsxfile file.tsx | --probfile file.prob} [--clength <corpus_length>] < file.crp \n\n";
 
-  wcerr<<"ARGUMENTS: \n"
+  cerr<<"ARGUMENTS: \n"
       <<"   --tsxfile|-x: Specify a tagger specification file\n"
       <<"   --probfile|-p: Specify a tagger parameter file\n"
       <<"   --clength|-l: Specify the length of the corpus to process\n";
@@ -100,12 +100,12 @@ int main(int argc, char* argv[]) {
   int c;
   int option_index=0;
 
-  wcerr<<"LOCALE: "<<setlocale(LC_ALL,"")<<"\n";
+  cerr<<"LOCALE: "<<setlocale(LC_ALL,"")<<"\n";
 
-  wcerr<<"Command line: ";
+  cerr<<"Command line: ";
   for(int i=0; i<argc; i++)
-    wcerr<<argv[i]<<" ";
-  wcerr<<"\n";
+    cerr<<argv[i]<<" ";
+  cerr<<"\n";
 
   while (true) {
     static struct option long_options[] =
@@ -126,7 +126,7 @@ int main(int argc, char* argv[]) {
     case 'l':
       corpus_length=atoi(optarg);
       if(corpus_length<=0) {
-	wcerr<<"Error: corpus length provided with --clength must be a positive integer\n";
+	cerr<<"Error: corpus length provided with --clength must be a positive integer\n";
 	help(argv[0]);
 	exit(EXIT_FAILURE);
       }
@@ -142,8 +142,8 @@ int main(int argc, char* argv[]) {
       exit(EXIT_SUCCESS);
       break;
     case 'v':
-      wcerr<<"apertium-tagger-readwords\n";
-      wcerr<<"LICENSE:\n\n"
+      cerr<<"apertium-tagger-readwords\n";
+      cerr<<"LICENSE:\n\n"
 	  <<"   Copyright (C) 2006 Felipe Sánchez Martínez\n\n"
 	  <<"   This program is free software; you can redistribute it and/or\n"
 	  <<"   modify it under the terms of the GNU General Public License as\n"
@@ -166,33 +166,33 @@ int main(int argc, char* argv[]) {
   }
 
   if((tsxfile=="") && (probfile=="")) {
-    wcerr<<"Error: You have provided neither a tagger specification file (.tsx) nor a tagger probability file (.prob). Use --tsxfile or --probfile to provide one of them\n";
+    cerr<<"Error: You have provided neither a tagger specification file (.tsx) nor a tagger probability file (.prob). Use --tsxfile or --probfile to provide one of them\n";
     help(argv[0]);
     exit(EXIT_FAILURE);
   }
 
   if((tsxfile!="") && (probfile!="")) {
-    wcerr<<"Error: You provided a tagger specification file and a tagger probability file. Only one of them can be provided, not both\n";
+    cerr<<"Error: You provided a tagger specification file and a tagger probability file. Only one of them can be provided, not both\n";
     help(argv[0]);
     exit(EXIT_FAILURE);
   }
 
   if (tsxfile!="") {
-    wcerr<<"Reading tagger specification from file '"<<tsxfile<<"' ..."<<flush;
+    cerr<<"Reading tagger specification from file '"<<tsxfile<<"' ..."<<flush;
     TSXReader treader;
     treader.read(tsxfile);
     tagger_data_hmm=treader.getTaggerData();
-    wcerr<<"done.\n";
+    cerr<<"done.\n";
     check_ambclasses=false;
   }
 
   if (probfile!="") {
-    wcerr<<"Reading tagger parameters from file '"<<probfile<<"' ..."<<flush;
+    cerr<<"Reading tagger parameters from file '"<<probfile<<"' ..."<<flush;
     FILE* fin=NULL;
     fin=fopen(probfile.c_str(), "r");
     check_file(fin, probfile);
     tagger_data_hmm.read(fin);
-    wcerr<<"done.\n";
+    cerr<<"done.\n";
     fclose(fin);
     check_ambclasses=true;
   }

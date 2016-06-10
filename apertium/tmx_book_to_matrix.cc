@@ -185,7 +185,7 @@ void sentenceListsToAlignMatrixIdentity( const SentenceList& huSentenceList, con
 
     if (!rarelyLogging || (huPos%100==0))
     {
-     // std::wcerr << huPos << " ";
+     // std::cerr << huPos << " ";
     }
   }
 }
@@ -255,7 +255,7 @@ void sentenceListsToAlignMatrixTranslation(
 
     if (!rarelyLogging || (huPos%100==0))
     {
-     // std::wcerr << huPos << " (" << numberOfEvaluatedItems << ") ";
+     // std::cerr << huPos << " (" << numberOfEvaluatedItems << ") ";
     }
   }
 }
@@ -301,7 +301,7 @@ void sentenceListsToAlignMatrixIBMModelOne(
 
     if (!rarelyLogging || (huPos%100==0))
     {
-     // std::wcerr << huPos << " ";
+     // std::cerr << huPos << " ";
     }
   }
 }

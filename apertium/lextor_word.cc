@@ -83,7 +83,7 @@ wstring
 LexTorWord::translate(FSTProcessor& bildic, int lexchoice) {
   wstring t;
 
-  //wcerr<<"In LexTorWord::translate, called with: "<<word<<", lexchoice: "<<lexchoice<<"\n";
+  //cerr<<"In LexTorWord::translate, called with: "<<word<<", lexchoice: "<<lexchoice<<"\n";
 
   if (lexchoice<0)
     lexchoice=default_choice;
@@ -98,7 +98,7 @@ LexTorWord::translate(FSTProcessor& bildic, int lexchoice) {
 
   t=bildic.biltrans(lexical_choices[lexchoice], false);
 
-  //wcerr<<"Translation: "<<t<<"\n";
+  //cerr<<"Translation: "<<t<<"\n";
 
   return t;
 }
@@ -170,11 +170,11 @@ LexTorWord::next_word(wistream& is, FSTProcessor *fstp) {
     w.extract_lexical_choices(fstp);
 
   /*
-    wcerr<<"word: "<<w.word<<"\n";
+    cerr<<"word: "<<w.word<<"\n";
     for (unsigned int i=0; i<w.lexical_choices.size(); i++) {
-    wcerr<<"Lex choice at "<<i<<": "<<w.lexical_choices[i]<<"\n";
+    cerr<<"Lex choice at "<<i<<": "<<w.lexical_choices[i]<<"\n";
     }
-    wcerr<<"Default: "<<w.default_choice<<"\n\n";
+    cerr<<"Default: "<<w.default_choice<<"\n\n";
   */
 
   return new LexTorWord(w);

@@ -36,7 +36,6 @@
 #include &lt;unistd.h&gt;
 #include &lt;lttoolbox/lt_locale.h&gt;
 #include &lt;lttoolbox/ltstr.h&gt;
-#include &lt;apertium/string_utils.h&gt;
 #include &lt;wchar.h&gt;
 #ifdef _WIN32
 #include &lt;io.h&gt;
@@ -124,7 +123,7 @@ wstring convertir(char const *multibyte, int const length)
 
   if(!temp)
   {
-    wcerr &lt;&lt; "ERROR: File '" &lt;&lt; filename &lt;&lt;"' not found." &lt;&lt; endl;
+    cerr &lt;&lt; "ERROR: File '" &lt;&lt; filename &lt;&lt;"' not found." &lt;&lt; endl;
     exit(EXIT_FAILURE);
   }
   while(static_cast&lt;int&gt;(mychar = fgetwc_unlocked(temp)) != EOF)
@@ -187,8 +186,8 @@ wstring convertir(char const *multibyte, int const length)
 
 void usage(string const &amp;progname)
 {
-  wcerr &lt;&lt; "USAGE: " &lt;&lt; progname &lt;&lt; " [input_file [output_file]" &lt;&lt; ']' &lt;&lt; endl;
-  wcerr &lt;&lt; "<xsl:value-of select="./@name"/> format processor " &lt;&lt; endl;
+  cerr &lt;&lt; "USAGE: " &lt;&lt; progname &lt;&lt; " [input_file [output_file]" &lt;&lt; ']' &lt;&lt; endl;
+  cerr &lt;&lt; "<xsl:value-of select="./@name"/> format processor " &lt;&lt; endl;
   exit(EXIT_SUCCESS);
 }
 

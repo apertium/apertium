@@ -140,7 +140,7 @@ Postchunk::read(string const &transferfile, string const &datafile)
   FILE *in = fopen(datafile.c_str(), "rb");
   if(!in)
   {
-    wcerr << "Error: Could not open file '" << datafile << "'." << endl;
+    cerr << "Error: Could not open file '" << datafile << "'." << endl;
     exit(EXIT_FAILURE);
   }
   readData(in);
@@ -155,7 +155,7 @@ Postchunk::readPostchunk(string const &in)
   
   if(doc == NULL)
   {
-    wcerr << "Error: Could not parse file '" << in << "'." << endl;
+    cerr << "Error: Could not parse file '" << in << "'." << endl;
     exit(EXIT_FAILURE);
   }
   
@@ -445,7 +445,7 @@ Postchunk::evalString(xmlNode *element)
   
   else
   {
-    wcerr << "Error: unexpected rvalue expression '" << element->name << "'" << endl;
+    cerr << "Error: unexpected rvalue expression '" << element->name << "'" << endl;
     exit(EXIT_FAILURE);
   }
 
@@ -1627,7 +1627,7 @@ Postchunk::postchunk(FILE *in, FILE *out)
 	break;
 
       default:
-	wcerr << "Error: Unknown input token." << endl;
+	cerr << "Error: Unknown input token." << endl;
 	return;
     }
   }

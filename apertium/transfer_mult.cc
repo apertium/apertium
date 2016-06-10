@@ -135,7 +135,7 @@ TransferMult::readBil(string const &fstfile)
   FILE *in = fopen(fstfile.c_str(), "r");
   if(!in)
   {
-    wcerr << "Error: Could not open file '" << fstfile << "'." << endl;
+    cerr << "Error: Could not open file '" << fstfile << "'." << endl;
     exit(EXIT_FAILURE);
   }
   fstp.load(in);
@@ -150,7 +150,7 @@ TransferMult::read(string const &datafile, string const &fstfile)
   FILE *in = fopen(datafile.c_str(), "r");
   if(!in)
   {
-    wcerr << "Error: Could not open file '" << datafile << "'." << endl;
+    cerr << "Error: Could not open file '" << datafile << "'." << endl;
     exit(EXIT_FAILURE);
   }
   readData(in);

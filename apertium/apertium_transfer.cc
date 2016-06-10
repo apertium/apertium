@@ -35,25 +35,25 @@ using namespace std;
 
 void message(char *progname)
 {
-  wcerr << "USAGE: " << basename(progname) << " trules preproc biltrans [input [output]]" << endl;
-  wcerr << "       " << basename(progname) << " -b trules preproc [input [output]]" << endl;
-  wcerr << "       " << basename(progname) << " -n trules preproc [input [output]]" << endl;
-  wcerr << "       " << basename(progname) << " -x extended trules preproc biltrans [input [output]]" << endl;
-  wcerr << "       " << basename(progname) << " -c trules preproc biltrans [input [output]]" << endl;
-  wcerr << "       " << basename(progname) << " -t trules preproc biltrans [input [output]]" << endl;
-  wcerr << "  trules     transfer rules file" << endl;
-  wcerr << "  preproc    result of preprocess trules file" << endl;
-  wcerr << "  biltrans   bilingual letter transducer file" << endl;
-  wcerr << "  input      input file, standard input by default" << endl;
-  wcerr << "  output     output file, standard output by default" << endl;
-  wcerr << "  -b         input from lexical transfer" << endl;
-  wcerr << "  -n         don't use bilingual dictionary" << endl;
-  wcerr << "  -x bindix  extended mode with user dictionary" << endl;
-  wcerr << "  -c         case-sensitiveness while accessing bilingual dictionary" << endl;
-  wcerr << "  -t         trace (show rule numbers and patterns matched)" << endl;
-  wcerr << "  -T         trace, for apertium-transfer-tools (also sets -t)" << endl;
-  wcerr << "  -z         null-flushing output on '\0'" << endl;
-  wcerr << "  -h         shows this message" << endl;
+  cerr << "USAGE: " << basename(progname) << " trules preproc biltrans [input [output]]" << endl;
+  cerr << "       " << basename(progname) << " -b trules preproc [input [output]]" << endl;
+  cerr << "       " << basename(progname) << " -n trules preproc [input [output]]" << endl;
+  cerr << "       " << basename(progname) << " -x extended trules preproc biltrans [input [output]]" << endl;
+  cerr << "       " << basename(progname) << " -c trules preproc biltrans [input [output]]" << endl;
+  cerr << "       " << basename(progname) << " -t trules preproc biltrans [input [output]]" << endl;
+  cerr << "  trules     transfer rules file" << endl;
+  cerr << "  preproc    result of preprocess trules file" << endl;
+  cerr << "  biltrans   bilingual letter transducer file" << endl;
+  cerr << "  input      input file, standard input by default" << endl;
+  cerr << "  output     output file, standard output by default" << endl;
+  cerr << "  -b         input from lexical transfer" << endl;
+  cerr << "  -n         don't use bilingual dictionary" << endl;
+  cerr << "  -x bindix  extended mode with user dictionary" << endl;
+  cerr << "  -c         case-sensitiveness while accessing bilingual dictionary" << endl;
+  cerr << "  -t         trace (show rule numbers and patterns matched)" << endl;
+  cerr << "  -T         trace, for apertium-transfer-tools (also sets -t)" << endl;
+  cerr << "  -z         null-flushing output on '\0'" << endl;
+  cerr << "  -h         shows this message" << endl;
   
 
   exit(EXIT_FAILURE);
@@ -64,8 +64,8 @@ void testfile(string const &filename)
   struct stat mybuf;
   if(stat(filename.c_str(), &mybuf) == -1)
   {
-    wcerr << "Error: can't stat file '";
-    wcerr << filename << "'." << endl;
+    cerr << "Error: can't stat file '";
+    cerr << filename << "'." << endl;
     exit(EXIT_FAILURE);
   }
 }
@@ -75,8 +75,8 @@ FILE * open_input(string const &filename)
   FILE *input = fopen(filename.c_str(), "r");
   if(!input)
   {
-    wcerr << "Error: can't open input file '";
-    wcerr << filename.c_str() << "'." << endl;
+    cerr << "Error: can't open input file '";
+    cerr << filename.c_str() << "'." << endl;
     exit(EXIT_FAILURE);
   }
   
@@ -88,8 +88,8 @@ FILE * open_output(string const &filename)
   FILE *output = fopen(filename.c_str(), "w");
   if(!output)
   {
-    wcerr << "Error: can't open output file '";
-    wcerr << filename.c_str() << "'." << endl;
+    cerr << "Error: can't open output file '";
+    cerr << filename.c_str() << "'." << endl;
     exit(EXIT_FAILURE);
   }
   return output;
