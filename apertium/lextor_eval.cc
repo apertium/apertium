@@ -124,7 +124,7 @@ LexTorEval::evalword(LexTorWord& ltword, int winner, LexTorData* lextor_data) {
       }
     } else {
       //if (LexTor::debug)
-      //  cerr<<"EVAL: reduced_w="<<reduced_w<<" reduced_wref="<<reduced_wref<<"\n";
+      //  wcerr<<"EVAL: reduced_w="<<reduced_w<<" reduced_wref="<<reduced_wref<<"\n";
 
       if(reduced_wref!=reduced_w) {
 	wcerr<<L"Error: Input and reference corpora are not aligned\n";
@@ -137,7 +137,7 @@ LexTorEval::evalword(LexTorWord& ltword, int winner, LexTorData* lextor_data) {
     //reduced_wref=wref;
     nignored+=1.0;
     if (LexTor::debug) {
-      cerr<<L"========= IGNORED\n";
+      wcerr<<L"========= IGNORED\n";
     }
 
   }

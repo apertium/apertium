@@ -43,7 +43,7 @@ FILE * open_file(char const *filename, char const *mode)
   struct stat var;  
   if(stat(filename, &var))
   {
-    cerr << "Can't stat '" << filename << "'" << endl;
+    wcerr << "Can't stat '" << filename << "'" << endl;
     exit(EXIT_FAILURE);
   }
  
@@ -51,7 +51,7 @@ FILE * open_file(char const *filename, char const *mode)
   
   if(!retval)
   {
-    cerr << "Can't open '" << filename << "'" << endl;
+    wcerr << "Can't open '" << filename << "'" << endl;
     exit(EXIT_FAILURE);
   }
 #ifdef _MSC_VER
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
   
   if(argc < 2 || argc > 4)
   {
-    cerr << "USAGE: " << basename(argv[0]) << " tsx_file [input [output]" << endl; 
+    wcerr << "USAGE: " << basename(argv[0]) << " tsx_file [input [output]" << endl; 
     exit(EXIT_FAILURE);
   }
 

@@ -42,12 +42,12 @@ using namespace std;
 
 
 void help(char *name) {
-  cerr<<"USAGE:\n";
-  cerr<<name<<" --trainwrd stopwords words n left right corpus model [--weightexp w]\nOR\n";
-  cerr<<name<<" --trainlch stopwords lexchoices n left right corpus wordmodel dic bildic model [--weightexp w]\nOR\n";
-  cerr<<name<<" --lextor model dic left right [--debug] [--weightexp w]\n\n";
-  //cerr<<name<<" --lextortl stopwords words tlmodel dic bildic left right [--debug] [--weightexp w]\n\n"; 
-  cerr<<"ARGUMENTS: \n"
+  wcerr<<"USAGE:\n";
+  wcerr<<name<<" --trainwrd stopwords words n left right corpus model [--weightexp w]\nOR\n";
+  wcerr<<name<<" --trainlch stopwords lexchoices n left right corpus wordmodel dic bildic model [--weightexp w]\nOR\n";
+  wcerr<<name<<" --lextor model dic left right [--debug] [--weightexp w]\n\n";
+  //wcerr<<name<<" --lextortl stopwords words tlmodel dic bildic left right [--debug] [--weightexp w]\n\n"; 
+  wcerr<<"ARGUMENTS: \n"
       <<"   --trainwrd|-t: Train word co-occurrences model.\n"
       <<"   Required parameters:\n"
       <<"      stopwords: file containing a list of stop words. Stop words are ignored\n"
@@ -94,7 +94,7 @@ void help(char *name) {
       <<"   --debug|-d: Show debug information while operating\n"
       <<"   --help|-h: Show this help\n"
       <<"   --version|-v: Show version information\n\n";
-  cerr<<"Reads from standard input and writes to standard output\n";
+  wcerr<<"Reads from standard input and writes to standard output\n";
 }
 
 int main(int argc, char* argv[]) {
@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
 
   LexTor::debug=false;
 
-  //cerr<<"LOCALE: "<<setlocale(LC_ALL,"")<<"\n";
+  //wcerr<<"LOCALE: "<<setlocale(LC_ALL,"")<<"\n";
 
   while (true) {
     static struct option long_options[] =
@@ -364,7 +364,7 @@ int main(int argc, char* argv[]) {
       exit(EXIT_FAILURE);
     }
     if (bildic_file=="") {
-      cerr<<"Error: No bilingual dictionary was provided\n";
+      wcerr<<"Error: No bilingual dictionary was provided\n";
       help(argv[0]);
       exit(EXIT_FAILURE);
     }

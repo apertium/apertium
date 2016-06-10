@@ -14,6 +14,7 @@
 #include <apertium/tmx_words.h>
 #include <apertium/tmx_dictionary.h>
 #include <apertium/tmx_dic_tree.h>
+#include <apertium/string_utils.h>
 
 #include <algorithm>
 #include <fstream>
@@ -33,7 +34,7 @@ void buildDumbDictionary( const DictionaryItems& dictionary, DumbDictionary& dum
     if (hu.size()==1)
     {
       dumbDictionary[ hu[0] ] = en ;
-      // std::cerr << hu[0] << "\t" << en << std::endl;
+      // std::wcerr << hu[0] << "\t" << en << std::endl;
     }
   }
 }
@@ -97,7 +98,7 @@ void buildDumbDictionary( TMXAligner::DumbDictionary& dumbDictionary,
   {
     std::ifstream is( dictionaryFilename.c_str() );
     dictionary.read( is );
-    std::cerr << dictionary.size() << " dictionary items read." << std::endl;
+    std::wcerr << dictionary.size() << " dictionary items read." << std::endl;
   }
 
   if (!enSentenceList.empty())
@@ -266,7 +267,7 @@ void naiveTranslate(
     {
       subsetLookup.add( dictionary[i].second, i+1 ); // !!! i+1
     }
-    std::cerr << "Index tree built." << std::endl;
+    std::wcerr << "Index tree built." << std::endl;
   }
 
   for ( size_t i=0; i<sentenceList.size(); ++i )
@@ -291,7 +292,7 @@ void naiveTranslate(
     translatedSentenceList.push_back(sentence);
   }
 
-  std::cerr << "Analysis ready." << std::endl;
+  std::wcerr << "Analysis ready." << std::endl;
 }
 
 
@@ -344,13 +345,13 @@ void normalizeTextsForIdentity( const DictionaryItems& dictionary,
   enFreq.build(enSentenceListPretty);
   buildDumbDictionaryUsingFrequencies( dictionary, enFreq, dumbDictionary );
 
-//  std::cerr << "Simplified dictionary ready." << std::endl;
+//  std::wcerr << "Simplified dictionary ready." << std::endl;
 
   SentenceList huSentenceList;
 
   trivialTranslateSentenceList( dumbDictionary, huSentenceListPretty, huSentenceListGarbled );
 
-//  std::cerr << "Rough translation ready." << std::endl;
+//  std::wcerr << "Rough translation ready." << std::endl;
 
   sortNormalizeSentences(huSentenceListGarbled);
 

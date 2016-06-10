@@ -280,7 +280,7 @@ void postprocessTrailStart( Trail& bestTrail,
     {
       if (global_postprocessLogging)
       {
-        std::cerr << "Thrown away at position " << pos
+        std::wcerr << "Thrown away at position " << pos
           << ", avarage " << avg << ", threshold " << qualityThreshold << std::endl;
       }
 
@@ -319,7 +319,7 @@ void postprocessTrailEnd( Trail& bestTrail,
     {
       if (global_postprocessLogging)
       {
-        std::cerr << "Thrown away at position " << pos
+        std::wcerr << "Thrown away at position " << pos
           << ", avarage " << avg << ", threshold " << qualityThreshold << std::endl;
       }
 
@@ -365,7 +365,7 @@ void postprocessTrail( Trail& bestTrail, const TrailScoresInterval& trailScoresI
     {
       if (global_postprocessLogging)
       {
-        std::cerr << "Thrown away at position " << pos
+        std::wcerr << "Thrown away at position " << pos
           << ", avarage " << avg << ", threshold " << qualityThreshold << std::endl;
       }
 
@@ -404,7 +404,7 @@ void postprocessTrailByTopology( Trail& bestTrail, double qualityThreshold )
     {
       if (global_postprocessLogging)
       {
-        std::cerr << "Thrown away at position " << pos
+        std::wcerr << "Thrown away at position " << pos
           << ", avarage " << avg << std::endl;
       }
 

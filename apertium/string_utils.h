@@ -57,4 +57,6 @@ class StringUtils {
   static wstring toupper(wstring const &s);
 };
 
+std::wostream & operator<< (std::wostream & ostr, std::string const & str);
+
 #endif

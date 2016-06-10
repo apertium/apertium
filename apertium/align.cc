@@ -14,8 +14,8 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include "align.h"
-
 #include "linebreak.h"
+#include <apertium/string_utils.h>
 
 #include <iomanip>
 #include <ios>
@@ -33,10 +33,10 @@ void align::align_(
   for (std::vector<std::pair<std::string, std::string> >::const_iterator i_ =
            string_.begin();
        i_ != string_.end(); ++i_) {
-    std::cerr << "  " << std::setw(width_) << std::left << i_->first
-              << std::setw(0)
-              << linebreak::linebreak_(i_->second, width_ + 2, width_ + 4)
-              << '\n';
+    std::wcerr << "  " << std::setw(width_) << std::left << i_->first
+               << std::setw(0)
+               << linebreak::linebreak_(i_->second, width_ + 2, width_ + 4)
+               << '\n';
   }
 }
 

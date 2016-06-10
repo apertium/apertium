@@ -62,7 +62,7 @@ ApertiumRE::compile(string const &str)
   if(re == NULL)
   {
     wcerr << L"Error: pcre_compile ";
-    cerr << error << endl;
+    wcerr << error << endl;
     exit(EXIT_FAILURE);
   }
   
@@ -74,7 +74,7 @@ ApertiumRE::write(FILE *output) const
 {
   if(empty)
   {
-    cerr << L"Error, cannot write empty regexp" << endl;
+    wcerr << L"Error, cannot write empty regexp" << endl;
     exit(EXIT_FAILURE);
   }
   

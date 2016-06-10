@@ -142,7 +142,7 @@ Transfer::readBil(string const &fstfile)
   FILE *in = fopen(fstfile.c_str(), "rb");
   if(!in)
   {
-    cerr << "Error: Could not open file '" << fstfile << "'." << endl;
+    wcerr << "Error: Could not open file '" << fstfile << "'." << endl;
     exit(EXIT_FAILURE);
   }
   fstp.load(in);
@@ -156,7 +156,7 @@ Transfer::setExtendedDictionary(string const &fstfile)
   FILE *in = fopen(fstfile.c_str(), "rb");
   if(!in)
   {
-    cerr << "Error: Could not open extended dictionary file '" << fstfile << "'." << endl;
+    wcerr << "Error: Could not open extended dictionary file '" << fstfile << "'." << endl;
     exit(EXIT_FAILURE);
   }
   extended.load(in);
@@ -175,7 +175,7 @@ Transfer::read(string const &transferfile, string const &datafile,
   FILE *in = fopen(datafile.c_str(), "rb");
   if(!in)
   {
-    cerr << "Error: Could not open file '" << datafile << "'." << endl;
+    wcerr << "Error: Could not open file '" << datafile << "'." << endl;
     exit(EXIT_FAILURE);
   }
   readData(in);
@@ -194,7 +194,7 @@ Transfer::readTransfer(string const &in)
 
   if(doc == NULL)
   {
-    cerr << "Error: Could not parse file '" << in << "'." << endl;
+    wcerr << "Error: Could not parse file '" << in << "'." << endl;
     exit(EXIT_FAILURE);
   }
 
@@ -583,7 +583,7 @@ Transfer::evalString(xmlNode *element)
   }
   else
   {
-    cerr << "Error: unexpected rvalue expression '" << element->name << "'" << endl;
+    wcerr << "Error: unexpected rvalue expression '" << element->name << "'" << endl;
     exit(EXIT_FAILURE);
   }
 
@@ -710,7 +710,7 @@ Transfer::processChunk(xmlNode *localroot)
     }
     else
     {
-      cerr << "Error: you must specify either 'name' or 'namefrom' for the 'chunk' element" << endl;
+      wcerr << "Error: you must specify either 'name' or 'namefrom' for the 'chunk' element" << endl;
       exit(EXIT_FAILURE);
     }
   }
@@ -726,7 +726,7 @@ Transfer::processChunk(xmlNode *localroot)
     }
     else
     {
-      cerr << "Error: you must specify either 'name' or 'namefrom' for the 'chunk' element" << endl;
+      wcerr << "Error: you must specify either 'name' or 'namefrom' for the 'chunk' element" << endl;
       exit(EXIT_FAILURE);
     }
   }
@@ -1898,10 +1898,10 @@ Transfer::transfer(FILE *in, FILE *out)
   {
     if(trace_att)
     {
-      cerr << "Loop start " << endl;
-      cerr << "ms.size: " << ms.size() << endl;
+      wcerr << "Loop start " << endl;
+      wcerr << "ms.size: " << ms.size() << endl;
 
-      cerr << "tmpword.size(): " << tmpword.size() << endl;
+      wcerr << "tmpword.size(): " << tmpword.size() << endl;
       for (unsigned int ind = 0; ind < tmpword.size(); ind++)
       {
         if(ind != 0)
@@ -1912,7 +1912,7 @@ Transfer::transfer(FILE *in, FILE *out)
       }
       wcerr << endl;
 
-      cerr << "tmpblank.size(): " << tmpblank.size() << endl;
+      wcerr << "tmpblank.size(): " << tmpblank.size() << endl;
       for (unsigned int ind = 0; ind < tmpblank.size(); ind++)
       {
         wcerr << L"'";
@@ -1921,8 +1921,8 @@ Transfer::transfer(FILE *in, FILE *out)
       }
       wcerr << endl;
 
-      cerr << "last: " << last << endl;
-      cerr << "prev_last: " << prev_last << endl << endl;
+      wcerr << "last: " << last << endl;
+      wcerr << "prev_last: " << prev_last << endl << endl;
     }
 
     if(ms.size() == 0)
@@ -1933,7 +1933,7 @@ Transfer::transfer(FILE *in, FILE *out)
 
         if(trace_att)
         {
-          cerr << "num_words_to_consume: " << num_words_to_consume << endl;
+          wcerr << "num_words_to_consume: " << num_words_to_consume << endl;
         }
 
         //Consume all the words from the input which matched the rule.
@@ -1980,7 +1980,7 @@ Transfer::transfer(FILE *in, FILE *out)
         {
           if(trace_att)
           {
-            cerr << "printing tmpword[0]" <<endl;
+            wcerr << "printing tmpword[0]" <<endl;
           }
 
           pair<wstring, int> tr;
@@ -2087,7 +2087,7 @@ Transfer::transfer(FILE *in, FILE *out)
 	{
           if(trace_att)
           {
-            cerr << "printing tmpblank[0]" <<endl;
+            wcerr << "printing tmpblank[0]" <<endl;
           }
           fputws_unlocked(tmpblank[0]->c_str(), output);
           tmpblank.clear();
@@ -2147,7 +2147,7 @@ Transfer::transfer(FILE *in, FILE *out)
 	break;
 
       default:
-	cerr << "Error: Unknown input token." << endl;
+	wcerr << "Error: Unknown input token." << endl;
 	return;
     }
   }

@@ -10,6 +10,7 @@
 *                                                                        *
 *************************************************************************/
 #include <apertium/tmx_aligner_tool.h>
+#include <apertium/string_utils.h>
 
 namespace TMXAligner
 {
@@ -27,7 +28,7 @@ void readTrailOrBisentenceList( std::istream& is, Trail& trail )
     is >> huPos;
     if (is.peek()!=' ')
     {
-      std::cerr << "no space in line" << std::endl;
+      std::wcerr << "no space in line" << std::endl;
       throw "data error";
     }
     is.ignore();
@@ -35,7 +36,7 @@ void readTrailOrBisentenceList( std::istream& is, Trail& trail )
     is >> enPos;
     if (is.peek()!='\n')
     {
-      std::cerr << "too much data in line" << std::endl;
+      std::wcerr << "too much data in line" << std::endl;
       throw "data error";
     }
     is.ignore();
@@ -98,7 +99,7 @@ void collectBisentences( const Trail& bestTrail, const AlignMatrix& dynMatrix,
     enBisentences.push_back( enSentenceListPretty[ bisentenceList[i].second ] );
   }
 
-//  std::cerr << huBisentences.size() << " bisentences collected." << std::endl;
+//  std::wcerr << huBisentences.size() << " bisentences collected." << std::endl;
 
 }
 
@@ -151,11 +152,11 @@ double alignerToolWithObjects( const DictionaryItems& dictionary,
   setSentenceValues( enSentenceList,       enLength, alignParameters.utfCharCountingMode );
 
   bool quasiglobal_stopwordRemoval = false;
-//  std::cerr << "quasiglobal_stopwordRemoval is set to " << quasiglobal_stopwordRemoval << std::endl;
+//  std::wcerr << "quasiglobal_stopwordRemoval is set to " << quasiglobal_stopwordRemoval << std::endl;
   if (quasiglobal_stopwordRemoval)
   {
     removeStopwords( huSentenceListPretty, enSentenceList );
-//    std::cerr << "Stopwords removed." << std::endl;
+//    std::wcerr << "Stopwords removed." << std::endl;
   }
 
   SentenceList huSentenceListGarbled, enSentenceListGarbled;
@@ -185,9 +186,9 @@ double alignerToolWithObjects( const DictionaryItems& dictionary,
 
   if (thickness>maximalThickness)
   {
-//    std::cerr << "WARNING: Downgrading planned thickness " << thickness << " to " << maximalThickness ;
-//    std::cerr << " to obey memory constraint of " << quasiglobal_maximalSizeInMegabytes << " megabytes " << std::endl;
-//    std::cerr << "You should recompile if you have much more physical RAM than that. People of the near-future, forgive me for the inconvenience." << std::endl;
+//    std::wcerr << "WARNING: Downgrading planned thickness " << thickness << " to " << maximalThickness ;
+//    std::wcerr << " to obey memory constraint of " << quasiglobal_maximalSizeInMegabytes << " megabytes " << std::endl;
+//    std::wcerr << "You should recompile if you have much more physical RAM than that. People of the near-future, forgive me for the inconvenience." << std::endl;
 
     thickness = maximalThickness;
   }
@@ -195,20 +196,20 @@ double alignerToolWithObjects( const DictionaryItems& dictionary,
   AlignMatrix similarityMatrix( huBookSize, enBookSize, thickness, outsideOfRadiusValue );
 
   sentenceListsToAlignMatrixIdentity( huSentenceListGarbled, enSentenceListGarbled, similarityMatrix );
-//  std::cerr << std::endl;
-//  std::cerr << "Rough translation-based similarity matrix ready." << std::endl;
+//  std::wcerr << std::endl;
+//  std::wcerr << "Rough translation-based similarity matrix ready." << std::endl;
 
   Trail bestTrail;
   AlignMatrix dynMatrix( huBookSize+1, enBookSize+1, thickness, 1e30 );
 
   align( similarityMatrix, huLength, enLength, bestTrail, dynMatrix );
-//  std::cerr << "Align ready." << std::endl;
+//  std::wcerr << "Align ready." << std::endl;
 
   double globalQuality;
   globalQuality = globalScoreOfTrail( bestTrail, dynMatrix,
                                       huSentenceListGarbled, enSentenceListGarbled );
 
-  //  std::cerr << "Global quality of unfiltered align " << globalQuality << std::endl;
+  //  std::wcerr << "Global quality of unfiltered align " << globalQuality << std::endl;
 
   if (alignParameters.realignType==AlignParameters::NoRealign)
   {
@@ -221,11 +222,11 @@ double alignerToolWithObjects( const DictionaryItems& dictionary,
 
     if (!success)
     {
-//      std::cerr << "Realign zone too close to quasidiagonal border. Abandoning realign. The align itself is suspicious." << std::endl;
+//      std::wcerr << "Realign zone too close to quasidiagonal border. Abandoning realign. The align itself is suspicious." << std::endl;
     }
     else
     {
-//      std::cerr << "Border of realign zone determined." << std::endl;
+//      std::wcerr << "Border of realign zone determined." << std::endl;
 
       switch (alignParameters.realignType)
       {
@@ -236,24 +237,24 @@ double alignerToolWithObjects( const DictionaryItems& dictionary,
           SentenceList huBisentences,enBisentences;
 
           throw "unimplemented";
-//          std::cerr << "Plausible bisentences filtered." << std::endl;
+//          std::wcerr << "Plausible bisentences filtered." << std::endl;
 
           modelOne.build(huBisentences,enBisentences);
-//          std::cerr << "IBM Model I ready." << std::endl;
+//          std::wcerr << "IBM Model I ready." << std::endl;
 
           sentenceListsToAlignMatrixIBMModelOne( huSentenceListPretty, enSentenceList, modelOne, similarityMatrixDetailed );
-//          std::cerr << "IBM Model I based similarity matrix ready." << std::endl;
+//          std::wcerr << "IBM Model I based similarity matrix ready." << std::endl;
           break;
         }
       case AlignParameters::FineTranslationRealign:
         {
           TransLex transLex;
           transLex.build(dictionary);
-//          std::cerr << "Hashtable for dictionary ready." << std::endl;
+//          std::wcerr << "Hashtable for dictionary ready." << std::endl;
 
           sentenceListsToAlignMatrixTranslation( huSentenceListPretty, enSentenceList, transLex, similarityMatrixDetailed );
 
-//          std::cerr << "Fine translation-based similarity matrix ready." << std::endl;
+//          std::wcerr << "Fine translation-based similarity matrix ready." << std::endl;
           break;
         }
 
@@ -267,7 +268,7 @@ double alignerToolWithObjects( const DictionaryItems& dictionary,
       Trail bestTrailDetailed;
       AlignMatrix dynMatrixDetailed( huBookSize+1, enBookSize+1, thickness, 1e30 );
       align( similarityMatrixDetailed, huLength, enLength, bestTrailDetailed, dynMatrixDetailed );
-//      std::cerr << "Detail realign ready." << std::endl;
+//      std::wcerr << "Detail realign ready." << std::endl;
 
       bestTrail = bestTrailDetailed;
       dynMatrix = dynMatrixDetailed;
@@ -275,7 +276,7 @@ double alignerToolWithObjects( const DictionaryItems& dictionary,
       globalQuality = globalScoreOfTrail( bestTrail, dynMatrix,
                                           huSentenceListGarbled, enSentenceListGarbled );
 
-      //      std::cerr << "Global quality of unfiltered align after realign " << globalQuality << std::endl;
+      //      std::wcerr << "Global quality of unfiltered align after realign " << globalQuality << std::endl;
     }
   }
 
@@ -284,27 +285,27 @@ double alignerToolWithObjects( const DictionaryItems& dictionary,
   if ( alignParameters.postprocessTrailQualityThreshold != -1 )
   {
     postprocessTrail( bestTrail, trailScoresInterval, alignParameters.postprocessTrailQualityThreshold );
-//    std::cerr << "Trail start and end postprocessed by score." << std::endl;
+//    std::wcerr << "Trail start and end postprocessed by score." << std::endl;
   }
 
   if ( alignParameters.postprocessTrailStartAndEndQualityThreshold != -1 )
   {
     postprocessTrailStartAndEnd( bestTrail, trailScoresInterval, alignParameters.postprocessTrailStartAndEndQualityThreshold );
-//    std::cerr << "Trail start and end postprocessed by score." << std::endl;
+//    std::wcerr << "Trail start and end postprocessed by score." << std::endl;
   }
 
   if ( alignParameters.postprocessTrailByTopologyQualityThreshold != -1 )
   {
     postprocessTrailByTopology( bestTrail, alignParameters.postprocessTrailByTopologyQualityThreshold );
-//    std::cerr << "Trail postprocessed by topology." << std::endl;
+//    std::wcerr << "Trail postprocessed by topology." << std::endl;
   }
 
   bool quasiglobal_spaceOutBySentenceLength = true;
-//  std::cerr << "quasiglobal_spaceOutBySentenceLength is set to " << quasiglobal_spaceOutBySentenceLength << std::endl;
+//  std::wcerr << "quasiglobal_spaceOutBySentenceLength is set to " << quasiglobal_spaceOutBySentenceLength << std::endl;
   if (quasiglobal_spaceOutBySentenceLength)
   {
     spaceOutBySentenceLength( bestTrail, huSentenceListPretty, enSentenceList, alignParameters.utfCharCountingMode );
-//    std::cerr << "Trail spaced out by sentence length." << std::endl;
+//    std::wcerr << "Trail spaced out by sentence length." << std::endl;
   }
 
   // In cautious mode, auto-aligned rundles are thrown away if
@@ -312,13 +313,13 @@ double alignerToolWithObjects( const DictionaryItems& dictionary,
   if (alignParameters.cautiousMode)
   {
     cautiouslyFilterTrail( bestTrail );
-//    std::cerr << "Trail filtered by topology." << std::endl;
+//    std::wcerr << "Trail filtered by topology." << std::endl;
   }
 
   globalQuality = globalScoreOfTrail( bestTrail, dynMatrix,
                                     huSentenceListGarbled, enSentenceListGarbled );
 
-  //  std::cerr << "Global quality of unfiltered align after realign " << globalQuality << std::endl;
+  //  std::wcerr << "Global quality of unfiltered align after realign " << globalQuality << std::endl;
 
   bool textual = ! alignParameters.justSentenceIds ;
 
@@ -428,17 +429,17 @@ void alignerToolWithFilenames( const DictionaryItems& dictionary,
   std::ifstream hus(huFilename.c_str());
   SentenceList huSentenceListPretty;
   huSentenceListPretty.readNoIds( hus );
-//  std::cerr << huSentenceListPretty.size() << " hungarian sentences read." << std::endl;
+//  std::wcerr << huSentenceListPretty.size() << " hungarian sentences read." << std::endl;
 
   std::ifstream ens(enFilename.c_str());
   SentenceList enSentenceList;
   enSentenceList.readNoIds( ens );
-//  std::cerr << enSentenceList.size() << " english sentences read." << std::endl;
+//  std::wcerr << enSentenceList.size() << " english sentences read." << std::endl;
 
   if ( (enSentenceList.      size() < huSentenceListPretty.size()/5) ||
        (huSentenceListPretty.size() < enSentenceList.      size()/5) )
   {
-//    std::cerr << "Sizes differing too much. Ignoring files to avoid a rare loop bug." << std::endl;
+//    std::wcerr << "Sizes differing too much. Ignoring files to avoid a rare loop bug." << std::endl;
     return;
   }
 
@@ -447,7 +448,7 @@ void alignerToolWithFilenames( const DictionaryItems& dictionary,
     /* double globalQuality = */alignerToolWithObjects
      ( dictionary, huSentenceListPretty, enSentenceList, alignParameters, std::cout );
 
-//    std::cerr << "Quality " << globalQuality << std::endl ;
+//    std::wcerr << "Quality " << globalQuality << std::endl ;
       
   }
   else
@@ -457,7 +458,7 @@ void alignerToolWithFilenames( const DictionaryItems& dictionary,
      ( dictionary, huSentenceListPretty, enSentenceList, alignParameters, os );
 
     // If you want to collect global quality information in batch mode, grep "^Quality" of stderr must do.
-//    std::cerr << "Quality\t" << outputFilename << "\t" << globalQuality << std::endl ;
+//    std::wcerr << "Quality\t" << outputFilename << "\t" << globalQuality << std::endl ;
   }
 
 }
@@ -473,7 +474,7 @@ void fillPercentParameter( Arguments& args, const std::string& argName, double& 
 
 void main_alignerToolUsage()
 {
-  std::cerr << "Usage (either):\n\
+  std::wcerr << "Usage (either):\n\
     alignerTool [ common_arguments ] [ -hand=hand_align_file ] dictionary_file source_text target_text\n\
 \n\
 or:\n\
@@ -585,8 +586,8 @@ int main_alignerTool(int argC, char* argV[])
 
     if (batchMode && (remains.size()!=2) )
     {
-      std::cerr << "Batch mode requires exactly two file arguments." << std::endl;
-      std::cerr << std::endl;
+      std::wcerr << "Batch mode requires exactly two file arguments." << std::endl;
+      std::wcerr << std::endl;
 
       main_alignerToolUsage();
       throw "argument error";
@@ -597,7 +598,7 @@ int main_alignerTool(int argC, char* argV[])
     {
       if (batchMode)
       {
-        std::cerr << "-batch and -" << handArgumentname << " are incompatible switches." << std::endl;
+        std::wcerr << "-batch and -" << handArgumentname << " are incompatible switches." << std::endl;
         throw "argument error";
       }
       else
@@ -607,7 +608,7 @@ int main_alignerTool(int argC, char* argV[])
 
         if (alignParameters.handAlignFilename.empty())
         {
-          std::cerr << "-" << handArgumentname << " switch requires a filename value." << std::endl;
+          std::wcerr << "-" << handArgumentname << " switch requires a filename value." << std::endl;
           throw "argument error";
         }
       }
@@ -618,7 +619,7 @@ int main_alignerTool(int argC, char* argV[])
     {
       if (batchMode)
       {
-        std::cerr << "-batch and -" << autoDictDumpArgumentname << " are incompatible switches." << std::endl;
+        std::wcerr << "-batch and -" << autoDictDumpArgumentname << " are incompatible switches." << std::endl;
         throw "argument error";
       }
       else
@@ -628,7 +629,7 @@ int main_alignerTool(int argC, char* argV[])
 
         if (alignParameters.autoDictionaryDumpFilename.empty())
         {
-          std::cerr << "-" << autoDictDumpArgumentname << " switch requires a filename value." << std::endl;
+          std::wcerr << "-" << autoDictDumpArgumentname << " switch requires a filename value." << std::endl;
           throw "argument error";
         }
       }
@@ -636,8 +637,8 @@ int main_alignerTool(int argC, char* argV[])
 
     if (!batchMode && (remains.size()!=3) )
     {
-      std::cerr << "Nonbatch mode requires exactly three file arguments." << std::endl;
-      std::cerr << std::endl;
+      std::wcerr << "Nonbatch mode requires exactly three file arguments." << std::endl;
+      std::wcerr << std::endl;
 
       main_alignerToolUsage();
       throw "argument error";
@@ -649,13 +650,13 @@ int main_alignerTool(int argC, char* argV[])
     }
     catch (...)
     {
-      std::cerr << std::endl;
+      std::wcerr << std::endl;
 
       main_alignerToolUsage();
       throw "argument error";
     }
 
-//    std::cerr << "Reading dictionary..." << std::endl;
+//    std::wcerr << "Reading dictionary..." << std::endl;
     const char* dicFilename = remains[0] ;
     DictionaryItems dictionary;
     std::ifstream dis(dicFilename);
@@ -676,7 +677,7 @@ int main_alignerTool(int argC, char* argV[])
 
         if (words.size()!=3)
         {
-          std::cerr << "Batch file has incorrect format." << std::endl;
+          std::wcerr << "Batch file has incorrect format." << std::endl;
           throw "data error";
         }
 
@@ -685,7 +686,7 @@ int main_alignerTool(int argC, char* argV[])
         enFilename  = words[1];
         outFilename = words[2];
 
-//        std::cerr << "Processing " << outFilename << std::endl;
+//        std::wcerr << "Processing " << outFilename << std::endl;
         bool failed = false;
         try
         {
@@ -693,23 +694,23 @@ int main_alignerTool(int argC, char* argV[])
         }
         catch ( const char* errorType )
         {
-          std::cerr << errorType << std::endl;
+          std::wcerr << errorType << std::endl;
           failed = true;
         }
         catch ( std::exception& e )
         {
-          std::cerr << "some failed assertion:" << e.what() << std::endl;
+          std::wcerr << "some failed assertion:" << e.what() << std::endl;
           failed = true;
         }
         catch ( ... )
         {
-          std::cerr << "some unknown failed assertion..." << std::endl;
+          std::wcerr << "some unknown failed assertion..." << std::endl;
           failed = true;
         }
 
         if (failed)
         {
-          std::cerr << "Align failed for " << outFilename << std::endl;
+          std::wcerr << "Align failed for " << outFilename << std::endl;
         }
       }
     }
@@ -724,17 +725,17 @@ int main_alignerTool(int argC, char* argV[])
 #ifndef _DEBUG
   catch ( const char* errorType )
   {
-    std::cerr << errorType << std::endl;
+    std::wcerr << errorType << std::endl;
     return -1;
   }
   catch ( std::exception& e )
   {
-    std::cerr << "some failed assertion:" << e.what() << std::endl;
+    std::wcerr << "some failed assertion:" << e.what() << std::endl;
     return -1;
   }
   catch ( ... )
   {
-    std::cerr << "some unknown failed assertion..." << std::endl;
+    std::wcerr << "some unknown failed assertion..." << std::endl;
     return -1;
   }
 #endif
