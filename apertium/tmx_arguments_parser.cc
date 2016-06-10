@@ -10,6 +10,7 @@
 *                                                                        *
 *************************************************************************/
 #include <apertium/tmx_arguments_parser.h>
+#include <apertium/string_utils.h>
 #include <iostream>
 #include <stdlib.h>
 
@@ -26,7 +27,7 @@ bool Arguments::read( int argc, char **argv )
     std::string p = argv[i];
     if (p.empty() || p[0]!='-')
     {
-      std::cerr << p << ": unable to parse argument\n";
+      std::wcerr << p << ": unable to parse argument\n";
       throw "argument error";
       return false;
     }
@@ -34,7 +35,7 @@ bool Arguments::read( int argc, char **argv )
 
     if (p.empty())
     {
-      std::cerr << "Empty argument\n";
+      std::wcerr << "Empty argument\n";
       throw "argument error";
       return false;
     }
@@ -85,7 +86,7 @@ bool Arguments::read( int argc, char **argv, std::vector<const char*>& remains )
 
     if (p.empty())
     {
-      std::cerr << "Empty argument\n";
+      std::wcerr << "Empty argument\n";
       throw "argument error";
       return false;
     }
@@ -123,13 +124,13 @@ bool Arguments::getNumericParam( const std::string& name, int& num )
   const_iterator it=find(name);
   if (it==end())
   {
-    // std::cerr << "Argument -" << name << " missing.\n";
+    // std::wcerr << "Argument -" << name << " missing.\n";
     return false;
   }
 
   if (it->second.kind != AnyData::Int)
   {
-    std::cerr << "Argument -" << name << ": integer expected.\n";
+    std::wcerr << "Argument -" << name << ": integer expected.\n";
     throw "argument error";
   }
 
@@ -148,7 +149,7 @@ bool Arguments::getSwitchConst( const ArgName& name, bool& sw ) const
   }
   else if (! it->second.dString.empty())
   {
-    std::cerr << "Argument -" << name << ": value is not allowed.\n";
+    std::wcerr << "Argument -" << name << ": value is not allowed.\n";
     return false;
   }
   else
@@ -178,7 +179,7 @@ bool Arguments::getSwitchCompact( const ArgName& name )
   }
   else
   {
-    std::cerr << "No value is allowed for argument -" << name << ".\n";
+    std::wcerr << "No value is allowed for argument -" << name << ".\n";
     throw "argument error";
   }
 }
@@ -187,16 +188,16 @@ void Arguments::checkEmptyArgs() const
 {
   if (!empty())
   {
-    std::cerr << "Invalid argument: ";
+    std::wcerr << "Invalid argument: ";
 
     for ( Arguments::const_iterator it=begin(); it!=end(); ++it )
     {
-      std::cerr << "-" << it->first;
+      std::wcerr << "-" << it->first;
       if (!it->second.dString.empty())
-        std::cerr << "=" << it->second.dString;
-      std::cerr << " ";
+        std::wcerr << "=" << it->second.dString;
+      std::wcerr << " ";
     }
-    std::cerr << std::endl;
+    std::wcerr << std::endl;
 
     throw "argument error";
   }

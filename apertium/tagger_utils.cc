@@ -43,7 +43,7 @@ void tagger_utils::fatal_error (wstring const &s) {
 }
 
 void tagger_utils::file_name_error (string const &s) { 
-  cerr << "Error: " << s << endl;
+  wcerr << "Error: " << s << endl;
   exit(1);
 }
 

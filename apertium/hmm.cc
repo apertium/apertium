@@ -539,15 +539,15 @@ HMM::train (FILE *ftxt) {
       i=*itag;
       for (jtag=pretags.begin(); jtag!=pretags.end(); jtag++) {
          j=*jtag;
-         //cerr<<"previous alpha["<<len<<"]["<<i<<"]="<<alpha[len][i]<<"\n";
-	 //cerr<<"alpha["<<len-1<<"]["<<j<<"]="<<alpha[len-1][j]<<"\n";
-         //cerr<<"a["<<j<<"]["<<i<<"]="<<a[j][i]<<"\n";
-         //cerr<<"b["<<i<<"]["<<k<<"]="<<b[i][k]<<"\n";
+         //wcerr<<"previous alpha["<<len<<"]["<<i<<"]="<<alpha[len][i]<<"\n";
+	 //wcerr<<"alpha["<<len-1<<"]["<<j<<"]="<<alpha[len-1][j]<<"\n";
+         //wcerr<<"a["<<j<<"]["<<i<<"]="<<a[j][i]<<"\n";
+         //wcerr<<"b["<<i<<"]["<<k<<"]="<<b[i][k]<<"\n";
 	 alpha[len][i] += alpha[len-1][j]*(tdhmm.getA())[j][i]*(tdhmm.getB())[i][k];
       }
       if (alpha[len][i]==0)
         alpha[len][i]=DBL_MIN;
-      //cerr<<"alpha["<<len<<"]["<<i<<"]="<<alpha[len][i]<<"\n--------\n";
+      //wcerr<<"alpha["<<len<<"]["<<i<<"]="<<alpha[len][i]<<"\n--------\n";
     }
 
     if (tags.size()>1) {
@@ -559,8 +559,8 @@ HMM::train (FILE *ftxt) {
       
       prob = alpha[len][tag];
       
-      //cerr<<"prob="<<prob<<"\n";
-      //cerr<<"alpha["<<len<<"]["<<tag<<"]="<<alpha[len][tag]<<"\n";
+      //wcerr<<"prob="<<prob<<"\n";
+      //wcerr<<"alpha["<<len<<"]["<<tag<<"]="<<alpha[len][tag]<<"\n";
       loli -= log(prob);  
       
       for (t=0; t<len; t++) {  // loop from T-1 to 0	
@@ -649,7 +649,7 @@ HMM::train (FILE *ftxt) {
           exit(1);
         }
 	if ((tdhmm.getA())[i][j]==0) {
-          //cerr <<"Error: BW - ZERO(1) a["<<i<<"]["<<j<<"]="<<(tdhmm.getA())[i][j]<<"\txsi["<<i<<"]["<<j<<"]="<<xsi[i][j]<<"\tgamma["<<i<<"]="<<gamma[i]<<"\n";
+          //wcerr <<"Error: BW - ZERO(1) a["<<i<<"]["<<j<<"]="<<(tdhmm.getA())[i][j]<<"\txsi["<<i<<"]["<<j<<"]="<<xsi[i][j]<<"\tgamma["<<i<<"]="<<gamma[i]<<"\n";
 	  //     exit(1);
         }
       }
@@ -672,7 +672,7 @@ HMM::train (FILE *ftxt) {
 	       exit(1);
         }
 	if ((tdhmm.getB())[i][k]==0) {
-          //cerr <<"Error: BW - ZERO(2) b["<<i<<"]["<<k<<"]="<<(tdhmm.getB())[i][k]<<"\tphi["<<i<<"]["<<k<<"]="<<phi[i][k]<<"\tgamma["<<i<<"]="<<gamma[i]<<"\n";
+          //wcerr <<"Error: BW - ZERO(2) b["<<i<<"]["<<k<<"]="<<(tdhmm.getB())[i][k]<<"\tphi["<<i<<"]["<<k<<"]="<<phi[i][k]<<"\tgamma["<<i<<"]="<<gamma[i]<<"\n";
 	  //     exit(1);
         }
       }

@@ -20,6 +20,7 @@
 #include <lttoolbox/xml_parse_util.h>
 #include <iostream>
 #include <cstring>
+#include <iterator>
 
 #ifdef _MSC_VER
 #define snprintf _snprintf
@@ -180,4 +181,11 @@ bool Apertium::operator!=(string const &s1, char const *s2)
 bool Apertium::operator!=(char const *s1, string const &s2)
 {
   return strcmp(s1, s2.c_str()) != 0;
+}
+
+std::wostream & operator<<(std::wostream & ostr, std::string const & str) {
+  std::copy(
+    str.begin(), str.end(),
+    std::ostream_iterator<char, wchar_t>(ostr));
+  return ostr;
 }

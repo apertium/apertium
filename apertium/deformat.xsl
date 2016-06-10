@@ -148,6 +148,7 @@ extern "C" {
 #include &lt;string&gt;
 #include &lt;lttoolbox/lt_locale.h&gt;
 #include &lt;lttoolbox/ltstr.h&gt;
+#include &lt;apertium/string_utils.h&gt;
 #ifndef GENFORMAT
 #include "apertium_config.h"
 #endif
@@ -220,7 +221,7 @@ void init_escape()
       <xsl:with-param name="replacement" select="string('\\')"/>
     </xsl:call-template>", REG_EXTENDED))
   {
-    cerr &lt;&lt; "ERROR: Illegal regular expression for escape characters" &lt;&lt; endl;
+    wcerr &lt;&lt; "ERROR: Illegal regular expression for escape characters" &lt;&lt; endl;
     exit(EXIT_FAILURE);
   }
 }
@@ -234,7 +235,7 @@ void init_tagNames()
       <xsl:with-param name="replacement" select="string('\\')"/>
     </xsl:call-template>", REG_EXTENDED))
   {
-    cerr &lt;&lt; "ERROR: Illegal regular expression for tag-names" &lt;&lt; endl;
+    wcerr &lt;&lt; "ERROR: Illegal regular expression for tag-names" &lt;&lt; endl;
     exit(EXIT_FAILURE);
   }
 }
@@ -742,13 +743,13 @@ void usage(string const &amp;progname)
 {
 <xsl:choose>
   <xsl:when test="$mode=string('matxin')">
-  cerr &lt;&lt; "USAGE: " &lt;&lt; progname &lt;&lt; " format_file [input_file [output_file]" &lt;&lt; ']' &lt;&lt; endl;
+  wcerr &lt;&lt; "USAGE: " &lt;&lt; progname &lt;&lt; " format_file [input_file [output_file]" &lt;&lt; ']' &lt;&lt; endl;
   </xsl:when>
   <xsl:otherwise>
-  cerr &lt;&lt; "USAGE: " &lt;&lt; progname &lt;&lt; " [ -h | -i | -n ] [input_file [output_file]" &lt;&lt; ']' &lt;&lt; endl;
+  wcerr &lt;&lt; "USAGE: " &lt;&lt; progname &lt;&lt; " [ -h | -i | -n ] [input_file [output_file]" &lt;&lt; ']' &lt;&lt; endl;
   </xsl:otherwise>
 </xsl:choose>
-  cerr &lt;&lt; "<xsl:value-of select="./@name"/> format processor " &lt;&lt; endl;
+  wcerr &lt;&lt; "<xsl:value-of select="./@name"/> format processor " &lt;&lt; endl;
   exit(EXIT_SUCCESS);
 }
 

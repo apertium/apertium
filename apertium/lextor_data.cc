@@ -110,33 +110,33 @@ LexTorData::is_stopword(const wstring& word) {
 
 void 
 LexTorData::read(FILE *is) {
-  //cerr<<"LexTorData::read------------------------------------\n";
+  //wcerr<<"LexTorData::read------------------------------------\n";
   n_stopwords=(WORD_DATA_TYPE)Compression::multibyte_read(is);
   n_words=(WORD_DATA_TYPE)Compression::multibyte_read(is);
   n_words_per_set=(WORD_DATA_TYPE)Compression::multibyte_read(is);
   n_set=(WORD_DATA_TYPE)Compression::multibyte_read(is);
 
-  //cerr<<n_stopwords<<"\n";
-  //cerr<<n_words<<"\n";
-  //cerr<<n_words_per_set<<"\n";
-  //cerr<<n_set<<"\n";
+  //wcerr<<n_stopwords<<"\n";
+  //wcerr<<n_words<<"\n";
+  //wcerr<<n_words_per_set<<"\n";
+  //wcerr<<n_set<<"\n";
 
 
   //Read the set of stopwords
-  //cerr<<"stopwords--------------------------------------------\n";
+  //wcerr<<"stopwords--------------------------------------------\n";
   for (unsigned int i=0; i<n_stopwords; i++) {
     stopwords.insert(Compression::wstring_read(is));
-    //cerr<<"len: "<<len<<" str: "<<str<<"\n";
+    //wcerr<<"len: "<<len<<" str: "<<str<<"\n";
   }
 
   //Read the list of words
-  //cerr<<"list of words----------------------------------------\n";
+  //wcerr<<"list of words----------------------------------------\n";
   for(unsigned int i=1; i<n_words; i++) {
     wstring str = Compression::wstring_read(is);
     index2word.push_back(str);
     word2index[str]=i;
     wordcount[i]=EndianDoubleUtil::read(is);
-    //cerr<<"len: "<<len<<" str: "<<str<<" index: "<<i<<" word_count: "<<wordcount[i]<<"\n";
+    //wcerr<<"len: "<<len<<" str: "<<str<<" index: "<<i<<" word_count: "<<wordcount[i]<<"\n";
   }
 
   //Read data of each set associate to each lexical choice (or word)
@@ -148,7 +148,7 @@ LexTorData::read(FILE *is) {
     lexchoice=(WORD_DATA_TYPE)Compression::multibyte_read(is);
     sum=EndianDoubleUtil::read(is);
 
-    //cerr<<"lexchoice: "<<lexchoice<<" sum: "<<sum<<" "<<index2word[lexchoice]<<"\n";
+    //wcerr<<"lexchoice: "<<lexchoice<<" sum: "<<sum<<" "<<index2word[lexchoice]<<"\n";
 
     reduced_lexical_choices.insert(index2word[lexchoice]);
 
@@ -163,7 +163,7 @@ LexTorData::read(FILE *is) {
 
       word=(WORD_DATA_TYPE)Compression::multibyte_read(is);
       count=EndianDoubleUtil::read(is);
-      //cerr<<"     word: "<<word<<" count: "<<count<<"\n";
+      //wcerr<<"     word: "<<word<<" count: "<<count<<"\n";
       lexchoice_set[lexchoice][word]=count;
     }
   }
@@ -177,31 +177,31 @@ LexTorData::read(FILE *is) {
 
     word=(WORD_DATA_TYPE)Compression::multibyte_read(is);
     words.insert(index2word[word]);
-    //cerr<<"word: "<<index2word[word]<<"\n";
+    //wcerr<<"word: "<<index2word[word]<<"\n";
   }
 }
 
 void 
 LexTorData::write(FILE *os) {
-  //cerr<<"LexTorData::write------------------------------------\n";
-  //cerr<<n_stopwords<<"\n";
-  //cerr<<n_words<<"\n";
-  //cerr<<n_words_per_set<<"\n";
-  //cerr<<n_set<<"\n";
+  //wcerr<<"LexTorData::write------------------------------------\n";
+  //wcerr<<n_stopwords<<"\n";
+  //wcerr<<n_words<<"\n";
+  //wcerr<<n_words_per_set<<"\n";
+  //wcerr<<n_set<<"\n";
   Compression::multibyte_write(n_stopwords, os);
   Compression::multibyte_write(n_words, os);
   Compression::multibyte_write(n_words_per_set, os);
   Compression::multibyte_write(n_set, os);
 
   //Write the set of stopwords
-  //cerr<<"stopwords--------------------------------------------\n";
+  //wcerr<<"stopwords--------------------------------------------\n";
   set<wstring>::iterator it;
   for (it=stopwords.begin(); it!=stopwords.end(); it++) {
     Compression::wstring_write(*it, os);
   }
 
   //Write the list of words
-  //cerr<<"list of words----------------------------------------\n";
+  //wcerr<<"list of words----------------------------------------\n";
   for(unsigned int i=1; i<index2word.size(); i++) {
     Compression::wstring_write(index2word[i], os);
     EndianDoubleUtil::write(os, wordcount[i]);
@@ -217,7 +217,7 @@ LexTorData::write(FILE *os) {
     COUNT_DATA_TYPE sum=lexchoice_sum[lexchoice];
     //double prob=lexchoice_prob[lexchoice];
 
-    //cerr<<"lexchoice: "<<lexchoice<<" sum: "<<sum<<" "<<index2word[lexchoice]<<"\n";
+    //wcerr<<"lexchoice: "<<lexchoice<<" sum: "<<sum<<" "<<index2word[lexchoice]<<"\n";
     Compression::multibyte_write(lexchoice, os);    
     //os.write(reinterpret_cast<char * const> (&prob), sizeof(double));
     EndianDoubleUtil::write(os, sum);
@@ -228,7 +228,7 @@ LexTorData::write(FILE *os) {
         it_w_lch_set++) {
       WORD_DATA_TYPE word=it_w_lch_set->first;
       COUNT_DATA_TYPE count=it_w_lch_set->second;
-      //cerr<<"     word: "<<word<<" count: "<<count<<"\n";
+      //wcerr<<"     word: "<<word<<" count: "<<count<<"\n";
       Compression::multibyte_write(word, os);
       EndianDoubleUtil::write(os, count);
       nwritten_words++;
@@ -238,7 +238,7 @@ LexTorData::write(FILE *os) {
     while (nwritten_words<n_words_per_set){
       WORD_DATA_TYPE word=word2index[NULLWORD];
       COUNT_DATA_TYPE count=0;
-      //cerr<<"     word: "<<word<<" count: "<<count<<"\n";
+      //wcerr<<"     word: "<<word<<" count: "<<count<<"\n";
       Compression::multibyte_write(word, os);
       EndianDoubleUtil::write(os, count);
       nwritten_words++;
@@ -253,7 +253,7 @@ LexTorData::write(FILE *os) {
   for(sit=words.begin(); sit!=words.end(); sit++) {
     WORD_DATA_TYPE word=word2index[*sit];
     Compression::multibyte_write(word, os);
-    //cerr<<"word: "<<*sit<<"\n";
+    //wcerr<<"word: "<<*sit<<"\n";
   }
 }
 
@@ -358,7 +358,7 @@ LexTorData::ensure_stopwords_ok() {
   for(its=stopwords.begin(); its!=stopwords.end(); its++) {
     bool is_ok=true;
     for(itw=words.begin(); itw!=words.end(); itw++) {
-      //cerr<<"sw: "<<*its<<" w: "<<*itw<<"\n";
+      //wcerr<<"sw: "<<*its<<" w: "<<*itw<<"\n";
       if (itw->find(*its)==0) {
 	wcerr<<L"Warning: Word '"<<*itw<<L"' for which co-ocurrence models will"
 	    <<L" be estimated is also a stopword. ";
