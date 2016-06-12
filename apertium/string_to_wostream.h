@@ -6,9 +6,7 @@
 #include <iterator>
 
 std::wostream & operator<<(std::wostream & ostr, std::string const & str) {
-  std::copy(
-    str.begin(), str.end(),
-    std::ostream_iterator<char, wchar_t>(ostr));
+  ostr << str.c_str();
   return ostr;
 }
 
