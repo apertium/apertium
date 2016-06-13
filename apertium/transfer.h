@@ -112,6 +112,7 @@ private:
   bool processIn(xmlNode *localroot);
   int processRule(xmlNode *localroot);
   string evalString(xmlNode *localroot);
+  void evalStringClip(xmlNode *element, string &lemma, int &pos); // the dark horse
   int processInstruction(xmlNode *localroot);
   int processChoose(xmlNode *localroot);
   string processChunk(xmlNode *localroot);
