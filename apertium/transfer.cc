@@ -79,7 +79,7 @@ void
 Transfer::readData(FILE *in)
 {
   // Read transfer rules.
-  cerr << "readData" << endl;
+  cerr << "readData" << endl; // di
 
   alphabet.read(in);
   any_char = alphabet(TRXReader::ANY_CHAR);
@@ -141,7 +141,8 @@ Transfer::readData(FILE *in)
 
 void
 Transfer::readBil(string const &fstfile)
-{ cerr << "readBil" << endl;
+{ 
+  cerr << "readBil" << endl; // di
   FILE *in = fopen(fstfile.c_str(), "rb");
   if(!in)
   {
@@ -155,7 +156,8 @@ Transfer::readBil(string const &fstfile)
 
 void
 Transfer::setExtendedDictionary(string const &fstfile)
-{ cerr << "setExtendedDictionary" << endl;
+{ 
+  cerr << "setExtendedDictionary" << endl; // di
   FILE *in = fopen(fstfile.c_str(), "rb");
   if(!in)
   {
@@ -173,12 +175,8 @@ Transfer::read(string const &transferfile, string const &datafile,
 	       string const &fstfile)
 { 
   // read and parse transfer file(s)
-
-  cerr << endl << "!! read started !!" << endl << endl;
-  cerr << "Reading transfer rules from " << transferfile << endl;
   readTransfer(transferfile);
 
-  cerr << "Reading data from " << datafile.c_str() << endl;
   // datafile
   FILE *in = fopen(datafile.c_str(), "rb");
   if(!in)
@@ -194,8 +192,6 @@ Transfer::read(string const &transferfile, string const &datafile,
     cerr << "fstfile: " << fstfile << endl;
     readBil(fstfile);
   }
-  
-  cerr << endl << "!! read ended !!" << endl << endl;
 }
 
 void
@@ -204,11 +200,8 @@ Transfer::readTransfer(string const &in)
   // Read transfer rules.
   // In fact, here we collect only default attribute value,
   // macroses (macri?), and actions specified in rules.
-
+  cerr << "Reading transfer rules from " << in.c_str() << endl; // di
   doc = xmlReadFile(in.c_str(), NULL, 0);
-
-  cerr << "Reading transfer rules from " << in.c_str() << endl;
-
   if(doc == NULL)
   {
     cerr << "Error: Could not parse file '" << in << "'." << endl;
@@ -216,7 +209,7 @@ Transfer::readTransfer(string const &in)
   }
 
   root_element = xmlDocGetRootElement(doc);
-  //cerr << root_element->properties << endl;
+  //cerr << root_element->properties << endl; // di
 
   // search through attributes of root element 
   for(xmlAttr *i = root_element->properties; i != NULL; i = i->next)
@@ -264,15 +257,15 @@ Transfer::collectRules(xmlNode *localroot)
     if(i->type == XML_ELEMENT_NODE)
     { 
       // normally looking at a 'rule' node now
-      //cerr << "Looking at " << i->name << endl;
-      for(xmlAttr *j = i->properties; j != NULL; j = j->next)
-      {
-        if(!xmlStrcmp(j->name, (const xmlChar *) "comment"))
-        {
-          cerr << "Collecting rule " << xmlNodeListGetString(i->doc, j->children, 1) << endl;             
-        }
-      }
-
+      //cerr << "Looking at " << i->name << endl; // di
+      for(xmlAttr *j = i->properties; j != NULL; j = j->next) // di
+      { // di
+        if(!xmlStrcmp(j->name, (const xmlChar *) "comment")) // di
+        { // di
+          cerr << "Collecting rule " << xmlNodeListGetString(i->doc, j->children, 1) << endl;   // di           
+        } // di
+      } // di
+      // di
       // go through subelements of this 'rule' node
       for(xmlNode *j = i->children; ; j = j->next)
       {
@@ -280,7 +273,7 @@ Transfer::collectRules(xmlNode *localroot)
         if(j->type == XML_ELEMENT_NODE && !xmlStrcmp(j->name, (const xmlChar *) "action"))
         {
           // if so, add it at the end of the rule map
-          //cerr << "Collected '" << i->name << "' part '" << j->name << "'" << endl;
+          //cerr << "Collected '" << i->name << "' part '" << j->name << "'" << endl; // di
           rule_map.push_back(j);
           break;
         }
@@ -354,16 +347,16 @@ Transfer::evalString(xmlNode *element)
   // if not, first add the instruction to evalStringCache,
   // then call evalString again, and execute that instruction.
   
-  // First, let's see what we've got.
-  if (element->type == XML_ELEMENT_NODE) 
-  { 
-    cerr << "Evaluating " << element->name << " ";
-    for(xmlAttr *prop = element->properties; prop != NULL; prop = prop->next)
-    { 
-      cerr << prop->name << "='" << xmlNodeListGetString(element->doc, prop->children, 1) << "' ";
-    }
-    cerr << endl;
-  }
+  // First, let's see what we've got. // di
+  if (element->type == XML_ELEMENT_NODE)  // di
+  {  // di
+    cerr << "Evaluating " << element->name << " "; // di
+    for(xmlAttr *prop = element->properties; prop != NULL; prop = prop->next) // di
+    {  // di
+      cerr << prop->name << "='" << xmlNodeListGetString(element->doc, prop->children, 1) << "' "; // di
+    } // di
+    cerr << endl; // di
+  } // di
 
   map<xmlNode *, TransferInstr>::iterator it;
   it = evalStringCache.find(element); 
@@ -691,8 +684,7 @@ Transfer::processOut(xmlNode *localroot)
 { 
   // apply 'out' subelement of a rule, one subelement at a time,
   // depending on subelement type
-
-  cerr << "Applying 'out' element" << endl;
+  cerr << "Applying 'out' element" << endl; // di
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE)
@@ -707,7 +699,7 @@ Transfer::processOut(xmlNode *localroot)
 	    if(j->type == XML_ELEMENT_NODE)
 	    {
 	      myword.append(evalString(j));
-              //cerr << myword << endl;
+              //cerr << myword << endl; // di
             }
 	  }
 	  if(myword != "")
@@ -715,7 +707,7 @@ Transfer::processOut(xmlNode *localroot)
   	    fputwc_unlocked(L'^', output);
    	    fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
 	    fputwc_unlocked(L'$', output);
-            //cerr << UtfConverter::fromUtf8(myword).c_str() << endl;
+            //cerr << UtfConverter::fromUtf8(myword).c_str() << endl; // di
           }
         }
         else if(!xmlStrcmp(i->name, (const xmlChar *) "mlu"))
@@ -766,7 +758,7 @@ Transfer::processOut(xmlNode *localroot)
         {
           string processed = processChunk(i);
           fputws_unlocked(UtfConverter::fromUtf8(processed).c_str(), output);
-          cerr << "Hey, I just made a chunk: " << processed << endl;
+          cerr << "Hey, I just made a chunk: " << processed << endl; // di
         }
         else // 'b'
         {
@@ -783,7 +775,7 @@ Transfer::processChunk(xmlNode *localroot)
   // apply 'chunk' subelement of 'out' element of a rule,
   // one subelement at a time, depending on subelement type
 
-  cerr << "Applying 'chunk' element" << endl;
+  cerr << "Applying 'chunk' element" << endl; // di
   string name, namefrom;
   string caseofchunk = "aa";
   string result;
@@ -792,7 +784,6 @@ Transfer::processChunk(xmlNode *localroot)
   unsigned int limit = tmpword.size();
   string* wordcache;
   wordcache = new string [limit];
-  //cerr << "limit = " << limit << endl;
 
   for(xmlAttr *i = localroot->properties; i != NULL; i = i->next)
   {
@@ -812,7 +803,7 @@ Transfer::processChunk(xmlNode *localroot)
 
   // starting to build the chunk
   result.append("^");
-  cerr << result << endl;
+  cerr << result << endl; // di
 
   // adding chunk name
   if(caseofchunk != "")
@@ -820,12 +811,12 @@ Transfer::processChunk(xmlNode *localroot)
     if(name != "")
     {
       result.append(copycase(variables[caseofchunk], name));
-      cerr << result << endl;
+      cerr << result << endl; // di
     }
     else if(namefrom != "")
     {
       result.append(copycase(variables[caseofchunk], variables[namefrom]));
-      cerr << result << endl;
+      cerr << result << endl; // di
     }
     else
     {
@@ -838,12 +829,12 @@ Transfer::processChunk(xmlNode *localroot)
     if(name != "")
     {
       result.append(name);
-      cerr << result << endl;
+      cerr << result << endl; // di
     }
     else if(namefrom != "")
     {
       result.append(variables[namefrom]);
-      cerr << result << endl;
+      cerr << result << endl; // di
     }
     else
     {
@@ -853,19 +844,19 @@ Transfer::processChunk(xmlNode *localroot)
   }
 
   // processing and adding chunk subelements one element at a time
-  int count = 0;
+  int count = 0; // di
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE)
     { 
-      cerr << "chunk element # " << count << ": " << i->name << endl;
-      count++;
+      cerr << "chunk element # " << count << ": " << i->name << endl; // di
+      count++; // di
       if(!xmlStrcmp(i->name, (const xmlChar *) "tags"))
       {
         // add chunk tags
         result.append(processTags(i));
         result.append("{");
-        cerr << result << endl;
+        cerr << result << endl; // di
       }
       else if(!xmlStrcmp(i->name, (const xmlChar *) "lu"))
       {
@@ -878,13 +869,13 @@ Transfer::processChunk(xmlNode *localroot)
         {
           if(j->type == XML_ELEMENT_NODE)
           {
-            cerr << "Executing " << j->name << endl;
+            cerr << "Executing " << j->name << endl; // di
             myword.append(evalString(j));
 
             evalStringClip(j, untouched, untouched_pos); // black magic
             if(untouched_pos != -1)
             {
-              //cerr << "Got untouched: " << untouched_pos << ", " << untouched << endl;
+              //cerr << "Got untouched: " << untouched_pos << ", " << untouched << endl; // di
               wordcache[untouched_pos].append(untouched);
             }
           }
@@ -931,17 +922,17 @@ Transfer::processChunk(xmlNode *localroot)
         }
         if(myword != "")
         {
-          cerr << myword << endl;
+          cerr << myword << endl; // di
           result.append("^");
           result.append(myword);
           result.append("$");
-          cerr << result << endl;
+          cerr << result << endl; // di
         }
       }
       else // 'b'
       {
         result.append(evalString(i));
-        cerr << result << endl;
+        cerr << result << endl; // di
       }
     }
   }
@@ -976,7 +967,8 @@ Transfer::processChunk(xmlNode *localroot)
 
 string
 Transfer::processTags(xmlNode *localroot)
-{ cerr << "processTags" << endl;
+{ 
+  cerr << "processTags" << endl; // di
   string result;
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
@@ -1001,9 +993,7 @@ int
 Transfer::processInstruction(xmlNode *localroot)
 { 
   // process instruction specified in rule action based on its name
-
-  cerr << "processInstruction" << endl;
-  cerr << "Processing instruction '" << localroot->name << "'" << endl;
+  cerr << "Processing instruction '" << localroot->name << "'" << endl; // di
 
   int words_to_consume = -1;
   if(!xmlStrcmp(localroot->name, (const xmlChar *) "choose"))
@@ -1039,7 +1029,8 @@ Transfer::processInstruction(xmlNode *localroot)
 
 int
 Transfer::processRejectCurrentRule(xmlNode *localroot)
-{ cerr << "processRejectCurrentRule" << endl;
+{ 
+  cerr << "processRejectCurrentRule" << endl; // di
   bool shifting = true;
   string value;
   for(xmlAttr *i = localroot->properties; i != NULL; i = i->next)
@@ -1061,7 +1052,8 @@ Transfer::processRejectCurrentRule(xmlNode *localroot)
 
 void
 Transfer::processLet(xmlNode *localroot)
-{ cerr << "processLet" << endl;
+{ 
+  err << "processLet" << endl; // di
   xmlNode *leftSide = NULL, *rightSide = NULL;
 
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
@@ -1156,7 +1148,8 @@ Transfer::processLet(xmlNode *localroot)
 
 void
 Transfer::processAppend(xmlNode *localroot)
-{ cerr << "processAppend" << endl;
+{ 
+  cerr << "processAppend" << endl; // di
   string name;
   for(xmlAttr *i = localroot->properties; i != NULL; i = i->next)
   {
@@ -1178,7 +1171,8 @@ Transfer::processAppend(xmlNode *localroot)
 
 void
 Transfer::processModifyCase(xmlNode *localroot)
-{ cerr << "processModifyCase" << endl;
+{ 
+  cerr << "processModifyCase" << endl; // di
   xmlNode *leftSide = NULL, *rightSide = NULL;
 
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
@@ -1252,7 +1246,8 @@ Transfer::processModifyCase(xmlNode *localroot)
 
 void
 Transfer::processCallMacro(xmlNode *localroot)
-{ cerr << "processCallMacro" << endl;
+{ 
+  cerr << "processCallMacro" << endl; // di
   string const n = (const char *) localroot->properties->children->content;
   int npar = 0;
 
@@ -1320,7 +1315,8 @@ Transfer::processCallMacro(xmlNode *localroot)
 
 int
 Transfer::processChoose(xmlNode *localroot)
-{ cerr << "processChoose" << endl;
+{ 
+  cerr << "processChoose" << endl; // di
   int words_to_consume = -1;
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
@@ -1381,7 +1377,8 @@ Transfer::processChoose(xmlNode *localroot)
 
 bool
 Transfer::processLogical(xmlNode *localroot)
-{ cerr << "processLogical" << endl;
+{ 
+  cerr << "processLogical" << endl; // di
   if(!xmlStrcmp(localroot->name, (const xmlChar *) "equal"))
   {
     return processEqual(localroot);
@@ -1428,7 +1425,8 @@ Transfer::processLogical(xmlNode *localroot)
 
 bool
 Transfer::processIn(xmlNode *localroot)
-{ cerr << "processIn" << endl;
+{ 
+  cerr << "processIn" << endl; // di
   xmlNode *value = NULL;
   xmlChar *idlist = NULL;
 
@@ -1480,7 +1478,8 @@ Transfer::processIn(xmlNode *localroot)
 
 bool
 Transfer::processTest(xmlNode *localroot)
-{ cerr << "processTest" << endl;
+{ 
+  cerr << "processTest" << endl; // di
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE)
@@ -1493,7 +1492,8 @@ Transfer::processTest(xmlNode *localroot)
 
 bool
 Transfer::processAnd(xmlNode *localroot)
-{ cerr << "processAnd" << endl;
+{ 
+  cerr << "processAnd" << endl; // di
   bool val = true;
   for(xmlNode *i = localroot->children; val && i != NULL; i = i->next)
   {
@@ -1508,7 +1508,8 @@ Transfer::processAnd(xmlNode *localroot)
 
 bool
 Transfer::processOr(xmlNode *localroot)
-{ cerr << "processOr" << endl;
+{ 
+  cerr << "processOr" << endl; // di
   bool val = false;
   for(xmlNode *i = localroot->children; !val && i != NULL ; i = i->next)
   {
@@ -1523,7 +1524,8 @@ Transfer::processOr(xmlNode *localroot)
 
 bool
 Transfer::processNot(xmlNode *localroot)
-{ cerr << "processNot" << endl;
+{ 
+  cerr << "processNot" << endl; // di
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE)
@@ -1536,7 +1538,8 @@ Transfer::processNot(xmlNode *localroot)
 
 bool
 Transfer::processEqual(xmlNode *localroot)
-{ cerr << "processEqual" << endl;
+{ 
+  cerr << "processEqual" << endl; // di
   xmlNode *first = NULL, *second = NULL;
 
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
@@ -1575,7 +1578,8 @@ Transfer::processEqual(xmlNode *localroot)
 
 bool
 Transfer::beginsWith(string const &s1, string const &s2) const
-{ cerr << "beginsWith" << endl;
+{ 
+  cerr << "beginsWith" << endl; // di
   int const limit = s2.size(), constraint = s1.size();
 
   if(constraint < limit)
@@ -1595,7 +1599,8 @@ Transfer::beginsWith(string const &s1, string const &s2) const
 
 bool
 Transfer::endsWith(string const &s1, string const &s2) const
-{ cerr << "endsWith" << endl;
+{ 
+  cerr << "endsWith" << endl; // di
   int const limit = s2.size(), constraint = s1.size();
 
   if(constraint < limit)
@@ -1616,7 +1621,8 @@ Transfer::endsWith(string const &s1, string const &s2) const
 
 bool
 Transfer::processBeginsWith(xmlNode *localroot)
-{ cerr << "processBeginsWith" << endl;
+{ 
+  cerr << "processBeginsWith" << endl; // di
   xmlNode *first = NULL, *second = NULL;
 
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
@@ -1655,7 +1661,8 @@ Transfer::processBeginsWith(xmlNode *localroot)
 
 bool
 Transfer::processEndsWith(xmlNode *localroot)
-{ cerr << "processEndsWith" << endl;
+{ 
+  cerr << "processEndsWith" << endl; // di
   xmlNode *first = NULL, *second = NULL;
 
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
@@ -1694,7 +1701,8 @@ Transfer::processEndsWith(xmlNode *localroot)
 
 bool
 Transfer::processBeginsWithList(xmlNode *localroot)
-{ cerr << "processBeginsWithList" << endl;
+{ 
+  cerr << "processBeginsWithList" << endl; // di
   xmlNode *first = NULL, *second = NULL;
 
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
@@ -1743,7 +1751,8 @@ Transfer::processBeginsWithList(xmlNode *localroot)
 
 bool
 Transfer::processEndsWithList(xmlNode *localroot)
-{ cerr << "processEndsWithList" << endl;
+{ 
+  cerr << "processEndsWithList" << endl; // di
   xmlNode *first = NULL, *second = NULL;
 
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
@@ -1791,7 +1800,8 @@ Transfer::processEndsWithList(xmlNode *localroot)
 
 bool
 Transfer::processContainsSubstring(xmlNode *localroot)
-{ cerr << "processContainsSubstring" << endl;
+{ 
+  cerr << "processContainsSubstring" << endl; // di
   xmlNode *first = NULL, *second = NULL;
 
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
@@ -1830,7 +1840,8 @@ Transfer::processContainsSubstring(xmlNode *localroot)
 
 string
 Transfer::copycase(string const &source_word, string const &target_word)
-{ cerr << "copycase" << endl;
+{ 
+  cerr << "copycase" << endl; // di
   wstring result;
   wstring const s_word = UtfConverter::fromUtf8(source_word);
   wstring const t_word = UtfConverter::fromUtf8(target_word);
@@ -1860,7 +1871,8 @@ Transfer::copycase(string const &source_word, string const &target_word)
 
 string
 Transfer::caseOf(string const &str)
-{ cerr << "caseOf" << endl;
+{ 
+  cerr << "caseOf" << endl; // di
   wstring const s = UtfConverter::fromUtf8(str);
 
   if(s.size() > 1)
@@ -1897,13 +1909,15 @@ Transfer::caseOf(string const &str)
 
 string
 Transfer::tolower(string const &str) const
-{ cerr << "tolower" << endl;
+{ 
+  cerr << "tolower" << endl; // di
   return UtfConverter::toUtf8(StringUtils::tolower(UtfConverter::fromUtf8(str)));
 }
 
 string
 Transfer::tags(string const &str) const
-{ //cerr << "tags" << endl;
+{ 
+  //cerr << "tags" << endl; // di
   string result = "<";
 
   for(unsigned int i = 0, limit = str.size(); i != limit; i++)
@@ -1926,7 +1940,7 @@ Transfer::tags(string const &str) const
 int
 Transfer::processRule(xmlNode *localroot)
 {
-  cerr << "processRule" << endl;
+  cerr << "processRule" << endl; // di
   int instruction_return, words_to_consume = -1;
   // localroot is supposed to be an 'action' tag
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
@@ -1948,7 +1962,8 @@ Transfer::processRule(xmlNode *localroot)
 
 TransferToken &
 Transfer::readToken(FILE *in)
-{ cerr << "readToken" << endl;
+{ 
+  cerr << "readToken" << endl; // di
   if(!input_buffer.isEmpty())
   {
     return input_buffer.next();
@@ -1958,8 +1973,7 @@ Transfer::readToken(FILE *in)
   while(true)
   {
     int val = fgetwc_unlocked(in);
-
-    //wcerr << UtfConverter::toUtf8(wchar_t(val)) << endl;
+    //wcerr << UtfConverter::toUtf8(wchar_t(val)) << endl; // di
 
     if(feof(in) || (val == 0 && internal_null_flush))
     {
@@ -1969,12 +1983,12 @@ Transfer::readToken(FILE *in)
     {
       content += L'\\';
       content += (wchar_t) fgetwc_unlocked(in);
-      //wcerr << content << endl;
+      //wcerr << content << endl; // di
     }
     else if(val == L'[')
     {
       content += L'[';
-      //wcerr << content << endl;
+      //wcerr << content << endl; // di
       while(true)
       {
 	int val2 = fgetwc_unlocked(in);
@@ -1982,18 +1996,18 @@ Transfer::readToken(FILE *in)
 	{
 	  content += L'\\';
 	  content += wchar_t(fgetwc_unlocked(in));
-          //wcerr << content << endl;
+          //wcerr << content << endl; // di
 	}
 	else if(val2 == L']')
 	{
 	  content += L']';
-          //wcerr << content << endl;
+          //wcerr << content << endl; // di
 	  break;
 	}
 	else
 	{
 	  content += wchar_t(val2);
-          //cerr << UtfConverter::toUtf8(content) << endl;
+          //cerr << UtfConverter::toUtf8(content) << endl; // di
 	}
       }
     }
@@ -2020,31 +2034,36 @@ Transfer::readToken(FILE *in)
 
 bool
 Transfer::getNullFlush(void)
-{ cerr << "getNullFlush" << endl;
+{ 
+  cerr << "getNullFlush" << endl; // di
   return null_flush;
 }
 
 void
 Transfer::setNullFlush(bool null_flush)
-{ cerr << "setNullFlush" << endl;
+{ 
+  cerr << "setNullFlush" << endl; // di
   this->null_flush = null_flush;
 }
 
 void
 Transfer::setTrace(bool trace)
-{ cerr << "setTrace" << endl;
+{ 
+  cerr << "setTrace" << endl; // di
   this->trace = trace;
 }
 
 void
 Transfer::setTraceATT(bool trace)
-{ cerr << "setTraceATT" << endl;
+{ 
+  cerr << "setTraceATT" << endl; // di
   this->trace_att = trace;
 }
 
 void
 Transfer::transfer_wrapper_null_flush(FILE *in, FILE *out)
-{ cerr << "transfer_wrapper_null_flush" << endl;
+{ 
+  cerr << "transfer_wrapper_null_flush" << endl; // di
   null_flush = false;
   internal_null_flush = true;
 
@@ -2066,7 +2085,7 @@ Transfer::transfer_wrapper_null_flush(FILE *in, FILE *out)
 void
 Transfer::transfer(FILE *in, FILE *out)
 { 
-  cerr << endl << "!! transfer started !!" << endl << endl;
+  cerr << endl << "transfer starts" << endl << endl; // di
 
   if(getNullFlush())
   {
@@ -2081,43 +2100,39 @@ Transfer::transfer(FILE *in, FILE *out)
   output = out;
   ms.init(me->getInitial());
 
-  int counter = 0;
+  int counter = 0; // di
   while(true)
   { 
-    cerr << endl << "Transfer iteration # " << counter << endl;
-    cerr << "last: " << last << endl;
-    cerr << "prev_last: " << prev_last << endl;
-    cerr << "lastrule_id: " << lastrule_id << endl;
-    cerr << "ms.size(): " << ms.size() << endl;
-
-    // Let's look at input_buffer contents
-    int initbuffpos = input_buffer.getPos();
-    cerr << "input_buffer position: " << initbuffpos << endl << endl;
-
-    input_buffer.setPos(0);
-    int currbuffpos, prevbuffpos = input_buffer.getPos();
-    TransferToken currbufftok, prevbufftok = input_buffer.next();
-
-    bool run = true;
-    while (run) {
-      currbuffpos = input_buffer.getPos();
-      currbufftok = input_buffer.next();
-      cerr << "input_buffer.buf[" << prevbuffpos << "]: " << UtfConverter::toUtf8(prevbufftok.getContent()) << endl;
-      if (currbuffpos == prevbuffpos) {
-        run = false;
-      } else {
-        prevbuffpos = currbuffpos;
-        prevbufftok = currbufftok;
-      }
-    }
-    cerr << endl;
-
-    // Return input_buffer to its initial position
-    input_buffer.setPos(initbuffpos);
+    cerr << endl << "Transfer iteration # " << counter << endl; // di
+    cerr << "last: " << last << endl; // di
+    cerr << "prev_last: " << prev_last << endl; // di
+    cerr << "lastrule_id: " << lastrule_id << endl; // di
+    cerr << "ms.size(): " << ms.size() << endl; // di
+    // Let's look at input_buffer contents // di
+    int initbuffpos = input_buffer.getPos(); // di
+    cerr << "input_buffer position: " << initbuffpos << endl << endl; // di
+    input_buffer.setPos(0); // di
+    int currbuffpos, prevbuffpos = input_buffer.getPos(); // di
+    TransferToken currbufftok, prevbufftok = input_buffer.next(); // di
+    bool run = true; // di
+    while (run) { // di
+      currbuffpos = input_buffer.getPos(); // di
+      currbufftok = input_buffer.next(); // di
+      cerr << "input_buffer.buf[" << prevbuffpos << "]: " << UtfConverter::toUtf8(prevbufftok.getContent()) << endl; // di
+      if (currbuffpos == prevbuffpos) { // di
+        run = false; // di
+      } else { // di
+        prevbuffpos = currbuffpos; // di
+        prevbufftok = currbufftok; // di
+      } // di
+    } // di
+    cerr << endl; // di
+    // Return input_buffer to its initial position // di
+    input_buffer.setPos(initbuffpos); // di
 
     if(trace_att)
     { 
-      cerr << "trace_att is True" << endl;
+      cerr << "trace_att is True" << endl; // di
       cerr << "Loop start " << endl;
       cerr << "ms.size: " << ms.size() << endl;
 
@@ -2148,11 +2163,11 @@ Transfer::transfer(FILE *in, FILE *out)
 
     if (ms.size() == 0)
     { 
-      cerr << "(ms.size() == 0)" << endl;
+      cerr << "(ms.size() == 0)" << endl; // di
       if(lastrule != NULL)
       {
         // this is the branch where a rule specified by lastrule_id is applied
-        cerr << "lastrule != NULL" << endl;
+        cerr << "lastrule != NULL" << endl; // di
         int num_words_to_consume = applyRule();
 
         if(trace_att)
@@ -2164,13 +2179,13 @@ Transfer::transfer(FILE *in, FILE *out)
         //This piece of code is executed unless the rule contains a "reject-current-rule" instruction
         if(num_words_to_consume < 0)
         {
-          cerr << "num_words_to_consume < 0" << endl;
+          cerr << "num_words_to_consume < 0" << endl; // di
           banned_rules.clear();
           input_buffer.setPos(last);
         }
         else if(num_words_to_consume > 0)
         {
-          cerr << "num_words_to_consume > 0" << endl;
+          cerr << "num_words_to_consume > 0" << endl; // di
           banned_rules.clear();
           if(prev_last >= input_buffer.getSize())
           {
@@ -2192,7 +2207,7 @@ Transfer::transfer(FILE *in, FILE *out)
         }
         else
         {
-          cerr << "num_words_to_consume == 0" << endl;
+          cerr << "num_words_to_consume == 0" << endl; // di
           //Add rule to banned rules
           banned_rules.insert(lastrule_id);
           input_buffer.setPos(prev_last);
@@ -2370,7 +2385,7 @@ Transfer::transfer(FILE *in, FILE *out)
 	else
 	{
 	  fputws_unlocked(current.getContent().c_str(), output);
-          cerr << endl << "!! transfer ended !!" << endl << endl;
+          cerr << endl << "transfer ends" << endl << endl;
 	  return;
 	}
 	break;
@@ -2386,42 +2401,44 @@ Transfer::transfer(FILE *in, FILE *out)
 int
 Transfer::applyRule()
 { 
-  cerr << "applyRule" << endl;
-  cerr << "limit " << tmpword.size() << endl;
-  //wcerr << UtfConverter::toUtf8(*tmpword[0]) << endl;
+  cerr << "applyRule" << endl; // di
+  cerr << "limit " << tmpword.size() << endl; // di
+  //wcerr << UtfConverter::toUtf8(*tmpword[0]) << endl; // di
   
   int words_to_consume;
   unsigned int limit = tmpword.size();
 
   for(unsigned int i = 0; i != limit; i++)
   { 
-    cerr << "applyRule iteration # " << i << endl;
+    cerr << "applyRule iteration # " << i << endl; // di
     if(i == 0)
     { 
-      cerr << "i == 0" << endl;
+      cerr << "i == 0" << endl; // di
       word = new TransferWord *[limit];
       lword = limit;
       if(limit != 1)
-      { cerr << "limit != 1" << endl;
+      { 
+        cerr << "limit != 1" << endl; // di
         blank = new string *[limit - 1];
         lblank = limit - 1;
       }
       else
-      { cerr << "not limit != 1" << endl;
+      { 
+        cerr << "not limit != 1" << endl; // di
         blank = NULL;
         lblank = 0;
       }
     }
     else
     { 
-      cerr << "not i == 0" << endl;
+      cerr << "not i == 0" << endl; // di
       blank[i-1] = new string(UtfConverter::toUtf8(*tmpblank[i-1]));
     }
 
     pair<wstring, int> tr;
     if(useBilingual && preBilingual == false)
     { 
-      cerr << "useBilingual && preBilingual == false" << endl;
+      cerr << "useBilingual && preBilingual == false" << endl; // di
       tr = fstp.biltransWithQueue(*tmpword[i], false);
       cerr << i << " ";
       wcerr << tr.first << " ";
@@ -2434,7 +2451,7 @@ Transfer::applyRule()
       // then
       // sl = word_in_lang1<its><tags>
       // tl = word_in_lang2<its><tags>
-      cerr << "preBilingual" << endl;
+      cerr << "preBilingual" << endl; // di
       wstring sl;
       wstring tl;
       int seenSlash = 0;
@@ -2476,24 +2493,23 @@ Transfer::applyRule()
           break;
         }
       }
-      cerr << UtfConverter::toUtf8(sl) << endl;
-      wcerr << tl << endl;
+      cerr << UtfConverter::toUtf8(sl) << endl; // di
+      wcerr << tl << endl; // di
       //tmpword[i]->assign(sl);
       tr = pair<wstring, int>(tl, false);
     }
     else
     { 
       // here we don't need to split anything
-      cerr << "else" << endl;
+      cerr << "else" << endl; // di
       tr = pair<wstring, int>(*tmpword[i], false);
     }
 
-    //wcerr << tr.first << endl;
-
+    //wcerr << tr.first << endl; // di
     word[i] = new TransferWord(UtfConverter::toUtf8(*tmpword[i]),
 			       UtfConverter::toUtf8(tr.first), tr.second);
-    //cerr << i << " ";
-    //wcerr << UtfConverter::fromUtf8(word[i]) << endl;
+    //cerr << i << " "; // di
+    //wcerr << UtfConverter::fromUtf8(word[i]) << endl; // di
   }
 
   words_to_consume = processRule(lastrule);
@@ -2522,14 +2538,15 @@ Transfer::applyRule()
   tmpword.clear();
   tmpblank.clear();
   ms.init(me->getInitial());
-  cerr << "wtc: " << words_to_consume << endl;
+  cerr << "wtc: " << words_to_consume << endl; // di
   return words_to_consume;
 } // end of applyRule
 
 /* HERE */
 void
 Transfer::applyWord(wstring const &word_str)
-{ cerr << "applyWord: applying to " << UtfConverter::toUtf8(word_str) << endl;
+{ 
+  cerr << "applyWord: applying to " << UtfConverter::toUtf8(word_str) << endl; // di
   ms.step(L'^');
   for(unsigned int i = 0, limit = word_str.size(); i < limit; i++)
   {
@@ -2570,7 +2587,7 @@ Transfer::applyWord(wstring const &word_str)
     }
   }
   ms.step(L'$');
-  //cerr << UtfConverter::toUtf8(word_str) << endl;
+  //cerr << UtfConverter::toUtf8(word_str) << endl; // di
 } // end of applyWord
 
 void
