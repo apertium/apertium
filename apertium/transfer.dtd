@@ -152,9 +152,14 @@ patterns used in rules
 -->
 
 <!ELEMENT rule (pattern, action)>
-<!ATTLIST rule comment CDATA #IMPLIED>
+<!ATTLIST rule id ID #IMPLIED
+               comment CDATA #IMPLIED>
 <!-- 
-      Each rule has a pattern and an action 
+      Each rule has a pattern and an action
+      * attribute 'id' is a unique rule identifier used to refer to the rule
+        in weigths file. It is really necessary only for ambiguous rules, and
+        is therefore optional. It is not restricted to integers, and it is
+        encouraged to make id meaningful. 
       * attribute 'comment' allows to put in comments about the purpose of
         the rule being defined
 -->
