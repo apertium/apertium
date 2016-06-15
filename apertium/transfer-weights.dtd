@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!ELEMENT transfer-weights (rule+)>
+<!-- 
+     'transfer-weights' is a root element.
+-->
+
+<!ELEMENT rule (pattern+)>
+<!ATTLIST rule id ID #REQUIRED
+               md5 CDATA #REQUIRED
+               comment CDATA #IMPLIED>
+<!-- 
+      Each rule has a list of patterns that define its weights.
+      * attribute 'id' is a unique rule identifier used to refer to the rule
+        as defined in transfer file.  It is not restricted to integers, and it is
+        encouraged to make id meaningful.
+      * attribute 'md5' is md5 sum of the corresponding rule entry text 
+        from transfer file with whitespace removed.  It is used to check 
+        if text of the rule hasn't changed since the weights were calculated.
+      * attribute 'comment' allows to put in comments about the purpose of
+        the rule.
+-->
+
+<!ELEMENT pattern (pattern-item+)>
+<!ATTLIST pattern weight #REQUIRED>
+<!-- 
+      The pattern is specified in terms of pattern items, each one
+      representing a lexical form in the matched pattern. 
+-->
+
+<!ELEMENT pattern-item EMPTY>
+<!ATTLIST pattern-item lemma CDATA #IMPLIED 
+                       tags CDATA #REQUIRED> 
+<!-- 
+     Each 'pattern-item' (pattern item) represents a set of lexical forms
+     and has a mandatory attribute 'tags' whose value is a sequence of
+     dot-separated tag names; this sequence is a subsequence of the
+     tag sequence defining each possible lexical form. For example,
+     tags="n.f" would match all lexical forms containing this tag
+     sequence, such as "^casa<n><f><pl>$".
+
+     In addition, an optional attribute, "lemma", may be used to
+     define lexical forms having a particular substring in their lemma.
+
+     This element is similar to 'cat-item' used in transfer files.
+-->
