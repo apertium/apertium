@@ -22,7 +22,7 @@
 -->
 
 <!ELEMENT pattern (pattern-item+)>
-<!ATTLIST pattern weight #REQUIRED>
+<!ATTLIST pattern weight CDATA #REQUIRED>
 <!-- 
       The pattern is specified in terms of pattern items, each one
       representing a lexical form in the matched pattern. 
