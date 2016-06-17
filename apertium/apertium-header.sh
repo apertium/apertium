@@ -414,8 +414,8 @@ while getopts ":uahlf:d:m:o:n" opt; do
     a) OPTION_TAGGER="-m" ;;
     l) LIST_MODES_AND_EXIT=true ;;
     h) message ;;
-    \?) echo "ERROR: Unknown option $OPTARG"; message ;;
-    :) echo "ERROR: $OPTARG requires an argument"; message ;;
+    \?) echo "ERROR: Unknown option $OPTARG" >&2; message >&2 ;;
+    :) echo "ERROR: $OPTARG requires an argument" >&2; message >&2 ;;
   esac
 done
 shift $(($OPTIND-1))
@@ -432,23 +432,23 @@ case "$#" in
     INFILE=$2
     PAIR=$1
     if [[ ! -e "$INFILE" ]]; then
-      echo "Error: file '$INFILE' not found."
-      message
+      echo "Error: file '$INFILE' not found." >&2
+      message >&2
     fi
     ;;
   2)
     INFILE=$2
     PAIR=$1
     if [[ ! -e "$INFILE" ]]; then
-      echo "Error: file '$INFILE' not found."
-      message
+      echo "Error: file '$INFILE' not found." >&2
+      message >&2
     fi
     ;;
   1)
     PAIR=$1
     ;;
   *)
-    message
+    message >&2
     ;;
 esac
 
@@ -456,15 +456,15 @@ esac
 if [[ -n $TRANSLATION_MEMORY_FILE ]]; then
   "$APERTIUM_PATH/lt-tmxcomp" "$TRANSLATION_MEMORY_DIRECTION" "$TRANSLATION_MEMORY_FILE" "$TMCOMPFILE" >/dev/null
   if [ "$?" != "0" ]; then
-    echo "Error: Cannot compile TM '$TRANSLATION_MEMORY_FILE'"
-    echo"   hint: use -o parameter"
-    message
+    echo "Error: Cannot compile TM '$TRANSLATION_MEMORY_FILE'" >&2
+    echo"   hint: use -o parameter" >&2
+    message >&2
   fi
 fi
 
 if [[ ! -d "$DATADIR/modes" ]]; then
-  echo "Error: Directory '$DATADIR/modes' does not exist."
-  message
+  echo "Error: Directory '$DATADIR/modes' does not exist." >&2
+  message >&2
 fi
 
 if [[ ! -e "$DATADIR/modes/$PAIR.mode" ]]; then
