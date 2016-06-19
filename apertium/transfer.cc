@@ -78,10 +78,12 @@ Transfer::~Transfer()
 void
 Transfer::readData(FILE *in)
 {
-  // Read transfer rules.
+  // Read transfer rules data from .t*x.bin file
   cerr << "readData" << endl; // di
 
   alphabet.read(in);
+  cerr << "Alphabet size: " << alphabet.size() << endl; // di
+
   any_char = alphabet(TRXReader::ANY_CHAR);
   any_tag = alphabet(TRXReader::ANY_TAG);
 
@@ -174,10 +176,11 @@ void
 Transfer::read(string const &transferfile, string const &datafile,
 	       string const &fstfile)
 { 
-  // read and parse transfer file(s)
+  // read and parse .t*x transfer file
   readTransfer(transferfile);
 
-  // datafile
+  // open precompiled .t*x.bin file and read data from it
+  cerr << "Reading data from " << datafile.c_str() << endl;
   FILE *in = fopen(datafile.c_str(), "rb");
   if(!in)
   {
@@ -187,9 +190,10 @@ Transfer::read(string const &transferfile, string const &datafile,
   readData(in);
   fclose(in);
 
+  // read data from fstfile if specified
   if(fstfile != "")
   {
-    cerr << "fstfile: " << fstfile << endl;
+    cerr << "Reading fst data from " << fstfile << endl; // di
     readBil(fstfile);
   }
 }
@@ -197,9 +201,9 @@ Transfer::read(string const &transferfile, string const &datafile,
 void
 Transfer::readTransfer(string const &in)
 { 
-  // Read transfer rules.
+  // Read transfer rules from .t*x file.
   // In fact, here we collect only default attribute value,
-  // macroses (macri?), and actions specified in rules.
+  // macros, and actions specified in rules.
   cerr << "Reading transfer rules from " << in.c_str() << endl; // di
   doc = xmlReadFile(in.c_str(), NULL, 0);
   if(doc == NULL)
@@ -339,7 +343,7 @@ Transfer::evalString(xmlNode *element)
   // Contrary to its name, this function basically evaluates
   // an xml element and executes appropriate instruction.
 
-  // I believe it is used to evaluate lowest-level elements, 
+  // I believe it is used to evaluate lowest-level action elements, 
   // such as 'clip' or 'lit-tag'.
 
   // If TransferInstr object corresponding to the element is already
@@ -1053,7 +1057,7 @@ Transfer::processRejectCurrentRule(xmlNode *localroot)
 void
 Transfer::processLet(xmlNode *localroot)
 { 
-  err << "processLet" << endl; // di
+  cerr << "processLet" << endl; // di
   xmlNode *leftSide = NULL, *rightSide = NULL;
 
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
@@ -2129,10 +2133,15 @@ Transfer::transfer(FILE *in, FILE *out)
     cerr << endl; // di
     // Return input_buffer to its initial position // di
     input_buffer.setPos(initbuffpos); // di
+    // List banned_rules //di
+    //cerr << "banned_rules:" << endl;
+    //for(set<int>::iterator iter=banned_rules.begin(); iter != banned_rules.end(); iter++) { // di
+    //    cerr << *iter << ", "; // di
+    //} // di
+    //cerr << endl; // di
 
     if(trace_att)
-    { 
-      cerr << "trace_att is True" << endl; // di
+    {
       cerr << "Loop start " << endl;
       cerr << "ms.size: " << ms.size() << endl;
 
@@ -2545,7 +2554,10 @@ Transfer::applyRule()
 /* HERE */
 void
 Transfer::applyWord(wstring const &word_str)
-{ 
+{
+  // Here, the token contained in word_str is fed 
+  // to the fst by stepping with ms
+
   cerr << "applyWord: applying to " << UtfConverter::toUtf8(word_str) << endl; // di
   ms.step(L'^');
   for(unsigned int i = 0, limit = word_str.size(); i < limit; i++)
@@ -2557,21 +2569,22 @@ Transfer::applyWord(wstring const &word_str)
 	ms.step(towlower(word_str[i]), any_char);
 	break;
 
-      case L'/':
+      case L'/': // got to the end of left side part (source token)
         i = limit;
         break;
 
-      case L'<':
+      case L'<': // got to the start of a tag
 	for(unsigned int j = i+1; j != limit; j++)
 	{
-	  if(word_str[j] == L'>')
+	  if(word_str[j] == L'>') // got to the end of the tag
 	  {
+            // try to get the symbol corresponding to the tag
 	    int symbol = alphabet(word_str.substr(i, j-i+1));
-	    if(symbol)
+	    if(symbol) // there is such symbol in alphabet
 	    {
 	      ms.step(symbol, any_tag);
 	    }
-	    else
+	    else // there is no such symbol in alphabet
 	    {
 	      ms.step(any_tag);
 	    }
@@ -2581,12 +2594,12 @@ Transfer::applyWord(wstring const &word_str)
 	}
 	break;
 
-      default:
+      default: // default is applying lemma's symbols one by one
 	ms.step(towlower(word_str[i]), any_char);
 	break;
     }
   }
-  ms.step(L'$');
+  ms.step(L'$'); // push the end of token
   //cerr << UtfConverter::toUtf8(word_str) << endl; // di
 } // end of applyWord
 
