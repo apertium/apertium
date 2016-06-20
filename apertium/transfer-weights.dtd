@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!ELEMENT transfer-weights (rule+)>
+<!ELEMENT transfer-weights (rule-group+)>
 <!-- 
      'transfer-weights' is a root element.
+-->
+
+<!ELEMENT rule-group (rule+)>
+<!--
+     An element used to keep all mutually ambiguous rules together.
 -->
 
 <!ELEMENT rule (pattern+)>
