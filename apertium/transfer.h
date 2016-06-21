@@ -34,6 +34,7 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <pcre.h>
 
 using namespace std;
 
@@ -51,6 +52,11 @@ private:
   map<string, set<string, Ltstr>, Ltstr> listslow;
   vector<xmlNode *> macro_map;
   vector<xmlNode *> rule_map;
+  vector<string> rule_ids; // rule number -> rule id, first meaningful rule at position 1
+  map<string, int> rule_id_map; // rule id -> rule number
+  vector<vector<string> > rule_groups; // rule group number -> rule ids
+  map<string, int> rule_group_map; // id -> rule group number
+  map<string, vector<pair<pcre*, double> > > weighted_patterns; // all weighted patterns, grouped by rule id
   xmlDoc *doc;
   xmlNode *root_element;
   TransferWord **word;
@@ -68,6 +74,7 @@ private:
   int any_tag;
 
   xmlNode *lastrule;
+  int lastrule_num;
   unsigned int nwords;
 
   map<xmlNode *, TransferInstr> evalStringCache;
@@ -77,6 +84,7 @@ private:
   OutputType defaultAttrs;
   bool preBilingual;
   bool useBilingual;
+  bool useWeights;
   bool null_flush;
   bool internal_null_flush;
   bool trace;
@@ -87,8 +95,11 @@ private:
   void readData(FILE *input);
   void readBil(string const &filename);
   void readTransfer(string const &input);
+  void readTransferWeights(string const &in); // read transfer weights file
   void collectMacros(xmlNode *localroot);
   void collectRules(xmlNode *localroot);
+  string getRuleId(xmlNode *localroot); // get value of 'id' property of 'rule' element
+  string getNodeAttr(xmlNode *localroot, const char* attr_name);
   string caseOf(string const &str);
   string copycase(string const &source_word, string const &target_word);
 
@@ -134,8 +145,8 @@ public:
   Transfer();
   ~Transfer();
   
-  void read(string const &transferfile, string const &datafile,
-	    string const &fstfile = "");
+  void read(string const &transferfile, string const &datafile, 
+            string const &weightsfile = "", string const &fstfile = "");
   void transfer(FILE *in, FILE *out);
   void setUseBilingual(bool value);
   bool getUseBilingual(void) const;
@@ -147,6 +158,8 @@ public:
   void setNullFlush(bool null_flush);
   void setTrace(bool trace);
   void setTraceATT(bool trace);
+  void setUseWeights(bool weighted);
+  bool getUseWeights(void) const;
 };
 
 #endif

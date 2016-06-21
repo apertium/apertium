@@ -41,19 +41,20 @@ void message(char *progname)
   wcerr << "       " << basename(progname) << " -x extended trules preproc biltrans [input [output]]" << endl;
   wcerr << "       " << basename(progname) << " -c trules preproc biltrans [input [output]]" << endl;
   wcerr << "       " << basename(progname) << " -t trules preproc biltrans [input [output]]" << endl;
-  wcerr << "  trules     transfer rules file" << endl;
-  wcerr << "  preproc    result of preprocess trules file" << endl;
-  wcerr << "  biltrans   bilingual letter transducer file" << endl;
-  wcerr << "  input      input file, standard input by default" << endl;
-  wcerr << "  output     output file, standard output by default" << endl;
-  wcerr << "  -b         input from lexical transfer" << endl;
-  wcerr << "  -n         don't use bilingual dictionary" << endl;
-  wcerr << "  -x bindix  extended mode with user dictionary" << endl;
-  wcerr << "  -c         case-sensitiveness while accessing bilingual dictionary" << endl;
-  wcerr << "  -t         trace (show rule numbers and patterns matched)" << endl;
-  wcerr << "  -T         trace, for apertium-transfer-tools (also sets -t)" << endl;
-  wcerr << "  -z         null-flushing output on '\0'" << endl;
-  wcerr << "  -h         shows this message" << endl;
+  wcerr << "  trules       transfer rules file" << endl;
+  wcerr << "  preproc      result of preprocess trules file" << endl;
+  wcerr << "  biltrans     bilingual letter transducer file" << endl;
+  wcerr << "  input        input file, standard input by default" << endl;
+  wcerr << "  output       output file, standard output by default" << endl;
+  wcerr << "  -w tweights  transfer rule weights file" << endl;
+  wcerr << "  -b           input from lexical transfer" << endl;
+  wcerr << "  -n           don't use bilingual dictionary" << endl;
+  wcerr << "  -x bindix    extended mode with user dictionary" << endl;
+  wcerr << "  -c           case-sensitiveness while accessing bilingual dictionary" << endl;
+  wcerr << "  -t           trace (show rule numbers and patterns matched)" << endl;
+  wcerr << "  -T           trace, for apertium-transfer-tools (also sets -t)" << endl;
+  wcerr << "  -z           null-flushing output on '\0'" << endl;
+  wcerr << "  -h           shows this message" << endl;
   
 
   exit(EXIT_FAILURE);
@@ -102,6 +103,7 @@ int main(int argc, char *argv[])
   Transfer t;
 
   int option_index=0;
+  string weights = "";
 
   while (true) {
     static struct option long_options[] =
@@ -109,6 +111,7 @@ int main(int argc, char *argv[])
       {"from-bilingual",      no_argument, 0, 'b'},
       {"no-bilingual",      no_argument, 0, 'n'},
       {"extended",      required_argument, 0, 'x'},
+      {"transfer-weihts",      required_argument, 0, 'w'},
       {"case-sensitive", no_argument, 0, 'c'},
       {"null-flush", no_argument, 0, 'z'},
       {"trace", no_argument, 0, 't'},
@@ -117,7 +120,7 @@ int main(int argc, char *argv[])
       {0, 0, 0, 0}
     };
 
-    int c=getopt_long(argc, argv, "nbx:cztTh", long_options, &option_index);
+    int c=getopt_long(argc, argv, "nbx:w:cztTh", long_options, &option_index);
     if (c==-1)
       break;
       
@@ -134,6 +137,12 @@ int main(int argc, char *argv[])
         
       case 'x':
         t.setExtendedDictionary(optarg);
+        break;
+
+      case 'w': // transfer rule weights file is specified
+        weights = optarg;
+        testfile(weights);
+        t.setUseWeights(true);
         break;
         
       case 'c':
@@ -170,7 +179,7 @@ int main(int argc, char *argv[])
       testfile(argv[argc-3]);
       testfile(argv[argc-4]);
       testfile(argv[argc-5]);
-      t.read(argv[argc-5], argv[argc-4], argv[argc-3]);
+      t.read(argv[argc-5], argv[argc-4], weights, argv[argc-3]);
       break;
       
     case 5:
@@ -180,7 +189,7 @@ int main(int argc, char *argv[])
         input = open_input(argv[argc-2]);
         testfile(argv[argc-3]);
         testfile(argv[argc-4]);
-        t.read(argv[argc-4], argv[argc-3]);
+        t.read(argv[argc-4], argv[argc-3], weights);
       }
       else
       {
@@ -188,7 +197,7 @@ int main(int argc, char *argv[])
         testfile(argv[argc-2]);
         testfile(argv[argc-3]);
         testfile(argv[argc-4]);
-        t.read(argv[argc-4], argv[argc-3], argv[argc-2]);
+        t.read(argv[argc-4], argv[argc-3], weights, argv[argc-2]);
       }
       break;
       
@@ -198,14 +207,14 @@ int main(int argc, char *argv[])
         input = open_input(argv[argc-1]);
         testfile(argv[argc-2]);
         testfile(argv[argc-3]);
-        t.read(argv[argc-3], argv[argc-2]);
+        t.read(argv[argc-3], argv[argc-2], weights);
       }
       else
       {
         testfile(argv[argc-1]);
         testfile(argv[argc-2]);
         testfile(argv[argc-3]);
-        t.read(argv[argc-3], argv[argc-2], argv[argc-1]);
+        t.read(argv[argc-3], argv[argc-2], weights, argv[argc-1]);
       }
       break;
     case 3:
@@ -213,7 +222,7 @@ int main(int argc, char *argv[])
       {
         testfile(argv[argc-1]);
         testfile(argv[argc-2]);
-        t.read(argv[argc-2], argv[argc-1]);
+        t.read(argv[argc-2], argv[argc-1], weights);
       }
       else
       {
