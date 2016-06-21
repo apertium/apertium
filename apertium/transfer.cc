@@ -2767,8 +2767,7 @@ Transfer::applyRule()
     double chosen_weight = 0., current_weight = 0.;
     string chosen_rule_id = rule_ids[lastrule_num];
     string current_rule_id;
-    unsigned int rule_group_num;
-    bool search; 
+    unsigned int rule_group_num; 
 
     // check if rule id is not empty
     if (chosen_rule_id != "")
@@ -2779,7 +2778,7 @@ Transfer::applyRule()
       {
         cerr << "Rule # " << lastrule_num << " is ambiguous" << endl; // di
         cerr << "Rule id: " << chosen_rule_id << endl; // di
-        cerr << "Other rules in the group: " << endl; // di
+        cerr << "Rules in the group: " << endl; // di
         for (unsigned int ind = 0; ind < rule_groups[rule_group_num].size(); ind++) // di
         {  // di
           cerr << "  " << rule_groups[rule_group_num][ind] << endl; // di
@@ -2789,14 +2788,13 @@ Transfer::applyRule()
         // let's check the weights for each rule in the group
         chosen_weight = 0.;
         for (unsigned int ind = 0; ind < rule_groups[rule_group_num].size(); ind++)
-        { 
-          search = true; // no suitable pattern yet
+        {
           current_weight = 0.;
           current_rule_id = rule_groups[rule_group_num][ind];
 
           cerr << "Checking " << current_rule_id << endl; // di
-          // go through patterns until some of them matches
-          for (unsigned int k = 0; k < weighted_patterns[current_rule_id].size() && search; k++)
+          // go through patterns
+          for (unsigned int k = 0; k < weighted_patterns[current_rule_id].size(); k++)
           { 
             pcreExecRet = pcre_exec(weighted_patterns[current_rule_id][k].first, NULL, 
                                     tmpchunk.c_str(), tmpchunk.length(), 
@@ -2806,17 +2804,13 @@ Transfer::applyRule()
               cerr << "Pattern matched " << weighted_patterns[current_rule_id][k].first; // di
               current_weight = weighted_patterns[current_rule_id][k].second;
               cerr << " with weight " << current_weight << endl; // di
-              search = false; // don't look at other patterns
+              if (current_weight > chosen_weight) // heavier rule
+              {
+                chosen_weight = current_weight;
+                chosen_rule_id = current_rule_id;
+              }
             }
           }
-          if (!search) // found something
-          {
-            if (current_weight > chosen_weight) // heavier rule
-            {
-              chosen_weight = current_weight;
-              chosen_rule_id = current_rule_id;
-            }
-          } 
         }
         cerr << endl; // di
         // substitute lastrule with the chosen one
