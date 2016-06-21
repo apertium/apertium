@@ -688,7 +688,7 @@ void apertium_tagger::s_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
 
   FILE *Corpus = try_open_file_utf8("CORPUS", argv[optind + 1], "r");
   FILE_Tagger_.train(Corpus, TheFunctionTypeOptionArgument);
-  try_close_file("CORPUS", argv[optind + 1], UntaggedCorpus);
+  try_close_file("CORPUS", argv[optind + 1], Corpus);
 
   FILE *Serialised_FILE_Tagger =
       try_open_file("SERIALISED_TAGGER", argv[optind + 3], "wb");
