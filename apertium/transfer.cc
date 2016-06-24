@@ -80,10 +80,8 @@ void
 Transfer::readData(FILE *in)
 {
   // Read transfer rules data from .t*x.bin file
-  //cerr << "readData" << endl; // di
 
   alphabet.read(in);
-  //cerr << "Alphabet size: " << alphabet.size() << endl; // di
 
   any_char = alphabet(TRXReader::ANY_CHAR);
   any_tag = alphabet(TRXReader::ANY_TAG);
@@ -144,8 +142,7 @@ Transfer::readData(FILE *in)
 
 void
 Transfer::readBil(string const &fstfile)
-{ 
-  cerr << "readBil" << endl; // di
+{
   FILE *in = fopen(fstfile.c_str(), "rb");
   if(!in)
   {
@@ -159,8 +156,7 @@ Transfer::readBil(string const &fstfile)
 
 void
 Transfer::setExtendedDictionary(string const &fstfile)
-{ 
-  cerr << "setExtendedDictionary" << endl; // di
+{
   FILE *in = fopen(fstfile.c_str(), "rb");
   if(!in)
   {
@@ -181,7 +177,7 @@ Transfer::read(string const &transferfile, string const &datafile,
   readTransfer(transferfile);
 
   // open precompiled .t*x.bin file and read data from it
-  cerr << "Reading data from " << datafile.c_str() << endl << endl;
+  cerr << "Reading data from " << datafile.c_str() << endl;
   FILE *in = fopen(datafile.c_str(), "rb");
   if(!in)
   {
@@ -221,7 +217,6 @@ Transfer::readTransfer(string const &in)
   }
 
   root_element = xmlDocGetRootElement(doc);
-  //cerr << root_element->properties << endl; // di
 
   // search through attributes of root element 
   for(xmlAttr *i = root_element->properties; i != NULL; i = i->next)
@@ -259,7 +254,7 @@ Transfer::readTransfer(string const &in)
     }
   }
 
-  if (useWeights) // di
+  /*if (useWeights) // di
   { // di
     // double-check rule ids in rule_id_map and rule_ids // di
     cerr << endl << "Those are the ids you wanted: " << endl; //di
@@ -268,7 +263,7 @@ Transfer::readTransfer(string const &in)
       cerr << "rule_ids[" << k << "]: " << rule_ids[k] << endl; // di
       cerr << "rule_id_map[" << rule_ids[k] << "]: " << rule_id_map[rule_ids[k]] << endl << endl; // di
     } // di
-  } // di
+  } // di*/
 }
 
 void
@@ -286,7 +281,7 @@ Transfer::collectRules(xmlNode *localroot)
     {
       // 'rule' element
       rule_index++;
-      cerr << "Collecting rule # " << rule_index << endl; //di
+      //cerr << "Collecting rule # " << rule_index << endl; //di
 
       if (useWeights) // only need ids if weights are used
       {
@@ -298,7 +293,7 @@ Transfer::collectRules(xmlNode *localroot)
         }
         rule_ids.push_back(rule_id);
         rule_id = "";
-        cerr << endl; // di
+        //cerr << endl; // di
       }
 
       // go through subelements of current 'rule' element looking for some action
@@ -351,7 +346,6 @@ Transfer::readTransferWeights(string const &in)
   int pcreErrorOffset;
 
   cerr << "Reading transfer weights from " << in.c_str() << endl << endl; // di
-  // di
   doc = xmlReadFile(in.c_str(), NULL, 0);
   if(doc == NULL)
   {
@@ -360,14 +354,13 @@ Transfer::readTransferWeights(string const &in)
   }
 
   root_element = xmlDocGetRootElement(doc);
-  //cerr << root_element->name << endl; // di
 
   // search through root's children nodes for 'rule-group' elements
   for(xmlNode *i = root_element->children; i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE && !xmlStrcmp(i->name, (const xmlChar *) "rule-group"))
     {
-      cerr << "Collecting rule-group # " << rule_group_index << endl; // di
+      cerr << "Collecting rule group # " << rule_group_index << endl; // di
       // get ids of all rules in rule group
       for(xmlNode *j = i->children; j != NULL; j = j->next)
       {
@@ -377,7 +370,7 @@ Transfer::readTransferWeights(string const &in)
           rule_id = getRuleId(j);
           current_rule_group.push_back(rule_id);
           rule_group_map[rule_id] = rule_group_index;
-          cerr << endl; // di
+          cerr << "Rule id: " << rule_id << endl; // di
 
           // get patterns
           for(xmlNode *k = j->children; k != NULL; k = k->next)
@@ -385,7 +378,6 @@ Transfer::readTransferWeights(string const &in)
             if(k->type == XML_ELEMENT_NODE && !xmlStrcmp(k->name, (const xmlChar *) "pattern"))
             {
                weight = atof(getNodeAttr(k, "weight").c_str());
-               cerr << weight << endl;
                for(xmlNode *patit = k->children; patit != NULL; patit = patit->next)
                {
                  if(patit->type == XML_ELEMENT_NODE && !xmlStrcmp(patit->name, (const xmlChar *) "pattern-item"))
@@ -428,11 +420,10 @@ Transfer::readTransferWeights(string const &in)
                    {
                      regex = regex + ">";
                    } 
-                   cerr << lemma << " " << tags << endl;
                    regex = regex + "\\S*? ";
-                   cerr << regex << endl;
                  }
                }
+               cerr << "  " << weight << " " << regex << endl;
                reCompiled = pcre_compile(regex.c_str(), 0, &pcreErrorStr, &pcreErrorOffset, NULL);
                //pcreExtra = pcre_study(reCompiled, 0, &pcreErrorStr);
                current_pattern_group.push_back(make_pair(reCompiled, weight));
@@ -441,18 +432,18 @@ Transfer::readTransferWeights(string const &in)
           }
           weighted_patterns[rule_id] = current_pattern_group;
           current_pattern_group.clear();
+          cerr << endl; // di
         }
       }
       // push newly acquired current_rule_group into rule_groups
       rule_groups.push_back(current_rule_group);
       current_rule_group.clear();
-      cerr << endl; // di
       rule_group_index++;
     }
   }
 
   // print out what was collected // di
-  cerr << "These are the rule groups you collected:" << endl; // di
+  /*cerr << "These are the rule groups you collected:" << endl; // di
   unsigned int k1, k2; // di
   for (k1 = 0; k1 < rule_groups.size(); k1++) // di
   { // di
@@ -460,13 +451,13 @@ Transfer::readTransferWeights(string const &in)
     for (k2 = 0; k2 < rule_groups[k1].size(); k2++) // di
     { // di
       cerr << "  " << rule_groups[k1][k2] << endl; // di
-      cerr << "    rule_group_map[" << rule_groups[k1][k2] << "]: "; // di
-      cerr << rule_group_map[rule_groups[k1][k2]] << endl; // di
+      //cerr << "    rule_group_map[" << rule_groups[k1][k2] << "]: "; // di
+      //cerr << rule_group_map[rule_groups[k1][k2]] << endl; // di
     } // di
     cerr << endl; // di
-  } // di
+  } // di*/
 
-  cerr << "And these are the patterns:" << endl; // di
+  /*cerr << "And these are the patterns:" << endl; // di
   for (k1 = 1; k1 < rule_ids.size(); k1++) // di
   { // di
     if (rule_ids[k1] != "") // di
@@ -478,7 +469,7 @@ Transfer::readTransferWeights(string const &in)
         cerr << weighted_patterns[rule_ids[k1]][k2].second << endl; // di
       } // di
     } // di
-  } // di
+  } // di*/
 
 }
 
@@ -491,7 +482,7 @@ Transfer::getRuleId(xmlNode *localroot)
       {
         if(!xmlStrcmp(j->name, (const xmlChar *) "comment")) // di
         { // di
-          cerr << "Rule comment: " << xmlNodeListGetString(localroot->doc, j->children, 1) << endl;   // di
+          //cerr << "Rule comment: " << xmlNodeListGetString(localroot->doc, j->children, 1) << endl;   // di
         } // di
         else //di
         { //di
@@ -499,7 +490,7 @@ Transfer::getRuleId(xmlNode *localroot)
           {
             // add rule id to rule_id_map
             rule_id = (const char*)xmlNodeListGetString(localroot->doc, j->children, 1);
-            cerr << "Rule id: " << rule_id << endl;   // di           
+            //cerr << "Rule id: " << rule_id << endl;   // di           
           }
         } // di
       } // di
@@ -923,7 +914,6 @@ Transfer::processOut(xmlNode *localroot)
             if(j->type == XML_ELEMENT_NODE)
             {
               myword.append(evalString(j));
-              //cerr << myword << endl; // di
             }
           }
           if(myword != "")
@@ -931,7 +921,6 @@ Transfer::processOut(xmlNode *localroot)
             fputwc_unlocked(L'^', output);
             fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
             fputwc_unlocked(L'$', output);
-            //cerr << UtfConverter::fromUtf8(myword).c_str() << endl; // di
           }
         }
         else if(!xmlStrcmp(i->name, (const xmlChar *) "mlu"))
@@ -982,7 +971,6 @@ Transfer::processOut(xmlNode *localroot)
         {
           string processed = processChunk(i);
           fputws_unlocked(UtfConverter::fromUtf8(processed).c_str(), output);
-          cerr << "Hey, I just made a chunk: " << processed << endl; // di
         }
         else // 'b'
         {
@@ -1027,7 +1015,6 @@ Transfer::processChunk(xmlNode *localroot)
 
   // starting to build the chunk
   result.append("^");
-  //cerr << result << endl; // di
 
   // adding chunk name
   if(caseofchunk != "")
@@ -1035,12 +1022,10 @@ Transfer::processChunk(xmlNode *localroot)
     if(name != "")
     {
       result.append(copycase(variables[caseofchunk], name));
-      //cerr << result << endl; // di
     }
     else if(namefrom != "")
     {
       result.append(copycase(variables[caseofchunk], variables[namefrom]));
-      //cerr << result << endl; // di
     }
     else
     {
@@ -1053,12 +1038,10 @@ Transfer::processChunk(xmlNode *localroot)
     if(name != "")
     {
       result.append(name);
-      //cerr << result << endl; // di
     }
     else if(namefrom != "")
     {
       result.append(variables[namefrom]);
-      //cerr << result << endl; // di
     }
     else
     {
@@ -1072,15 +1055,13 @@ Transfer::processChunk(xmlNode *localroot)
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE)
-    { 
-      cerr << "chunk element # " << count << ": " << i->name << endl; // di
+    {
       count++; // di
       if(!xmlStrcmp(i->name, (const xmlChar *) "tags"))
       {
         // add chunk tags
         result.append(processTags(i));
         result.append("{");
-        //cerr << result << endl; // di
       }
       else if(!xmlStrcmp(i->name, (const xmlChar *) "lu"))
       {
@@ -1093,24 +1074,20 @@ Transfer::processChunk(xmlNode *localroot)
         {
           if(j->type == XML_ELEMENT_NODE)
           {
-            //cerr << "Executing " << j->name << endl; // di
             myword.append(evalString(j));
 
             evalStringClip(j, untouched, untouched_pos); // black magic
             if(untouched_pos != -1)
             {
-              //cerr << "Got untouched: " << untouched_pos << ", " << untouched << endl; // di
               wordcache[untouched_pos].append(untouched);
             }
           }
         }
         if(myword != "")
         {
-          //cerr << myword << endl;
           result.append("^");
           result.append(myword);
           result.append("$");
-          //cerr << result << endl;
         }
       }
       else if(!xmlStrcmp(i->name, (const xmlChar *) "mlu"))
@@ -1146,17 +1123,14 @@ Transfer::processChunk(xmlNode *localroot)
         }
         if(myword != "")
         {
-          //cerr << myword << endl; // di
           result.append("^");
           result.append(myword);
           result.append("$");
-          //cerr << result << endl; // di
         }
       }
       else // 'b'
       {
         result.append(evalString(i));
-        //cerr << result << endl; // di
       }
     }
   }
@@ -1191,8 +1165,7 @@ Transfer::processChunk(xmlNode *localroot)
 
 string
 Transfer::processTags(xmlNode *localroot)
-{ 
-  //cerr << "processTags" << endl; // di
+{
   string result;
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
@@ -1253,8 +1226,7 @@ Transfer::processInstruction(xmlNode *localroot)
 
 int
 Transfer::processRejectCurrentRule(xmlNode *localroot)
-{ 
-  cerr << "processRejectCurrentRule" << endl; // di
+{
   bool shifting = true;
   string value;
   for(xmlAttr *i = localroot->properties; i != NULL; i = i->next)
@@ -1276,8 +1248,7 @@ Transfer::processRejectCurrentRule(xmlNode *localroot)
 
 void
 Transfer::processLet(xmlNode *localroot)
-{ 
-  cerr << "processLet" << endl; // di
+{
   xmlNode *leftSide = NULL, *rightSide = NULL;
 
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
@@ -1372,8 +1343,7 @@ Transfer::processLet(xmlNode *localroot)
 
 void
 Transfer::processAppend(xmlNode *localroot)
-{ 
-  cerr << "processAppend" << endl; // di
+{
   string name;
   for(xmlAttr *i = localroot->properties; i != NULL; i = i->next)
   {
@@ -1395,8 +1365,7 @@ Transfer::processAppend(xmlNode *localroot)
 
 void
 Transfer::processModifyCase(xmlNode *localroot)
-{ 
-  cerr << "processModifyCase" << endl; // di
+{
   xmlNode *leftSide = NULL, *rightSide = NULL;
 
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
@@ -1470,8 +1439,7 @@ Transfer::processModifyCase(xmlNode *localroot)
 
 void
 Transfer::processCallMacro(xmlNode *localroot)
-{ 
-  cerr << "processCallMacro" << endl; // di
+{
   string const n = (const char *) localroot->properties->children->content;
   int npar = 0;
 
@@ -1539,8 +1507,7 @@ Transfer::processCallMacro(xmlNode *localroot)
 
 int
 Transfer::processChoose(xmlNode *localroot)
-{ 
-  cerr << "processChoose" << endl; // di
+{
   int words_to_consume = -1;
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
@@ -1601,8 +1568,7 @@ Transfer::processChoose(xmlNode *localroot)
 
 bool
 Transfer::processLogical(xmlNode *localroot)
-{ 
-  cerr << "processLogical" << endl; // di
+{
   if(!xmlStrcmp(localroot->name, (const xmlChar *) "equal"))
   {
     return processEqual(localroot);
@@ -1649,8 +1615,7 @@ Transfer::processLogical(xmlNode *localroot)
 
 bool
 Transfer::processIn(xmlNode *localroot)
-{ 
-  cerr << "processIn" << endl; // di
+{
   xmlNode *value = NULL;
   xmlChar *idlist = NULL;
 
@@ -1701,8 +1666,7 @@ Transfer::processIn(xmlNode *localroot)
 
 bool
 Transfer::processTest(xmlNode *localroot)
-{ 
-  cerr << "processTest" << endl; // di
+{
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE)
@@ -1715,8 +1679,7 @@ Transfer::processTest(xmlNode *localroot)
 
 bool
 Transfer::processAnd(xmlNode *localroot)
-{ 
-  cerr << "processAnd" << endl; // di
+{
   bool val = true;
   for(xmlNode *i = localroot->children; val && i != NULL; i = i->next)
   {
@@ -1731,8 +1694,7 @@ Transfer::processAnd(xmlNode *localroot)
 
 bool
 Transfer::processOr(xmlNode *localroot)
-{ 
-  cerr << "processOr" << endl; // di
+{
   bool val = false;
   for(xmlNode *i = localroot->children; !val && i != NULL ; i = i->next)
   {
@@ -1747,8 +1709,7 @@ Transfer::processOr(xmlNode *localroot)
 
 bool
 Transfer::processNot(xmlNode *localroot)
-{ 
-  cerr << "processNot" << endl; // di
+{
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE)
@@ -1761,8 +1722,7 @@ Transfer::processNot(xmlNode *localroot)
 
 bool
 Transfer::processEqual(xmlNode *localroot)
-{ 
-  cerr << "processEqual" << endl; // di
+{
   xmlNode *first = NULL, *second = NULL;
 
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
@@ -1801,8 +1761,7 @@ Transfer::processEqual(xmlNode *localroot)
 
 bool
 Transfer::beginsWith(string const &s1, string const &s2) const
-{ 
-  cerr << "beginsWith" << endl; // di
+{
   int const limit = s2.size(), constraint = s1.size();
 
   if(constraint < limit)
@@ -1822,8 +1781,7 @@ Transfer::beginsWith(string const &s1, string const &s2) const
 
 bool
 Transfer::endsWith(string const &s1, string const &s2) const
-{ 
-  cerr << "endsWith" << endl; // di
+{
   int const limit = s2.size(), constraint = s1.size();
 
   if(constraint < limit)
@@ -1844,8 +1802,7 @@ Transfer::endsWith(string const &s1, string const &s2) const
 
 bool
 Transfer::processBeginsWith(xmlNode *localroot)
-{ 
-  cerr << "processBeginsWith" << endl; // di
+{
   xmlNode *first = NULL, *second = NULL;
 
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
@@ -1884,8 +1841,7 @@ Transfer::processBeginsWith(xmlNode *localroot)
 
 bool
 Transfer::processEndsWith(xmlNode *localroot)
-{ 
-  cerr << "processEndsWith" << endl; // di
+{
   xmlNode *first = NULL, *second = NULL;
 
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
@@ -1924,8 +1880,7 @@ Transfer::processEndsWith(xmlNode *localroot)
 
 bool
 Transfer::processBeginsWithList(xmlNode *localroot)
-{ 
-  cerr << "processBeginsWithList" << endl; // di
+{
   xmlNode *first = NULL, *second = NULL;
 
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
@@ -1974,8 +1929,7 @@ Transfer::processBeginsWithList(xmlNode *localroot)
 
 bool
 Transfer::processEndsWithList(xmlNode *localroot)
-{ 
-  cerr << "processEndsWithList" << endl; // di
+{
   xmlNode *first = NULL, *second = NULL;
 
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
@@ -2023,8 +1977,7 @@ Transfer::processEndsWithList(xmlNode *localroot)
 
 bool
 Transfer::processContainsSubstring(xmlNode *localroot)
-{ 
-  cerr << "processContainsSubstring" << endl; // di
+{
   xmlNode *first = NULL, *second = NULL;
 
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
@@ -2063,8 +2016,7 @@ Transfer::processContainsSubstring(xmlNode *localroot)
 
 string
 Transfer::copycase(string const &source_word, string const &target_word)
-{ 
-  //cerr << "copycase" << endl; // di
+{
   wstring result;
   wstring const s_word = UtfConverter::fromUtf8(source_word);
   wstring const t_word = UtfConverter::fromUtf8(target_word);
@@ -2094,8 +2046,7 @@ Transfer::copycase(string const &source_word, string const &target_word)
 
 string
 Transfer::caseOf(string const &str)
-{ 
-  cerr << "caseOf" << endl; // di
+{
   wstring const s = UtfConverter::fromUtf8(str);
 
   if(s.size() > 1)
@@ -2132,15 +2083,13 @@ Transfer::caseOf(string const &str)
 
 string
 Transfer::tolower(string const &str) const
-{ 
-  cerr << "tolower" << endl; // di
+{
   return UtfConverter::toUtf8(StringUtils::tolower(UtfConverter::fromUtf8(str)));
 }
 
 string
 Transfer::tags(string const &str) const
-{ 
-  //cerr << "tags" << endl; // di
+{
   string result = "<";
 
   for(unsigned int i = 0, limit = str.size(); i != limit; i++)
@@ -2163,7 +2112,6 @@ Transfer::tags(string const &str) const
 int
 Transfer::processRule(xmlNode *localroot)
 {
-  cerr << "processRule" << endl; // di
   int instruction_return, words_to_consume = -1;
   // localroot is supposed to be an 'action' tag
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
@@ -2185,8 +2133,7 @@ Transfer::processRule(xmlNode *localroot)
 
 TransferToken &
 Transfer::readToken(FILE *in)
-{ 
-  //cerr << "readToken" << endl; // di
+{
   if(!input_buffer.isEmpty())
   {
     return input_buffer.next();
@@ -2196,7 +2143,6 @@ Transfer::readToken(FILE *in)
   while(true)
   {
     int val = fgetwc_unlocked(in);
-    //wcerr << UtfConverter::toUtf8(wchar_t(val)) << endl; // di
 
     if(feof(in) || (val == 0 && internal_null_flush))
     {
@@ -2206,12 +2152,10 @@ Transfer::readToken(FILE *in)
     {
       content += L'\\';
       content += (wchar_t) fgetwc_unlocked(in);
-      //wcerr << content << endl; // di
     }
     else if(val == L'[')
     {
       content += L'[';
-      //wcerr << content << endl; // di
       while(true)
       {
         int val2 = fgetwc_unlocked(in);
@@ -2219,29 +2163,26 @@ Transfer::readToken(FILE *in)
         {
           content += L'\\';
           content += wchar_t(fgetwc_unlocked(in));
-          //wcerr << content << endl; // di
         }
         else if(val2 == L']')
         {
           content += L']';
-          //wcerr << content << endl; // di
           break;
         }
         else
         {
           content += wchar_t(val2);
-          //cerr << UtfConverter::toUtf8(content) << endl; // di
         }
       }
     }
     else if(val == L'$')
     {
-      cerr << UtfConverter::toUtf8(content) << endl;
+      //cerr << UtfConverter::toUtf8(content) << endl; // di
       return input_buffer.add(TransferToken(content, tt_word));
     }
     else if(val == L'^')
     {
-      cerr << UtfConverter::toUtf8(content) << endl;
+      // cerr << UtfConverter::toUtf8(content) << endl; // di
       return input_buffer.add(TransferToken(content, tt_blank));
     }
     else if(val == L'\0' && null_flush)
@@ -2257,36 +2198,31 @@ Transfer::readToken(FILE *in)
 
 bool
 Transfer::getNullFlush(void)
-{ 
-  //cerr << "getNullFlush" << endl; // di
+{
   return null_flush;
 }
 
 void
 Transfer::setNullFlush(bool null_flush)
-{ 
-  cerr << "setNullFlush" << endl; // di
+{
   this->null_flush = null_flush;
 }
 
 void
 Transfer::setTrace(bool trace)
-{ 
-  cerr << "setTrace" << endl; // di
+{
   this->trace = trace;
 }
 
 void
 Transfer::setTraceATT(bool trace)
-{ 
-  cerr << "setTraceATT" << endl; // di
+{
   this->trace_att = trace;
 }
 
 void
 Transfer::transfer_wrapper_null_flush(FILE *in, FILE *out)
-{ 
-  cerr << "transfer_wrapper_null_flush" << endl; // di
+{
   null_flush = false;
   internal_null_flush = true;
 
@@ -2308,7 +2244,7 @@ Transfer::transfer_wrapper_null_flush(FILE *in, FILE *out)
 void
 Transfer::transfer(FILE *in, FILE *out)
 { 
-  cerr << "Transfer starts here" << endl << endl; // di
+  //cerr << "Transfer starts here" << endl << endl; // di
 
   if(getNullFlush())
   {
@@ -2326,11 +2262,11 @@ Transfer::transfer(FILE *in, FILE *out)
   int counter = 0; // di
   while(true)
   { 
-    cerr << "Transfer iteration # " << counter << endl; // di
-    cerr << "last: " << last << endl; // di
-    cerr << "prev_last: " << prev_last << endl; // di
-    cerr << "lastrule_num: " << lastrule_num << endl; // di
-    cerr << "ms.size(): " << ms.size() << endl; // di
+    //cerr << "Transfer iteration # " << counter << endl; // di
+    //cerr << "last: " << last << endl; // di
+    //cerr << "prev_last: " << prev_last << endl; // di
+    //cerr << "lastrule_num: " << lastrule_num << endl; // di
+    //cerr << "ms.size(): " << ms.size() << endl; // di
 
     // Let's look at input_buffer contents // di
     /*int initbuffpos = input_buffer.getPos(); // di
@@ -2391,13 +2327,10 @@ Transfer::transfer(FILE *in, FILE *out)
     } // if(trace_att) ends here 
 
     if (ms.size() == 0)
-    { 
-      //cerr << "(ms.size() == 0)" << endl; // di
+    {
       if(lastrule != NULL)
       {
         // this is the branch where a rule specified by lastrule_num is applied
-
-        //cerr << "lastrule != NULL" << endl; // di
         int num_words_to_consume = applyRule();
 
         if(trace_att)
@@ -2409,13 +2342,11 @@ Transfer::transfer(FILE *in, FILE *out)
         //This piece of code is executed unless the rule contains a "reject-current-rule" instruction
         if(num_words_to_consume < 0)
         {
-          cerr << "num_words_to_consume < 0" << endl; // di
           banned_rules.clear();
           input_buffer.setPos(last);
         }
         else if(num_words_to_consume > 0)
         {
-          cerr << "num_words_to_consume > 0" << endl; // di
           banned_rules.clear();
           if(prev_last >= input_buffer.getSize())
           {
@@ -2437,7 +2368,6 @@ Transfer::transfer(FILE *in, FILE *out)
         }
         else
         {
-          cerr << "num_words_to_consume == 0" << endl; // di
           //Add rule to banned rules
           banned_rules.insert(lastrule_num);
           input_buffer.setPos(prev_last);
@@ -2557,7 +2487,6 @@ Transfer::transfer(FILE *in, FILE *out)
         }
         else if(tmpblank.size() != 0)
         {
-          cerr << "tmpblank.size() != 0" << endl;
           if(trace_att)
           {
             cerr << "printing tmpblank[0]" <<endl;
@@ -2615,7 +2544,6 @@ Transfer::transfer(FILE *in, FILE *out)
         else
         {
           fputws_unlocked(current.getContent().c_str(), output);
-          cerr << endl << "transfer ends" << endl << endl;
           return;
         }
         break;
@@ -2624,18 +2552,13 @@ Transfer::transfer(FILE *in, FILE *out)
         cerr << "Error: Unknown input token." << endl;
         return;
     }
-    counter++;
-    cerr << endl;
+    counter++; // di
   }
 } // end of transfer
 
 int
 Transfer::applyRule()
-{ 
-  //cerr << "applyRule" << endl; // di
-  //cerr << "limit " << tmpword.size() << endl; // di
-  //wcerr << UtfConverter::toUtf8(*tmpword[0]) << endl; // di
-
+{
   int words_to_consume;
   unsigned int limit = tmpword.size();
 
@@ -2649,39 +2572,32 @@ Transfer::applyRule()
 
   for(unsigned int i = 0; i != limit; i++)
   { 
-    cerr << "applyRule iteration # " << i << endl; // di
+    //cerr << "applyRule iteration # " << i << endl; // di
     if(i == 0)
-    { 
-      cerr << "i == 0" << endl; // di
+    {
       word = new TransferWord *[limit];
       lword = limit;
       if(limit != 1)
-      { 
-        cerr << "limit != 1" << endl; // di
+      {
         blank = new string *[limit - 1];
         lblank = limit - 1;
       }
       else
-      { 
-        cerr << "not limit != 1" << endl; // di
+      {
         blank = NULL;
         lblank = 0;
       }
     }
     else
-    { 
-      cerr << "not i == 0" << endl; // di
+    {
       blank[i-1] = new string(UtfConverter::toUtf8(*tmpblank[i-1]));
     }
 
     pair<wstring, int> tr;
     if(useBilingual && preBilingual == false)
-    { 
-      cerr << "useBilingual && preBilingual == false" << endl; // di
+    {
       tr = fstp.biltransWithQueue(*tmpword[i], false);
       cerr << i << " ";
-      wcerr << tr.first << " "; // di
-      cerr << tr.second << endl; // di
     }
     else if(preBilingual)
     { 
@@ -2691,7 +2607,6 @@ Transfer::applyRule()
       // sl = word_in_lang1<its><tags>
       // tl = word_in_lang2<its><tags>
 
-      cerr << "preBilingual" << endl; // di
       wstring sl;
       wstring tl;
       int seenSlash = 0;
@@ -2733,8 +2648,7 @@ Transfer::applyRule()
           break;
         }
       }
-      cerr << UtfConverter::toUtf8(sl) << endl; // di
-      wcerr << tl << endl; // di
+
       //tmpword[i]->assign(sl);
       tr = pair<wstring, int>(tl, false);
       if (useWeights)
@@ -2745,22 +2659,18 @@ Transfer::applyRule()
     else
     { 
       // here we don't need to split anything
-      cerr << "else" << endl; // di
       tr = pair<wstring, int>(*tmpword[i], false);
     }
 
-    //wcerr << L"tr.first: " << tr.first << endl; // di
     word[i] = new TransferWord(UtfConverter::toUtf8(*tmpword[i]),
                                UtfConverter::toUtf8(tr.first), tr.second);
-    //cerr << i << " "; // di
-    //wcerr << L"word[" << i << L"]: " << UtfConverter::fromUtf8(tr.first) << endl; // di
   }
 
   // check if we use weights
   if (useWeights)
   {
     tmpchunk = UtfConverter::toUtf8(wtmpchunk);
-    cerr << "Got an lchunk: " << tmpchunk << endl << endl; // di
+    //cerr << tmpchunk << endl << endl; // di
 
     int pcreExecRet;
     int subStrVec[30];
@@ -2776,14 +2686,14 @@ Transfer::applyRule()
       rule_group_num = rule_group_map[chosen_rule_id];
       if (rule_groups[rule_group_num].size() > 1)
       {
-        cerr << "Rule # " << lastrule_num << " is ambiguous" << endl; // di
-        cerr << "Rule id: " << chosen_rule_id << endl; // di
-        cerr << "Rules in the group: " << endl; // di
+        cerr << "Rule # " << lastrule_num << " with id '" << chosen_rule_id << "' is ambiguous on input:" << endl; // di
+        cerr << tmpchunk << endl << endl; // di
+        /*cerr << "Rules in the group: " << endl; // di
         for (unsigned int ind = 0; ind < rule_groups[rule_group_num].size(); ind++) // di
         {  // di
           cerr << "  " << rule_groups[rule_group_num][ind] << endl; // di
         } // di
-        cerr << endl; // di
+        cerr << endl; // di*/
      
         // let's check the weights for each rule in the group
         chosen_weight = 0.;
@@ -2792,7 +2702,7 @@ Transfer::applyRule()
           current_weight = 0.;
           current_rule_id = rule_groups[rule_group_num][ind];
 
-          cerr << "Checking " << current_rule_id << endl; // di
+          cerr << "Checking rule # " << rule_id_map[current_rule_id] << " with id '" << current_rule_id << "'" << endl; // di
           // go through patterns
           for (unsigned int k = 0; k < weighted_patterns[current_rule_id].size(); k++)
           { 
@@ -2801,9 +2711,9 @@ Transfer::applyRule()
                                     0, 0, subStrVec, 30);
             if(pcreExecRet >= 0) // bingo!
             {
-              cerr << "Pattern matched " << weighted_patterns[current_rule_id][k].first; // di
+              cerr << "  Pattern # " << k; // di
               current_weight = weighted_patterns[current_rule_id][k].second;
-              cerr << " with weight " << current_weight << endl; // di
+              cerr << " matched with weight " << current_weight << endl; // di
               if (current_weight > chosen_weight) // heavier rule
               {
                 chosen_weight = current_weight;
@@ -2816,8 +2726,8 @@ Transfer::applyRule()
         // substitute lastrule with the chosen one
         lastrule_num = rule_id_map[chosen_rule_id];
         lastrule = rule_map[lastrule_num-1];
-        cerr << "Chose rule # " << lastrule_num << " id: " << chosen_rule_id;
-        cerr << " with weight " << chosen_weight << endl; // di
+        cerr << "Rule # " << lastrule_num << " with id '" << chosen_rule_id;
+        cerr << "' wins with weight " << chosen_weight << endl << endl; // di
       }
     }
   }
@@ -2848,7 +2758,6 @@ Transfer::applyRule()
   tmpword.clear();
   tmpblank.clear();
   ms.init(me->getInitial());
-  cerr << "wtc: " << words_to_consume << endl; // di
   return words_to_consume;
 } // end of applyRule
 
@@ -2859,7 +2768,6 @@ Transfer::applyWord(wstring const &word_str)
   // Here, the token contained in word_str is fed 
   // to the fst by stepping with ms
 
-  //cerr << "applyWord: applying to " << UtfConverter::toUtf8(word_str) << endl; // di
   ms.step(L'^');
   for(unsigned int i = 0, limit = word_str.size(); i < limit; i++)
   {
@@ -2901,7 +2809,6 @@ Transfer::applyWord(wstring const &word_str)
     }
   }
   ms.step(L'$'); // push the end of token
-  //cerr << UtfConverter::toUtf8(word_str) << endl; // di
 } // end of applyWord
 
 void
