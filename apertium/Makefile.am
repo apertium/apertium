@@ -226,7 +226,7 @@ apertium_DATA = deformat.xsl reformat.xsl new2old.xsl lexchoice.xsl \
 
 apertium_pretransfer_SOURCES = apertium_pretransfer.cc
 apertium_multiple_translations_SOURCES = apertium-multiple-translations.cc
-apertium_multiple_translations_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
+apertium_multiple_translations_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 apertium_destxt_SOURCES = apertium_destxt.cc
 apertium_retxt_SOURCES = apertium_retxt.cc
 apertium_deshtml_SOURCES = apertium_deshtml.cc
@@ -249,55 +249,55 @@ apertium_repptx_SOURCES = apertium_repptx.cc
 apertium_desmediawiki_SOURCES = apertium_desmediawiki.cc
 apertium_remediawiki_SOURCES = apertium_remediawiki.cc
 apertium_prelatex_SOURCES = apertium_prelatex.cc
-apertium_prelatex_LDADD= $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
+apertium_prelatex_LDADD= $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 apertium_postlatex_SOURCES = apertium_postlatex.cc
-apertium_postlatex_LDADD= $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
+apertium_postlatex_LDADD= $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 apertium_postlatex_raw_SOURCES = apertium_postlatex_raw.cc
-apertium_postlatex_raw_LDADD= $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
+apertium_postlatex_raw_LDADD= $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 
 apertium_tagger_SOURCES = apertium_tagger.cc
-apertium_tagger_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
+apertium_tagger_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 
 apertium_tmxbuild_SOURCES = apertium_tmxbuild.cc
-apertium_tmxbuild_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
+apertium_tmxbuild_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 
 apertium_preprocess_transfer_SOURCES = transferpp.cc
 apertium_preprocess_transfer_LDADD = $(APERTIUM_LIBS) \
-                                     -lapertium$(GENERIC_MAJOR_VERSION)
+                                     -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 
 apertium_filter_ambiguity_SOURCES = apertium_filter_ambiguity.cc
 apertium_filter_ambiguity_LDADD = $(APERTIUM_LIBS) \
-                                  -lapertium$(GENERIC_MAJOR_VERSION)
+                                  -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 
 apertium_transfer_SOURCES = apertium_transfer.cc
-apertium_transfer_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
+apertium_transfer_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 
 apertium_interchunk_SOURCES = apertium_interchunk.cc
-apertium_interchunk_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
+apertium_interchunk_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 
 apertium_postchunk_SOURCES = apertium_postchunk.cc
-apertium_postchunk_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
+apertium_postchunk_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 
 ###apertium_lextor_SOURCES = apertium_lextor.cc
-###apertium_lextor_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
+###apertium_lextor_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 
 #apertium_lextor_eval_SOURCES = apertium-lextor-eval.C
-#apertium_lextor_eval_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
+#apertium_lextor_eval_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 
 apertium_tagger_apply_new_rules_SOURCES = apertium_tagger_apply_new_rules.cc
-apertium_tagger_apply_new_rules_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
+apertium_tagger_apply_new_rules_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 
 apertium_tagger_readwords_SOURCES = apertium_tagger_readwords.cc
-apertium_tagger_readwords_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
+apertium_tagger_readwords_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 
 ###apertium_lextor_search_SOURCES = apertium-lextor-search.C
-###apertium_lextor_search_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
+###apertium_lextor_search_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 
 ###pruebas_lextor_SOURCES = pruebas-lextor.C
-###pruebas_lextor_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
+###pruebas_lextor_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 
 ###apertium_gen_wlist_lextor_translation_SOURCES = apertium_gen_wlist_lextor_translation.cc
-###apertium_gen_wlist_lextor_translation_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION)
+###apertium_gen_wlist_lextor_translation_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 
 
 if WINDOWS
