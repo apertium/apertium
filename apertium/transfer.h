@@ -56,7 +56,8 @@ private:
   map<string, int> rule_id_map; // rule id -> rule number
   vector<vector<string> > rule_groups; // rule group number -> rule ids
   map<string, int> rule_group_map; // id -> rule group number
-  map<string, vector<pair<pcre*, double> > > weighted_patterns; // all weighted patterns, grouped by rule id
+  //map<string, vector<pair<pcre*, double> > > weighted_patterns; 
+  map<string, map<string, double> > weighted_patterns; // all weighted patterns, grouped by rule id
   xmlDoc *doc;
   xmlNode *root_element;
   TransferWord **word;

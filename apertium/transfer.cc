@@ -332,12 +332,13 @@ Transfer::readTransferWeights(string const &in)
   // Read transfer weights from .w*x file.
   int rule_group_index = 0;
   double weight = 0.;
-  string lemma = "", tags = "*";
+  string lemma = "";
+  string tags = "";
   string rule_id = "";
-  string regex = "";
+  string current_pattern = "";
   vector<string> current_rule_group; // to track all rules in one group
   rule_group_map[""] = -1; // a uniformed answer to all empty rule_group ids
-  vector<pair<pcre*, double > > current_pattern_group;
+  map<string, double> current_pattern_group;
   weighted_patterns[""] = current_pattern_group;
 
   pcre *reCompiled;
@@ -383,17 +384,40 @@ Transfer::readTransferWeights(string const &in)
                  if(patit->type == XML_ELEMENT_NODE && !xmlStrcmp(patit->name, (const xmlChar *) "pattern-item"))
                  {
                    lemma = getNodeAttr(patit, "lemma");
-                   if (lemma == "")
+                   current_pattern = current_pattern + lemma;
+
+                   /*if (lemma == "")
                    {
                      regex = regex + "[^<>]*?";
                    }
                    else
                    {
                      regex = regex + lemma;
-                   }
+                   }*/
 
                    tags = getNodeAttr(patit, "tags");
-                   unsigned int tags_len = tags.size();
+                   if (tags != "")
+                   {
+                     current_pattern = current_pattern + "<";
+                     unsigned int tags_len = tags.size();
+                     char curr_char;
+                     for(unsigned int i = 0; i < tags_len; i++)
+                     {
+                       curr_char = tags[i];
+                       if (curr_char == '.')
+                       {
+                         current_pattern = current_pattern + "><";
+                       }
+                       else
+                       {
+                         current_pattern = current_pattern + curr_char;
+                       }
+                     }
+                     current_pattern = current_pattern + "> ";
+                   } 
+                   //regex = regex + "\\S*? ";
+
+                   /*unsigned int tags_len = tags.size();
                    if (tags_len > 0 && tags != "*")
                    {
                      regex = regex + "<";
@@ -420,14 +444,14 @@ Transfer::readTransferWeights(string const &in)
                    {
                      regex = regex + ">";
                    } 
-                   regex = regex + "\\S*? ";
+                   regex = regex + "\\S*? ";*/
                  }
                }
-               cerr << "  " << weight << " " << regex << endl;
-               reCompiled = pcre_compile(regex.c_str(), 0, &pcreErrorStr, &pcreErrorOffset, NULL);
+               cerr << "  " << weight << " " << current_pattern << endl;
+               //reCompiled = pcre_compile(regex.c_str(), 0, &pcreErrorStr, &pcreErrorOffset, NULL);
                //pcreExtra = pcre_study(reCompiled, 0, &pcreErrorStr);
-               current_pattern_group.push_back(make_pair(reCompiled, weight));
-               regex = "";
+               current_pattern_group[current_pattern] = weight;
+               current_pattern = "";
             }
           }
           weighted_patterns[rule_id] = current_pattern_group;
@@ -2562,13 +2586,8 @@ Transfer::applyRule()
   int words_to_consume;
   unsigned int limit = tmpword.size();
 
-  wstring wtmpchunk;
+  wstring wtmpchunk = L"";
   string tmpchunk;
-
-  if (useWeights)
-  {
-    wtmpchunk = L"";
-  }
 
   for(unsigned int i = 0; i != limit; i++)
   { 
@@ -2669,15 +2688,12 @@ Transfer::applyRule()
   // check if we use weights
   if (useWeights)
   {
-    tmpchunk = UtfConverter::toUtf8(wtmpchunk);
-    //cerr << tmpchunk << endl << endl; // di
-
-    int pcreExecRet;
-    int subStrVec[30];
+    //int pcreExecRet;
+    //int subStrVec[30];
     double chosen_weight = 0., current_weight = 0.;
     string chosen_rule_id = rule_ids[lastrule_num];
-    string current_rule_id;
-    unsigned int rule_group_num; 
+    string current_rule_id = "";
+    unsigned int rule_group_num = -1;
 
     // check if rule id is not empty
     if (chosen_rule_id != "")
@@ -2686,8 +2702,21 @@ Transfer::applyRule()
       rule_group_num = rule_group_map[chosen_rule_id];
       if (rule_groups[rule_group_num].size() > 1)
       {
+        map<string,double>::iterator lookup_pattern;
+        tmpchunk = UtfConverter::toUtf8(wtmpchunk);
+        string lookup_chunk = "";
+        unsigned int tmpchunk_size = tmpchunk.size();
+        unsigned int chunk_end;
+
+        for (chunk_end = tmpchunk_size - 2; tmpchunk[chunk_end] != ' ' && chunk_end > 0; chunk_end--);
+        for (unsigned int i = 0; i <= chunk_end; i++)
+        {
+          lookup_chunk = lookup_chunk + tmpchunk[i];
+        }
+
         cerr << "Rule # " << lastrule_num << " with id '" << chosen_rule_id << "' is ambiguous on input:" << endl; // di
-        cerr << tmpchunk << endl << endl; // di
+        cerr << lookup_chunk << endl << endl; // di
+
         /*cerr << "Rules in the group: " << endl; // di
         for (unsigned int ind = 0; ind < rule_groups[rule_group_num].size(); ind++) // di
         {  // di
@@ -2704,7 +2733,24 @@ Transfer::applyRule()
 
           cerr << "Checking rule # " << rule_id_map[current_rule_id] << " with id '" << current_rule_id << "'" << endl; // di
           // go through patterns
-          for (unsigned int k = 0; k < weighted_patterns[current_rule_id].size(); k++)
+          lookup_pattern = weighted_patterns[current_rule_id].find(lookup_chunk);
+          if (lookup_pattern == weighted_patterns[current_rule_id].end())
+          {
+            cerr << "Pattern not found" << endl; // di
+          }
+          else
+          { 
+            cerr << "  Pattern " << lookup_pattern->first; // di
+            current_weight = lookup_pattern->second;
+            cerr << " matched with weight " << current_weight << endl; // di
+            if (current_weight > chosen_weight) // heavier rule
+            {
+              chosen_weight = current_weight;
+              chosen_rule_id = current_rule_id;
+            }
+          }
+
+          /*for (unsigned int k = 0; k < weighted_patterns[current_rule_id].size(); k++)
           { 
             pcreExecRet = pcre_exec(weighted_patterns[current_rule_id][k].first, NULL, 
                                     tmpchunk.c_str(), tmpchunk.length(), 
@@ -2720,7 +2766,7 @@ Transfer::applyRule()
                 chosen_rule_id = current_rule_id;
               }
             }
-          }
+          }*/
         }
         cerr << endl; // di
         // substitute lastrule with the chosen one
