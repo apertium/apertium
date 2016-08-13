@@ -27,7 +27,7 @@
 
 #include <cstdio>
 #include <fstream>
-#include <math.h>
+#include <cmath>
 #include <string>
 #include <vector>
 #include <set>
