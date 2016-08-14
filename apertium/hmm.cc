@@ -27,20 +27,27 @@
 #include <apertium/unlocked_cstdio.h>
 #include <lttoolbox/compression.h>
 
-#ifdef WIN32
-#define isnan(n) _isnan(n)
-#define isinf(n) (!_finite(n))
-#endif
-
-#ifdef __clang__
-#undef __GNUC__
-#endif
-
 #include <stdio.h>
 #include <unistd.h>
 #include <vector>
 #include <algorithm>
 #include <apertium/string_utils.h>
+
+inline bool p_isnan(double v) {
+#if __cplusplus >= 201103L
+	return std::isnan(v);
+#else
+	return ::isnan(v);
+#endif
+}
+
+inline bool p_isinf(double v) {
+#if __cplusplus >= 201103L
+	return std::isinf(v);
+#else
+	return ::isinf(v);
+#endif
+}
 
 using namespace Apertium;
 using namespace tagger_utils;
@@ -164,31 +171,16 @@ HMM::init_probabilities_kupiec (FILE *is)
   int N = tdhmm.getN();
   int M = tdhmm.getM();
   int i=0, j=0, k=0, k1=0, k2=0, nw=0;
-#ifdef __GNUC__
-  double classes_ocurrences[M]; //M = Number of ambiguity classes
-  double classes_pair_ocurrences[M][M];
-  double tags_estimate[N]; //N = Number of tags (states)
-  double tags_pair_estimate[N][N];
-#else
   vector <double> classes_ocurrences (M, 1);
   vector <vector <double> > classes_pair_ocurrences(M, vector<double>(M, 1));
   vector <double> tags_estimate(N, 0);
   vector <vector <double> > tags_pair_estimate(N, vector<double>(N, 0));
-#endif
   
   Collection &output = tdhmm.getOutput();
  
   MorphoStream lexmorfo(is, true, &tdhmm);
   
   TaggerWord *word=NULL;
-
-#ifdef __GNUC__
-  for(k=0; k<M; k++) {
-    classes_ocurrences[k]=1; 
-    for (k2=0; k2<M; k2++)
-      classes_pair_ocurrences[k][k2]=1;
-  }
-#endif
 
   set<TTag> tags;
   tags.insert(eos);  
@@ -221,9 +213,6 @@ HMM::init_probabilities_kupiec (FILE *is)
 
   //Estimation of the number of time each tags occurs in the training text
   for(i=0; i<N; i++) {  
-#ifdef __GNUC__
-    tags_estimate[i]=0;
-#endif
     for(k=0; k<M;  k++) { 
   
       if(output[k].find(i) != output[k].end())
@@ -231,13 +220,6 @@ HMM::init_probabilities_kupiec (FILE *is)
     }
   }
   
-#ifdef __GNUC__
-  //Estimation of the number of times each tag pair occurs
-  for(i=0; i<N; i++)
-    for(j=0; j<N; j++)
-      tags_pair_estimate[i][j]=0;
-#endif
-
   set<TTag> tags1, tags2;
   set<TTag>::iterator itag1, itag2;
   for(k1=0; k1<M; k1++) {
@@ -287,13 +269,8 @@ HMM::init_probabilities_from_tagged_text(FILE *ftagged, FILE *funtagged) {
   int i, j, k, nw=0;
   int N = tdhmm.getN();
   int M = tdhmm.getM();
-#ifdef __GNUC__
-  double tags_pair[N][N];
-  double emission[N][M];
-#else
   vector <vector <double> > tags_pair(N, vector<double>(N, 0));
   vector <vector <double> > emission(N, vector<double>(M, 0));
-#endif
 
 
   MorphoStream stream_tagged(ftagged, true, &tdhmm);
@@ -304,21 +281,6 @@ HMM::init_probabilities_from_tagged_text(FILE *ftagged, FILE *funtagged) {
 
   
   set<TTag> tags;
-
-#ifdef __GNUC__ 
-  // Init counters - each event appears at least once. 
-  // Espected likelihood estimate (ELE) with a fixed initial count of 1
-  for(i=0; i<N; i++) {
-    for(j=0; j<N; j++)
-      tags_pair[i][j]=0;
-  }
-  for(k=0; k<M; k++) {
-    for(i=0; i<N; i++) {
-      if (output[k].find(i)!=output[k].end())
-        emission[i][k] = 0;
-    }  
-  }
-#endif 
 
   TTag tag1, tag2;  
   tag1 = eos; // The first seen tag is the end-of-sentence tag
@@ -578,12 +540,12 @@ HMM::train (FILE *ftxt) {
 	       double previous_value = gamma[i];
        
 	       gamma[i] +=  alpha[len-t][i]*beta[t%2][i]/prob;		       
-	       if (isnan(gamma[i])) {
+	       if (p_isnan(gamma[i])) {
 	          wcerr<<L"NAN(3) gamma["<<i<<L"] = "<<gamma[i]<<L" alpha["<<len-t<<L"]["<<i<<L"]= "<<alpha[len-t][i]
 	               <<L" beta["<<t%2<<L"]["<<i<<L"] = "<<beta[t%2][i]<<L" prob = "<<prob<<L" previous gamma = "<<previous_value<<L"\n";
 	          exit(1);	               
 	       }
-	       if (isinf(gamma[i])) {
+	       if (p_isinf(gamma[i])) {
 	          wcerr<<L"INF(3) gamma["<<i<<L"] = "<<gamma[i]<<L" alpha["<<len-t<<L"]["<<i<<L"]= "<<alpha[len-t][i]
 	               <<L" beta["<<t%2<<L"]["<<i<<L"] = "<<beta[t%2][i]<<L" prob = "<<prob<<L" previous gamma = "<<previous_value<<L"\n";
 	          exit(1);	               
@@ -638,12 +600,12 @@ HMM::train (FILE *ftxt) {
         
         (tdhmm.getA())[i][j] = xsi[i][j]/gamma[i];
 	
-        if (isnan((tdhmm.getA())[i][j])) {
+        if (p_isnan((tdhmm.getA())[i][j])) {
           wcerr<<L"NAN\n";
           wcerr <<L"Error: BW - NAN(1) a["<<i<<L"]["<<j<<L"]="<<(tdhmm.getA())[i][j]<<L"\txsi["<<i<<L"]["<<j<<L"]="<<xsi[i][j]<<L"\tgamma["<<i<<L"]="<<gamma[i]<<L"\n";
 	  exit(1);
         }
-	if (isinf((tdhmm.getA())[i][j])) {
+	if (p_isinf((tdhmm.getA())[i][j])) {
 	  wcerr<<L"INF\n"; 
           wcerr <<L"Error: BW - INF(1) a["<<i<<L"]["<<j<<L"]="<<(tdhmm.getA())[i][j]<<L"\txsi["<<i<<L"]["<<j<<L"]="<<xsi[i][j]<<L"\tgamma["<<i<<L"]="<<gamma[i]<<L"\n";
           exit(1);
@@ -663,11 +625,11 @@ HMM::train (FILE *ftxt) {
       if (phi[i][k]>0) {
         (tdhmm.getB())[i][k] = phi[i][k]/gamma[i];	
         
-	if (isnan((tdhmm.getB())[i][k])) {
+	if (p_isnan((tdhmm.getB())[i][k])) {
           wcerr<<L"Error: BW - NAN(2) b["<<i<<L"]["<<k<<L"]="<<(tdhmm.getB())[i][k]<<L"\tphi["<<i<<L"]["<<k<<L"]="<<phi[i][k]<<L"\tgamma["<<i<<L"]="<<gamma[i]<<L"\n";
 	       exit(1);
         }
-	if (isinf((tdhmm.getB())[i][k])) {
+	if (p_isinf((tdhmm.getB())[i][k])) {
           wcerr<<L"Error: BW - INF(2) b["<<i<<L"]["<<k<<L"]="<<(tdhmm.getB())[i][k]<<L"\tphi["<<i<<L"]["<<k<<L"]="<<phi[i][k]<<L"\tgamma["<<i<<L"]="<<gamma[i]<<L"\n";
 	       exit(1);
         }
@@ -715,13 +677,8 @@ HMM::tagger(FILE *Input, FILE *Output, const bool &First) {
   
   double prob, loli, x;
   int N = tdhmm.getN();  
-#ifdef __GNUC__
-  double alpha[2][N];
-  vector<TTag> best[2][N];
-#else
   vector <vector <double> > alpha(2, vector<double>(N));
   vector <vector <vector<TTag> > > best(2, vector <vector <TTag> >(N));
-#endif
   
   vector <TaggerWord> wpend; 
   int nwpend;
@@ -754,13 +711,8 @@ HMM::tagger(FILE *Input, FILE *Output, const bool &First) {
          
     k = output[tags];  //Ambiguity class the word belongs to
     
-#ifdef __GNUC__
-    clear_array_double(alpha[nwpend%2], N);    
-    clear_array_vector(best[nwpend%2], N);
-#else
     clear_array_double(&alpha[nwpend%2][0], N);    
     clear_array_vector(&best[nwpend%2][0], N);
-#endif
     
     //Induction
     for (itag=tags.begin(); itag!=tags.end(); itag++) { //For all tag from the current word
