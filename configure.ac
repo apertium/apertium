@@ -185,7 +185,7 @@ AC_CHECK_FUNCS([setlocale strdup getopt snprintf mbtowc])
 AC_REPLACE_FUNCS(getopt_long)
 
 AM_CONDITIONAL([WINDOWS], [test x$version_type = xwindows])
-AS_IF([test x$version_type = xwindows], [AC_DEFINE(HAVE_GETOPT_LONG,0)], [])
+#AS_IF([test x$version_type = xwindows], [AC_DEFINE(HAVE_GETOPT_LONG,0)], [])
 
 # Checks for highest supported C++ standard
 AC_LANG(C++)

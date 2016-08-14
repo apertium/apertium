@@ -30,6 +30,10 @@
 #include <unistd.h>
 #endif
 
+#if HAVE_GETOPT
+#include <getopt.h>
+#endif
+
 #ifdef	__cplusplus
 extern "C" {
 #endif
@@ -48,7 +52,7 @@ extern "C" {
    simply define it to be 1, and also as a sort of warped documentation. */
 #define THIS_IS__STDC__ 1
 
-#if !HAVE_DECL_GETOPT
+#if !HAVE_GETOPT
 /* For communication from `getopt' to the caller.
    When `getopt' finds an option that takes an argument,
    the argument value is returned here.
@@ -82,7 +86,7 @@ extern int optopt;
 
 #endif /* ifndef HAVE_DECL_GETOPT */
 
-#if !HAVE_DECL_GETOPT_LONG
+#if !HAVE_GETOPT_LONG
 /* Describe the long-named options requested by the application.
    The LONG_OPTIONS argument to getopt_long or getopt_long_only is a vector
    of `struct option' terminated by an element containing a name which is
