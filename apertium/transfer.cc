@@ -224,6 +224,7 @@ Transfer::readTransferWeights(string const &in)
   string lemma = "";
   string tags = "";
   string rule_id = "";
+  int current_pattern_length = 0;
   string current_pattern = "";
   map<string, vector<pair<string, double> > > weighted_pattern_rule_group;
   // to track all rules in one group //tc
@@ -262,39 +263,41 @@ Transfer::readTransferWeights(string const &in)
           {
             if(k->type == XML_ELEMENT_NODE && !xmlStrcmp(k->name, (const xmlChar *) "pattern"))
             {
-               weight = atof(getNodeAttr(k, "weight").c_str());
-               for(xmlNode *patit = k->children; patit != NULL; patit = patit->next)
-               {
-                 if(patit->type == XML_ELEMENT_NODE && !xmlStrcmp(patit->name, (const xmlChar *) "pattern-item"))
-                 {
-                   lemma = getNodeAttr(patit, "lemma");
-                   current_pattern = current_pattern + lemma;
+              current_pattern_length = 0;
+              weight = atof(getNodeAttr(k, "weight").c_str());
+              for(xmlNode *patit = k->children; patit != NULL; patit = patit->next)
+              {
+                if(patit->type == XML_ELEMENT_NODE && !xmlStrcmp(patit->name, (const xmlChar *) "pattern-item"))
+                {
+                  lemma = getNodeAttr(patit, "lemma");
+                  current_pattern = current_pattern + lemma;
+                  current_pattern_length++;
 
-                   tags = getNodeAttr(patit, "tags");
-                   if (tags != "")
-                   {
-                     current_pattern = current_pattern + "<";
-                     unsigned int tags_len = tags.size();
-                     char curr_char;
-                     for(unsigned int i = 0; i < tags_len; i++)
-                     {
-                       curr_char = tags[i];
-                       if (curr_char == '.')
-                       {
-                         current_pattern = current_pattern + "><";
-                       }
-                       else
-                       {
-                         current_pattern = current_pattern + curr_char;
-                       }
-                     }
-                     current_pattern = current_pattern + "> ";
+                  tags = getNodeAttr(patit, "tags");
+                  if (tags != "")
+                  {
+                    current_pattern = current_pattern + "<";
+                    unsigned int tags_len = tags.size();
+                    char curr_char;
+                    for(unsigned int i = 0; i < tags_len; i++)
+                    {
+                      curr_char = tags[i];
+                      if (curr_char == '.')
+                      {
+                        current_pattern = current_pattern + "><";
+                      }
+                      else
+                      {
+                        current_pattern = current_pattern + curr_char;
+                      }
+                    }
+                    current_pattern = current_pattern + "> ";
                    } 
-                 }
-               }
-               cerr << "  " << weight << " " << current_pattern << endl; // di
-               weighted_pattern_rule_group[current_pattern].push_back(make_pair(rule_id, weight));
-               current_pattern = "";
+                }
+              }
+              cerr << "  " << weight << " " << current_pattern << endl; // di
+              weighted_pattern_rule_group[current_pattern].push_back(make_pair(rule_id, weight));
+              current_pattern = "";
             }
           }
         }
@@ -303,7 +306,7 @@ Transfer::readTransferWeights(string const &in)
       weighted_patterns.push_back(weighted_pattern_rule_group);
       weighted_pattern_rule_group.clear();
       cerr << endl; // di
-      rule_groups.push_back(current_rule_group);
+      rule_groups.push_back(make_pair(current_pattern_length, current_rule_group));
       current_rule_group.clear();
       rule_group_index++;
     }
@@ -313,12 +316,10 @@ Transfer::readTransferWeights(string const &in)
   cerr << "These are the rule groups you collected:" << endl; // di
   for (unsigned int k1 = 0; k1 < rule_groups.size(); k1++) // di
   { // di
-    cerr << "rule_groups[" << k1 << "]:" << endl; // di
-    for (unsigned int k2 = 0; k2 < rule_groups[k1].size(); k2++) // di
+    cerr << "rule_groups[" << k1 << "]: " << rule_groups[k1].first << endl; // di
+    for (unsigned int k2 = 0; k2 < rule_groups[k1].second.size(); k2++) // di
     { // di
-      cerr << "  " << rule_groups[k1][k2] << endl; // di
-      //cerr << "    rule_group_map[" << rule_groups[k1][k2] << "]: "; // di
-      //cerr << rule_group_map[rule_groups[k1][k2]] << endl; // di
+      cerr << "  " << rule_groups[k1].second[k2] << endl; // di
     } // di
     cerr << endl; // di
   } // di
@@ -2460,6 +2461,7 @@ Transfer::applyRule()
 
   wstring wtmpchunk = L"";
   string tmpchunk = "";
+  string lookup_chunk = "";
   string fallback_tmpchunk = "";
 
   for(unsigned int i = 0; i != limit; i++)
@@ -2569,11 +2571,11 @@ Transfer::applyRule()
     {
       /* //tc
         If there are other rules in the rule group,
-        that means chosen rule is ambiguous.
+        that means the chosen rule is ambiguous.
       */
       
       rule_group_num = rule_group_map[chosen_rule_id];
-      if (rule_groups[rule_group_num].size() > 1)
+      if (rule_groups[rule_group_num].second.size() > 1)
       {
         map<string, vector<pair<string, double> > >::iterator lookup_pattern;
         tmpchunk = UtfConverter::toUtf8(wtmpchunk);
@@ -2581,36 +2583,24 @@ Transfer::applyRule()
         cerr << "Rule # " << lastrule_num << " with id '" << chosen_rule_id; // di
         cerr << "' is ambiguous on input:" << endl; // di
         cerr << tmpchunk << endl << endl; // di
-     
-        // go through patterns //tc
-        bool found = false;
-        lookup_pattern = weighted_patterns[rule_group_num].find(tmpchunk);
-        if (lookup_pattern != weighted_patterns[rule_group_num].end())
+
+        lookup_chunk = "";
+        unsigned int lookup_chunk_len = 0;
+        for (unsigned int i = 0; i <= tmpchunk.size() && lookup_chunk_len < rule_groups[rule_group_num].first; i++)
         {
-          found = true;
-        }
-        else
-        {
-          cerr << "Pattern not found" << endl; // di
-          unsigned int chunk_end;
-          for (chunk_end = tmpchunk.size() - 2; tmpchunk[chunk_end] != ' ' && chunk_end > 0; chunk_end--);
-          fallback_tmpchunk = "";
-          for (unsigned int i = 0; i <= chunk_end; i++)
+          lookup_chunk = lookup_chunk + tmpchunk[i];
+          if (tmpchunk[i] == ' ')
           {
-            fallback_tmpchunk = fallback_tmpchunk + tmpchunk[i];
-          }
-          lookup_pattern = weighted_patterns[rule_group_num].find(fallback_tmpchunk);
-          if (lookup_pattern == weighted_patterns[rule_group_num].end())
-          {
-            cerr << "Pattern still not found" << endl; // di
-          }
-          else
-          {
-            found = true;
+            lookup_chunk_len++;
           }
         }
 
-        if (found)
+        cerr << "Going to check: " << endl; // di
+        cerr << lookup_chunk << endl;
+     
+        // go through patterns //tc
+        lookup_pattern = weighted_patterns[rule_group_num].find(lookup_chunk);
+        if (lookup_pattern != weighted_patterns[rule_group_num].end())
         {
           // let's check the weights for each rule in the group //tc
           chosen_weight = 0.;
@@ -2618,7 +2608,7 @@ Transfer::applyRule()
           {
             current_rule_id = (lookup_pattern->second)[ind].first;
             current_weight = (lookup_pattern->second)[ind].second;
-            cerr << "  Pattern " << lookup_pattern->first; // di
+            cerr << " Pattern " << lookup_pattern->first; // di
             cerr << " matched for rule " << current_rule_id; // di
             cerr << " with weight " << current_weight << endl; // di
             if (current_weight > chosen_weight) // found heavier rule //tc
@@ -2628,6 +2618,10 @@ Transfer::applyRule()
             }
           }
         }
+        else // di
+        { // di
+          cerr << "Pattern not found" << endl; // di
+        } // di
         cerr << endl; // di
         // substitute lastrule with the chosen one //tc
         lastrule_num = rule_id_map[chosen_rule_id];

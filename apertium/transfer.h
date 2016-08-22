@@ -51,27 +51,43 @@ private:
   map<string, set<string, Ltstr>, Ltstr> lists;
   map<string, set<string, Ltstr>, Ltstr> listslow;
 
-  // all macros in xml in order of appearance in transfer file
+  /**
+    all macros in xml in order of their appearance in transfer file
+  */
   vector<xmlNode *> macro_map;
 
-  // all rule actions in xml in order of appearance in transfer file
+  /**
+    all rule actions in xml in order of their appearance in transfer file
+  */
   vector<xmlNode *> rule_map;
 
-  // rule number -> rule id, first meaningful rule at position 1
+  /**
+    rule ids in order of their appearance in transfer file
+    first rule at position 1
+  */
   vector<string> rule_ids;
 
-  // rule id : rule number
+  /**
+    rule id : rule number
+  */
   map<string, int> rule_id_map;
 
-  // rule group number : rule ids
-  vector<vector<string> > rule_groups; 
+  /**
+    information about rule groups
+    each element of outer vector is pair of pattern length and vector of rule ids
+  */
+  vector<pair<int, vector<string> > > rule_groups; 
 
-  // id : rule group number
+  /**
+    rule id : rule group number
+  */
   map<string, int> rule_group_map; 
 
-  // all weighted patterns, grouped by rule group number
-  // index of outer vector corresponds to rule group numbers
-  // map is pattern string : vector of pairs <rule_id, weight>
+  /**
+    all weighted patterns, grouped by rule group number
+    index of outer vector corresponds to rule group numbers
+    map is pattern string : vector of pairs of rule id and weight
+  */
   vector<map<string, vector<pair<string, double> > > > weighted_patterns;
 
   xmlDoc *doc;
@@ -160,8 +176,8 @@ private:
   string copycase(string const &source_word, string const &target_word);
 
   /**
-    Apply subelements of 'out' subelement of rule action, one subelement
-    at a time, depending on subelement type.
+    Apply subelements of 'out' subelement of rule action,
+    one subelement at a time, depending on subelement type.
   */
   void processOut(xmlNode *localroot);
 
@@ -235,7 +251,7 @@ public:
   ~Transfer();
   
   /**
-    Read all data needed for transfer
+    Read all data needed for transfer.
   */
   void read(string const &transferfile, string const &datafile, 
             string const &weightsfile = "", string const &fstfile = "");
