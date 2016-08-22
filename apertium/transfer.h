@@ -38,6 +38,10 @@
 
 using namespace std;
 
+typedef vector<pair<string, double> > idweightvector;
+typedef map<string, idweightvector> patternmap;
+typedef map<int, map<string, patternmap> > genpatternmap;
+
 class Transfer
 {
 private:
@@ -88,7 +92,7 @@ private:
     index of outer vector corresponds to rule group numbers
     map is pattern string : vector of pairs of rule id and weight
   */
-  vector<map<string, vector<pair<string, double> > > > weighted_patterns;
+  vector<genpatternmap> weighted_patterns;
 
   xmlDoc *doc;
   xmlNode *root_element;
