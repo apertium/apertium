@@ -90,7 +90,10 @@ private:
   /**
     all weighted patterns, grouped by rule group number
     index of outer vector corresponds to rule group numbers
-    map is pattern string : vector of pairs of rule id and weight
+    elements of vector are maps from number of lemmas in pattern
+    to the map of string denoting actual lemma distribution
+    (e.g., "010" means no lemma for the 1st and the 3rd pattern items)
+    to the map of actual patterns to the vector of pairs (rule id, weight)
   */
   vector<genpatternmap> weighted_patterns;
 
