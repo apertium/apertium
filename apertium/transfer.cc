@@ -500,32 +500,6 @@ Transfer::checkIndex(xmlNode *element, int index, int limit)
   return true;
 }
 
-void
-Transfer::evalStringClip(xmlNode *element, string &lemma, int &pos)
-{
-  // This is a corrupted baby clone of evalString 
-  // that only gets lemma and its position from source part
-  
-  map<xmlNode *, TransferInstr>::iterator it;
-  it = evalStringCache.find(element);
-  TransferInstr &ti = it->second;
-
-  lemma = "";
-  pos = -1;
-
-  if (ti.getType() == ti_clip_tl)
-  {
-    if (checkIndex(element, ti.getPos(), lword))
-    { 
-      if (ti.getContent() == "lem") 
-      { 
-        pos = ti.getPos();
-        lemma = word[pos]->source(attr_items["lem"], ti.getCondition());
-      }
-    }
-  }
-}
-
 string
 Transfer::evalString(xmlNode *element)
 {
@@ -1037,20 +1011,12 @@ Transfer::processChunk(xmlNode *localroot)
       {
         // process and add one 'lu' element //tc
         string myword;
-        string untouched;
-        int untouched_pos;
 
         for(xmlNode *j = i->children; j != NULL; j = j->next)
         {
           if(j->type == XML_ELEMENT_NODE)
           {
             myword.append(evalString(j));
-
-            evalStringClip(j, untouched, untouched_pos); // black magic
-            if(untouched_pos != -1)
-            {
-              wordcache[untouched_pos].append(untouched);
-            }
           }
         }
         if(myword != "")
@@ -1107,29 +1073,6 @@ Transfer::processChunk(xmlNode *localroot)
 
   // finish he chunk //tc
   result.append("}$");
-
-  // check if there was a magic word in the chunk
-  bool stopword = false;
-  for (int k = 0; k < limit && !stopword; k++)
-  {
-    if (wordcache[k] == "море")
-    {
-      stopword = true;
-    }
-  }
-  if (stopword)
-  {
-    result = "^untouchable<SN>{";
-    for (int k = 0; k < limit-1; k++)
-    {
-      result.append("^");
-      result.append(wordcache[k]);
-      result.append("$ ");
-    }
-    result.append("^");
-    result.append(wordcache[limit-1]);
-    result.append("$}$");
-  }
   return result;
 }
 

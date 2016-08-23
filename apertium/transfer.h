@@ -217,7 +217,6 @@ private:
     Used for lowest-level action elements, such as 'clip' or 'lit-tag'.
   */
   string evalString(xmlNode *localroot);
-  void evalStringClip(xmlNode *element, string &lemma, int &pos); // the dark horse
 
   /**
     Process instruction specified in rule action based on instruction name.
