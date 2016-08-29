@@ -354,7 +354,6 @@ MTXReader::procIntExpr(bool allow_fail)
     procBinCompareOp(VM::ARRLEN);
     stepToNextTag();
   } else {
-    std::wcerr << "Allow fail " << allow_fail << "\n";
     if (allow_fail) {
       return false;
     }
@@ -390,7 +389,6 @@ bool MTXReader::tryProcSubscript(bool (MTXReader::*proc_inner)(bool))
 {
   if (name == L"subscript") {
     int idx = getInt("idx");
-    std::wcerr << "Subscript idx " << idx << "\n";
     stepToNextTag();
     (this->*proc_inner)(false);
     emitOpcode(VM::SUBSCRIPT);
@@ -462,7 +460,6 @@ bool MTXReader::tryProcVar(VM::StackValueType svt)
 bool
 MTXReader::procStrExpr(bool allow_fail)
 {
-  std::wcerr << "strexpr: " << name << "\n";
   if (!tryProcVar(VM::STRVAL) && !tryProcSlice(&MTXReader::procStrExpr)
                               && !tryProcSubscript(&MTXReader::procStrArrExpr)) {
     if (name == L"ex-surf") {
@@ -597,7 +594,6 @@ void
 MTXReader::procAddrExpr()
 {
   stepToTag();
-  std::wcerr << "AYZ: " << name;
   /* Self-closing tags */
   if (name == L"wrdaddr") {
     emitOpcode(VM::PUSHADDR);
@@ -658,7 +654,6 @@ MTXReader::procWordoidArrExpr(bool allow_fail)
 bool
 MTXReader::procWordoidExpr(bool allow_fail)
 {
-  std::wcerr << "start wordoid\n";
   stepToTag();
   if (!tryProcVar(VM::WRDVAL)
       && !tryProcSubscript(&MTXReader::procWordoidArrExpr)) {
@@ -883,12 +878,10 @@ MTXReader::procOutMany()
 void
 MTXReader::procForEach(Optional<VM::StackValueType> svt)
 {
-  std::wcerr << "Proc for-each\n";
   std::wstring var_name = attrib(L"as");
   if (var_name == L"") {
     parseError(L"'as' attribute required for for-each.");
   }
-  std::wcerr << "Set var: " << var_name << "\n";
   size_t slot_idx = slot_counter++;
   slot_names[var_name] = slot_idx;
   bool has_expr = false;

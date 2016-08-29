@@ -40,7 +40,7 @@ XMLReader::step()
   }
   name = XMLParseUtil::towstring(xmlTextReaderConstName(reader));
   type = xmlTextReaderNodeType(reader);
-  std::wcerr << name << L": " << type << "\n";
+  //std::wcerr << name << L": " << type << "\n";
 }
 
 void
