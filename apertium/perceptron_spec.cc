@@ -149,6 +149,23 @@ void PerceptronSpec::get_features(
   }
 }
 
+std::string
+PerceptronSpec::coarsen(const Morpheme &wrd) const
+{
+  std::map<const Morpheme, std::string>::const_iterator it = coarsen_cache.find(wrd);
+  if (it == coarsen_cache.end()) {
+    std::string coarse_tag = UtfConverter::toUtf8(coarse_tags->coarsen(wrd));
+    coarsen_cache[wrd] = coarse_tag;
+    return coarse_tag;
+  }
+  return it->second;
+}
+
+void PerceptronSpec::clearCache() const
+{
+  coarsen_cache.clear();
+}
+
 std::string PerceptronSpec::dot = ".";
 
 const std::string&
@@ -470,7 +487,7 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
     case EXWRDCOARSETAG: {
       assert(spec.coarse_tags);
       Morpheme &wrd = stack.top().wrd();
-      std::string coarse_tag = UtfConverter::toUtf8(spec.coarse_tags->coarsen(wrd));
+      std::string coarse_tag = spec.coarsen(wrd);
       stack.pop();
       stack.push(coarse_tag);
     } break;
@@ -482,10 +499,15 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
       for (analy_it = analyses.begin(); analy_it != analyses.end(); analy_it++) {
         ambgset.push_back(std::string());
         const std::vector<Morpheme> &wrds = analy_it->TheMorphemes;
-        std::vector<Morpheme>::const_iterator wrd_it;
-        for (wrd_it = wrds.begin(); wrd_it != wrds.end(); wrd_it++) {
-          ambgset.back() += UtfConverter::toUtf8(spec.coarse_tags->coarsen(*wrd_it));
-          ambgset.back() += "+";
+        std::vector<Morpheme>::const_iterator wrd_it = wrds.begin();
+        while (true) {
+          ambgset.back() += spec.coarsen(*wrd_it);
+          wrd_it++;
+          if (wrd_it == wrds.end()) {
+            break;
+          } else {
+            ambgset.back() += "+";
+          }
         }
       }
       stack.push(ambgset);

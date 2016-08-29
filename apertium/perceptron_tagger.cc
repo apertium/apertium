@@ -94,6 +94,7 @@ PerceptronTagger::tagSentence(const Sentence &untagged_sent) const {
     }
   }
 
+  spec.clearCache();
   return agenda.front().tagged;
 }
 
@@ -253,6 +254,7 @@ void PerceptronTagger::train(
     std::vector<TrainingSentence>::const_iterator si;
     for (si = tc.sentences.begin(); si != tc.sentences.end(); si++) {
       avail_skipped += trainSentence(*si, avg_weights);
+      spec.clearCache();
     }
   }
   avg_weights.average();

@@ -392,7 +392,10 @@ public:
     const TaggedSentence &tagged, const Sentence &untagged,
     int token_idx, int wordoid_idx,
     UnaryFeatureVec &feat_vec_out) const;
+  std::string coarsen(const Morpheme &wrd) const;
+  void clearCache() const;
   int beam_width;
+  mutable std::map<const Morpheme, std::string> coarsen_cache;
 private:
   class MachineStack {
     std::deque<StackValue> data;
