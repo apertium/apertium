@@ -49,6 +49,7 @@ class MTXReader : public XMLReader
   typedef std::map<std::pair<size_t, std::vector<VM::FeatureDefn> >, size_t> InstanciationMap;
   typedef std::pair<VM::FeatureDefn, TemplateReplacements> TemplateDefn;
 public:
+  void printTmplDefns();
   MTXReader(VM &spec);
   VM &spec;
 

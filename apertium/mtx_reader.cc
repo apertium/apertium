@@ -858,12 +858,14 @@ void
 MTXReader::printTmplDefn(const TemplateDefn &tmpl_defn)
 {
   PerceptronSpec::printFeature(std::wcerr, tmpl_defn.first);
-  std::wcerr << "Replacements:\n";
-  TemplateReplacements::const_iterator it = tmpl_defn.second.begin();
-  for (; it != tmpl_defn.second.end(); it++) {
-    std::wcerr << "Index: " << it->first << " ";
-    printTypeExpr(it->second);
-    std::wcerr << "\n";
+  if (tmpl_defn.second.size() > 0) {
+    std::wcerr << "Replacements:\n";
+    TemplateReplacements::const_iterator it = tmpl_defn.second.begin();
+    for (; it != tmpl_defn.second.end(); it++) {
+      std::wcerr << "Index: " << it->first << " ";
+      printTypeExpr(it->second);
+      std::wcerr << "\n";
+    }
   }
 }
 
@@ -1132,6 +1134,16 @@ MTXReader::procFeats()
 }
 
 void
+MTXReader::printTmplDefns()
+{
+  std::vector<TemplateDefn>::const_iterator it = template_defns.begin();
+  for (; it != template_defns.end(); it++) {
+    std::wcerr << " Macro " << it - template_defns.begin() << "\n";
+    printTmplDefn(*it);
+  }
+}
+
+void
 MTXReader::parse()
 {
   xmlTextReaderSetParserProp(reader, XML_PARSER_SUBST_ENTITIES, true);
@@ -1157,13 +1169,6 @@ MTXReader::parse()
   if (name == L"defns") {
     procDefns();
   }
-  /*
-  std::vector<TemplateDefn>::const_iterator it = template_defns.begin();
-  for (; it != template_defns.end(); it++) {
-    std::wcerr << "Template " << it - template_defns.begin() << "\n";
-    printTmplDefn(*it);
-  }
-  */
   if (name == L"global-pred") {
     procGlobalPred();
   }
