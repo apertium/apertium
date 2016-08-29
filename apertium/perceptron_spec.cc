@@ -3,16 +3,19 @@
 #include <apertium/deserialiser.h>
 #include <apertium/serialiser.h>
 #include <lttoolbox/match_state.h>
+#include <iomanip>
 
 
 namespace Apertium {
 
-template <typename OStream>
-void PerceptronSpec::printFeature(OStream &out, const PerceptronSpec::FeatureDefn &feat_defn)
+void PerceptronSpec::printFeature(std::wostream &out, const PerceptronSpec::FeatureDefn &feat_defn)
 {
+  ios::fmtflags orig_flags(out.flags());
+  out << std::hex << std::setw(2) << std::setfill(L'0');
   for (size_t j = 0; j < feat_defn.size(); j++) {
-    out << std::hex << feat_defn[j] << std::dec << " ";
+     out << +feat_defn[j]  << " ";
   }
+  out.flags(orig_flags);
   out << "\n";
   for (size_t j = 0; j < feat_defn.size(); j++) {
     if (feat_defn[j] < PerceptronSpec::num_opcodes) {
@@ -24,33 +27,22 @@ void PerceptronSpec::printFeature(OStream &out, const PerceptronSpec::FeatureDef
   out << "\n";
 }
 
-template
-void PerceptronSpec::printFeature(std::wostream &out, const PerceptronSpec::FeatureDefn &feat_defn);
-
-template
-void PerceptronSpec::printFeature(std::ostream &out, const PerceptronSpec::FeatureDefn &feat_defn);
-
-template <typename OStream>
-OStream&
-operator<<(OStream &out, PerceptronSpec const &ps) {
-  out << "Global pred\n";
+std::wostream &
+operator<<(std::wostream &out, PerceptronSpec const &ps) {
+  out << "= Global predicate =\n";
   PerceptronSpec::printFeature(out, ps.global_pred);
+  out << "= Globals (" << ps.global_defns.size() << ") =\n";
   for (size_t i = 0; i < ps.global_defns.size(); i++) {
-    out << "Global " << i << "\n";
+    out << " Global " << i << "\n";
     PerceptronSpec::printFeature(out, ps.global_defns[i]);
   }
+  out << "= Features (" << ps.features.size() << ") =\n";
   for (size_t i = 0; i < ps.features.size(); i++) {
-    out << "Feature " << i << "\n";
+    out << " Feature " << i << "\n";
     PerceptronSpec::printFeature(out, ps.features[i]);
   }
   return out;
 }
-
-template std::wostream&
-operator<<(std::wostream& out, PerceptronSpec const &ps);
-
-template std::ostream&
-operator<<(std::ostream& out, PerceptronSpec const &ps);
 
 #define X(a) #a,
 const std::string PerceptronSpec::opcode_names[] = {
@@ -786,20 +778,13 @@ void PerceptronSpec::deserialiseFeatDefnVec(
 }
 
 void PerceptronSpec::serialise(std::ostream &serialised) const {
-  std::wcerr << "Serialise beam width\n";
   Serialiser<size_t>::serialise(beam_width, serialised);
-  std::wcerr << "Serialise string constants\n";
   Serialiser<std::vector<std::string> >::serialise(str_consts, serialised);
-  std::wcerr << "Serialise set constants\n";
   Serialiser<std::vector<VMSet> >::serialise(set_consts, serialised);
-  std::wcerr << "Serialise features\n";
   serialiseFeatDefnVec(serialised, features);
-  std::wcerr << "Serialise globals\n";
   serialiseFeatDefnVec(serialised, global_defns);
-  std::wcerr << "Serialise global pred\n";
   serialiseFeatDefn(serialised, global_pred);
   if (coarse_tags) {
-    std::wcerr << "Serialise coarse tags\n";
     Serialiser<size_t>::serialise(1, serialised);
     coarse_tags->serialise(serialised);
   } else {

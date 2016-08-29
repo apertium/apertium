@@ -328,7 +328,6 @@ bool MTXReader::tryProcArg(ExprType expr_type, bool allow_fail)
     if (in_global_defn) {
       VarNVMap::const_iterator arg_name_it = template_arg_names.find(var_name);
       if (arg_name_it != template_arg_names.end()) {
-        printTypeExpr(expr_type);
         cur_replacements->push_back(make_pair(arg_name_it->second, expr_type));
         stepPastSelfClosingTag(L"var");
         return true;
@@ -1158,11 +1157,13 @@ MTXReader::parse()
   if (name == L"defns") {
     procDefns();
   }
+  /*
   std::vector<TemplateDefn>::const_iterator it = template_defns.begin();
   for (; it != template_defns.end(); it++) {
     std::wcerr << "Template " << it - template_defns.begin() << "\n";
     printTmplDefn(*it);
   }
+  */
   if (name == L"global-pred") {
     procGlobalPred();
   }

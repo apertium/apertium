@@ -26,7 +26,7 @@ public:
 
   void read_spec(const std::string &filename);
 
-  template <typename OStream> friend OStream& operator<<(OStream & out, PerceptronTagger const &pt);
+  friend std::wostream& operator<<(std::wostream &out, PerceptronTagger const &pt);
 protected:
   virtual TaggedSentence tagSentence(const Sentence &untagged) const;
   virtual void outputLexicalUnit(

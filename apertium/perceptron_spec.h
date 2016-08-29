@@ -32,8 +32,8 @@ class PerceptronSpec
 {
 public:
   typedef std::vector<unsigned char> FeatureDefn;
-  template <typename OStream> static void printFeature(OStream &out, const PerceptronSpec::FeatureDefn &feat_defn);
-  template <typename OStream> friend OStream& operator<<(OStream & out, PerceptronSpec const &pt);
+  static void printFeature(std::wostream &out, const PerceptronSpec::FeatureDefn &feat_defn);
+  friend std::wostream& operator<<(std::wostream &out, PerceptronSpec const &pt);
   PerceptronSpec();
   #define OPCODES \
     /** Boolean and arithmetic */\

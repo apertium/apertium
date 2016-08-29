@@ -20,27 +20,17 @@ void PerceptronTagger::read_spec(const std::string &filename) {
   MTXReader(spec).read(filename);
 }
 
-template <typename OStream>
-OStream&
-operator<<(OStream & out, PerceptronTagger const &pt) {
-  out << "Spec:\n";
-  out << pt.spec.features.size() << "\n";
+std::wostream &
+operator<<(std::wostream &out, PerceptronTagger const &pt) {
+  out << "== Spec ==\n";
   out << pt.spec;
-  out << "Weights:\n";
-  out << pt.weights.size() << "\n";
+  out << "== Weights " << pt.weights.size() << " ==\n";
   out << pt.weights;
   return out;
 }
 
-template std::wostream&
-operator<<(std::wostream& out, PerceptronTagger const &pt);
-
-template std::ostream&
-operator<<(std::ostream& out, PerceptronTagger const &pt);
-
 TaggedSentence
 PerceptronTagger::tagSentence(const Sentence &untagged_sent) const {
-  //std::wcerr << "TAG SENT!\n";
   const size_t sent_len = untagged_sent.size();
 
   std::vector<AgendaItem> agenda;
@@ -81,17 +71,27 @@ PerceptronTagger::tagSentence(const Sentence &untagged_sent) const {
           feat_vec_delta.clear();
           spec.get_features(new_agenda_item.tagged, untagged_sent,
                             token_idx, wordoid_idx, feat_vec_delta);
+          if (TheFlags.getDebug()) {
+            FeatureVec fv(feat_vec_delta);
+            std::wcerr << "Token " << token_idx << "\t\tWordoid " << wordoid_idx << "\n";
+            std::wcerr << fv;
+            std::wcerr << "Score: " << weights * feat_vec_delta << "\n";
+          }
           new_agenda_item.score += weights * feat_vec_delta;
         }
       }
     }
     // Apply the beam
-    //std::wcerr << "-- Before beam: --\n" << new_agenda;
+    if (TheFlags.getDebug()) {
+      std::wcerr << "-- Before beam: --\n" << new_agenda;
+    }
     size_t new_agenda_size = std::min((size_t)spec.beam_width, new_agenda.size());
     agenda.resize(new_agenda_size);
     std::partial_sort_copy(new_agenda.begin(), new_agenda.end(),
                            agenda.begin(), agenda.end());
-    //std::wcerr << "-- After beam: --\n" << agenda;
+    if (TheFlags.getDebug()) {
+      std::wcerr << "-- After beam: --\n" << agenda;
+    }
   }
 
   return agenda.front().tagged;
@@ -243,7 +243,6 @@ void PerceptronTagger::train(
     Stream &tagged,
     Stream &untagged,
     int iterations) {
-  std::wcerr << *this;
   FeatureVecAverager avg_weights(weights);
   TrainingCorpus tc(tagged, untagged, TheFlags.getSkipErrors(), TheFlags.getSentSeg());
   size_t avail_skipped;
@@ -263,7 +262,7 @@ void PerceptronTagger::train(
                << "tagged token being unavailable in untagged file out of "
                << tc.sentences.size() << " total sentences.\n";
   }
-  std::wcerr << *this;
+  //std::wcerr << *this;
 }
 
 void PerceptronTagger::serialise(std::ostream &serialised) const
