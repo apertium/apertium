@@ -559,7 +559,7 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
     } break;
     case EXWRDARR: {
       int token_idx = stack.pop_off().intVal();
-      if (0 < token_idx) {
+      if (token_idx < 0) {
         stack.push(token_wordoids_underflow.TheAnalyses[0].TheMorphemes);
       } else if ((size_t)token_idx >= tagged.size()) {
         stack.push(token_wordoids_overflow.TheAnalyses[0].TheMorphemes);
