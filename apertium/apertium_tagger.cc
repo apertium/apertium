@@ -356,6 +356,8 @@ void apertium_tagger::help() {
   std::wcerr << '\n';
   options_description_.clear();
   options_description_.push_back(std::make_pair("-w, --sliding-window", "use the Light Sliding Window algorithm"));
+  options_description_.push_back(std::make_pair("-x, --perceptron", "use the averaged perceptron algorithm"));
+  options_description_.push_back(std::make_pair("-e, --skip-on-error", "with -xs, ignore certain types of errors with the training corpus"));
   align::align_(options_description_);
   std::wcerr << '\n';
   options_description_.clear();
