@@ -26,22 +26,11 @@ TaggerDataPercepCoarseTags::~TaggerDataPercepCoarseTags() {}
 
 void TaggerDataPercepCoarseTags::serialise(std::ostream &serialised) const
 {
-  std::wcerr << "Serialise open class\n";
-  std::wcerr << "Which is open class\n";
-  set<TTag>::const_iterator it = open_class.begin();
-  for (; it != open_class.end(); it++) {
-    std::wcerr << *it << ": " << array_tags[*it] << "\n";
-  }
   Serialiser<set<TTag> >::serialise(open_class, serialised);
-  std::wcerr << "Serialise array tags\n";
   Serialiser<vector<wstring> >::serialise(array_tags, serialised);
-  std::wcerr << "Serialise tags index\n";
   Serialiser<map<wstring, TTag, Ltstr> >::serialise(tag_index, serialised);
-  std::wcerr << "Serialise constants\n";
   constants.serialise(serialised);
-  std::wcerr << "Serialise output\n";
   output.serialise(serialised);
-  std::wcerr << "Serialise plist\n";
   plist.serialise(serialised);
 }
 
