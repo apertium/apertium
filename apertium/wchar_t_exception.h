@@ -36,6 +36,8 @@ namespace wchar_t_Exception {
     ~WCHAR_T_EXCEPTION_TYPE() throw() {}                                       \
   };
 
+WCHAR_T_EXCEPTION(UnalignedStreams);
+
 namespace PerceptronTagger {
 WCHAR_T_EXCEPTION(CorrectAnalysisUnavailable)
 }

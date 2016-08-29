@@ -2,6 +2,7 @@
 #include <apertium/stream_tagger.h>
 #include <apertium/sentence_stream.h>
 #include <apertium/exception.h>
+#include <apertium/wchar_t_exception.h>
 #include <iostream>
 
 namespace Apertium {
@@ -27,9 +28,17 @@ bool isSentenceEnd(StreamedType &token) {
   return true;
 }
 
+bool isSentenceEnd(StreamedType tok, Stream &in, bool sent_seg) {
+  if (sent_seg) {
+    return isSentenceEnd(tok) && in.peekIsBlank();
+  } else {
+    return isSentenceEnd(tok);
+  }
+}
+
 SentenceTagger::SentenceTagger() {}
 
-void SentenceTagger::tag(Stream &in, std::wostream &out) const {
+void SentenceTagger::tag(Stream &in, std::wostream &out, bool sent_seg) const {
   clearBuffers();
 
   while (true) {
@@ -46,7 +55,7 @@ void SentenceTagger::tag(Stream &in, std::wostream &out) const {
     }
 
     lexical_sent.push_back(token);
-    if (isSentenceEnd(token)) {
+    if (isSentenceEnd(token, in, sent_seg)) {
       tagAndPutSentence(out);
     }
   }
@@ -76,21 +85,58 @@ void SentenceTagger::tagAndPutSentence(std::wostream &out) const {
   clearBuffers();
 }
 
-TrainingCorpus::TrainingCorpus(Stream &tagged, Stream &untagged)
+TrainingCorpus::TrainingCorpus(Stream &tagged, Stream &untagged,
+                               bool skip_on_error, bool sent_seg)
+  : sent_seg(sent_seg), skipped(0)
 {
   TrainingSentence *training_sentence;
   bool was_sentence_end = true;
+  unsigned int tagged_line = 0;
+  unsigned int untagged_line = 0;
   while (1) {
     StreamedType tagged_token = tagged.get();
     StreamedType untagged_token = untagged.get();
+    tagged_line++;
+    untagged_line++;
     if (!tagged_token.TheLexicalUnit || !untagged_token.TheLexicalUnit) {
       if (tagged_token.TheLexicalUnit || untagged_token.TheLexicalUnit) {
-        std::stringstream what_;
-        what_ << "One stream has ended prematurely. "
-              << "Please check if they are aligned.\n";
-        throw Exception::UnalignedStreams(what_);
+        std::wcerr << "Normal perm\n";
+        std::wcerr << "tagged: " << tagged_line << " " << (!!tagged_token.TheLexicalUnit) << "\n";
+        std::wcerr << "untagged: " << untagged_line << " " << (!!untagged_token.TheLexicalUnit) << "\n";
+        prematureEnd();
       }
       break;
+    }
+    //std::wcerr << tagged_token.TheLexicalUnit->TheSurfaceForm << " || " << untagged_token.TheLexicalUnit->TheSurfaceForm << "\n";
+    if (untagged_token.TheLexicalUnit->TheSurfaceForm != tagged_token.TheLexicalUnit->TheSurfaceForm) {
+      if (!skip_on_error) {
+        std::wstringstream what_;
+        what_ << "Streams diverged at line " << tagged_line << "\n";
+        what_ << "Untagged token: "
+              << untagged_token.TheLexicalUnit->TheSurfaceForm << "\n";
+        what_ << "Tagged token: "
+              << tagged_token.TheLexicalUnit->TheSurfaceForm << "\n";
+        what_ << "Rerun with --skip-on-error to skip this sentence.";
+        throw wchar_t_Exception::UnalignedStreams(what_);
+      }
+
+      skipped++;
+      training_sentence->first.clear();
+      training_sentence->second.clear();
+
+      std::wcerr << "fast forward\n";
+      bool tagged_ended = contToEndOfSent(tagged, tagged_token, tagged_line);
+      bool untagged_ended = contToEndOfSent(untagged, untagged_token, untagged_line);
+      if (tagged_ended || untagged_ended) {
+        if (!tagged_ended || !untagged_ended) {
+          std::wcerr << "fast forward prem\n";
+          prematureEnd();
+        }
+        std::wcerr << "fast forward finish\n";
+        break;
+      }
+      std::wcerr << "fast forwarded\n";
+      continue;
     }
     if (was_sentence_end) {
       sentences.push_back(std::make_pair(0, 0));
@@ -104,10 +150,34 @@ TrainingCorpus::TrainingCorpus(Stream &tagged, Stream &untagged)
       training_sentence->first.push_back(analyses.front());
     }
     training_sentence->second.push_back(untagged_token);
-    if (isSentenceEnd(tagged_token)) {
+    if (isSentenceEnd(tagged_token, tagged, sent_seg)) {
       was_sentence_end = true;
     }
   }
+}
+
+bool TrainingCorpus::contToEndOfSent(Stream &stream, StreamedType token,
+                                     unsigned int &line)
+{
+  while (1) {
+    if (!token.TheLexicalUnit) {
+      return true;
+    }
+    if (isSentenceEnd(token, stream, sent_seg)) {
+      return false;
+    }
+    std::wcerr << "Skip " << token.TheLexicalUnit->TheSurfaceForm << "\n";
+    token = stream.get();
+    line++;
+  }
+}
+
+void TrainingCorpus::prematureEnd()
+{
+  std::stringstream what_;
+  what_ << "One stream has ended prematurely. "
+        << "Please check if they are aligned.\n";
+  throw Exception::UnalignedStreams(what_);
 }
 
 void TrainingCorpus::shuffle()

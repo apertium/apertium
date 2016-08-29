@@ -58,6 +58,7 @@ StreamedType Stream::get() {
   std::wstring Lemma;
   private_flush_ = false;
 
+  //TheCharacterStream.clear();
   if (!is_eof_throw_if_not_TheCharacterStream_good()) {
     while (true) {
       const wchar_t Character_ = TheCharacterStream.get();
@@ -623,6 +624,32 @@ StreamedType Stream::get() {
   return TheStreamedType;
 }
 
+StreamedType Stream::peek() {
+  bool prev_flush = private_flush_;
+  std::ios::iostate state = TheCharacterStream.rdstate();
+  int pos = TheCharacterStream.tellg();
+
+  StreamedType token = get();
+
+  TheCharacterStream.clear(state);
+  TheCharacterStream.seekg(pos);
+  private_flush_ = prev_flush;
+  return token;
+}
+
+bool Stream::peekIsBlank() {
+  std::ios::iostate state = TheCharacterStream.rdstate();
+  int pos = TheCharacterStream.tellg();
+
+  const wchar_t newline1 = TheCharacterStream.get();
+  const wchar_t newline2 = TheCharacterStream.get();
+
+  TheCharacterStream.clear(state);
+  TheCharacterStream.seekg(pos);
+
+  return newline1 == L'\n' && newline2 == L'\n';
+}
+
 bool Stream::flush_() const { return private_flush_; }
 
 void Stream::outputLexicalUnit(
@@ -670,6 +697,10 @@ bool Stream::is_eof_throw_if_not_TheCharacterStream_good() const {
     return true;
 
   if (!TheCharacterStream) {
+    std::wcerr << L"State bad " << TheCharacterStream.good() << " "
+                                << TheCharacterStream.eof() << " "
+                                << TheCharacterStream.fail() << " "
+                                << TheCharacterStream.bad() << "\n";
     std::wstringstream Message;
     Message << L"can't get const wchar_t: TheCharacterStream not good";
     throw wchar_t_Exception::Stream::TheCharacterStream_not_good(

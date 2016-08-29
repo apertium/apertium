@@ -103,6 +103,16 @@ void PerceptronSpec::get_features(
     UnaryFeatureVec &feat_vec_out) const {
   size_t i;
   global_results.clear();
+  if (global_pred.size() > 0) {
+    Machine machine(
+      *this, global_pred, 0, false,
+      tagged, untagged, token_idx, wordoid_idx);
+    StackValue result = machine.getValue();
+    assert(result.type == BVAL);
+    if (!result.boolVal()) {
+      return;
+    }
+  }
   for (i = 0; i < global_defns.size(); i++) {
     Machine machine(
       *this, global_defns[i], i, false,
@@ -506,11 +516,13 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
       str_arr.erase(std::remove_if(
           str_arr.begin(), str_arr.end(), std::not1(In(set_op))));
     } break;
+    /*
     case SETHAS: {
       const VMSet& set_op = get_set_operand();
       std::string str = stack.pop_off().str();
       stack.push(set_op.find(str) != set_op.end());
     } break;
+    */
     case SETHASANY: {
       const VMSet& set_op = get_set_operand();
       std::vector<std::string> str_arr = stack.pop_off().strArr();
@@ -694,14 +706,29 @@ PerceptronSpec::Machine::get_tag(const Tag &in) {
   return UtfConverter::toUtf8(in.TheTag);
 }
 
+void PerceptronSpec::serialiseFeatDefn(
+    std::ostream &serialised, const FeatureDefn &defn) const {
+  Serialiser<std::string>::serialise(
+      std::string((char*)&(defn.front()), defn.size()),
+      serialised);
+}
+
+void PerceptronSpec::deserialiseFeatDefn(
+    std::istream &serialised, FeatureDefn &feat) {
+  std::string feat_str = Deserialiser<std::string>::deserialise(serialised);
+  feat.reserve(feat_str.size());
+  std::string::iterator feat_str_it;
+  for (feat_str_it = feat_str.begin(); feat_str_it != feat_str.end(); feat_str_it++) {
+    feat.push_back(*feat_str_it);
+  }
+}
+
 void PerceptronSpec::serialiseFeatDefnVec(
     std::ostream &serialised, const std::vector<FeatureDefn> &defn_vec) const {
   Serialiser<size_t>::serialise(defn_vec.size(), serialised);
   std::vector<FeatureDefn>::const_iterator feat_it;
   for (feat_it = defn_vec.begin(); feat_it != defn_vec.end(); feat_it++) {
-    Serialiser<std::string>::serialise(
-        std::string((char*)&(feat_it->front()), feat_it->size()),
-        serialised);
+    serialiseFeatDefn(serialised, *feat_it);
   }
 }
 
@@ -711,12 +738,7 @@ void PerceptronSpec::deserialiseFeatDefnVec(
   while (num_features-- > 0) {
     defn_vec.push_back(FeatureDefn());
     FeatureDefn &feat = defn_vec.back();
-    std::string feat_str = Deserialiser<std::string>::deserialise(serialised);
-    feat.reserve(feat_str.size());
-    std::string::iterator feat_str_it;
-    for (feat_str_it = feat_str.begin(); feat_str_it != feat_str.end(); feat_str_it++) {
-      feat.push_back(*feat_str_it);
-    }
+    deserialiseFeatDefn(serialised, feat);
   }
 }
 
@@ -726,6 +748,7 @@ void PerceptronSpec::serialise(std::ostream &serialised) const {
   Serialiser<std::vector<VMSet> >::serialise(set_consts, serialised);
   serialiseFeatDefnVec(serialised, features);
   serialiseFeatDefnVec(serialised, global_defns);
+  serialiseFeatDefn(serialised, global_pred);
 }
 
 void PerceptronSpec::deserialise(std::istream &serialised) {
@@ -734,6 +757,7 @@ void PerceptronSpec::deserialise(std::istream &serialised) {
   set_consts = Deserialiser<std::vector<VMSet> >::deserialise(serialised);
   deserialiseFeatDefnVec(serialised, features);
   deserialiseFeatDefnVec(serialised, global_defns);
+  deserialiseFeatDefn(serialised, global_pred);
 }
 
 }

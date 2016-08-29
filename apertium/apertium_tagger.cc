@@ -70,7 +70,7 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
       TheFunctionTypeOptionArgument(0), CgAugmentedMode(0), TheFlags() {
   try {
     while (true) {
-      The_val = getopt_long(argc, argv, "c:dfegmpr:s:t:u:wxz", longopts, &The_indexptr);
+      The_val = getopt_long(argc, argv, "bc:dfegmpr:s:t:u:wxz", longopts, &The_indexptr);
 
       if (The_val == -1)
         break;
@@ -78,6 +78,10 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
       set_indexptr();
 
       switch (The_val) {
+      case 'b':
+        flagOptionCase(&basic_Tagger::Flags::getSentSeg,
+                       &basic_Tagger::Flags::setSentSeg);
+        break;
       case 'c':
         getCgAugmentedModeArgument();
         break;
@@ -385,6 +389,7 @@ void apertium_tagger::help() {
 
 const struct option apertium_tagger::longopts[] = {
     {"help", no_argument, 0, 'h'},
+    {"sent-seg", no_argument, 0, 'b'},
     {"debug", no_argument, 0, 'd'},
     {"skip-on-error", no_argument, 0, 'e'},
     {"first", no_argument, 0, 'f'},
@@ -393,7 +398,7 @@ const struct option apertium_tagger::longopts[] = {
     {"null-flush", no_argument, 0, 'z'},
     {"unigram", required_argument, 0, 'u'},
     {"sliding-window", no_argument, 0, 'w'},
-    {"perceptron", required_argument, 0, 'x'},
+    {"perceptron", no_argument, 0, 'x'},
     {"tagger", no_argument, 0, 'g'},
     {"retrain", required_argument, 0, 'r'},
     {"supervised", required_argument, 0, 's'},

@@ -24,6 +24,8 @@ public:
     Flags();
     bool getDebug() const;
     void setDebug(const bool &Debug_);
+    bool getSentSeg() const;
+    void setSentSeg(const bool &SentSeg);
     bool getSkipErrors() const;
     void setSkipErrors(const bool &SkipErrors_);
     bool getFirst() const;
@@ -47,6 +49,7 @@ public:
 
   private:
     bool Debug : 1;
+    bool SentSeg : 1;
     bool SkipErrors : 1;
     bool First : 1;
     bool Mark : 1;

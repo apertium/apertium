@@ -14,10 +14,12 @@ namespace SentenceStream {
   typedef std::vector<TaggedToken> TaggedSentence;
   typedef std::pair<TaggedSentence, Sentence> TrainingSentence;
 
+  bool isAfterSentenceEnd(StreamedType &token);
   bool isSentenceEnd(StreamedType &token);
+  bool isSentenceEnd(Stream &in, bool sent_seg = false);
   class SentenceTagger {
   public:
-    void tag(Stream &in, std::wostream &out) const;
+    void tag(Stream &in, std::wostream &out, bool sent_seg) const;
     SentenceTagger();
   protected:
     virtual TaggedSentence tagSentence(const Sentence &untagged) const = 0;
@@ -36,8 +38,13 @@ namespace SentenceStream {
   };
 
   class TrainingCorpus {
+    void prematureEnd();
+    bool contToEndOfSent(Stream &stream, StreamedType token,
+                         unsigned int &line);
+    bool sent_seg;
   public:
-    TrainingCorpus(Stream &stream_tagged, Stream &stream_untagged);
+    unsigned int skipped;
+    TrainingCorpus(Stream &tagged, Stream &untagged, bool skip_on_error, bool sent_seg);
     void shuffle();
     std::vector<TrainingSentence> sentences;
   };

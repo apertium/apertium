@@ -36,6 +36,8 @@ public:
   Stream(const basic_Tagger::Flags &Flags_, std::wifstream &CharacterStream_,
          const std::stringstream &Filename_);
   StreamedType get();
+  StreamedType peek();
+  bool peekIsBlank();
   bool flush_() const;
 
   static void outputLexicalUnit(

@@ -28,6 +28,9 @@ FeatureVec::FeatureVec(Container &container) : data()
   init(container.begin(), container.end());
 }
 
+template
+FeatureVec::FeatureVec(UnaryFeatureVec &ufv);
+
 template <typename Iter>
 FeatureVec::FeatureVec(Iter first, Iter last) : data()
 {
@@ -126,17 +129,19 @@ template <typename Iter>
 void
 FeatureVec::init(Iter first, Iter last)
 {
-  std::transform(first, last, std::back_inserter(data), initPair);
+  for (;first!=last;first++) {
+    data.insert(initPair(*first));
+  }
 }
 
 FeatureVec::Pair
-FeatureVec::initPair(FeatureVec::Pair &pair)
+FeatureVec::initPair(const FeatureVec::Pair &pair)
 {
   return pair;
 }
 
 FeatureVec::Pair
-FeatureVec::initPair(FeatureKey &key)
+FeatureVec::initPair(const FeatureKey &key)
 {
   return make_pair(key, 1.0L);
 }

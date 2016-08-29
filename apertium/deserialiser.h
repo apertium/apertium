@@ -231,7 +231,12 @@ char Deserialiser<char>::deserialise(std::istream &Stream_) {
 }
 
 double Deserialiser<double>::deserialise(std::istream &Stream_) {
-  return static_cast<double>(Deserialiser<uint64_t>::deserialise(Stream_));
+  union {
+    uint64_t i;
+    double d;
+  } u;
+  u.i = Deserialiser<uint64_t>::deserialise(Stream_);
+  return u.d;
 }
 
 template <typename Container>

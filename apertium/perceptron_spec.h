@@ -332,6 +332,7 @@ public:
   typedef std::vector<unsigned char> FeatureDefn;
   std::vector<FeatureDefn> global_defns;
   std::vector<FeatureDefn> features;
+  FeatureDefn global_pred;
   void get_features(
     const TaggedSentence &tagged, const Sentence &untagged,
     int token_idx, int wordoid_idx,
@@ -431,6 +432,10 @@ private:
   static void appendStr(UnaryFeatureVec::iterator begin,
                         UnaryFeatureVec::iterator end,
                         const std::string &tail_str);
+  void serialiseFeatDefn(
+    std::ostream &serialised, const FeatureDefn &defn) const;
+  void deserialiseFeatDefn(
+    std::istream &serialised, FeatureDefn &feat);
   void serialiseFeatDefnVec(
     std::ostream &serialised, const std::vector<FeatureDefn> &defn_vec) const;
   void deserialiseFeatDefnVec(

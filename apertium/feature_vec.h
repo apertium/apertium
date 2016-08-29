@@ -18,7 +18,7 @@ typedef std::vector<FeatureKey> UnaryFeatureVec;
 class FeatureVec
 {
   friend class FeatureVecAverager;
-  friend class PerceptronTagger; //
+  friend class PerceptronTagger;
 public:
   typedef std::map<FeatureKey, double, CompareFeatureKey> Map;
   typedef std::pair<FeatureKey, double> Pair;
@@ -35,8 +35,8 @@ public:
   size_t size() const;
   template <typename OStream> friend OStream& operator<<(OStream & out, FeatureVec const &fv);
 private:
-  static Pair initPair(Pair &pair);
-  static Pair initPair(FeatureKey &key);
+  static Pair initPair(const Pair &pair);
+  static Pair initPair(const FeatureKey &key);
   Map data;
   template <typename Iter> void init(Iter first, Iter last);
   struct FeatOp {

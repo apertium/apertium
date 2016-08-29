@@ -50,7 +50,9 @@ private:
                      const std::wstring &what, VarNVMap &const_map,
                      size_t (MTXReader::*push_new)(std::string&), bool& exists);
   size_t getSetRef(bool& exists);
+  size_t getSetRef();
   size_t getStrRef(bool& exists);
+  size_t getStrRef();
   void emitBytecode(VM::Bytecode bc);
   void emitOpcode(VM::Opcode op);
   void pokeBytecode(size_t addr, VM::Bytecode bc);
@@ -61,10 +63,13 @@ private:
   void emitPushAddrFromAttr();
   int getInt(std::string attr_name, bool& exists);
   int getInt(bool& exists);
+  int getInt(std::string attr_name);
+  int getInt();
 
   void procSetDef();
   void procStrDef();
   void procDefns();
+  void procGlobalPred();
   void procBinOp(void (MTXReader::*procLeft)(void),
                  void (MTXReader::*procRight)(void), VM::Opcode op);
   void emitSetImmOp(VM::Opcode op);

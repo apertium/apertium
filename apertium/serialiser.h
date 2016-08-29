@@ -252,7 +252,12 @@ void Serialiser<char>::serialise(const char &SerialisedType_,
 
 void Serialiser<double>::serialise(const double &SerialisedType_,
                                    std::ostream &Output) {
-  Serialiser<uint64_t>::serialise(static_cast<uint64_t>(SerialisedType_), Output);
+  union {
+    uint64_t i;
+    double d;
+  } u;
+  u.d = SerialisedType_;
+  Serialiser<uint64_t>::serialise(u.i, Output);
 }
 
 template <typename Container>

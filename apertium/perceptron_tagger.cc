@@ -13,7 +13,7 @@ PerceptronTagger::PerceptronTagger(basic_Tagger::Flags flags) : basic_Tagger(fla
 PerceptronTagger::~PerceptronTagger() {};
 
 void PerceptronTagger::tag(Stream &in, std::wostream &out) const {
-  SentenceStream::SentenceTagger::tag(in, out);
+  SentenceStream::SentenceTagger::tag(in, out, TheFlags.getSentSeg());
 }
 
 void PerceptronTagger::read_spec(const std::string &filename) {
@@ -40,7 +40,7 @@ operator<<(std::ostream& out, PerceptronTagger const &pt);
 
 TaggedSentence
 PerceptronTagger::tagSentence(const Sentence &untagged_sent) const {
-  std::wcerr << "TAG SENT!\n";
+  //std::wcerr << "TAG SENT!\n";
   const size_t sent_len = untagged_sent.size();
 
   std::vector<AgendaItem> agenda;
@@ -86,12 +86,12 @@ PerceptronTagger::tagSentence(const Sentence &untagged_sent) const {
       }
     }
     // Apply the beam
-    std::wcerr << "-- Before beam: --\n" << new_agenda;
+    //std::wcerr << "-- Before beam: --\n" << new_agenda;
     size_t new_agenda_size = std::min((size_t)spec.beam_width, new_agenda.size());
     agenda.resize(new_agenda_size);
     std::partial_sort_copy(new_agenda.begin(), new_agenda.end(),
                            agenda.begin(), agenda.end());
-    std::wcerr << "-- After beam: --\n" << agenda;
+    //std::wcerr << "-- After beam: --\n" << agenda;
   }
 
   return agenda.front().tagged;
@@ -216,6 +216,7 @@ bool PerceptronTagger::trainSentence(
       std::wcerr << "Correct:\n" << correct_sentence.vec << "\n";*/
       avg_weights -= agenda.front().vec;
       avg_weights += correct_sentence.vec;
+      avg_weights.incIteration();
       //std::wcerr << "After:\n" << weights << "\n";
       return false;
     }
@@ -230,6 +231,7 @@ bool PerceptronTagger::trainSentence(
     std::wcerr << "Correct:\n" << correct_sentence.vec << "\n";*/
     avg_weights -= agenda.front().vec;
     avg_weights += correct_sentence.vec;
+    avg_weights.incIteration();
     //std::wcerr << "After:\n" << weights << "\n";
   }
   return false;
@@ -242,21 +244,23 @@ void PerceptronTagger::train(
     Stream &untagged,
     int iterations) {
   FeatureVecAverager avg_weights(weights);
-  TrainingCorpus tc(tagged, untagged);
-  size_t skipped;
+  TrainingCorpus tc(tagged, untagged, TheFlags.getSkipErrors(), TheFlags.getSentSeg());
+  size_t avail_skipped;
   for (int i = 0; i < iterations; i++) {
-    skipped = 0;
+    std::wcerr << "Iteration " << i + 1 << " of " << iterations << "\n";
+    avail_skipped = 0;
     tc.shuffle();
     std::vector<TrainingSentence>::const_iterator si;
     for (si = tc.sentences.begin(); si != tc.sentences.end(); si++) {
-      skipped += trainSentence(*si, avg_weights);
-      avg_weights.incIteration();
+      avail_skipped += trainSentence(*si, avg_weights);
     }
   }
   avg_weights.average();
-  if (skipped) {
-    std::wcerr << "Skipped " << skipped << " out of "
-               << tc.sentences.size() << " sentences.";
+  if (avail_skipped) {
+    std::wcerr << "Skipped " << tc.skipped << " sentences due to token "
+               << "misalignment and " << avail_skipped << " sentences due to "
+               << "tagged token being unavailable in untagged file out of "
+               << tc.sentences.size() << " total sentences.";
   }
 }
 

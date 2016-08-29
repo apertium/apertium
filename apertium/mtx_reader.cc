@@ -266,6 +266,16 @@ MTXReader::procDefns()
 }
 
 void
+MTXReader::procGlobalPred()
+{
+  cur_feat = &spec.global_pred;
+  stepToNextTag();
+  procBoolExpr();
+  assert(name == L"global-pred" && type == XML_READER_TYPE_END_ELEMENT);
+  stepToNextTag();
+}
+
+void
 MTXReader::emitSetImmOp(VM::Opcode op)
 {
   emitOpcode(op);
@@ -313,6 +323,9 @@ MTXReader::procIntExpr(bool allow_fail)
   } else if (name == L"tokaddr") {
     emitOpcode(VM::PUSHTOKADDR);
     stepPastSelfClosingTag(L"tokaddr");
+  } else if (name == L"wrdidx") {
+    emitOpcode(VM::PUSHWRDADDR);
+    stepPastSelfClosingTag(L"wrdidx");
   } else if (name == L"int") {
     emitOpcode(VM::PUSHINT);
     getAndEmitInt();
@@ -341,6 +354,7 @@ MTXReader::procIntExpr(bool allow_fail)
     procBinCompareOp(VM::ARRLEN);
     stepToNextTag();
   } else {
+    std::wcerr << "Allow fail " << allow_fail << "\n";
     if (allow_fail) {
       return false;
     }
@@ -375,14 +389,12 @@ MTXReader::procStrArrExpr(bool allow_fail)
 bool MTXReader::tryProcSubscript(bool (MTXReader::*proc_inner)(bool))
 {
   if (name == L"subscript") {
+    int idx = getInt("idx");
+    std::wcerr << "Subscript idx " << idx << "\n";
     stepToNextTag();
     (this->*proc_inner)(false);
-    bool exists;
     emitOpcode(VM::SUBSCRIPT);
-    int idx = getInt("idx", exists);
-    if (!exists) {
-      emitInt(idx);
-    }
+    emitUInt(idx);
     assert(name == L"subscript" && type == XML_READER_TYPE_END_ELEMENT);
     stepToNextTag();
     return true;
@@ -486,53 +498,98 @@ MTXReader::procStrExpr(bool allow_fail)
 bool
 MTXReader::procBoolExpr(bool allow_fail)
 {
-  if (name == L"and") {
-    procCommBoolOp(VM::AND);
-  } else if (name == L"or") {
-    procCommBoolOp(VM::OR);
-  } else if (name == L"not") {
-    stepToNextTag();
-    procBoolExpr();
-    assert(type == XML_READER_TYPE_END_ELEMENT);
-    emitOpcode(VM::NOT);
-    step();
-  } else if (name == L"lt") {
-    procBinCompareOp(VM::LT);
-  } else if (name == L"lte") {
-    procBinCompareOp(VM::LTE);
-  } else if (name == L"gt") {
-    procBinCompareOp(VM::GT);
-  } else if (name == L"gte") {
-    procBinCompareOp(VM::GTE);
-  } else if (name == L"streq") {
-    stepToNextTag();
-    procStrExpr();
-    emitStrImmOp(VM::STREQ);
-  } else if (name == L"strin") {
-    stepToNextTag();
-    procStrExpr();
-    emitSetImmOp(VM::STRIN);
-  } else if (name == L"sethas") {
-    stepToNextTag();
-    procStrExpr();
-    emitSetImmOp(VM::SETHAS);
-  } else if (name == L"sethasany") {
-    stepToNextTag();
-    procStrArrExpr();
-    emitSetImmOp(VM::SETHASANY);
-  } else if (name == L"sethasall") {
-    stepToNextTag();
-    procStrArrExpr();
-    emitSetImmOp(VM::SETHASALL);
-  } else {
-    if (allow_fail) {
-      return false;
+  if (!tryProcVar(VM::BVAL)) {
+    if (name == L"and") {
+      stepToNextTag();
+      procCommBoolOp(VM::AND);
+      assert(name == L"and" && type == XML_READER_TYPE_END_ELEMENT);
+      stepToNextTag();
+    } else if (name == L"or") {
+      stepToNextTag();
+      procCommBoolOp(VM::OR);
+      assert(name == L"or" && type == XML_READER_TYPE_END_ELEMENT);
+      stepToNextTag();
+    } else if (name == L"not") {
+      stepToNextTag();
+      procBoolExpr();
+      emitOpcode(VM::NOT);
+      assert(name == L"not" && type == XML_READER_TYPE_END_ELEMENT);
+      stepToNextTag();
+    } else if (name == L"eq") {
+      stepToNextTag();
+      procBinCompareOp(VM::EQ);
+      assert(name == L"eq" && type == XML_READER_TYPE_END_ELEMENT);
+      stepToNextTag();
+    } else if (name == L"neq") {
+      stepToNextTag();
+      procBinCompareOp(VM::NEQ);
+      assert(name == L"neq" && type == XML_READER_TYPE_END_ELEMENT);
+      stepToNextTag();
+    } else if (name == L"lt") {
+      stepToNextTag();
+      procBinCompareOp(VM::LT);
+      assert(name == L"lt" && type == XML_READER_TYPE_END_ELEMENT);
+      stepToNextTag();
+    } else if (name == L"lte") {
+      stepToNextTag();
+      procBinCompareOp(VM::LTE);
+      assert(name == L"lte" && type == XML_READER_TYPE_END_ELEMENT);
+      stepToNextTag();
+    } else if (name == L"gt") {
+      stepToNextTag();
+      procBinCompareOp(VM::GT);
+      assert(name == L"gt" && type == XML_READER_TYPE_END_ELEMENT);
+      stepToNextTag();
+    } else if (name == L"gte") {
+      stepToNextTag();
+      procBinCompareOp(VM::GTE);
+      assert(name == L"gte" && type == XML_READER_TYPE_END_ELEMENT);
+      stepToNextTag();
+    } else if (name == L"streq") {
+      size_t str_ref = getStrRef();
+      stepToNextTag();
+      procStrExpr();
+      emitOpcode(VM::STREQ);
+      emitUInt(str_ref);
+      assert(name == L"streq" && type == XML_READER_TYPE_END_ELEMENT);
+      stepToNextTag();
+    } else if (name == L"strin") {
+      size_t set_ref = getSetRef();
+      stepToNextTag();
+      procStrExpr();
+      emitOpcode(VM::STRIN);
+      emitUInt(set_ref);
+      assert(name == L"strin" && type == XML_READER_TYPE_END_ELEMENT);
+      stepToNextTag();
+    /* Identical to strin?
+    } else if (name == L"sethas") {
+      stepToNextTag();
+      procStrExpr();
+      emitSetImmOp(VM::SETHAS);
+    */
+    } else if (name == L"sethasany") {
+      size_t set_ref = getSetRef();
+      stepToNextTag();
+      procStrArrExpr();
+      emitOpcode(VM::SETHASANY);
+      emitUInt(set_ref);
+      assert(name == L"sethasany" && type == XML_READER_TYPE_END_ELEMENT);
+      stepToNextTag();
+    } else if (name == L"sethasall") {
+      size_t set_ref = getSetRef();
+      stepToNextTag();
+      procStrArrExpr();
+      emitOpcode(VM::SETHASALL);
+      emitUInt(set_ref);
+      assert(name == L"sethasall" && type == XML_READER_TYPE_END_ELEMENT);
+      stepToNextTag();
+    } else {
+      if (allow_fail) {
+        return false;
+      }
+      parseError(L"Expected a boolean expression.");
     }
-    parseError(L"Expected a boolean expression.");
   }
-  stepToTag();
-  assert(type == XML_READER_TYPE_END_ELEMENT);
-  stepToTag();
   return true;
 }
 
@@ -624,11 +681,11 @@ MTXReader::procWordoidExpr(bool allow_fail)
 void
 MTXReader::procPred()
 {
-  step();
+  stepToNextTag();
   procBoolExpr();
-  assert(type == XML_READER_TYPE_END_ELEMENT);
-  step();
+  assert(name == L"pred" && type == XML_READER_TYPE_END_ELEMENT);
   emitOpcode(VM::DIEIFFALSE);
+  stepToNextTag();
 }
 
 size_t
@@ -665,9 +722,31 @@ MTXReader::getSetRef(bool& exists)
 }
 
 size_t
+MTXReader::getSetRef()
+{
+  bool has_attr;
+  size_t set_ref = getSetRef(has_attr);
+  if (!has_attr) {
+    parseError(L"Set required");
+  }
+  return set_ref;
+}
+
+size_t
 MTXReader::getStrRef(bool& exists)
 {
   return getConstRef(L"name", "val", L"string", str_names, &MTXReader::pushStrConst, exists);
+}
+
+size_t
+MTXReader::getStrRef()
+{
+  bool has_attr;
+  size_t str_ref = getStrRef(has_attr);
+  if (!has_attr) {
+    parseError(L"String required");
+  }
+  return str_ref;
 }
 
 int
@@ -689,6 +768,23 @@ int
 MTXReader::getInt(bool& exists)
 {
   return getInt("val", exists);
+}
+
+int
+MTXReader::getInt(std::string attr_name)
+{
+  bool has_attr;
+  int i = getInt(attr_name, has_attr);
+  if (!has_attr) {
+    parseError(L"String required");
+  }
+  return i;
+}
+
+int
+MTXReader::getInt()
+{
+  return getInt("val");
 }
 
 template<typename GetT, typename EmitT>
@@ -955,6 +1051,9 @@ MTXReader::parse()
   }
   if (name == L"defns") {
     procDefns();
+  }
+  if (name == L"global-pred") {
+    procGlobalPred();
   }
   if (name == L"feats") {
     procFeats();
