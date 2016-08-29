@@ -18,6 +18,7 @@
 #include <lttoolbox/xml_parse_util.h>
 #include <lttoolbox/compression.h>
 #include <apertium/string_utils.h>
+#include <apertium/utils.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -29,7 +30,9 @@
 // When delegating or returning control, step beyond yourself
 
 namespace Apertium {
-MTXReader::MTXReader(VM &spec) : spec(spec), cur_feat(NULL) {}
+MTXReader::MTXReader(VM &spec) :
+    spec(spec), in_global_defn(false),
+    template_slot_counter(0), cur_feat(NULL) {}
 
 size_t MTXReader::pushSetConst(std::string &val)
 {
@@ -76,141 +79,6 @@ void MTXReader::emitUInt(int val)
   emitBytecode((VM::Bytecode){.uintbyte = (unsigned char)val});
 }
 
-/*
-bool MTXReader::emitPushTokAddrFromAttr(bool is_tagged)
-{
-  std::string addr = attrib("tokaddr");
-  if (addr.length() == 0) {
-    emitOpcode(VM::PUSHTOKADDR);
-    return false;
-  }
-  bool pushed_initial = false;
-  bool is_rel = true;
-  char op;
-  int offset;
-  std::istringstream addr_ss(addr);
-  while (!addr_ss.eof()) {
-    addr_ss >> op;
-    switch (op) {
-      case 'C':
-        if (is_tagged) {
-          emitOpcode(VM::CLAMPTAGGEDTOKADDR);
-        } else {
-          emitOpcode(VM::CLAMPTOKADDR);
-        }
-        break;
-      case 'X':
-        emitOpcode(VM::DUP);
-        if (is_tagged) {
-          emitOpcode(VM::ISVALIDTAGGEDTOKADDR);
-        } else {
-          emitOpcode(VM::ISVALIDTOKADDR);
-        }
-        emitOpcode(VM::DIEIFFALSE);
-        break;
-      case '.':
-        is_rel = false;
-        break;
-      case ' ':
-        is_rel = true;
-        break;
-      default:
-        addr_ss >> offset;
-        if (!pushed_initial) {
-          if (is_rel) {
-            emitOpcode(VM::PUSHTOKADDR);
-          } else if (0 <= offset) {
-            emitOpcode(VM::PUSHZERO);
-          } else {
-            if (is_tagged) {
-              emitOpcode(VM::SENTLENTAGGEDTOK);
-            } else {
-              emitOpcode(VM::SENTLENTOK);
-            }
-          }
-          pushed_initial = true;
-        }
-        emitOpcode(VM::PUSHINT);
-        emitInt(offset);
-        emitOpcode(VM::ADD);
-        break;
-    }
-  }
-  return true;
-}
-
-void MTXReader::emitPushTokAddrFromAttr()
-{
-  emitPushTokAddrFromAttr(false);
-}
-
-void MTXReader::emitPushAddrFromAttr()
-{
-  bool has_tok_addr = emitPushTokAddrFromAttr(true);
-  std::string addr = attrib("wrdaddr");
-  if (addr.length() == 0) {
-    if (has_tok_addr) {
-      emitOpcode(VM::PUSHINT);
-      emitInt(0);
-    } else {
-      emitOpcode(VM::PUSHWRDADDR);
-    }
-    return;
-  }
-  bool pushed_initial = false;
-  bool is_rel = true;
-  char op;
-  int offset;
-  std::istringstream addr_ss(addr);
-  while (!addr_ss.eof()) {
-    addr_ss >> op;
-    switch (op) {
-      case 'A':
-        emitOpcode(VM::ADJADDR);
-        break;
-      case 'C':
-        emitOpcode(VM::CLAMPADDR);
-        break;
-      case 'X':
-        emitOpcode(VM::DUP2);
-        emitOpcode(VM::ISVALIDADDR);
-        emitOpcode(VM::DIEIFFALSE);
-        break;
-      case '.':
-        is_rel = false;
-        break;
-      case ' ':
-        is_rel = true;
-        break;
-      default:
-        addr_ss.seekg(-1, ios_base::cur);
-        addr_ss >> offset;
-        if (addr_ss.fail()) {
-          parseError(L"Expected A, C, X, R, space or a number.");
-        }
-        if (!pushed_initial) {
-          if (is_rel) {
-            if (has_tok_addr) {
-              parseError(L"Can't combine token addressing with relative "
-                         L"wordoid addressing");
-            }
-            emitOpcode(VM::PUSHWRDADDR);
-          } else if (0 <= offset) {
-            emitOpcode(VM::PUSHZERO);
-          } else {
-            emitOpcode(VM::DUP);
-            emitOpcode(VM::TOKLENWRD);
-          }
-          pushed_initial = true;
-        }
-        emitOpcode(VM::PUSHINT);
-        emitInt(offset);
-        break;
-    }
-  }
-}
-*/
-
 void MTXReader::procSetDef()
 {
   std::wstring name = attrib(L"name");
@@ -246,15 +114,14 @@ void MTXReader::procStrDef()
 void
 MTXReader::procDefns()
 {
-  global_slot_counter = 0;
   stepToNextTag();
   while (type != XML_READER_TYPE_END_ELEMENT) {
     if (name == L"def-set") {
       procSetDef();
     } else if (name == L"def-str") {
       procStrDef();
-    } else if (name == L"def-global") {
-      procDefGlobal();
+    } else if (name == L"def-macro") {
+      procDefMacro();
     } else if (name == L"#text" || name == L"#comment") {
       // skip
     } else {
@@ -366,14 +233,16 @@ bool
 MTXReader::procStrArrExpr(bool allow_fail)
 {
   stepToTag();
-  if (!tryProcVar(VM::STRARRVAL) && !tryProcSlice(&MTXReader::procStrArrExpr)) {
+  if (!tryProcArg(STRARREXPR, true)
+      && !tryProcVar(VM::STRARRVAL)
+      && !tryProcSlice(&MTXReader::procStrArrExpr)) {
     if (name == L"ex-tags") {
       stepToNextTag();
       procWordoidExpr();
       assert(type == XML_READER_TYPE_END_ELEMENT);
       emitOpcode(VM::EXTAGS);
     } else if (name == L"for-each") {
-      procForEach(Optional<VM::StackValueType>(VM::STRVAL));
+      procForEach(STREXPR);
     } else {
       if (allow_fail) {
         return false;
@@ -426,6 +295,24 @@ bool MTXReader::tryProcSlice(bool (MTXReader::*proc_inner)(bool))
   return false;
 }
 
+bool MTXReader::tryProcArg(ExprType expr_type, bool allow_fail)
+{
+  if (name == L"var") {
+    std::wstring var_name = attrib(L"name");
+    if (in_global_defn) {
+      VarNVMap::const_iterator arg_name_it = template_arg_names.find(var_name);
+      if (arg_name_it != template_arg_names.end()) {
+        cur_replacements->push_back(make_pair(arg_name_it->second, expr_type));
+        return true;
+      }
+      if (!allow_fail) {
+        parseError(L"No such argument " + var_name);
+      }
+    }
+  }
+  return false;
+}
+
 bool MTXReader::tryProcVar(VM::StackValueType svt)
 {
   if (name == L"var") {
@@ -442,17 +329,68 @@ bool MTXReader::tryProcVar(VM::StackValueType svt)
       return true;
     }
 
-    slot_names_it = global_slot_names.find(var_name);
-    if (slot_names_it != global_slot_names.end()) {
-      if (global_slot_types[slot_names_it->second] != svt) {
-        parseError(L"Global variable " + var_name + L" has the wrong type");
-      }
-      emitOpcode(VM::GETGVAR);
-      emitUInt(slot_names_it->second);
-      stepPastSelfClosingTag(L"var");
-      return true;
-    }
     parseError(L"Variable " + var_name + L" has not been set.");
+  } else if (!in_global_defn && name == L"macro") {
+    // Get template data
+    std::wstring var_name = attrib(L"name");
+    VarNVMap::const_iterator template_name_it = template_slot_names.find(var_name);
+    if (template_name_it == template_arg_names.end()) {
+      parseError(L"No such macro " + var_name);
+    }
+    size_t templ_idx = template_name_it->second;
+    std::pair<VM::FeatureDefn, TemplateReplacements> &templ_defn = template_defns[templ_idx];
+    // Get arg values
+    stepToNextTag();
+    std::vector<VM::FeatureDefn> arg_values;
+    VM::FeatureDefn *saved_feat = cur_feat;
+    TemplateReplacements::const_iterator templ_repl_it = templ_defn.second.begin();
+    for (; templ_repl_it != templ_defn.second.end(); templ_repl_it++) {
+      arg_values.push_back(VM::FeatureDefn());
+      cur_feat = &arg_values.back();
+      procTypeExpr(templ_repl_it->second);
+    }
+    cur_feat = saved_feat;
+    // Check for previous instanciation...
+    InstanciationMap::const_iterator templ_instcia_it =
+        template_instanciations.find(make_pair(templ_idx, arg_values));
+    if (templ_instcia_it == template_instanciations.end()) {
+      // and instanciate if doesn't exist...
+      // by ordering argument defns correctly
+      vector<unsigned int> indices(templ_defn.second.size(), 0);
+      for (size_t i = 0; i < templ_defn.second.size(); i++) {
+        indices[i] = i;
+      }
+      SortByComparer<std::pair<size_t, ExprType>, int> sbc(templ_defn.second);
+      std::sort(indices.begin(), indices.end(), sbc);
+      // And then copying the template defn bits and the argument defn bits into the global defn
+      VM::FeatureDefn::const_iterator src_start_it = templ_defn.first.begin();
+      VM::FeatureDefn::const_iterator src_end_it = templ_defn.first.end();
+      VM::FeatureDefn::const_iterator src_cur_it = src_start_it;
+      spec.global_defns.push_back(VM::FeatureDefn());
+      VM::FeatureDefn &global_defn = spec.global_defns.back();
+      std::back_insert_iterator<VM::FeatureDefn> dest_it(global_defn);
+      for (size_t i = 0; i < indices.size(); i++) {
+        size_t repl_i = indices[i];
+        size_t offset = templ_defn.second[repl_i].first;
+        VM::FeatureDefn &arg_src = arg_values[repl_i];
+        std::copy(src_cur_it, src_cur_it + offset, dest_it);
+        src_cur_it = src_start_it + offset;
+        std::copy(arg_src.begin(), arg_src.end(), dest_it);
+      }
+      std::copy(src_cur_it, src_end_it, dest_it);
+      templ_instcia_it = template_instanciations.insert(
+          make_pair(
+            make_pair(templ_idx, arg_values),
+            spec.global_defns.size() - 1)).first;
+    }
+    // Finally emit a reference to the relevant global
+    emitOpcode(VM::GETGVAR);
+    std::wcerr << "Emit GETGVAR: " << templ_instcia_it->second << "\n";
+    emitUInt(templ_instcia_it->second);
+    // Step past end
+    assert(name == L"macro" && type == XML_READER_TYPE_END_ELEMENT);
+    stepToNextTag();
+    return true;
   }
   return false;
 }
@@ -460,8 +398,10 @@ bool MTXReader::tryProcVar(VM::StackValueType svt)
 bool
 MTXReader::procStrExpr(bool allow_fail)
 {
-  if (!tryProcVar(VM::STRVAL) && !tryProcSlice(&MTXReader::procStrExpr)
-                              && !tryProcSubscript(&MTXReader::procStrArrExpr)) {
+  if (!tryProcArg(STREXPR, true)
+      && !tryProcVar(VM::STRVAL)
+      && !tryProcSlice(&MTXReader::procStrExpr)
+      && !tryProcSubscript(&MTXReader::procStrArrExpr)) {
     if (name == L"ex-surf") {
       stepToNextTag();
       procIntExpr();
@@ -495,7 +435,8 @@ MTXReader::procStrExpr(bool allow_fail)
 bool
 MTXReader::procBoolExpr(bool allow_fail)
 {
-  if (!tryProcVar(VM::BVAL)) {
+  if (!tryProcArg(BEXPR, true)
+      && !tryProcVar(VM::BVAL)) {
     if (name == L"and") {
       stepToNextTag();
       procCommBoolOp(VM::AND);
@@ -595,51 +536,55 @@ MTXReader::procAddrExpr()
 {
   stepToTag();
   /* Self-closing tags */
-  if (name == L"wrdaddr") {
-    emitOpcode(VM::PUSHADDR);
-    stepPastSelfClosingTag(L"wrdaddr");
-  /* Others */
-  } else if (name == L"addr-of-ints") {
-    stepToNextTag();
-    procIntExpr();
-    procIntExpr();
-    assert(name == L"addr-of-ints" && type == XML_READER_TYPE_END_ELEMENT);
-    stepToNextTag();
-  } else if (name == L"add") {
-    stepToNextTag();
-    procAddrExpr();
-    procAddrExpr();
-    assert(name == L"add" && type == XML_READER_TYPE_END_ELEMENT);
-    emitOpcode(VM::ADD2);
-    stepToNextTag();
-  } else if (name == L"adjust") {
-    stepToNextTag();
-    procAddrExpr();
-    assert(name == L"adjust" && type == XML_READER_TYPE_END_ELEMENT);
-    emitOpcode(VM::ADJADDR);
-    stepToNextTag();
-  } else if (name == L"clamp") {
-    stepToNextTag();
-    procAddrExpr();
-    assert(name == L"clamp" && type == XML_READER_TYPE_END_ELEMENT);
-    emitOpcode(VM::CLAMPADDR);
-    stepToNextTag();
-  } else {
-    parseError(L"Expected an address expression.");
+  if (!tryProcArg(ADDREXPR)) {
+    if (name == L"wrdaddr") {
+      emitOpcode(VM::PUSHADDR);
+      stepPastSelfClosingTag(L"wrdaddr");
+    /* Others */
+    } else if (name == L"addr-of-ints") {
+      stepToNextTag();
+      procIntExpr();
+      procIntExpr();
+      assert(name == L"addr-of-ints" && type == XML_READER_TYPE_END_ELEMENT);
+      stepToNextTag();
+    } else if (name == L"add") {
+      stepToNextTag();
+      procAddrExpr();
+      procAddrExpr();
+      assert(name == L"add" && type == XML_READER_TYPE_END_ELEMENT);
+      emitOpcode(VM::ADD2);
+      stepToNextTag();
+    } else if (name == L"adjust") {
+      stepToNextTag();
+      procAddrExpr();
+      assert(name == L"adjust" && type == XML_READER_TYPE_END_ELEMENT);
+      emitOpcode(VM::ADJADDR);
+      stepToNextTag();
+    } else if (name == L"clamp") {
+      stepToNextTag();
+      procAddrExpr();
+      assert(name == L"clamp" && type == XML_READER_TYPE_END_ELEMENT);
+      emitOpcode(VM::CLAMPADDR);
+      stepToNextTag();
+    } else {
+      parseError(L"Expected an address expression.");
+    }
   }
 }
 
 bool
 MTXReader::procWordoidArrExpr(bool allow_fail)
 {
-  if (!tryProcVar(VM::WRDARRVAL) && !tryProcSlice(&MTXReader::procWordoidArrExpr)) {
+  if (!tryProcArg(WRDARREXPR, true)
+      && !tryProcVar(VM::WRDARRVAL)
+      && !tryProcSlice(&MTXReader::procWordoidArrExpr)) {
     if (name == L"ex-wordoids") {
       stepToNextTag();
       procIntExpr();
       emitOpcode(VM::EXWRDARR);
       assert(name == L"ex-wordoids" && type == XML_READER_TYPE_END_ELEMENT);
     } else if (name == L"for-each") {
-      procForEach(Optional<VM::StackValueType>(VM::WRDVAL));
+      procForEach(WRDEXPR);
     } else {
       if (allow_fail) {
         return false;
@@ -655,7 +600,8 @@ bool
 MTXReader::procWordoidExpr(bool allow_fail)
 {
   stepToTag();
-  if (!tryProcVar(VM::WRDVAL)
+  if (!tryProcArg(WRDEXPR, true)
+      && !tryProcVar(VM::WRDVAL)
       && !tryProcSubscript(&MTXReader::procWordoidArrExpr)) {
     if (name == L"ex-wordoid") {
       stepToNextTag();
@@ -876,7 +822,40 @@ MTXReader::procOutMany()
 }
 
 void
-MTXReader::procForEach(Optional<VM::StackValueType> svt)
+MTXReader::procTypeExpr(ExprType expr_type)
+{
+  switch (expr_type) {
+    case VOIDEXPR:
+      procVoidExpr();
+      break;
+    case INTEXPR:
+      procIntExpr();
+      break;
+    case BEXPR:
+      procBoolExpr();
+      break;
+    case STREXPR:
+      procStrExpr();
+      break;
+    case STRARREXPR:
+      procStrExpr();
+      break;
+    case WRDEXPR:
+      procWordoidExpr();
+      break;
+    case WRDARREXPR:
+      procWordoidArrExpr();
+      break;
+    case ADDREXPR:
+      procAddrExpr();
+      break;
+    default:
+      assert(false);
+  }
+}
+
+void
+MTXReader::procForEach(ExprType expr_type)
 {
   std::wstring var_name = attrib(L"as");
   if (var_name == L"") {
@@ -906,21 +885,27 @@ MTXReader::procForEach(Optional<VM::StackValueType> svt)
   emitUInt(0); // offset placeholder
   size_t for_each_body_begin = cur_feat->size();
 
-  if (!svt) {
-    procVoidExpr();
-  } else if (*svt == VM::STRVAL) {
-    procStrExpr();
-  } else if (*svt == VM::WRDVAL) {
-    procWordoidExpr();
-  } else {
-    assert(false);
+  switch (expr_type) {
+    case VOIDEXPR:
+      procVoidExpr();
+      break;
+    case STREXPR:
+      procStrExpr();
+      break;
+    case WRDEXPR:
+      procWordoidExpr();
+      break;
+    default:
+      assert(false);
+      break;
   }
   assert(type == XML_READER_TYPE_END_ELEMENT);
 
   size_t end_for_each_addr = cur_feat->size();
   emitOpcode(VM::ENDFOREACH);
   emitInt(end_for_each_addr + 2 - for_each_begin); // offset
-  pokeBytecode(begin_offset_placeholder, (VM::Bytecode){.intbyte=end_for_each_addr + 2 - for_each_body_begin});
+  pokeBytecode(begin_offset_placeholder, (VM::Bytecode){
+    .uintbyte=(unsigned char)(end_for_each_addr + 2 - for_each_body_begin)});
 }
 
 bool
@@ -934,7 +919,7 @@ MTXReader::procVoidExpr(bool allow_fail)
   } else if (name == L"out-many") {
     procOutMany();
   } else if (name == L"for-each") {
-    procForEach(Optional<VM::StackValueType>());
+    procForEach(VOIDEXPR);
   } else if (name == L"inst") {
     procInst();
   } else {
@@ -947,50 +932,69 @@ MTXReader::procVoidExpr(bool allow_fail)
 }
 
 void
-MTXReader::procDefGlobal()
+MTXReader::procDefMacro()
 {
+  in_global_defn = true;
   slot_counter = 0;
-  spec.global_defns.push_back(VM::FeatureDefn());
-  cur_feat = &spec.global_defns.back();
+  template_defns.push_back(make_pair(VM::FeatureDefn(), TemplateReplacements()));
+  cur_feat = &template_defns.back().first;
+  cur_replacements = &template_defns.back().second;
+
   std::wstring var_name = attrib(L"as");
   if (var_name == L"") {
-    parseError(L"'as' attribute required for for-each.");
+    parseError(L"'as' attribute required for def-macro.");
   }
-  global_slot_names[var_name] = global_slot_counter;
+  template_slot_names[var_name] = template_slot_counter;
+
+  template_arg_names.clear();
+  std::wstring args = attrib(L"args");
+  std::wistringstream args_ss(args);
+  size_t arg_i = 0;
+  for (; !args_ss.eof(); arg_i++) {
+    wstring arg_name;
+    args_ss >> arg_name;
+    if (arg_name == L"") {
+      break;
+    }
+    template_arg_names[arg_name] = arg_i;
+  }
+  std::wcerr << "Length of template_arg_names " << template_arg_names.size() << "\n";
+  cur_replacements->resize(arg_i);
   stepToNextTag();
 
   bool has_expr = false;
   if (procIntExpr(true)) {
-    global_slot_types.push_back(VM::INTVAL);
+    template_slot_types.push_back(VM::INTVAL);
     has_expr = true;
   }
   if (!has_expr && procBoolExpr(true)) {
-    global_slot_types.push_back(VM::BVAL);
+    template_slot_types.push_back(VM::BVAL);
     has_expr = true;
   }
   if (!has_expr && procStrExpr(true)) {
-    global_slot_types.push_back(VM::STRVAL);
+    template_slot_types.push_back(VM::STRVAL);
     has_expr = true;
   }
   if (!has_expr && procStrArrExpr(true)) {
-    global_slot_types.push_back(VM::STRARRVAL);
+    template_slot_types.push_back(VM::STRARRVAL);
     has_expr = true;
   }
   if (!has_expr && procWordoidArrExpr(true)) {
-    global_slot_types.push_back(VM::WRDARRVAL);
+    template_slot_types.push_back(VM::WRDARRVAL);
     has_expr = true;
   }
   if (!has_expr && procWordoidExpr(true)) {
-    global_slot_types.push_back(VM::WRDVAL);
+    template_slot_types.push_back(VM::WRDVAL);
     has_expr = true;
   }
   if (!has_expr) {
     parseError(L"Expected a non-void expression.");
   }
-  assert(name == L"def-global" && type == XML_READER_TYPE_END_ELEMENT);
+  assert(name == L"def-macro" && type == XML_READER_TYPE_END_ELEMENT);
   stepToNextTag();
 
-  global_slot_counter++;
+  template_slot_counter++;
+  in_global_defn = false;
 }
 
 void

@@ -18,6 +18,7 @@
 #include <apertium/tsx_reader.h>
 #include <apertium/tagger_utils.h>
 #include <apertium/file_morpho_stream.h>
+#include <apertium/utils.h>
 
 #include <algorithm>
 #include <cstdio>
@@ -87,16 +88,6 @@ void FILE_Tagger::read_dictionary(FILE *fdic) {
   post_ambg_class_scan();
 }
 
-class SortByComparer {
-private:
-  vector<unsigned int> sort_by;
-public:
-  SortByComparer(vector<unsigned int> sort_by) : sort_by(sort_by) {}
-  bool operator()(int a, int b) {
-    return sort_by[a] < sort_by[b];
-  }
-};
-
 void FILE_Tagger::scan_and_count_ambg_classes(FILE *crp,
                                               Collection &all_ambg_classes,
                                               vector<unsigned int> &all_acc) {
@@ -123,7 +114,7 @@ void FILE_Tagger::use_pop_ambg_class(Collection &all_ambg_classes,
   for (int i = 0; i < all_ambg_classes.size(); i++) {
     indices[i] = i;
   }
-  SortByComparer sbc(all_acc);
+  SortByComparer<unsigned int, int> sbc(all_acc);
   std::sort(indices.begin(), indices.end(), sbc);
   acc.assign(n, 0);
   for (size_t i = 0, num_ambg_classes = 0; num_ambg_classes < n; i++) {

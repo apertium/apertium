@@ -260,7 +260,7 @@ void PerceptronTagger::train(
     std::wcerr << "Skipped " << tc.skipped << " sentences due to token "
                << "misalignment and " << avail_skipped << " sentences due to "
                << "tagged token being unavailable in untagged file out of "
-               << tc.sentences.size() << " total sentences.";
+               << tc.sentences.size() << " total sentences.\n";
   }
 }
 

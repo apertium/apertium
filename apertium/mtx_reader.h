@@ -33,7 +33,14 @@
 namespace Apertium {
 class MTXReader : public XMLReader
 {
+  enum ExprType {
+    VOIDEXPR, INTEXPR, BEXPR, STREXPR, STRARREXPR, WRDEXPR, WRDARREXPR, ADDREXPR
+  };
+
   typedef PerceptronSpec VM;
+  typedef std::map<std::wstring, size_t> VarNVMap;
+  typedef std::vector<std::pair<size_t, ExprType> > TemplateReplacements;
+  typedef std::map<std::pair<size_t, std::vector<VM::FeatureDefn> >, size_t> InstanciationMap;
 public:
   MTXReader(VM &spec);
   VM &spec;
@@ -42,8 +49,6 @@ protected:
   virtual void parse();
 
 private:
-  typedef std::map<std::wstring, size_t> VarNVMap;
-
   size_t pushSetConst(std::string &val);
   size_t pushStrConst(std::string &val);
   size_t getConstRef(const std::wstring &ref_attr, const std::string &lit_attr,
@@ -77,9 +82,10 @@ private:
   void procBinCompareOp(VM::Opcode op);
   void procCommBoolOp(VM::Opcode op);
   bool procVoidExpr(bool allow_fail=false);
-  void procDefGlobal();
+  void procDefMacro();
   bool tryProcSubscript(bool (MTXReader::*proc_inner)(bool));
   bool tryProcSlice(bool (MTXReader::*proc_inner)(bool));
+  bool tryProcArg(ExprType type, bool allow_fail=false);
   bool tryProcVar(VM::StackValueType);
   void procAddrExpr();
   bool procWordoidArrExpr(bool allow_fail=false);
@@ -88,9 +94,10 @@ private:
   bool procStrArrExpr(bool allow_fail=false);
   bool procStrExpr(bool allow_fail=false);
   bool procBoolExpr(bool allow_fail=false);
+  void procTypeExpr(ExprType type);
   void procOut();
   void procOutMany();
-  void procForEach(Optional<VM::StackValueType> svt);
+  void procForEach(ExprType type);
   void procPred();
   template<typename GetT, typename EmitT> void emitAttr(
       std::wstring what, GetT (MTXReader::*getter)(bool&),
@@ -104,16 +111,25 @@ private:
   void copy(MTXReader const &o);
   MTXReader(MTXReader const &o);
 
+  bool in_global_defn;
   size_t slot_counter;
-  size_t global_slot_counter;
+  size_t template_slot_counter;
   VarNVMap set_names;
   VarNVMap str_names;
   VarNVMap slot_names;
   std::vector<VM::StackValueType> slot_types;
+  /*
   VarNVMap global_slot_names;
   std::vector<VM::StackValueType> global_slot_types;
+  */
+  VarNVMap template_slot_names;
+  std::vector<VM::StackValueType> template_slot_types;
+  VarNVMap template_arg_names;
+  std::vector<std::pair<VM::FeatureDefn, TemplateReplacements> > template_defns;
+  InstanciationMap template_instanciations;
   std::stack<size_t> loop_stack;
   VM::FeatureDefn *cur_feat;
+  TemplateReplacements *cur_replacements;
 };
 }
 
