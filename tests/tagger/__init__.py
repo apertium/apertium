@@ -292,13 +292,10 @@ class AmbiguityClassTest(unittest.TestCase):
         subst_stdout = check_output(
             [APERTIUM_TAGGER, '-d', '-g', model_fn, new_ambg_class],
             stderr=DEVNULL)
-        lexical_units = streamparser.parse(subst_stdout)
         acceptable = False
-        for lexical_unit in lexical_units:
-            for reading in lexical_unit.readings:
-                if reading.baseform == 'cat' and \
-                        ('adj' in reading.tags or 'n' in reading.tags):
-                    acceptable = True
+        for line in subst_stdout.split("\n"):
+            if (line.startswith('^cat') and ('<adj>' in line or '<n>' in line)):
+                acceptable = True
         self.assertTrue(
             acceptable,
             "'cat' must be output and tagged as an adjective or a noun.\n" +
