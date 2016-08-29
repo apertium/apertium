@@ -70,6 +70,7 @@ private:
   int &argc;
   char **&argv;
   int The_val;
+  int nonoptarg;
 
 
   int The_indexptr;

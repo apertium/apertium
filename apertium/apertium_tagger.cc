@@ -59,7 +59,7 @@
 
 namespace Apertium {
 apertium_tagger::apertium_tagger(int &argc, char **&argv)
-    : argc(argc), argv(argv), The_val(),
+    : argc(argc), argv(argv), The_val(), nonoptarg(),
 
       The_indexptr(), FunctionTypeTypeOption_indexptr(),
       FunctionTypeOption_indexptr(),
@@ -154,6 +154,8 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
       help();
       return;
     }
+
+    nonoptarg = argc - optind;
 
     switch (*TheFunctionType) {
     case Tagger:
@@ -294,6 +296,13 @@ void apertium_tagger::help() {
 "  or:  apertium-tagger [OPTION]... -s ITERATIONS                               \\\n"
 "                                      DICTIONARY                               \\\n"
 "                                      CORPUS                                   \\\n"
+"                                      TAGGER_SPECIFICATION                     \\\n"
+"                                      SERIALISED_TAGGER                        \\\n"
+"                                      TAGGED_CORPUS                            \\\n"
+"                                      UNTAGGED_CORPUS\n"
+"\n"
+"  or:  apertium-tagger [OPTION]... -s 0                                        \\\n"
+"                                      DICTIONARY                               \\\n"
 "                                      TAGGER_SPECIFICATION                     \\\n"
 "                                      SERIALISED_TAGGER                        \\\n"
 "                                      TAGGED_CORPUS                            \\\n"
@@ -527,9 +536,9 @@ static void try_close_file(const char *metavar, const char *filename, FILE *file
 void apertium_tagger::g_StreamTagger(basic_StreamTagger &StreamTagger_) {
   locale_global_();
 
-  if (argc - optind < 1 || !(argc - optind < 4)) {
+  if (nonoptarg < 1 || !(nonoptarg < 4)) {
     std::stringstream what_;
-    what_ << "expected 1, 2, or 3 file arguments, got " << argc - optind;
+    what_ << "expected 1, 2, or 3 file arguments, got " << nonoptarg;
     throw Exception::apertium_tagger::UnexpectedFileArgumentCount(what_);
   }
 
@@ -546,7 +555,7 @@ void apertium_tagger::g_StreamTagger(basic_StreamTagger &StreamTagger_) {
     throw Exception::apertium_tagger::deserialise(what_);
   }
 
-  if (argc - optind < 2) {
+  if (nonoptarg < 2) {
     Stream Input(TheFlags);
     StreamTagger_.tag(Input, std::wcout);
     return;
@@ -555,7 +564,7 @@ void apertium_tagger::g_StreamTagger(basic_StreamTagger &StreamTagger_) {
   std::wifstream Input_stream;
   try_open_fstream("INPUT", argv[optind + 1], Input_stream);
 
-  if (argc - optind < 3) {
+  if (nonoptarg < 3) {
     Stream Input(TheFlags, Input_stream, argv[optind + 1]);
     StreamTagger_.tag(Input, std::wcout);
     return;
@@ -579,9 +588,9 @@ void apertium_tagger::s_StreamTaggerTrainer(
     throw Exception::apertium_tagger::InvalidArgument(what_);
   }
 
-  if (argc - optind < 2 || !(argc - optind < 3)) {
+  if (nonoptarg < 2 || !(nonoptarg < 3)) {
     std::stringstream what_;
-    what_ << "expected 2 file arguments, got " << argc - optind;
+    what_ << "expected 2 file arguments, got " << nonoptarg;
     throw Exception::apertium_tagger::UnexpectedFileArgumentCount(what_);
   }
 
@@ -601,9 +610,9 @@ void apertium_tagger::s_StreamTaggerTrainer(
 void apertium_tagger::g_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
   LtLocale::tryToSetLocale();
 
-  if (argc - optind < 1 || !(argc - optind < 4)) {
+  if (nonoptarg < 1 || !(nonoptarg < 4)) {
     std::stringstream what_;
-    what_ << "expected 1, 2, or 3 file arguments, got " << argc - optind;
+    what_ << "expected 1, 2, or 3 file arguments, got " << nonoptarg;
     throw Exception::apertium_tagger::UnexpectedFileArgumentCount(what_);
   }
 
@@ -618,12 +627,12 @@ void apertium_tagger::g_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
   FILE_Tagger_.set_show_sf(TheFlags.getShowSuperficial());
   FILE_Tagger_.setNullFlush(TheFlags.getNullFlush());
 
-  if (argc - optind < 2)
+  if (nonoptarg < 2)
     FILE_Tagger_.tagger(stdin, stdout, TheFlags.getFirst());
   else {
     FILE *Input = try_open_file("INPUT", argv[optind + 1], "r");
 
-    if (argc - optind < 3)
+    if (nonoptarg < 3)
       FILE_Tagger_.tagger(Input, stdout, TheFlags.getFirst());
     else {
       FILE *Output = try_open_file_utf8("OUTPUT", argv[optind + 2], "w");
@@ -638,9 +647,9 @@ void apertium_tagger::g_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
 void apertium_tagger::r_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
   LtLocale::tryToSetLocale();
 
-  if (argc - optind < 2 || !(argc - optind < 3)) {
+  if (nonoptarg < 2 || !(nonoptarg < 3)) {
     std::stringstream what_;
-    what_ << "expected 2 file arguments, got " << argc - optind;
+    what_ << "expected 2 file arguments, got " << nonoptarg;
     throw Exception::apertium_tagger::UnexpectedFileArgumentCount(what_);
   }
 
@@ -665,43 +674,59 @@ void apertium_tagger::r_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
 void apertium_tagger::s_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
   LtLocale::tryToSetLocale();
 
-  if (argc - optind < 6 || !(argc - optind < 7)) {
+  if (TheFunctionTypeOptionArgument == 0 &&
+        (nonoptarg < 5 || nonoptarg >= 7)) {
     std::stringstream what_;
-    what_ << "expected 6 file arguments, got " << argc - optind;
+    what_ << "expected 5 or 6 file arguments, got " << nonoptarg;
+    throw Exception::apertium_tagger::UnexpectedFileArgumentCount(what_);
+  } else if (nonoptarg < 6 || nonoptarg >= 7) {
+    std::stringstream what_;
+    what_ << "expected 6 file arguments, got " << nonoptarg;
     throw Exception::apertium_tagger::UnexpectedFileArgumentCount(what_);
   }
+  char *DicFn, *CrpFn, *TsxFn, *ProbFn, *TaggedFn, *UntaggedFn;
+  DicFn = argv[optind++];
+  if (nonoptarg == 6) {
+    CrpFn = argv[optind++];
+  }
+  TsxFn = argv[optind++];
+  ProbFn = argv[optind++];
+  TaggedFn = argv[optind++];
+  UntaggedFn = argv[optind++];
 
-  FILE_Tagger_.deserialise(argv[optind + 2]);
+  FILE_Tagger_.deserialise(TsxFn);
   FILE_Tagger_.set_debug(TheFlags.getDebug());
   TaggerWord::setArrayTags(FILE_Tagger_.getArrayTags());
 
-  FILE *Dictionary = try_open_file("DICTIONARY", argv[optind], "r");
+  FILE *Dictionary = try_open_file("DICTIONARY", DicFn, "r");
   FILE_Tagger_.read_dictionary(Dictionary);
-  try_close_file("DICTIONARY", argv[optind], Dictionary);
+  try_close_file("DICTIONARY", DicFn, Dictionary);
 
-  FILE *TaggedCorpus = try_open_file("TAGGED_CORPUS", argv[optind + 4], "r");
-  FILE *UntaggedCorpus = try_open_file("UNTAGGED_CORPUS", argv[optind + 5], "r");
+  FILE *TaggedCorpus = try_open_file("TAGGED_CORPUS", TaggedFn, "r");
+  FILE *UntaggedCorpus = try_open_file("UNTAGGED_CORPUS", UntaggedFn, "r");
   FILE_Tagger_.init_probabilities_from_tagged_text_(TaggedCorpus,
                                                     UntaggedCorpus);
-  try_close_file("TAGGED_CORPUS", argv[optind + 4], TaggedCorpus);
-  try_close_file("UNTAGGED_CORPUS", argv[optind + 5], UntaggedCorpus);
+  try_close_file("TAGGED_CORPUS", TaggedFn, TaggedCorpus);
+  try_close_file("UNTAGGED_CORPUS", UntaggedFn, UntaggedCorpus);
 
-  FILE *Corpus = try_open_file_utf8("CORPUS", argv[optind + 1], "r");
-  FILE_Tagger_.train(Corpus, TheFunctionTypeOptionArgument);
-  try_close_file("CORPUS", argv[optind + 1], Corpus);
+  if (TheFunctionTypeOptionArgument > 0) {
+    FILE *Corpus = try_open_file_utf8("CORPUS", CrpFn, "r");
+    FILE_Tagger_.train(Corpus, TheFunctionTypeOptionArgument);
+    try_close_file("CORPUS", CrpFn, Corpus);
+ }
 
   FILE *Serialised_FILE_Tagger =
-      try_open_file("SERIALISED_TAGGER", argv[optind + 3], "wb");
+      try_open_file("SERIALISED_TAGGER", ProbFn, "wb");
   FILE_Tagger_.serialise(Serialised_FILE_Tagger);
-  try_close_file("SERIALISED_TAGGER", argv[optind + 3], UntaggedCorpus);
+  try_close_file("SERIALISED_TAGGER", ProbFn, Serialised_FILE_Tagger);
 }
 
 void apertium_tagger::t_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
   LtLocale::tryToSetLocale();
 
-  if (argc - optind < 4 || !(argc - optind < 5)) {
+  if (nonoptarg < 4 || !(nonoptarg < 5)) {
     std::stringstream what_;
-    what_ << "expected 4 file arguments, got " << argc - optind;
+    what_ << "expected 4 file arguments, got " << nonoptarg;
     throw Exception::apertium_tagger::UnexpectedFileArgumentCount(what_);
   }
 

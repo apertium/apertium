@@ -11,7 +11,7 @@ architecture: \fBhttp://www.apertium.org\fR.
 {n} DIC CRP TSX PROB [\-\-debug|\-d]\fR 
 .PP
 .B apertium-tagger \-\-supervised|\-s 
-{n} DIC CRP TSX PROB HTAG UNTAG [\-\-debug|\-d]\fR 
+{n} DIC [CRP] TSX PROB HTAG UNTAG [\-\-debug|\-d]\fR 
 .PP
 .B apertium-tagger \-\-retrain|\-r 
 {n} CRP PROB [\-\-debug|\-d] \fR
@@ -36,6 +36,7 @@ then performs \fBn\fR iterations of the Baum-Welch training algorithm
 Initializes parameters against a hand-tagged text (supervised) through
 the maximum likelihood estimate method, then performs \fBn\fR
 iterations of the Baum-Welch training algorithm (unsupervised)
+The CRP argument can be ommitted only when n=0.
 .TP
 .B \-r {n}, \-\-retrain {n}
 Retrains the model with \fBn\fR additional Baum-Welch iterations
