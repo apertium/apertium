@@ -9,8 +9,6 @@ from os.path import abspath, dirname
 from subprocess import (check_call, check_output, Popen, PIPE, DEVNULL,
                         TimeoutExpired, CalledProcessError)
 
-from . import streamparser
-
 
 # Utilities
 def tmp(contents):
@@ -169,10 +167,12 @@ TRAIN_CAT_TO_BE_A_VERB_UNTAGGED = """
 ^booked/book<vblex><pp>/book<vblex><past>$
 ^books/book<n><pl>/book<vblex><pres><p3><sg>$
 ^./.<sent>$
+
 ^Close/close<adj><sint>/close<n><sg>/close<vblex><inf>/close<vblex><pres>/close<vblex><imp>$
 ^the/the<det><def><sp>$
 ^books/book<n><pl>/book<vblex><pri><p3><sg>$
 ^./.<sent>$
+
 ^The/the<det><def><sp>$
 ^falling/fall<vblex><pprs>/fall<vblex><ger>/fall<vblex><subs>$
 ^cat/cat<n><sg>$
@@ -189,10 +189,12 @@ TRAIN_CAT_TO_BE_A_VERB_TAGGED = """
 ^booked/book<vblex><pp>$
 ^books/book<n><pl>$
 ^./.<sent>$
+
 ^Close/close<vblex><imp>$
 ^the/the<det><def><sp>$
 ^books/book<n><pl>$
 ^./.<sent>$
+
 ^The/the<det><def><sp>$
 ^falling/fall<vblex><pprs>$
 ^cat/cat<n><sg>$
@@ -259,7 +261,7 @@ class AmbiguityClassTest(unittest.TestCase):
     def test_changing_class_hmm_sup(self):
         model_fn = tmp("")
         untagged = tmp(TRAIN_NO_PROBLEM_UNTAGGED)
-        tagged = tmp(TRAIN_NO_PROBLEM_UNTAGGED)
+        tagged = tmp(TRAIN_NO_PROBLEM_TAGGED)
         check_call(
             [APERTIUM_TAGGER, '-s', '0', self.dic_fn, untagged, self.tsx_fn,
              model_fn, tagged, untagged])
