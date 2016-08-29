@@ -2,6 +2,7 @@
 #include <apertium/stream_tagger.h>
 #include <apertium/sentence_stream.h>
 #include <apertium/exception.h>
+#include <iostream>
 
 namespace Apertium {
 namespace SentenceStream {
@@ -26,11 +27,10 @@ bool isSentenceEnd(StreamedType &token) {
   return true;
 }
 
+SentenceTagger::SentenceTagger() {}
+
 void SentenceTagger::tag(Stream &in, std::wostream &out) const {
-  Sentence full_sent;
-  Sentence lexical_sent;
-  std::vector<bool> flushes;
-  TaggedSentence tagged_sent;
+  clearBuffers();
 
   while (true) {
     StreamedType token = in.get();
@@ -39,26 +39,27 @@ void SentenceTagger::tag(Stream &in, std::wostream &out) const {
 
     if (!token.TheLexicalUnit) {
       if (!in.flush_()) {
-        tagged_sent = tagSentence(lexical_sent);
-        putTaggedSent(out, tagged_sent, full_sent, flushes);
+        tagAndPutSentence(out);
         break;
       }
-
       continue;
     }
 
     lexical_sent.push_back(token);
     if (isSentenceEnd(token)) {
-      tagged_sent = tagSentence(lexical_sent);
-      putTaggedSent(out, tagged_sent, full_sent, flushes);
+      tagAndPutSentence(out);
     }
-
   }
 }
 
-void SentenceTagger::putTaggedSent(
-    std::wostream &out, TaggedSentence &tagged_sent, Sentence &full_sent,
-    std::vector<bool> &flushes) const {
+void SentenceTagger::clearBuffers() const {
+  full_sent.clear();
+  lexical_sent.clear();
+  flushes.clear();
+}
+
+void SentenceTagger::tagAndPutSentence(std::wostream &out) const {
+  TaggedSentence tagged_sent = tagSentence(lexical_sent);
   TaggedSentence::const_iterator ts_it = tagged_sent.begin();
 
   for (size_t full_idx = 0; full_idx < full_sent.size(); full_idx++) {
@@ -72,6 +73,7 @@ void SentenceTagger::putTaggedSent(
     }
     outputLexicalUnit(*token.TheLexicalUnit, *(ts_it++), out);
   }
+  clearBuffers();
 }
 
 TrainingCorpus::TrainingCorpus(Stream &tagged, Stream &untagged)

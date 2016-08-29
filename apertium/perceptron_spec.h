@@ -19,6 +19,7 @@ class PerceptronSpec
 {
 public:
   template <typename OStream> friend OStream& operator<<(OStream & out, PerceptronSpec const &pt);
+  PerceptronSpec();
   #define OPCODES \
     /** Boolean and arithmetic */\
     /* bool, bool -> bool */\
@@ -130,16 +131,11 @@ public:
     OPCODES
   };
   #undef X
+  static bool static_constructed;
   static unsigned char num_opcodes;
   static const std::string opcode_names[];
   static std::map<const std::string, Opcode> opcode_values;
-private:
-  friend class StaticConstruct;
-  struct StaticConstruct {
-      StaticConstruct();
-  };
-public:
-  static StaticConstruct static_construct;
+  static std::vector<Morpheme> untagged_sentinel;
   template <typename T> struct CountPtr {
     int count;
     T *ptr;
@@ -176,6 +172,22 @@ public:
     StackValue(bool bval) {
       payload.bval = bval;
       type = BVAL;
+    }
+    StackValue(const std::string &strval) {
+      payload.strval = new std::string(strval);
+      type = STRVAL;
+    }
+    StackValue(const std::vector<std::string> &strarrval) {
+      payload.strarrval = new std::vector<std::string>(strarrval);
+      type = STRARRVAL;
+    }
+    StackValue(std::string *strval) {
+      payload.strval = strval;
+      type = STRVAL;
+    }
+    StackValue(std::vector<std::string> *strarrval) {
+      payload.strarrval = strarrval;
+      type = STRARRVAL;
     }
     ~StackValue() {
       switch (type) {
@@ -215,13 +227,13 @@ public:
     } type;
   };
   union Bytecode {
-    Opcode op;
-    unsigned char uintbyte;
-    signed char intbyte;
+    Opcode op : 8;
+    unsigned char uintbyte : 8;
+    signed char intbyte : 8;
   };
   std::vector<std::string> str_consts;
   std::vector<VMSet> set_consts;
-  typedef std::vector<Bytecode> FeatureDefn;
+  typedef std::vector<unsigned char> FeatureDefn;
   std::vector<FeatureDefn> features;
   void get_features(
     const TaggedSentence &tagged, const Sentence &untagged,
@@ -229,8 +241,26 @@ public:
     UnaryFeatureVec &feat_vec_out) const;
   int beam_width;
 private:
-  class MachineStack : public std::stack<StackValue> {
+  class MachineStack {
+    std::deque<StackValue> data;
+    template <typename OStream> friend OStream& operator<<(OStream & out, MachineStack const &pt) {
+      out << pt.data.size() << ": ";
+      std::deque<StackValue>::const_iterator it;
+      for (it = pt.data.begin(); it != pt.data.end(); it++) {
+        out << it->payload.intval << " ";
+      }
+      return out;
+    }
   public:
+    void pop() {
+      data.pop_back();
+    }
+    void push(const StackValue &val) {
+      data.push_back(val);
+    }
+    StackValue& top() {
+      return data.back();
+    }
     StackValue pop_off() {
       StackValue ret = top();
       pop();
@@ -239,7 +269,7 @@ private:
   };
   class Machine {
     std::vector<FeatureDefn>::const_iterator feat_iter;
-    std::vector<Bytecode>::const_iterator bytecode_iter;
+    std::vector<unsigned char>::const_iterator bytecode_iter;
     const PerceptronSpec &spec;
     MachineStack stack;
     void unimplemented_opcode(std::string opstr);

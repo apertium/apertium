@@ -45,10 +45,13 @@ template <typename SerialisedType>
 static unsigned char compressedSize(const SerialisedType &SerialisedType_) {
   unsigned char compressedSize_ = 0;
 
+  // Have to be careful here, if we shift >> 64 it's the same as >> 0 so make
+  // sure only to shift up to >> 56
   for (; (SerialisedType_ >>
-          std::numeric_limits<unsigned char>::digits * compressedSize_) != 0;
+          std::numeric_limits<unsigned char>::digits * compressedSize_ > 255);
        ++compressedSize_) {
   }
+  ++compressedSize_;
 
   return compressedSize_;
 }
@@ -127,13 +130,6 @@ template<> class Serialiser<double> {
 public:
   inline static void serialise(const double &SerialisedType_,
                                std::ostream &Output);
-};
-
-template<> class Serialiser<PerceptronSpec::Bytecode> {
-  public:
-  inline static void serialise(
-    const PerceptronSpec::Bytecode &SerialisedType_,
-    std::ostream &Output);
 };
 
 template <typename Container>
@@ -257,12 +253,6 @@ void Serialiser<char>::serialise(const char &SerialisedType_,
 void Serialiser<double>::serialise(const double &SerialisedType_,
                                    std::ostream &Output) {
   Serialiser<uint64_t>::serialise(static_cast<uint64_t>(SerialisedType_), Output);
-}
-
-void Serialiser<PerceptronSpec::Bytecode>::serialise(
-    const PerceptronSpec::Bytecode &SerialisedType_,
-    std::ostream &Output) {
-  Serialiser<char>::serialise(SerialisedType_.uintbyte, Output);
 }
 
 template <typename Container>

@@ -12,12 +12,12 @@ operator<<(OStream & out, PerceptronSpec const &ps) {
   for (size_t i = 0; i < ps.features.size(); i++) {
     out << "Feature " << i << "\n";
     for (size_t j = 0; j < ps.features[i].size(); j++) {
-      out << std::hex << ps.features[i][j].uintbyte << " ";
+      out << std::hex << ps.features[i][j] << " ";
     }
     out << "\n";
     for (size_t j = 0; j < ps.features[i].size(); j++) {
-      if (ps.features[i][j].uintbyte < PerceptronSpec::num_opcodes) {
-        out << PerceptronSpec::opcode_names[ps.features[i][j].uintbyte].c_str() << " ";
+      if (ps.features[i][j] < PerceptronSpec::num_opcodes) {
+        out << PerceptronSpec::opcode_names[ps.features[i][j]].c_str() << " ";
       } else {
         out << "XX ";
       }
@@ -39,17 +39,29 @@ const std::string PerceptronSpec::opcode_names[] = {
 };
 #undef X
 
-unsigned char PerceptronSpec::num_opcodes;
+PerceptronSpec::PerceptronSpec() {
+  if (!static_constructed) {
+    num_opcodes = sizeof(opcode_names) / sizeof(opcode_names[0]);
+    for (size_t i=0; i < num_opcodes; i++) {
+      opcode_values[opcode_names[i]] = (Opcode)i;
+    }
 
-std::map<const std::string, PerceptronSpec::Opcode>
-PerceptronSpec::opcode_values;
+    Morpheme untagged_morpheme;
+    untagged_morpheme.TheLemma = L"!!UNTAGGED";
+    Tag untagged_tag;
+    untagged_tag.TheTag = L"!ut";
+    untagged_morpheme.TheTags.push_back(untagged_tag);
+    untagged_sentinel.push_back(untagged_morpheme);
 
-PerceptronSpec::StaticConstruct::StaticConstruct() {
-  num_opcodes = sizeof(opcode_names) / sizeof(opcode_names[0]);
-  for (size_t i=0; i < num_opcodes; i++) {
-    opcode_values[opcode_names[i]] = (Opcode)i;
+    static_constructed = true;
   }
 }
+
+unsigned char PerceptronSpec::num_opcodes;
+bool PerceptronSpec::static_constructed = false;
+std::map<const std::string, PerceptronSpec::Opcode>
+PerceptronSpec::opcode_values;
+std::vector<Morpheme> PerceptronSpec::untagged_sentinel;
 
 void PerceptronSpec::get_features(
     const TaggedSentence &tagged, const Sentence &untagged,
@@ -71,17 +83,17 @@ void PerceptronSpec::get_features(
 
 const std::string&
 PerceptronSpec::Machine::get_str_operand() {
-  return spec.str_consts[(++bytecode_iter)->uintbyte];
+  return spec.str_consts[*(++bytecode_iter)];
 }
 
 const VMSet&
 PerceptronSpec::Machine::get_set_operand() {
-  return spec.set_consts[(++bytecode_iter)->uintbyte];
+  return spec.set_consts[*(++bytecode_iter)];
 }
 
 int
 PerceptronSpec::Machine::get_int_operand() {
-  return (++bytecode_iter)->intbyte;
+  return (Bytecode){.uintbyte=*(++bytecode_iter)}.intbyte;
 }
 
 const LexicalUnit&
@@ -93,6 +105,10 @@ PerceptronSpec::Machine::get_token(const Sentence &untagged) {
 
 const std::vector<Morpheme>&
 PerceptronSpec::Machine::tagged_to_wordoids(const TaggedToken &tt) {
+  // Replaces empty analyses with a sentinel value
+  if (!tt) {
+    return untagged_sentinel;
+  }
   return tt->TheMorphemes;
 }
 
@@ -102,7 +118,7 @@ PerceptronSpec::Machine::get_wordoid(const TaggedSentence &tagged) {
   int target_token_idx = stack.pop_off().intVal();
   assert(0 <= target_token_idx && (size_t)target_token_idx < tagged.size());
 
-  const vector<Morpheme> &wordoids = tagged[target_token_idx]->TheMorphemes;
+  const vector<Morpheme> &wordoids = tagged_to_wordoids(tagged[target_token_idx]);
   assert(0 <= target_wordoid_idx && (size_t)target_wordoid_idx < wordoids.size());
 
   return wordoids[target_wordoid_idx];
@@ -118,7 +134,17 @@ void PerceptronSpec::Machine::get_feature(
     int token_idx, int wordoid_idx,
     UnaryFeatureVec &feat_vec_out) {
   for (; bytecode_iter != feat_iter->end(); bytecode_iter++) {
-    switch (bytecode_iter->op) {
+    /*
+    std::wcerr << "pc: " << bytecode_iter - feat_iter->begin() << "\n";
+    std::wcerr << "peek: ";
+    std::wcerr << bytecode_iter->uintbyte;
+    if (bytecode_iter->uintbyte < num_opcodes) {
+      std::wcerr << " (" << opcode_names[bytecode_iter->uintbyte].c_str() << ")";
+    }
+    std::wcerr << "\n";
+    std::wcerr << "stack: " << stack << "\n";
+    */
+    switch ((Bytecode){.intbyte=*bytecode_iter}.op) {
       case OR:
         stack.push(stack.pop_off().boolVal() || stack.pop_off().boolVal());
         break;
@@ -250,6 +276,7 @@ void PerceptronSpec::Machine::get_feature(
           ss << UtfConverter::toUtf8(ti->TheTag);
           ss << ">";
         }
+        stack.push(StackValue(ss.str()));
       } break;
       case SENTLENTOK:
         stack.push((int)untagged.size());
@@ -278,7 +305,7 @@ void PerceptronSpec::Machine::get_feature(
           stack.push(false);
           break;
         }
-        int wordoid_len = tagged[token_idx]->TheMorphemes.size();
+        int wordoid_len = tagged_to_wordoids(tagged[token_idx]).size();
         stack.push(0 <= wordoid_idx && wordoid_idx < wordoid_len);
       } break;
       case FILTERIN: {
@@ -382,7 +409,7 @@ void PerceptronSpec::Machine::get_feature(
         stack.pop();
       } break;
       default:
-        unimplemented_opcode(opcode_names[bytecode_iter->op]);
+        unimplemented_opcode(opcode_names[*bytecode_iter]);
         break;
     }
   }
@@ -435,13 +462,30 @@ void PerceptronSpec::serialise(std::ostream &serialised) const {
   Serialiser<size_t>::serialise(beam_width, serialised);
   Serialiser<std::vector<std::string> >::serialise(str_consts, serialised);
   Serialiser<std::vector<VMSet> >::serialise(set_consts, serialised);
-  Serialiser<std::vector<FeatureDefn> >::serialise(features, serialised);
+  Serialiser<size_t>::serialise(features.size(), serialised);
+  std::vector<FeatureDefn>::const_iterator feat_it;
+  for (feat_it = features.begin(); feat_it != features.end(); feat_it++) {
+    Serialiser<std::string>::serialise(
+        std::string((char*)&(feat_it->front()), feat_it->size()),
+        serialised);
+  }
 }
 
 void PerceptronSpec::deserialise(std::istream &serialised) {
   beam_width = Deserialiser<size_t>::deserialise(serialised);
   str_consts = Deserialiser<std::vector<std::string> >::deserialise(serialised);
   set_consts = Deserialiser<std::vector<VMSet> >::deserialise(serialised);
-  features = Deserialiser<std::vector<FeatureDefn> >::deserialise(serialised);
+  size_t num_features = Deserialiser<size_t>::deserialise(serialised);
+  while (num_features-- > 0) {
+    features.push_back(FeatureDefn());
+    FeatureDefn &feat = features.back();
+    std::string feat_str = Deserialiser<std::string>::deserialise(serialised);
+    feat.reserve(feat_str.size());
+    std::string::iterator feat_str_it;
+    for (feat_str_it = feat_str.begin(); feat_str_it != feat_str.end(); feat_str_it++) {
+      feat.push_back(*feat_str_it);
+    }
+  }
 }
+
 }

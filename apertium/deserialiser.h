@@ -38,6 +38,8 @@
 #include <utility>
 #include <vector>
 
+#include <typeinfo>
+
 namespace Apertium {
 
 template <typename T>
@@ -117,11 +119,6 @@ public:
   inline static double deserialise(std::istream &Stream_);
 };
 
-template<> class Deserialiser<PerceptronSpec::Bytecode> {
-public:
-  inline static PerceptronSpec::Bytecode deserialise(std::istream &Stream_);
-};
-
 template <typename Container>
 class Deserialiser {
 public:
@@ -188,9 +185,9 @@ template <typename first_type, typename second_type>
 std::pair<first_type, second_type>
 Deserialiser<std::pair<first_type, second_type> >::deserialise(
     std::istream &Stream_) {
-  return std::make_pair(
-    Deserialiser<typename remove_const<first_type>::type>::deserialise(Stream_),
-    Deserialiser<typename remove_const<second_type>::type>::deserialise(Stream_));
+  first_type a = Deserialiser<typename remove_const<first_type>::type>::deserialise(Stream_);
+  second_type b = Deserialiser<typename remove_const<second_type>::type>::deserialise(Stream_);
+  return std::make_pair(a, b);
 }
 
 template <typename integer_type>
@@ -235,10 +232,6 @@ char Deserialiser<char>::deserialise(std::istream &Stream_) {
 
 double Deserialiser<double>::deserialise(std::istream &Stream_) {
   return static_cast<double>(Deserialiser<uint64_t>::deserialise(Stream_));
-}
-
-PerceptronSpec::Bytecode Deserialiser<PerceptronSpec::Bytecode>::deserialise(std::istream &Stream_) {
-  return (PerceptronSpec::Bytecode){.intbyte = Deserialiser<char>::deserialise(Stream_)};
 }
 
 template <typename Container>

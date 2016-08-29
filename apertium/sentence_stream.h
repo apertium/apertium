@@ -18,15 +18,21 @@ namespace SentenceStream {
   class SentenceTagger {
   public:
     void tag(Stream &in, std::wostream &out) const;
+    SentenceTagger();
   protected:
     virtual TaggedSentence tagSentence(const Sentence &untagged) const = 0;
     virtual void outputLexicalUnit(
       const LexicalUnit &lexical_unit, const Optional<Analysis> analysis,
       std::wostream &output) const = 0;
   private:
+    void clearBuffers() const;
+    void tagAndPutSentence(std::wostream &out) const;
     void putTaggedSent(
       std::wostream &out, TaggedSentence &tagged_sent, Sentence &full_sent,
       std::vector<bool> &flushes) const;
+    mutable Sentence full_sent;
+    mutable Sentence lexical_sent;
+    mutable std::vector<bool> flushes;
   };
 
   class TrainingCorpus {

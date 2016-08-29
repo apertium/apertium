@@ -50,7 +50,7 @@ size_t MTXReader::pushStrConst(std::string &val)
 
 void MTXReader::emitBytecode(VM::Bytecode bc)
 {
-  cur_feat->push_back(bc);
+  cur_feat->push_back(bc.intbyte);
 }
 
 void MTXReader::emitOpcode(VM::Opcode op)
@@ -128,7 +128,6 @@ bool MTXReader::emitPushTokAddrFromAttr(bool is_tagged)
         emitOpcode(VM::ADD);
         break;
     }
-    addr_ss.clear();
   }
   return true;
 }
@@ -201,7 +200,6 @@ void MTXReader::emitPushAddrFromAttr()
         emitInt(offset);
         break;
     }
-    addr_ss.clear();
   }
 }
 

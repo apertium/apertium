@@ -32,7 +32,7 @@ protected:
     const LexicalUnit &lexical_unit, const Optional<Analysis> analysis,
     std::wostream &output) const;
 private:
-  void trainSentence(
+  bool trainSentence(
     const TrainingSentence &sentence,
     FeatureVecAverager &avg_weights);
   FeatureVec weights;
@@ -52,8 +52,18 @@ private:
   };
   template <typename T> static void extendAgendaAll(
     std::vector<T> &agenda, Optional<Analysis> analy);
+  friend std::wostream& operator<<(std::wostream &out,
+                                   const TrainingAgendaItem &tai);
+  friend std::wostream& operator<<(
+      std::wostream &out, const std::vector<TrainingAgendaItem> &agenda);
   friend bool operator<(AgendaItem &a, AgendaItem &b);
+  friend std::wostream& operator<<(
+      std::wostream &out, const PerceptronTagger::AgendaItem &ai);
+  friend std::wostream& operator<<(
+      std::wostream &out, const std::vector<PerceptronTagger::AgendaItem> &agenda);
 };
+
+std::wostream& operator<<(std::wostream &out, const TaggedSentence &tagged);
 }
 
 #endif

@@ -196,7 +196,7 @@ void FeatureVec::serialise(std::ostream &serialised) const {
 }
 
 void FeatureVec::deserialise(std::istream &serialised) {
-  data = Apertium::Deserialiser<FeatureVec::Map>::deserialise(serialised);
+  data = Deserialiser<FeatureVec::Map>::deserialise(serialised);
 }
 
 }

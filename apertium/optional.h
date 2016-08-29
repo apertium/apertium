@@ -41,6 +41,7 @@ public:
   OptionalType &operator*();
   const OptionalType *operator->() const;
   OptionalType *operator->();
+  bool operator==(const Optional &Optional_) const;
   operator bool() const;
 
 private:
@@ -107,6 +108,17 @@ const OptionalType *Optional<OptionalType>::operator->() const {
         "can't dereference Optional comprising null OptionalType pointer");
 
   return TheOptionalTypePointer;
+}
+
+template <typename OptionalType>
+bool Optional<OptionalType>::operator==(const Optional &Optional_) const {
+  if (!*this && !Optional_) {
+    return true;
+  } else if (!*this || !Optional_) {
+    return false;
+  } else {
+    return **this == *Optional_;
+  }
 }
 
 template <typename OptionalType>
