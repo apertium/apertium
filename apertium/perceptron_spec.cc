@@ -261,15 +261,15 @@ clamp(int lower, int upper, int x) {
 }
 
 template <typename T> static void
-slice(T vec, int begin, int end) {
+slice(T &vec, int begin, int end) {
   if (begin < 0) {
-    begin = vec.size() - begin;
+    begin = vec.size() + begin;
   }
-  if (end < 0) {
-    end = vec.size() - end;
+  if (end <= 0) {
+    end = vec.size() + end;
   }
-  begin = clamp(begin, 0, vec.size() - 1);
-  end = clamp(end, 0, vec.size() - 1);
+  begin = clamp(0, vec.size() - 1, begin);
+  end = clamp(0, vec.size(), end);
   vec.assign(vec.begin() + begin, vec.begin() + end);
 }
 
@@ -278,7 +278,7 @@ subscript(std::vector<T> vec, int idx) {
   if (idx < 0) {
     idx = vec.size() - idx;
   }
-  idx = clamp(idx, 0, vec.size() - 1);
+  idx = clamp(0, vec.size() - 1, idx);
   return vec[idx];
 }
 
