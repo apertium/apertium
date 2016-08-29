@@ -9,5 +9,6 @@ node {
    sh "make test"
 
    stage 'Archive'
+   sh "rm apertium.zip || true"
    zip zipFile: 'apertium.zip', archive: true, dir: 'apertium'
 }
