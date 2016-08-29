@@ -24,9 +24,10 @@ class XMLReader
 private:
   class XmlTextReaderResource {
     friend class XMLReader;
-    XmlTextReaderResource(string const &filename);
+    xmlTextReaderPtr &reader;
+    XmlTextReaderResource(string const &filename,
+                          xmlTextReaderPtr &reader);
     ~XmlTextReaderResource();
-    xmlTextReaderPtr reader;
   };
 
 protected:

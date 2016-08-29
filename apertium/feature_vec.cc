@@ -1,5 +1,9 @@
+#include <apertium/stdint_shim.h>
 #include <apertium/feature_vec.h>
+#include <apertium/deserialiser.h>
+#include <apertium/serialiser.h>
 #include <algorithm>
+#include <iterator>
 #include <vector>
 
 namespace Apertium {
@@ -30,14 +34,11 @@ FeatureVec::FeatureVec(Iter first, Iter last) : data()
   init(first, last);
 }
 
-template <typename Container>
 FeatureVec&
-FeatureVec::operator+=(const Container &container)
+FeatureVec::operator+=(const UnaryFeatureVec &other)
 {
-  return inPlaceAdd(container.begin(), container.end());
+  return inPlaceAdd(other.begin(), other.end());
 }
-
-template FeatureVec& FeatureVec::operator+=(const std::vector<FeatureKey> &other);
 
 FeatureVec&
 FeatureVec::operator+=(const FeatureVec &other)
@@ -45,22 +46,36 @@ FeatureVec::operator+=(const FeatureVec &other)
   return inPlaceAdd(other.data.begin(), other.data.end());
 }
 
-template <typename Container> FeatureVec&
-FeatureVec::operator-=(const Container &container)
+FeatureVec&
+FeatureVec::operator-=(const UnaryFeatureVec &other)
 {
-  return inPlaceSubtract(container.begin(), container.end());
+  return inPlaceSubtract(other.begin(), other.end());
 }
-
-template FeatureVec& FeatureVec::operator-=(const std::vector<FeatureKey> &other);
 
 template <typename OStream>
 OStream&
 operator<<(OStream & out, FeatureVec const &fv) {
-  FeatureVecMap::const_iterator it = fv.data.begin();
-  for (; it != fv.data.end(); it++) {
-    out << it->first << ": " << it->second << "\n";
+  FeatureVec::Map::const_iterator feat_it = fv.data.begin();
+  for (; feat_it != fv.data.end(); feat_it++) {
+    FeatureKey::const_iterator bc_it;
+    for (bc_it = feat_it->first.begin();
+         bc_it != feat_it->first.end(); bc_it++) {
+      if (bc_it == feat_it->first.begin()) {
+        out << "<prg> ";
+      } else {
+        out << bc_it->c_str();
+      }
+    }
+    out << ": " << feat_it->second << "\n";
   }
+  return out;
 }
+
+template std::wostream&
+operator<<(std::wostream& out, FeatureVec const &fv);
+
+template std::ostream&
+operator<<(std::ostream& out, FeatureVec const &fv);
 
 FeatureVec&
 FeatureVec::operator-=(const FeatureVec &other)
@@ -68,13 +83,12 @@ FeatureVec::operator-=(const FeatureVec &other)
   return inPlaceSubtract(other.data.begin(), other.data.end());
 }
 
-template <typename Container>
-double FeatureVec::operator*(const Container &other) const
+double FeatureVec::operator*(const UnaryFeatureVec &other) const
 {
   double result = 0.0L;
-  typename Container::const_iterator other_it = other.begin();
-  for (; other_it != other.end(); other_it++) {
-    FeatureVecMap::const_iterator fv_it = data.find(*other_it);
+  UnaryFeatureVec::const_iterator other_it;
+  for (other_it = other.begin(); other_it != other.end(); other_it++) {
+    Map::const_iterator fv_it = data.find(*other_it);
     if (fv_it != data.end()) {
       result += fv_it->second;
     }
@@ -82,15 +96,13 @@ double FeatureVec::operator*(const Container &other) const
   return result;
 }
 
-template double FeatureVec::operator*(const std::vector<FeatureKey> &other) const;
-
 double FeatureVec::operator*(const FeatureVec &other) const
 {
   // This is O(N) in the size of the largest vector.
   // With a hash table we would have O(n) in the size of the smaller vector.
   double result = 0.0L;
-  FeatureVecMap::const_iterator il = data.begin();
-  FeatureVecMap::const_iterator ir = other.data.begin();
+  FeatureVec::Map::const_iterator il = data.begin();
+  FeatureVec::Map::const_iterator ir = other.data.begin();
   while (il != data.end() && ir != other.data.end()) {
     if (il->first < ir->first) {
       ++il;
@@ -105,26 +117,39 @@ double FeatureVec::operator*(const FeatureVec &other) const
   return result;
 }
 
+size_t
+FeatureVec::size() const
+{
+  return data.size();
+};
+
 template <typename Iter>
 void
 FeatureVec::init(Iter first, Iter last)
 {
-  std::transform(first, last, data.begin(), initPair);
+  std::transform(first, last, std::back_inserter(data), initPair);
 }
 
-FeatureVecPair FeatureVec::initPair(FeatureVecPair &pair)
+FeatureVec::Pair
+FeatureVec::initPair(FeatureVec::Pair &pair)
 {
   return pair;
 }
 
-FeatureVecPair FeatureVec::initPair(FeatureKey &key)
+FeatureVec::Pair
+FeatureVec::initPair(FeatureKey &key)
 {
   return make_pair(key, 1.0L);
 }
 
-FeatureVec::FeatOp::FeatOp(FeatureVecMap &data) : data(data) {}
-FeatureVec::AddFeat::AddFeat(FeatureVecMap &data) : FeatOp(data) {}
-FeatureVec::SubFeat::SubFeat(FeatureVecMap &data) : FeatOp(data) {}
+FeatureVec::FeatOp::FeatOp(FeatureVec::Map &data)
+  : data(data) {}
+
+FeatureVec::AddFeat::AddFeat(FeatureVec::Map &data)
+  : FeatOp(data) {}
+
+FeatureVec::SubFeat::SubFeat(FeatureVec::Map &data)
+  : FeatOp(data) {}
 
 void
 FeatureVec::AddFeat::operator()(const FeatureKey &feat)
@@ -133,7 +158,7 @@ FeatureVec::AddFeat::operator()(const FeatureKey &feat)
 }
 
 void
-FeatureVec::AddFeat::operator()(const FeatureVecPair &feat_val)
+FeatureVec::AddFeat::operator()(const FeatureVec::Pair &feat_val)
 {
   data[feat_val.first] += feat_val.second;
 }
@@ -145,7 +170,7 @@ FeatureVec::SubFeat::operator()(const FeatureKey &feat)
 }
 
 void
-FeatureVec::SubFeat::operator()(const FeatureVecPair &feat_val)
+FeatureVec::SubFeat::operator()(const FeatureVec::Pair &feat_val)
 {
   data[feat_val.first] -= feat_val.second;
 }
@@ -165,4 +190,13 @@ FeatureVec::inPlaceSubtract(Iter first, Iter last)
   for_each(first, last, SubFeat(data));
   return *this;
 }
+
+void FeatureVec::serialise(std::ostream &serialised) const {
+  Serialiser<FeatureVec::Map>::serialise(data, serialised);
+}
+
+void FeatureVec::deserialise(std::istream &serialised) {
+  data = Apertium::Deserialiser<FeatureVec::Map>::deserialise(serialised);
+}
+
 }

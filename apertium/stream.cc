@@ -625,6 +625,43 @@ StreamedType Stream::get() {
 
 bool Stream::flush_() const { return private_flush_; }
 
+void Stream::outputLexicalUnit(
+    const LexicalUnit &lexical_unit, const Optional<Analysis> analysis,
+    std::wostream &output, const basic_Tagger::Flags &flags) {
+  using namespace std::rel_ops;
+  output << L"^";
+
+  if (lexical_unit.TheAnalyses.empty() || !analysis) {
+    if (flags.getShowSuperficial())
+      output << lexical_unit.TheSurfaceForm << L"/";
+
+    output << L"*" << lexical_unit.TheSurfaceForm << L"$";
+    return;
+  }
+
+  if (flags.getMark()) {
+    if (lexical_unit.TheAnalyses.size() != 1)
+      output << L"=";
+  }
+
+  if (flags.getShowSuperficial())
+    output << lexical_unit.TheSurfaceForm << L"/";
+
+  output << *analysis;
+
+  if (flags.getFirst()) {
+    for (std::vector<Analysis>::const_iterator other_analysis =
+             lexical_unit.TheAnalyses.begin();
+         // Call .end() each iteration to save memory.
+         other_analysis != lexical_unit.TheAnalyses.end(); ++other_analysis) {
+      if (*other_analysis != *analysis)
+        output << L"/" << *other_analysis;
+    }
+  }
+
+  output << L"$";
+}
+
 Stream::PreviousCaseType::PreviousCaseType(const wchar_t &PreviousCase_)
     : ThePreviousCase(PreviousCase_), isPreviousCharacter(true) {}
 

@@ -8,7 +8,6 @@
 #include <set>
 #include <stack>
 #include <map>
-#include <stdint.h>
 #include <apertium/sentence_stream.h>
 #include <apertium/feature_vec.h>
 
@@ -19,43 +18,7 @@ typedef std::set<std::string> VMSet;
 class PerceptronSpec
 {
 public:
-  /*
-  struct Predicate {
-    union {
-    };
-    enum {
-      SUBSTR_EQ, WHOLE_EQ, HAS_TAG, AMBG_SET, FINE_TAG, COARSE_TAG
-    } type;
-  };
-  struct Observation {
-    union {
-      struct {
-        signed int wordoffset;
-        signed int charoffset;
-        unsigned int maxlen;
-      } substr;
-      struct {
-        signed int wordoffset;
-      } whole;
-      struct {
-        signed int wordoffset;
-        bool all;
-        bool any;
-        signed int charoffset;
-      } is_upper;
-      struct {
-        signed int wordoffset;
-      } fine_tag;
-    };
-    enum {
-      SUBSTR, WHOLE, IS_UPPER, AMBG_SET, FINE_TAG, COARSE_TAG
-    } type;
-  };
-  struct Feature {
-    std::vector<Predicate> preds;
-    std::vector<Observation> obvs;
-  };
-  */
+  template <typename OStream> friend OStream& operator<<(OStream & out, PerceptronSpec const &pt);
   #define OPCODES \
     /** Boolean and arithmetic */\
     /* bool, bool -> bool */\
@@ -71,7 +34,7 @@ public:
     /* -> int */\
     X(PUSHZERO)\
     /* int, int(operand) -> bool */\
-    X(LT) X(LTE) X(GT) X(GTE)\
+    X(LT) X(LTE) X(GT) X(GTE) X(EQ) X(NEQ)\
     \
     /** Stack manipulation */\
     /* 'a -> 'a, 'a */\
@@ -167,6 +130,7 @@ public:
     OPCODES
   };
   #undef X
+  static unsigned char num_opcodes;
   static const std::string opcode_names[];
   static std::map<const std::string, Opcode> opcode_values;
 private:
@@ -252,8 +216,8 @@ public:
   };
   union Bytecode {
     Opcode op;
-    uint8_t uintbyte;
-    int8_t intbyte;
+    unsigned char uintbyte;
+    signed char intbyte;
   };
   std::vector<std::string> str_consts;
   std::vector<VMSet> set_consts;
@@ -262,7 +226,7 @@ public:
   void get_features(
     const TaggedSentence &tagged, const Sentence &untagged,
     int token_idx, int wordoid_idx,
-    std::vector<std::string> &feat_vec_out) const;
+    UnaryFeatureVec &feat_vec_out) const;
   int beam_width;
 private:
   class MachineStack : public std::stack<StackValue> {
@@ -290,7 +254,7 @@ private:
     void get_feature(
       const TaggedSentence &tagged, const Sentence &untagged,
       int token_idx, int wordoid_idx,
-      std::vector<std::string> &feat_vec_out);
+      UnaryFeatureVec &feat_vec_out);
     Machine(
       const PerceptronSpec &spec,
       std::vector<FeatureDefn>::const_iterator feat_iter);
@@ -300,13 +264,16 @@ private:
     In(const VMSet &haystack);
     bool operator() (const std::string &needle) const;
   };
-  struct AppendStr {
-    const std::string &tail_str;
-    AppendStr(const std::string &tail_str);
-    std::string operator()(const std::string &head_str);
-  };
-  static int inRange(int lower, int upper, int x);
+  static void appendStr(UnaryFeatureVec &feat_vec,
+                        const std::string &tail_str);
+  static void appendStr(UnaryFeatureVec::iterator begin,
+                        UnaryFeatureVec::iterator end,
+                        const std::string &tail_str);
+  static bool inRange(int lower, int upper, int x);
   static int clamp(int lower, int upper, int x);
+public:
+  void serialise(std::ostream &serialised) const;
+  void deserialise(std::istream &serialised);
 };
 }
 

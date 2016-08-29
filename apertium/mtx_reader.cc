@@ -27,6 +27,9 @@
 namespace Apertium {
 MTXReader::MTXReader(VM &spec) : spec(spec), cur_feat(NULL) {}
 
+MTXReader::ConstNVMap MTXReader::set_names;
+MTXReader::ConstNVMap MTXReader::str_names;
+
 size_t MTXReader::pushSetConst(std::string &val)
 {
   size_t set_idx = spec.set_consts.size();
@@ -58,13 +61,13 @@ void MTXReader::emitOpcode(VM::Opcode op)
 void MTXReader::emitInt(int val)
 {
   assert(-128 <= val && val < 128);
-  emitBytecode((VM::Bytecode){.intbyte = val});
+  emitBytecode((VM::Bytecode){.intbyte = (signed char)val});
 }
 
 void MTXReader::emitUInt(int val)
 {
   assert(0 <= val && val < 256);
-  emitBytecode((VM::Bytecode){.uintbyte = val});
+  emitBytecode((VM::Bytecode){.uintbyte = (unsigned char)val});
 }
 
 bool MTXReader::emitPushTokAddrFromAttr(bool is_tagged)
@@ -205,8 +208,22 @@ void MTXReader::emitPushAddrFromAttr()
 void MTXReader::procSetDef()
 {
   std::wstring name = attrib(L"name");
-  std::string val = attrib("val");
-  set_names[name] = pushSetConst(val);
+  step();
+  size_t set_idx = spec.set_consts.size();
+  spec.set_consts.push_back(VMSet());
+  VMSet &vm_set = spec.set_consts.back();
+  while (type != XML_READER_TYPE_END_ELEMENT) {
+    if (name == L"set-member") {
+      std::string tag = attrib("tag");
+      std::string str = attrib("str");
+      vm_set.insert(tag != "" ? tag : str);
+    } else if (name == L"#text" || name == L"#comment") {
+      // skip
+    } else {
+      parseError(L"Expected set-member");
+    }
+  }
+  set_names[name] = set_idx;
 }
 
 void MTXReader::procStrDef()
@@ -323,35 +340,37 @@ MTXReader::procStrArrExpr()
 void
 MTXReader::procStrExpr()
 {
+  step();
   stepToTag();
-  if (name == L"slicebegin") {
+  std::wcerr << "strexpr: " << name << "\n";
+  if (name == L"slice-begin") {
     procStrExpr();
     emitOpcode(VM::SLICEBEGIN);
     emitInt();
-  } else if (name == L"sliceend") {
+  } else if (name == L"slice-end") {
     procStrExpr();
     emitOpcode(VM::SLICEEND);
     emitInt();
-  } else if (name == L"gettoklf") {
+  } else if (name == L"token-lf") {
     emitPushTokAddrFromAttr();
     emitOpcode(VM::GETTOKLF);
-  } else if (name == L"getwrdlf") {
+  } else if (name == L"wordoid-lf") {
     emitPushAddrFromAttr();
     emitOpcode(VM::GETWRDLF);
-  } else if (name == L"gettagsflat") {
+  } else if (name == L"tags-flat") {
     emitPushAddrFromAttr();
     emitOpcode(VM::GETTAGSFLAT);
   } else {
-    parseError(L"Expected a string list expression.");
+    parseError(L"Expected a string expression.");
   }
-  stepToTag();
-  assert(type == XML_READER_TYPE_END_ELEMENT);
+  step();
   stepToTag();
 }
 
 void
 MTXReader::procBoolExpr()
 {
+  step();
   stepToTag();
   if (name == L"and") {
     procCommBoolOp(VM::AND);
@@ -359,7 +378,9 @@ MTXReader::procBoolExpr()
     procCommBoolOp(VM::OR);
   } else if (name == L"not") {
     procBoolExpr();
+    assert(type == XML_READER_TYPE_END_ELEMENT);
     emitOpcode(VM::NOT);
+    step();
   } else if (name == L"lt") {
     procBinCompareOp(VM::LT);
   } else if (name == L"lte") {
@@ -515,11 +536,36 @@ MTXReader::procInst()
 void
 MTXReader::procFeat()
 {
-  spec.features.push_back(VM::Feature());
+  spec.features.push_back(VM::FeatureDefn());
   cur_feat = &spec.features.back();
+  step();
   while (type != XML_READER_TYPE_END_ELEMENT) {
+    std::wcerr << name << "\n";
     if (name == L"pred") {
       procPred();
+    } else if (name == L"map-cat") {
+      procStrArrExpr();
+      assert(type == XML_READER_TYPE_END_ELEMENT);
+      emitOpcode(VM::FCATSTRARR);
+      step();
+    } else if (name == L"extend") {
+      //procStrArrExpr();
+      parseError(L"unimplemented");
+    } else if (name == L"cat") {
+      procStrExpr();
+      assert(type == XML_READER_TYPE_END_ELEMENT);
+      emitOpcode(VM::FCATSTR);
+      step();
+    } else if (name == L"cat-bool") {
+      procBoolExpr();
+      assert(type == XML_READER_TYPE_END_ELEMENT);
+      emitOpcode(VM::FCATBOOL);
+      step();
+    } else if (name == L"cat-int") {
+      procIntExpr();
+      assert(type == XML_READER_TYPE_END_ELEMENT);
+      emitOpcode(VM::FCATINT);
+      step();
     } else if (name == L"inst") {
       procInst();
     } else if (name == L"#text" || name == L"#comment") {
@@ -534,6 +580,7 @@ MTXReader::procFeat()
 void
 MTXReader::procFeats()
 {
+  step();
   while (type != XML_READER_TYPE_END_ELEMENT) {
     if (name == L"feat") {
       procFeat();
@@ -549,22 +596,28 @@ MTXReader::procFeats()
 void
 MTXReader::parse()
 {
-  bool processedFeats = false;
-  while (type != XML_READER_TYPE_END_ELEMENT) {
-    if (name == L"feats") {
-      procFeats();
-      processedFeats = true;
-    } else if (name == L"defns") {
-      if (processedFeats) {
-        parseError(L"<defns> must preceed <feats>");
-      }
-      procDefns();
-    } else if (name == L"#text" || name == L"#comment") {
-      // skip
-    } else {
-      unexpectedTag();
-    }
-    step();
+  step();
+  stepToTag();
+  std::wcerr << name << "\n";
+  if (name == L"beam-width") {
+    size_t val;
+    std::istringstream val_ss(attrib("val"));
+    val_ss >> val;
+    spec.beam_width = val;
+  } else {
+    spec.beam_width = 4;
   }
+  stepToTag();
+  std::wcerr << name << "\n";
+  if (name == L"defns") {
+    procDefns();
+  }
+  stepToTag();
+  std::wcerr << name << "\n";
+  if (name == L"feats") {
+    procFeats();
+  }
+  stepToTag();
+  std::wcerr << name << "\n";
 }
 }

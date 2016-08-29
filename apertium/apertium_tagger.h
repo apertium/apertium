@@ -52,8 +52,6 @@ private:
   void getCgAugmentedModeArgument();
   void getIterationsArgument();
   unsigned long optarg_unsigned_long(const char *metavar);
-  void expect_file_arguments(int lower, int upper);
-  void expect_file_arguments(int exactly);
   void get_file_arguments(
     bool get_crp_fn,
     unsigned long* ambg_class_count,

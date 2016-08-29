@@ -1,8 +1,37 @@
 #include <apertium/perceptron_spec.h>
 #include <apertium/utf_converter.h>
+#include <apertium/deserialiser.h>
+#include <apertium/serialiser.h>
 
 
 namespace Apertium {
+
+template <typename OStream>
+OStream&
+operator<<(OStream & out, PerceptronSpec const &ps) {
+  for (size_t i = 0; i < ps.features.size(); i++) {
+    out << "Feature " << i << "\n";
+    for (size_t j = 0; j < ps.features[i].size(); j++) {
+      out << std::hex << ps.features[i][j].uintbyte << " ";
+    }
+    out << "\n";
+    for (size_t j = 0; j < ps.features[i].size(); j++) {
+      if (ps.features[i][j].uintbyte < PerceptronSpec::num_opcodes) {
+        out << PerceptronSpec::opcode_names[ps.features[i][j].uintbyte].c_str() << " ";
+      } else {
+        out << "XX ";
+      }
+    }
+    out << "\n";
+  }
+  return out;
+}
+
+template std::wostream&
+operator<<(std::wostream& out, PerceptronSpec const &ps);
+
+template std::ostream&
+operator<<(std::ostream& out, PerceptronSpec const &ps);
 
 #define X(a) #a,
 const std::string PerceptronSpec::opcode_names[] = {
@@ -10,23 +39,29 @@ const std::string PerceptronSpec::opcode_names[] = {
 };
 #undef X
 
+unsigned char PerceptronSpec::num_opcodes;
+
 std::map<const std::string, PerceptronSpec::Opcode>
 PerceptronSpec::opcode_values;
 
 PerceptronSpec::StaticConstruct::StaticConstruct() {
-  size_t num_opcodes = sizeof(opcode_names) / sizeof(opcode_names[0]);
+  num_opcodes = sizeof(opcode_names) / sizeof(opcode_names[0]);
   for (size_t i=0; i < num_opcodes; i++) {
-    PerceptronSpec::opcode_values[PerceptronSpec::opcode_names[i]] = (Opcode)i;
+    opcode_values[opcode_names[i]] = (Opcode)i;
   }
 }
 
 void PerceptronSpec::get_features(
     const TaggedSentence &tagged, const Sentence &untagged,
     int token_idx, int wordoid_idx,
-    std::vector<std::string> &feat_vec_out) const {
+    UnaryFeatureVec &feat_vec_out) const {
   std::vector<FeatureDefn>::const_iterator feat_it;
-  vector<std::string> feat_vec_delta;
+  UnaryFeatureVec feat_vec_delta;
   for (feat_it = features.begin(); feat_it != features.end(); feat_it++) {
+    feat_vec_delta.clear();
+    feat_vec_delta.push_back(FeatureKey());
+    FeatureKey &fk = feat_vec_delta.back();
+    fk.push_back(std::string((char*)&(feat_it->front()), feat_it->size()));
     Machine machine(*this, feat_it);
     machine.get_feature(tagged, untagged, token_idx, wordoid_idx, feat_vec_delta);
     feat_vec_out.insert(feat_vec_out.end(),
@@ -81,8 +116,7 @@ PerceptronSpec::Machine::Machine(
 void PerceptronSpec::Machine::get_feature(
     const TaggedSentence &tagged, const Sentence &untagged,
     int token_idx, int wordoid_idx,
-    std::vector<std::string> &feat_vec_out) {
-  feat_vec_out.clear();
+    UnaryFeatureVec &feat_vec_out) {
   for (; bytecode_iter != feat_iter->end(); bytecode_iter++) {
     switch (bytecode_iter->op) {
       case OR:
@@ -117,6 +151,12 @@ void PerceptronSpec::Machine::get_feature(
         break;
       case GTE:
         stack.push(stack.pop_off().intVal() >= stack.pop_off().intVal());
+        break;
+      case EQ:
+        stack.push(stack.pop_off().intVal() == stack.pop_off().intVal());
+        break;
+      case NEQ:
+        stack.push(stack.pop_off().intVal() != stack.pop_off().intVal());
         break;
       case DUP:
         stack.push(stack.top());
@@ -175,17 +215,17 @@ void PerceptronSpec::Machine::get_feature(
       case CLAMPADDR: {
         int wordoid_idx = stack.pop_off().intVal();
         int token_idx = stack.pop_off().intVal();
-        token_idx = clamp(token_idx, 0, (int)tagged.size() - 1);
+        token_idx = clamp(0, (int)tagged.size() - 1, token_idx);
         int wordoid_len = tagged_to_wordoids(tagged[token_idx]).size();
-        wordoid_idx = clamp(wordoid_idx, 0, wordoid_len - 1);
+        wordoid_idx = clamp(0, wordoid_len - 1, wordoid_idx);
         stack.push(token_idx);
         stack.push(wordoid_idx);
       } break;
       case CLAMPTAGGEDTOKADDR:
-        stack.push(clamp(stack.pop_off().intVal(), 0, (int)tagged.size() - 1));
+        stack.push(clamp(0, (int)tagged.size() - 1, stack.pop_off().intVal()));
         break;
       case CLAMPTOKADDR:
-        stack.push(clamp(stack.pop_off().intVal(), 0, (int)untagged.size() - 1));
+        stack.push(clamp(0, (int)untagged.size() - 1, stack.pop_off().intVal()));
         break;
       case GETTOKLF: {
         std::wstring lf = get_token(untagged).TheSurfaceForm;
@@ -308,13 +348,17 @@ void PerceptronSpec::Machine::get_feature(
         std::vector<std::string> &str_arr = stack.top().strArr();
         if (str_arr.size() == 0) {
           feat_vec_out.clear();
+          return;
         } else {
-          std::vector<std::string> new_feat_vec;
+          UnaryFeatureVec new_feat_vec;
           new_feat_vec.reserve(feat_vec_out.size() * str_arr.size());
           std::vector<std::string>::const_iterator str_arr_it;
           for (str_arr_it = str_arr.begin(); str_arr_it != str_arr.end(); str_arr_it++) {
-            std::transform(feat_vec_out.begin(), feat_vec_out.end(),
-                           back_inserter(new_feat_vec), AppendStr(*str_arr_it));
+            UnaryFeatureVec::iterator append_begin_it = new_feat_vec.end();
+            std::copy(feat_vec_out.begin(), feat_vec_out.end(),
+                      back_inserter(new_feat_vec));
+            UnaryFeatureVec::iterator append_end_it = new_feat_vec.end();
+            appendStr(append_begin_it, append_end_it, *str_arr_it);
           }
           std::swap(feat_vec_out, new_feat_vec);
         }
@@ -322,22 +366,19 @@ void PerceptronSpec::Machine::get_feature(
       } break;
       case FCATSTR: {
         std::string &str = stack.top().str();
-        std::transform(feat_vec_out.begin(), feat_vec_out.end(),
-                       feat_vec_out.begin(), AppendStr(str));
+        appendStr(feat_vec_out, str);
         stack.pop();
       } break;
       case FCATBOOL: {
         bool b = stack.top().boolVal();
-        std::transform(feat_vec_out.begin(), feat_vec_out.end(),
-                       feat_vec_out.begin(), AppendStr(b ? "t" : "f"));
+        appendStr(feat_vec_out, b ? "t" : "f");
         stack.pop();
       } break;
       case FCATINT: {
         int i  = stack.top().intVal();
         stringstream ss;
         ss << i;
-        std::transform(feat_vec_out.begin(), feat_vec_out.end(),
-                       feat_vec_out.begin(), AppendStr(ss.str()));
+        appendStr(feat_vec_out, ss.str());
         stack.pop();
       } break;
       default:
@@ -364,11 +405,17 @@ PerceptronSpec::In::operator() (const std::string &needle) const {
   return haystack.find(needle) != haystack.end();
 };
 
-PerceptronSpec::AppendStr::AppendStr(const std::string &tail_str)
-  : tail_str(tail_str) {};
+void PerceptronSpec::appendStr(UnaryFeatureVec &feat_vec,
+                               const std::string &tail_str) {
+  appendStr(feat_vec.begin(), feat_vec.end(), tail_str);
+}
 
-std::string PerceptronSpec::AppendStr::operator()(const std::string &head_str) {
-  return head_str + tail_str;
+void PerceptronSpec::appendStr(UnaryFeatureVec::iterator begin,
+                               UnaryFeatureVec::iterator end,
+                               const std::string &tail_str) {
+  for (;begin != end; begin++) {
+    begin->push_back(tail_str);
+  }
 }
 
 std::string
@@ -376,7 +423,25 @@ PerceptronSpec::Machine::get_tag(const Tag &in) {
   return UtfConverter::toUtf8(in.TheTag);
 }
 
-int PerceptronSpec::clamp(int x, int lower, int upper) {
+bool PerceptronSpec::inRange(int lower, int upper, int x) {
+  return lower <= x && x < upper;
+}
+
+int PerceptronSpec::clamp(int lower, int upper, int x) {
   return std::min(std::max(x, lower), upper);
+}
+
+void PerceptronSpec::serialise(std::ostream &serialised) const {
+  Serialiser<size_t>::serialise(beam_width, serialised);
+  Serialiser<std::vector<std::string> >::serialise(str_consts, serialised);
+  Serialiser<std::vector<VMSet> >::serialise(set_consts, serialised);
+  Serialiser<std::vector<FeatureDefn> >::serialise(features, serialised);
+}
+
+void PerceptronSpec::deserialise(std::istream &serialised) {
+  beam_width = Deserialiser<size_t>::deserialise(serialised);
+  str_consts = Deserialiser<std::vector<std::string> >::deserialise(serialised);
+  set_consts = Deserialiser<std::vector<VMSet> >::deserialise(serialised);
+  features = Deserialiser<std::vector<FeatureDefn> >::deserialise(serialised);
 }
 }

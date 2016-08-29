@@ -24,6 +24,8 @@ public:
     Flags();
     bool getDebug() const;
     void setDebug(const bool &Debug_);
+    bool getSkipErrors() const;
+    void setSkipErrors(const bool &SkipErrors_);
     bool getFirst() const;
     void setFirst(const bool &First_);
     bool getMark() const;
@@ -45,6 +47,7 @@ public:
 
   private:
     bool Debug : 1;
+    bool SkipErrors : 1;
     bool First : 1;
     bool Mark : 1;
     bool ShowSuperficial : 1;

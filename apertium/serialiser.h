@@ -25,7 +25,11 @@
 #include "morpheme.h"
 #include "tag.h"
 
+#include <apertium/stdint_shim.h>
+#include <apertium/static_assert.h>
+#include <apertium/perceptron_spec.h>
 #include <cstddef>
+#include <limits>
 #include <ios>
 #include <limits>
 #include <map>
@@ -93,14 +97,6 @@ public:
             std::ostream &Output);
 };
 
-template <typename key_type, typename mapped_type>
-class Serialiser<std::map<key_type, mapped_type> > {
-public:
-  inline static void
-  serialise(const std::map<key_type, mapped_type> &SerialisedType_,
-            std::ostream &Output);
-};
-
 template <typename first_type, typename second_type>
 class Serialiser<std::pair<first_type, second_type> > {
 public:
@@ -109,21 +105,41 @@ public:
             std::ostream &Output);
 };
 
-template <> class Serialiser<std::size_t> {
+template <> class Serialiser<size_t> {
 public:
-  inline static void serialise(const std::size_t &SerialisedType_,
-                               std::ostream &Output);
-};
-
-template <typename value_type> class Serialiser<std::vector<value_type> > {
-public:
-  inline static void serialise(const std::vector<value_type> &SerialisedType_,
+  inline static void serialise(const size_t &SerialisedType_,
                                std::ostream &Output);
 };
 
 template <> class Serialiser<wchar_t> {
 public:
   inline static void serialise(const wchar_t &SerialisedType_,
+                               std::ostream &Output);
+};
+
+template <> class Serialiser<char> {
+public:
+  inline static void serialise(const char &SerialisedType_,
+                               std::ostream &Output);
+};
+
+template<> class Serialiser<double> {
+public:
+  inline static void serialise(const double &SerialisedType_,
+                               std::ostream &Output);
+};
+
+template<> class Serialiser<PerceptronSpec::Bytecode> {
+  public:
+  inline static void serialise(
+    const PerceptronSpec::Bytecode &SerialisedType_,
+    std::ostream &Output);
+};
+
+template <typename Container>
+class Serialiser {
+public:
+  inline static void serialise(const Container &SerialisedType_,
                                std::ostream &Output);
 };
 }
@@ -179,21 +195,6 @@ void Serialiser<std::basic_string<value_type> >::serialise(
   }
 }
 
-template <typename key_type, typename mapped_type>
-void Serialiser<std::map<key_type, mapped_type> >::serialise(
-    const std::map<key_type, mapped_type> &SerialisedType_,
-    std::ostream &Output) {
-  ::Apertium::serialise(SerialisedType_.size(), Output);
-
-  for (typename std::map<key_type, mapped_type>::const_iterator
-           SerialisedType_iterator = SerialisedType_.begin();
-       // Call .end() each iteration to save memory.
-       SerialisedType_iterator != SerialisedType_.end();
-       ++SerialisedType_iterator) {
-    ::Apertium::serialise(*SerialisedType_iterator, Output);
-  }
-}
-
 template <typename first_type, typename second_type>
 void Serialiser<std::pair<first_type, second_type> >::serialise(
     const std::pair<first_type, second_type> &SerialisedType_,
@@ -202,8 +203,10 @@ void Serialiser<std::pair<first_type, second_type> >::serialise(
   ::Apertium::serialise(SerialisedType_.second, Output);
 }
 
-void Serialiser<std::size_t>::serialise(const std::size_t &SerialisedType_,
-                                        std::ostream &Output) {
+template <typename integer_type>
+void int_serialise(const integer_type &SerialisedType_,
+                   std::ostream &Output) {
+  static_assertion<std::numeric_limits<integer_type>::is_integer> _; (void)_;
   try {
     Output.put(compressedSize(SerialisedType_));
 
@@ -230,55 +233,48 @@ void Serialiser<std::size_t>::serialise(const std::size_t &SerialisedType_,
     }
   } catch (const basic_ExceptionType &basic_ExceptionType_) {
     std::stringstream what_;
-    what_ << "can't serialise const std::size_t & : "
+    what_ << "can't serialise const " << sizeof(integer_type) << " byte integer type: "
           << basic_ExceptionType_.what();
     throw Exception::Serialiser::size_t_(what_);
   }
 }
 
-template <typename value_type>
-void Serialiser<std::vector<value_type> >::serialise(
-    const std::vector<value_type> &SerialisedType_, std::ostream &Output) {
-  ::Apertium::serialise(SerialisedType_.size(), Output);
-
-  for (typename std::vector<value_type>::const_iterator value_type_ =
-           SerialisedType_.begin();
-       // Call .end() each iteration to save memory.
-       value_type_ != SerialisedType_.end(); ++value_type_) {
-    ::Apertium::serialise(*value_type_, Output);
-  }
+void Serialiser<size_t>::serialise(const size_t &SerialisedType_,
+                                   std::ostream &Output) {
+  int_serialise(SerialisedType_, Output);
 }
 
 void Serialiser<wchar_t>::serialise(const wchar_t &SerialisedType_,
                                     std::ostream &Output) {
-  try {
-    Output.put(compressedSize(SerialisedType_));
+  int_serialise(SerialisedType_, Output);
+}
 
-    if (!Output) {
-      std::stringstream what_;
-      what_ << "can't serialise size " << std::hex
-            << /* [1] */ +compressedSize(SerialisedType_);
-      throw Exception::Serialiser::not_Stream_good(what_);
-    }
+void Serialiser<char>::serialise(const char &SerialisedType_,
+                                 std::ostream &Output) {
+  int_serialise(SerialisedType_, Output);
+}
 
-    for (unsigned char CompressedSize = compressedSize(SerialisedType_);
-         CompressedSize != 0; Output.put(static_cast<unsigned char>(
-             static_cast<unsigned wchar_t>(SerialisedType_) >>
-             std::numeric_limits<unsigned char>::digits * --CompressedSize))) {
-      if (!Output) {
-        std::stringstream what_;
-        what_ << "can't serialise byte " << std::hex
-              << /* [1] */ +(static_cast<unsigned wchar_t>(SerialisedType_) >>
-                             std::numeric_limits<unsigned char>::digits *
-                                 CompressedSize);
-        throw Exception::Serialiser::not_Stream_good(what_);
-      }
-    }
-  } catch (const basic_ExceptionType &basic_ExceptionType_) {
-    std::stringstream what_;
-    what_ << "can't serialise const wchar_t & : "
-          << basic_ExceptionType_.what();
-    throw Exception::Serialiser::wchar_t_(what_);
+void Serialiser<double>::serialise(const double &SerialisedType_,
+                                   std::ostream &Output) {
+  Serialiser<uint64_t>::serialise(static_cast<uint64_t>(SerialisedType_), Output);
+}
+
+void Serialiser<PerceptronSpec::Bytecode>::serialise(
+    const PerceptronSpec::Bytecode &SerialisedType_,
+    std::ostream &Output) {
+  Serialiser<char>::serialise(SerialisedType_.uintbyte, Output);
+}
+
+template <typename Container>
+void Serialiser<Container>::serialise(
+    const Container &SerialisedType_, std::ostream &Output) {
+  ::Apertium::serialise(SerialisedType_.size(), Output);
+
+  for (typename Container::const_iterator value_type_ =
+           SerialisedType_.begin();
+       // Call .end() each iteration to save memory.
+       value_type_ != SerialisedType_.end(); ++value_type_) {
+    ::Apertium::serialise(*value_type_, Output);
   }
 }
 }

@@ -13,44 +13,51 @@ typedef std::vector<std::string> FeatureKey;
 struct CompareFeatureKey {
   bool operator() (FeatureKey const& lhs, FeatureKey const& rhs) const;
 };
-typedef std::map<FeatureKey, double, CompareFeatureKey> FeatureVecMap;
-typedef std::pair<FeatureKey, double> FeatureVecPair;
+typedef std::vector<FeatureKey> UnaryFeatureVec;
 
 class FeatureVec
 {
+  friend class FeatureVecAverager;
+  friend class PerceptronTagger; //
 public:
+  typedef std::map<FeatureKey, double, CompareFeatureKey> Map;
+  typedef std::pair<FeatureKey, double> Pair;
   FeatureVec();
   template <typename Container> FeatureVec(Container &container);
   template <typename Iter> FeatureVec(Iter first, Iter last);
-  template <typename Container> FeatureVec& operator+=(const Container &container);
+  FeatureVec& operator+=(const UnaryFeatureVec &other);
   FeatureVec& operator+=(const FeatureVec &other);
-  template <typename Container> FeatureVec& operator-=(const Container &container);
+  FeatureVec& operator-=(const UnaryFeatureVec &other);
   FeatureVec& operator-=(const FeatureVec &other);
   // dot/inner product
-  template <typename Container> double operator*(const Container &other) const;
+  double operator*(const UnaryFeatureVec &other) const;
   double operator*(const FeatureVec &other) const;
+  size_t size() const;
   template <typename OStream> friend OStream& operator<<(OStream & out, FeatureVec const &fv);
 private:
-  static FeatureVecPair initPair(FeatureVecPair &pair);
-  static FeatureVecPair initPair(FeatureKey &key);
-  FeatureVecMap data;
+  static Pair initPair(Pair &pair);
+  static Pair initPair(FeatureKey &key);
+  Map data;
   template <typename Iter> void init(Iter first, Iter last);
   struct FeatOp {
-    FeatOp(FeatureVecMap &data);
-    FeatureVecMap &data;
+    FeatOp(Map &data);
+    Map &data;
   };
   struct AddFeat : FeatOp {
-    AddFeat(FeatureVecMap &data);
+    AddFeat(Map &data);
     void operator() (const FeatureKey &feat);
-    void operator() (const FeatureVecPair &feat_val);
+    void operator() (const Pair &feat_val);
   };
   struct SubFeat : FeatOp {
-    SubFeat(FeatureVecMap &data);
+    SubFeat(Map &data);
     void operator() (const FeatureKey &feat);
-    void operator() (const FeatureVecPair &feat_val);
+    void operator() (const Pair &feat_val);
   };
   template <typename Iter> FeatureVec& inPlaceAdd(Iter first, Iter last);
   template <typename Iter> FeatureVec& inPlaceSubtract(Iter first, Iter last);
+public:
+  void serialise(std::ostream &serialised) const;
+  void deserialise(std::istream &serialised);
 };
 }
 

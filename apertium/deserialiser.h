@@ -25,7 +25,11 @@
 #include "morpheme.h"
 #include "tag.h"
 
+#include <apertium/stdint_shim.h>
+#include <apertium/static_assert.h>
+#include <apertium/perceptron_spec.h>
 #include <cstddef>
+#include <limits>
 #include <istream>
 #include <limits>
 #include <map>
@@ -35,6 +39,18 @@
 #include <vector>
 
 namespace Apertium {
+
+template <typename T>
+struct remove_const
+{
+    typedef T type;
+};
+template <typename T>
+struct remove_const<const T>
+{
+    typedef T type;
+};
+
 template <typename DeserialisedType> class Deserialiser;
 
 template <> class Deserialiser<a> {
@@ -74,13 +90,6 @@ public:
   deserialise(std::istream &Stream_);
 };
 
-template <typename key_type, typename mapped_type>
-class Deserialiser<std::map<key_type, mapped_type> > {
-public:
-  inline static std::map<key_type, mapped_type>
-  deserialise(std::istream &Stream_);
-};
-
 template <typename first_type, typename second_type>
 class Deserialiser<std::pair<first_type, second_type> > {
 public:
@@ -88,19 +97,35 @@ public:
   deserialise(std::istream &Stream_);
 };
 
-template <> class Deserialiser<std::size_t> {
+template <> class Deserialiser<size_t> {
 public:
-  inline static std::size_t deserialise(std::istream &Stream_);
-};
-
-template <typename value_type> class Deserialiser<std::vector<value_type> > {
-public:
-  inline static std::vector<value_type> deserialise(std::istream &Stream_);
+  inline static size_t deserialise(std::istream &Stream_);
 };
 
 template <> class Deserialiser<wchar_t> {
 public:
   inline static wchar_t deserialise(std::istream &Stream_);
+};
+
+template <> class Deserialiser<char> {
+public:
+  inline static char deserialise(std::istream &Stream_);
+};
+
+template<> class Deserialiser<double> {
+public:
+  inline static double deserialise(std::istream &Stream_);
+};
+
+template<> class Deserialiser<PerceptronSpec::Bytecode> {
+public:
+  inline static PerceptronSpec::Bytecode deserialise(std::istream &Stream_);
+};
+
+template <typename Container>
+class Deserialiser {
+public:
+  inline static Container deserialise(std::istream &Stream_);
 };
 
 a Deserialiser<a>::deserialise(std::istream &Stream_) {
@@ -159,35 +184,20 @@ Deserialiser<std::basic_string<value_type> >::deserialise(
   return SerialisedType_;
 }
 
-template <typename key_type, typename mapped_type>
-std::map<key_type, mapped_type>
-Deserialiser<std::map<key_type, mapped_type> >::deserialise(
-    std::istream &Stream_) {
-  std::size_t SerialisedValueCount =
-      Deserialiser<std::size_t>::deserialise(Stream_);
-  std::map<key_type, mapped_type> SerialisedType_;
-
-  for (; SerialisedValueCount != 0; --SerialisedValueCount) {
-    SerialisedType_.insert(
-        Deserialiser<std::pair<key_type, mapped_type> >::deserialise(Stream_));
-  }
-
-  return SerialisedType_;
-}
-
 template <typename first_type, typename second_type>
 std::pair<first_type, second_type>
 Deserialiser<std::pair<first_type, second_type> >::deserialise(
     std::istream &Stream_) {
-  std::pair<first_type, second_type> SerialisedType_;
-  SerialisedType_.first = Deserialiser<first_type>::deserialise(Stream_);
-  SerialisedType_.second = Deserialiser<second_type>::deserialise(Stream_);
-  return SerialisedType_;
+  return std::make_pair(
+    Deserialiser<typename remove_const<first_type>::type>::deserialise(Stream_),
+    Deserialiser<typename remove_const<second_type>::type>::deserialise(Stream_));
 }
 
-std::size_t Deserialiser<std::size_t>::deserialise(std::istream &Stream_) {
+template <typename integer_type>
+integer_type int_deserialise(std::istream &Stream_) {
+  static_assertion<std::numeric_limits<integer_type>::is_integer> _; (void)_;
   try {
-    std::size_t SerialisedType_ = 0;
+    integer_type SerialisedType_ = 0;
     unsigned char SerialisedTypeSize = Stream_.get();
 
     if (!Stream_)
@@ -195,7 +205,7 @@ std::size_t Deserialiser<std::size_t>::deserialise(std::istream &Stream_) {
 
     for (; SerialisedTypeSize != 0;) {
       SerialisedType_ +=
-          static_cast<std::size_t>(Stream_.get())
+          static_cast<integer_type>(Stream_.get())
           << std::numeric_limits<unsigned char>::digits * --SerialisedTypeSize;
 
       if (!Stream_)
@@ -206,49 +216,45 @@ std::size_t Deserialiser<std::size_t>::deserialise(std::istream &Stream_) {
     return SerialisedType_;
   } catch (const basic_ExceptionType &basic_ExceptionType_) {
     std::stringstream what_;
-    what_ << "can't deserialise std::size_t: " << basic_ExceptionType_.what();
+    what_ << "can't deserialise " << sizeof(integer_type) << " byte integer type: " << basic_ExceptionType_.what();
     throw Exception::Deserialiser::size_t_(what_);
   }
 }
 
-template <typename value_type>
-std::vector<value_type>
-Deserialiser<std::vector<value_type> >::deserialise(std::istream &Stream_) {
-  std::size_t SerialisedValueCount =
-      Deserialiser<std::size_t>::deserialise(Stream_);
-  std::vector<value_type> SerialisedType_;
-
-  for (; SerialisedValueCount != 0; --SerialisedValueCount) {
-    SerialisedType_.push_back(Deserialiser<value_type>::deserialise(Stream_));
-  }
-
-  return SerialisedType_;
+size_t Deserialiser<size_t>::deserialise(std::istream &Stream_) {
+  return int_deserialise<size_t>(Stream_);
 }
 
 wchar_t Deserialiser<wchar_t>::deserialise(std::istream &Stream_) {
-  try {
-    unsigned wchar_t SerialisedType_ = 0;
-    unsigned char SerialisedTypeSize = Stream_.get();
+  return int_deserialise<wchar_t>(Stream_);
+}
 
-    if (!Stream_)
-      throw Exception::Deserialiser::not_Stream_good("can't deserialise size");
+char Deserialiser<char>::deserialise(std::istream &Stream_) {
+  return int_deserialise<char>(Stream_);
+}
 
-    for (; SerialisedTypeSize != 0;) {
-      SerialisedType_ +=
-          static_cast<std::size_t>(Stream_.get())
-          << std::numeric_limits<unsigned char>::digits * --SerialisedTypeSize;
+double Deserialiser<double>::deserialise(std::istream &Stream_) {
+  return static_cast<double>(Deserialiser<uint64_t>::deserialise(Stream_));
+}
 
-      if (!Stream_)
-        throw Exception::Deserialiser::not_Stream_good(
-            "can't deserialise byte");
-    }
+PerceptronSpec::Bytecode Deserialiser<PerceptronSpec::Bytecode>::deserialise(std::istream &Stream_) {
+  return (PerceptronSpec::Bytecode){.intbyte = Deserialiser<char>::deserialise(Stream_)};
+}
 
-    return static_cast<wchar_t>(SerialisedType_);
-  } catch (const basic_ExceptionType &basic_ExceptionType_) {
-    std::stringstream what_;
-    what_ << "can't deserialise wchar_t: " << basic_ExceptionType_.what();
-    throw Exception::Deserialiser::wchar_t_(what_);
+template <typename Container>
+Container
+Deserialiser<Container>::deserialise(std::istream &Stream_) {
+  std::size_t SerialisedValueCount =
+      Deserialiser<std::size_t>::deserialise(Stream_);
+  typename remove_const<Container>::type SerialisedType_;
+  std::insert_iterator<typename remove_const<Container>::type> insert_it =
+      std::inserter(SerialisedType_, SerialisedType_.begin());
+
+  for (; SerialisedValueCount != 0; --SerialisedValueCount) {
+    *(insert_it++) = Deserialiser<typename Container::value_type>::deserialise(Stream_);
   }
+
+  return SerialisedType_;
 }
 }
 

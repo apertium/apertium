@@ -18,7 +18,6 @@
 #define _MTXREADER_
 
 #include <apertium/constant_manager.h>
-#include <apertium/tagger_data_perceptron.h>
 #include <apertium/perceptron_spec.h>
 #include <apertium/ttag.h>
 #include <apertium/xml_reader.h>
@@ -89,7 +88,7 @@ private:
 
   static ConstNVMap set_names;
   static ConstNVMap str_names;
-  VM::Feature *cur_feat;
+  VM::FeatureDefn *cur_feat;
 };
 }
 

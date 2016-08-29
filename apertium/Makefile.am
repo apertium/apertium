@@ -21,6 +21,7 @@ h_sources = a.h \
 	    exception.h \
 	    exception_type.h \
 	    feature_vec.h \
+	    feature_vec_averager.h \
 	    file_tagger.h \
 	    hmm.h \
 	    i.h \
@@ -33,6 +34,7 @@ h_sources = a.h \
 	    lswpost.h \
 	    morpheme.h \
 	    morpho_stream.h \
+	    mtx_reader.h \
 	    dual_morpho_stream.h \
 	    file_morpho_stream.h \
 	    optional.h \
@@ -52,11 +54,11 @@ h_sources = a.h \
 	    stream_tagger_trainer.h \
 	    streamed_type.h \
 	    string_utils.h \
+	    shell_utils.h \
 	    tag.h \
 	    tagger_data.h \
 	    tagger_data_hmm.h \
 	    tagger_data_lsw.h \
-	    tagger_data_perceptron.h \
 	    tagger_utils.h \
 	    tagger_word.h \
 	    tmx_aligner_tool.h \
@@ -110,6 +112,7 @@ cc_sources = a.cc \
 	     endian_double_util.cc \
 	     exception_type.cc \
 	     feature_vec.cc \
+	     feature_vec_averager.cc \
 	     file_tagger.cc \
 	     hmm.cc \
 	     i.cc \
@@ -121,6 +124,7 @@ cc_sources = a.cc \
 	     lswpost.cc \
 	     morpheme.cc \
 	     morpho_stream.cc \
+	     mtx_reader.cc \
 	     dual_morpho_stream.cc \
 	     file_morpho_stream.cc \
 	     perceptron_spec.cc \
@@ -137,11 +141,11 @@ cc_sources = a.cc \
 	     stream_tagger.cc \
 	     stream_tagger_trainer.cc \
 	     string_utils.cc \
+	     shell_utils.cc \
 	     tag.cc \
 	     tagger_data.cc \
 	     tagger_data_hmm.cc \
 	     tagger_data_lsw.cc \
-	     tagger_data_perceptron.cc \
 	     tagger_utils.cc \
 	     tagger_word.cc \
 	     tmx_aligner_tool.cc \

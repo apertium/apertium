@@ -24,6 +24,10 @@ bool basic_Tagger::Flags::getDebug() const { return Debug; }
 
 void basic_Tagger::Flags::setDebug(const bool &Debug_) { Debug = Debug_; }
 
+bool basic_Tagger::Flags::getSkipErrors() const { return SkipErrors; }
+
+void basic_Tagger::Flags::setSkipErrors(const bool &SkipErrors_) { SkipErrors = SkipErrors_; }
+
 bool basic_Tagger::Flags::getFirst() const { return First; }
 
 void basic_Tagger::Flags::setFirst(const bool &First_) { First = First_; }

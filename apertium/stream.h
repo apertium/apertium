@@ -38,6 +38,11 @@ public:
   StreamedType get();
   bool flush_() const;
 
+  static void outputLexicalUnit(
+    const LexicalUnit &lexical_unit, const Optional<Analysis> analysis,
+    std::wostream &output, const basic_Tagger::Flags &flags);
+
+  std::size_t TheLineNumber;
 private:
   class PreviousCaseType {
   public:
@@ -58,7 +63,6 @@ private:
                  const wchar_t &Character_);
   std::wistream &TheCharacterStream;
   Optional<std::string> TheFilename;
-  std::size_t TheLineNumber;
   std::wstring TheLine;
   const basic_Tagger::Flags &TheFlags;
   bool private_flush_ : 1;

@@ -1,7 +1,9 @@
 #include <apertium/xml_reader.h>
 
 
-XMLReader::XmlTextReaderResource::XmlTextReaderResource(string const &filename)
+XMLReader::XmlTextReaderResource::XmlTextReaderResource(
+    string const &filename,
+    xmlTextReaderPtr &reader) : reader(reader)
 {
   reader = xmlReaderForFile(filename.c_str(), NULL, 0);
   if (reader == NULL) {
@@ -38,6 +40,7 @@ XMLReader::step()
   }
   name = XMLParseUtil::towstring(xmlTextReaderConstName(reader));
   type = xmlTextReaderNodeType(reader);
+  std::wcerr << name << L": " << type << "\n";
 }
 
 wstring
@@ -69,6 +72,6 @@ XMLReader::unexpectedTag()
 void
 XMLReader::read(string const &filename)
 {
-  XmlTextReaderResource reader_resource(filename);
+  XmlTextReaderResource reader_resource(filename, reader);
   parse();
 }

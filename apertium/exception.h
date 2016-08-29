@@ -38,18 +38,21 @@ namespace Analysis {
 EXCEPTION(TheMorphemes_empty)
 }
 
+namespace Shell {
+EXCEPTION(UnexpectedFileArgumentCount)
+EXCEPTION(StreamOpenError)
+EXCEPTION(FopenError)
+EXCEPTION(FcloseError)
+}
+
 namespace apertium_tagger {
 EXCEPTION(deserialise)
-EXCEPTION(fclose)
-EXCEPTION(fopen)
-EXCEPTION(open_stream_fail)
 EXCEPTION(optarg_eq_NULL)
 EXCEPTION(str_end_not_eq_NULL)
 EXCEPTION(ERANGE_)
 EXCEPTION(InvalidArgument)
 EXCEPTION(InvalidArgumentCombination)
 EXCEPTION(InvalidOption)
-EXCEPTION(UnexpectedFileArgumentCount)
 EXCEPTION(UnexpectedFlagOption)
 EXCEPTION(UnexpectedFunctionTypeOption)
 EXCEPTION(UnexpectedFunctionTypeTypeOption)

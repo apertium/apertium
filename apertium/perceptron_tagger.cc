@@ -1,3 +1,4 @@
+#include <apertium/mtx_reader.h>
 #include <apertium/perceptron_tagger.h>
 #include <apertium/perceptron_spec.h>
 #include <apertium/wchar_t_exception.h>
@@ -7,17 +8,6 @@
 
 namespace Apertium {
 
-/*
-double PerceptronTagger::local_weight(std::set<std::string> &feats) {
-  std::set<std::string>::const_iterator feat_iter = feats.begin();
-  double out = 0;
-  for (;feat_iter!=feats.end();feat_iter++) {
-    out += tdpercep.weights[*feat_iter];
-  }
-  return out;
-}
-*/
-
 PerceptronTagger::PerceptronTagger(basic_Tagger::Flags flags) : basic_Tagger(flags) {};
 
 PerceptronTagger::~PerceptronTagger() {};
@@ -25,6 +15,28 @@ PerceptronTagger::~PerceptronTagger() {};
 void PerceptronTagger::tag(Stream &in, std::wostream &out) const {
   SentenceStream::SentenceTagger::tag(in, out);
 }
+
+void PerceptronTagger::read_spec(const std::string &filename) {
+  MTXReader(spec).read(filename);
+}
+
+template <typename OStream>
+OStream&
+operator<<(OStream & out, PerceptronTagger const &pt) {
+  out << "Spec:\n";
+  out << pt.spec.features.size() << "\n";
+  out << pt.spec;
+  out << "Weights:\n";
+  out << pt.weights.size() << "\n";
+  out << pt.weights;
+  return out;
+}
+
+template std::wostream&
+operator<<(std::wostream& out, PerceptronTagger const &pt);
+
+template std::ostream&
+operator<<(std::ostream& out, PerceptronTagger const &pt);
 
 TaggedSentence
 PerceptronTagger::tagSentence(const Sentence &untagged_sent) const {
@@ -35,7 +47,7 @@ PerceptronTagger::tagSentence(const Sentence &untagged_sent) const {
   agenda.push_back(AgendaItem());
   agenda.back().tagged.reserve(sent_len);
 
-  std::vector<std::string> feat_vec_delta;
+  UnaryFeatureVec feat_vec_delta;
   std::vector<Analysis>::const_iterator analys_it;
   std::vector<AgendaItem>::const_iterator agenda_it;
   std::vector<Morpheme>::const_iterator wordoid_it;
@@ -68,7 +80,7 @@ PerceptronTagger::tagSentence(const Sentence &untagged_sent) const {
           feat_vec_delta.clear();
           spec.get_features(new_agenda_item.tagged, untagged_sent,
                             token_idx, wordoid_idx, feat_vec_delta);
-          new_agenda_item.score += tdpercep.weights * feat_vec_delta;
+          new_agenda_item.score += weights * feat_vec_delta;
         }
       }
     }
@@ -88,7 +100,9 @@ void PerceptronTagger::outputLexicalUnit(
   StreamTagger::outputLexicalUnit(lexical_unit, analysis, output);
 }
 
-void PerceptronTagger::trainSentence(const TrainingSentence &sentence)
+void PerceptronTagger::trainSentence(
+    const TrainingSentence &sentence,
+    FeatureVecAverager &avg_weights)
 {
   const TaggedSentence &tagged_sent = sentence.first;
   const Sentence &untagged_sent = sentence.second;
@@ -105,7 +119,7 @@ void PerceptronTagger::trainSentence(const TrainingSentence &sentence)
   TrainingAgendaItem correct_sentence;
   correct_sentence.tagged.reserve(sent_len);
 
-  std::vector<std::string> feat_vec_delta;
+  UnaryFeatureVec feat_vec_delta;
   std::vector<Analysis>::const_iterator analys_it;
   std::vector<TrainingAgendaItem>::const_iterator agenda_it;
   std::vector<Morpheme>::const_iterator wordoid_it;
@@ -150,7 +164,7 @@ void PerceptronTagger::trainSentence(const TrainingSentence &sentence)
           spec.get_features(new_agenda_item.tagged, untagged_sent,
                             token_idx, wordoid_idx, feat_vec_delta);
           new_agenda_item.vec += feat_vec_delta;
-          new_agenda_item.score += tdpercep.weights * feat_vec_delta;
+          new_agenda_item.score += weights * feat_vec_delta;
           if (agenda_it == correct_agenda_it && *analys_it == *tagged_tok) {
             correct_sentence = new_agenda_item;
             correct_available = true;
@@ -168,7 +182,14 @@ void PerceptronTagger::trainSentence(const TrainingSentence &sentence)
         what_ << *analys_it << L"\n";
       }
       what_ << L"Required: " << *tagged_tok << L"\n";
-      throw Apertium::wchar_t_Exception::PerceptronTagger::CorrectAnalysisUnavailable(what_);
+      if (TheFlags.getSkipErrors()) {
+        std::wcerr << what_.str();
+        std::wcerr << L"Skipped training on sentence.\n";
+        return;
+      } else {
+        what_ << L"Rerun with --skip-on-error to skip this sentence.";
+        throw Apertium::wchar_t_Exception::PerceptronTagger::CorrectAnalysisUnavailable(what_);
+      }
     }
     // Apply the beam
     size_t new_agenda_size = std::min((size_t)spec.beam_width, new_agenda.size());
@@ -186,15 +207,15 @@ void PerceptronTagger::trainSentence(const TrainingSentence &sentence)
       }
     }
     if (!any_match) {
-      tdpercep.weights -= agenda.front().vec;
-      tdpercep.weights += correct_sentence.vec;
+      avg_weights -= agenda.front().vec;
+      avg_weights += correct_sentence.vec;
       return;
     }
   }
   // Normal update
   if (agenda.front().tagged != correct_sentence.tagged) {
-    tdpercep.weights -= agenda.front().vec;
-    tdpercep.weights += correct_sentence.vec;
+    avg_weights -= agenda.front().vec;
+    avg_weights += correct_sentence.vec;
   }
 }
 
@@ -204,24 +225,30 @@ void PerceptronTagger::train(
     Stream &tagged,
     Stream &untagged,
     int iterations) {
-  std::map<std::string, unsigned int> tstamps;
-  FeatureVec totals;
-
+  FeatureVecAverager avg_weights(weights);
   TrainingCorpus tc(tagged, untagged);
   for (int i=0;i<iterations;i++) {
     tc.shuffle();
     std::vector<TrainingSentence>::const_iterator si;
     for (si = tc.sentences.begin(); si != tc.sentences.end(); si++) {
-      trainSentence(*si);
+      trainSentence(*si, avg_weights);
+      avg_weights.incIteration();
     }
   }
+  avg_weights.average();
 }
 
-void PerceptronTagger::serialise(std::ostream &serialised) const {};
+void PerceptronTagger::serialise(std::ostream &serialised) const
+{
+  spec.serialise(serialised);
+  weights.serialise(serialised);
+};
 
-void PerceptronTagger::deserialise(std::istream &serialised) {} // dummy
-
-void PerceptronTagger::deserialise(TaggerData const&) {} // dummy
+void PerceptronTagger::deserialise(std::istream &serialised)
+{
+  spec.deserialise(serialised);
+  weights.deserialise(serialised);
+};
 
 template <typename T> void
 PerceptronTagger::extendAgendaAll(
