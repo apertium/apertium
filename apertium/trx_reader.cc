@@ -35,9 +35,7 @@ TRXReader::destroy()
   xmlFreeTextReader(reader);
 }
 
-TRXReader::TRXReader() :
-reader(0),
-type(0)
+TRXReader::TRXReader()
 {
   td.getAlphabet().includeSymbol(ANY_TAG);
   td.getAlphabet().includeSymbol(ANY_CHAR);
@@ -46,32 +44,6 @@ type(0)
 TRXReader::~TRXReader()
 {
   destroy();
-}
-
-void
-TRXReader::step()
-{
-  int retval = xmlTextReaderRead(reader);
-  if(retval != 1)
-  {
-    parseError(L"unexpected EOF");
-  }
-  name = XMLParseUtil::towstring(xmlTextReaderConstName(reader));
-  type = xmlTextReaderNodeType(reader);
-}
-
-wstring
-TRXReader::attrib(wstring const &name)
-{
-  return XMLParseUtil::attrib(reader, name);
-} 
-
-void
-TRXReader::parseError(wstring const &message)
-{
-  wcerr << L"Error: (" << xmlTextReaderGetParserLineNumber(reader);
-  wcerr << L"): " << message << L"." << endl;
-  exit(EXIT_FAILURE);
 }
 
 int
@@ -161,15 +133,8 @@ TRXReader::insertTags(int const base, wstring const &tags)
 }
 
 void
-TRXReader::read(string const &filename)
+TRXReader::parse()
 {
-  reader = xmlReaderForFile(filename.c_str(), NULL, 0);
-  if(reader == NULL)
-  {
-    wcerr << "Error: Cannot open '" << filename << "'." << endl;
-    exit(EXIT_FAILURE);
-  }
-
   procDefCats();
   step();
   while(name == L"#text" || name == L"#comment")
@@ -408,7 +373,7 @@ TRXReader::procDefAttrs()
     }
     else
     {
-      parseError(L"Unexpected '<" + name + L">' tag");
+      unexpectedTag();
     }
   }
 }
@@ -422,7 +387,7 @@ TRXReader::procDefCats()
     if(name != L"#text" && name != L"transfer" &&  name != L"interchunk" &&
        name != L"postchunk" && name != L"section-def-cats" && name != L"#comment")
     {
-      parseError(L"'<" + name + L">' tag unexpected");
+      unexpectedTag();
     }
   }
   
@@ -471,7 +436,7 @@ TRXReader::procDefCats()
     }
     else
     {
-      parseError(L"Unexpected '<" + name + L">' tag");
+      unexpectedTag();
     }
   }
 }
@@ -504,7 +469,7 @@ TRXReader::procDefVars()
     }
     else
     {
-      parseError(L"Unexpected '<" + name + L">' tag");
+      unexpectedTag();
     }
   }
 }
@@ -550,7 +515,7 @@ TRXReader::procDefLists()
     }
     else
     {
-      parseError(L"Unexpected '<" + name + L">' tag");
+      unexpectedTag();
     }
   }
 }

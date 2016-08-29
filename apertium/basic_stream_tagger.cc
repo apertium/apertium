@@ -61,9 +61,6 @@ void basic_StreamTagger::tag(Stream &Input, std::wostream &Output) const {
   }
 }
 
-basic_StreamTagger::basic_StreamTagger(const basic_Tagger::Flags &Flags_)
-    : basic_Tagger(Flags_) {}
-
 void basic_StreamTagger::tag(const LexicalUnit &LexicalUnit_,
                              std::wostream &Output) const {
 #if ENABLE_DEBUG
@@ -79,47 +76,19 @@ void basic_StreamTagger::tag(const LexicalUnit &LexicalUnit_,
 
 #endif // ENABLE_DEBUG
 
-  Output << L"^";
+  Optional<Analysis> TheAnalysis;
 
-  if (LexicalUnit_.TheAnalyses.empty()) {
-    if (TheFlags.getShowSuperficial())
-      Output << LexicalUnit_.TheSurfaceForm << L"/";
-
-    Output << L"*" << LexicalUnit_.TheSurfaceForm << L"$";
-    return;
-  }
-
-  if (TheFlags.getMark()) {
-    if (LexicalUnit_.TheAnalyses.size() != 1)
-      Output << L"=";
-  }
-
-  if (TheFlags.getShowSuperficial())
-    Output << LexicalUnit_.TheSurfaceForm << L"/";
-
-  std::vector<Analysis>::const_iterator TheAnalysis =
-      LexicalUnit_.TheAnalyses.begin();
-
-  for (std::vector<Analysis>::const_iterator Analysis_ =
-           LexicalUnit_.TheAnalyses.begin() + 1;
-       // Call .end() each iteration to save memory.
-       Analysis_ != LexicalUnit_.TheAnalyses.end(); ++Analysis_) {
-    if (score(*Analysis_) > score(*TheAnalysis))
-      TheAnalysis = Analysis_;
-  }
-
-  Output << *TheAnalysis;
-
-  if (TheFlags.getFirst()) {
+  if (!LexicalUnit_.TheAnalyses.empty()) {
+    TheAnalysis = *LexicalUnit_.TheAnalyses.begin();
     for (std::vector<Analysis>::const_iterator Analysis_ =
-             LexicalUnit_.TheAnalyses.begin();
+             LexicalUnit_.TheAnalyses.begin() + 1;
          // Call .end() each iteration to save memory.
          Analysis_ != LexicalUnit_.TheAnalyses.end(); ++Analysis_) {
-      if (Analysis_ != TheAnalysis)
-        Output << L"/" << *Analysis_;
+      if (score(*Analysis_) > score(*TheAnalysis))
+        TheAnalysis = *Analysis_;
     }
   }
 
-  Output << L"$";
+  outputLexicalUnit(LexicalUnit_, TheAnalysis, Output);
 }
 }

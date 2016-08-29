@@ -53,7 +53,6 @@ void basic_StreamTaggerTrainer::train(Stream &TaggedCorpus) {
   }
 }
 
-basic_StreamTaggerTrainer::basic_StreamTaggerTrainer(
-    const basic_Tagger::Flags &Flags_)
-    : basic_Tagger(Flags_), OccurrenceCoefficient(1) {}
+basic_StreamTaggerTrainer::basic_StreamTaggerTrainer()
+    : OccurrenceCoefficient(1) {}
 }

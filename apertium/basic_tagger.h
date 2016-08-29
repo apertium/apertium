@@ -52,6 +52,7 @@ public:
   };
 
 protected:
+  basic_Tagger();
   basic_Tagger(const Flags &Flags_);
   Flags TheFlags;
 };

@@ -20,6 +20,7 @@
 #include <apertium/constant_manager.h>
 #include <apertium/tagger_data.h>
 #include <apertium/ttag.h>
+#include <apertium/xml_reader.h>
 #include <lttoolbox/pattern_list.h>
 #include <lttoolbox/ltstr.h>
 
@@ -31,10 +32,9 @@
 
 using namespace std;
 
-class TSXReader
+class TSXReader : public XMLReader
 {
 private:
-  xmlTextReaderPtr reader;  
   set<TTag> *open_class;
   vector<TForbidRule> *forbid_rules;
   map<wstring, TTag, Ltstr> *tag_index;
@@ -45,12 +45,6 @@ private:
   ConstantManager *constants;
   TaggerData tdata;
 
-  int type;
-  wstring name;
-
-  wstring attrib(wstring const &name);
-
-  void parseError(wstring const &message);
   void newTagIndex(wstring const &tag);
   void newDefTag(wstring const &tag);
   void newConstant(wstring const &constant);
@@ -65,12 +59,14 @@ private:
   void destroy();
   void clearTagIndex();
 
-  void step();
+protected:
+  virtual void parse();
+
 public:
+  using XMLReader::read;
   TSXReader();
   ~TSXReader();
 
-  void read(string const &filename);
   TaggerData & getTaggerData();
 
 private:

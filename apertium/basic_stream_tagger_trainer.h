@@ -16,20 +16,20 @@
 #ifndef BASIC_STREAM_TAGGER_TRAINER_H
 #define BASIC_STREAM_TAGGER_TRAINER_H
 
-#include "basic_tagger.h"
+#include "stream_tagger_trainer.h"
 #include "stream.h"
 
 #include <ostream>
 
 namespace Apertium {
-class basic_StreamTaggerTrainer : protected basic_Tagger {
+class basic_StreamTaggerTrainer : public StreamTaggerTrainer {
 public:
   virtual ~basic_StreamTaggerTrainer();
-  void train(Stream &TaggedCorpus);
+  virtual void train(Stream &TaggedCorpus);
   virtual void serialise(std::ostream &Serialised_basic_Tagger) const = 0;
 
 protected:
-  basic_StreamTaggerTrainer(const Flags &Flags_);
+  basic_StreamTaggerTrainer();
   virtual void train_Analysis(const Analysis &Analysis_,
                               const std::size_t &Coefficient_) = 0;
   virtual void

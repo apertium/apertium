@@ -23,7 +23,7 @@
 #ifndef _GETOPT_LONG_H
 #define _GETOPT_LONG_H 1
 
-#include <apertium_config.h>
+#include "apertium_config.h"
 
 #if HAVE_UNISTD_H
 /* Declares getopt, if present */

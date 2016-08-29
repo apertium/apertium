@@ -44,5 +44,7 @@ void basic_Tagger::Flags::setNullFlush(const bool &NullFlush_) {
   NullFlush = NullFlush_;
 }
 
+basic_Tagger::basic_Tagger() : TheFlags() {}
+
 basic_Tagger::basic_Tagger(const Flags &Flags_) : TheFlags(Flags_) {}
 }

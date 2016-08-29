@@ -53,6 +53,7 @@ EXCEPTION(UnexpectedFileArgumentCount)
 EXCEPTION(UnexpectedFlagOption)
 EXCEPTION(UnexpectedFunctionTypeOption)
 EXCEPTION(UnexpectedFunctionTypeTypeOption)
+EXCEPTION(UnimplementedOpcode)
 }
 
 namespace Deserialiser {

@@ -35,7 +35,7 @@
 
 namespace Apertium {
 Stream_5_3_2_Tagger::Stream_5_3_2_Tagger(const Flags &Flags_)
-    : basic_5_3_2_Tagger(), basic_StreamTagger(Flags_) {}
+    : basic_Tagger(Flags_), basic_5_3_2_Tagger() {}
 
 void Stream_5_3_2_Tagger::deserialise(std::istream &Serialised_basic_Tagger) {
   Model =

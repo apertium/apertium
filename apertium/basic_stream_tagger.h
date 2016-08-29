@@ -18,9 +18,10 @@
 
 #include "apertium_config.h"
 
-#include "basic_tagger.h"
+#include "stream_tagger.h"
 #include "lexical_unit.h"
 #include "stream.h"
+#include "basic_tagger.h"
 
 #include <istream>
 #include <ostream>
@@ -32,14 +33,12 @@
 #endif // ENABLE_DEBUG
 
 namespace Apertium {
-class basic_StreamTagger : protected basic_Tagger {
+class basic_StreamTagger : public StreamTagger {
 public:
   virtual ~basic_StreamTagger();
   virtual void deserialise(std::istream &Serialised_basic_Tagger) = 0;
-  void tag(Stream &Input, std::wostream &Output) const;
-
+  virtual void tag(Stream &Input, std::wostream &Output) const;
 protected:
-  basic_StreamTagger(const Flags &Flags_);
   virtual long double score(const Analysis &Analysis_) const = 0;
 
 #if ENABLE_DEBUG

@@ -36,6 +36,10 @@ namespace wchar_t_Exception {
     ~WCHAR_T_EXCEPTION_TYPE() throw() {}                                       \
   };
 
+namespace PerceptronTagger {
+WCHAR_T_EXCEPTION(CorrectAnalysisUnavailable)
+}
+
 namespace Stream {
 WCHAR_T_EXCEPTION(TheCharacterStream_not_good)
 WCHAR_T_EXCEPTION(UnexpectedAnalysis)

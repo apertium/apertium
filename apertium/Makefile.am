@@ -20,6 +20,7 @@ h_sources = a.h \
 	    err_exception.h \
 	    exception.h \
 	    exception_type.h \
+	    feature_vec.h \
 	    file_tagger.h \
 	    hmm.h \
 	    i.h \
@@ -35,7 +36,10 @@ h_sources = a.h \
 	    dual_morpho_stream.h \
 	    file_morpho_stream.h \
 	    optional.h \
+	    perceptron_spec.h \
+	    perceptron_tagger.h \
 	    postchunk.h \
+	    sentence_stream.h \
 	    serialiser.h \
 	    stream.h \
 	    stream_5_3_1_tagger.h \
@@ -44,12 +48,15 @@ h_sources = a.h \
 	    stream_5_3_1_tagger_trainer.h \
 	    stream_5_3_2_tagger_trainer.h \
 	    stream_5_3_3_tagger_trainer.h \
+	    stream_tagger.h \
+	    stream_tagger_trainer.h \
 	    streamed_type.h \
 	    string_utils.h \
 	    tag.h \
 	    tagger_data.h \
 	    tagger_data_hmm.h \
 	    tagger_data_lsw.h \
+	    tagger_data_perceptron.h \
 	    tagger_utils.h \
 	    tagger_word.h \
 	    tmx_aligner_tool.h \
@@ -79,7 +86,8 @@ h_sources = a.h \
 	    unlocked_cstdio.h \
 	    utf_converter.h \
 	    wchar_t_exception.h \
-	    wchar_t_exception_type.h
+	    wchar_t_exception_type.h\
+	    xml_reader.h
 
 #DEPR.:
 #	    lextor_data.h
@@ -101,6 +109,7 @@ cc_sources = a.cc \
 	     constant_manager.cc \
 	     endian_double_util.cc \
 	     exception_type.cc \
+	     feature_vec.cc \
 	     file_tagger.cc \
 	     hmm.cc \
 	     i.cc \
@@ -114,7 +123,10 @@ cc_sources = a.cc \
 	     morpho_stream.cc \
 	     dual_morpho_stream.cc \
 	     file_morpho_stream.cc \
+	     perceptron_spec.cc \
+	     perceptron_tagger.cc \
 	     postchunk.cc \
+	     sentence_stream.cc \
 	     stream.cc \
 	     stream_5_3_1_tagger.cc \
 	     stream_5_3_2_tagger.cc \
@@ -122,11 +134,14 @@ cc_sources = a.cc \
 	     stream_5_3_1_tagger_trainer.cc \
 	     stream_5_3_2_tagger_trainer.cc \
 	     stream_5_3_3_tagger_trainer.cc \
+	     stream_tagger.cc \
+	     stream_tagger_trainer.cc \
 	     string_utils.cc \
 	     tag.cc \
 	     tagger_data.cc \
 	     tagger_data_hmm.cc \
 	     tagger_data_lsw.cc \
+	     tagger_data_perceptron.cc \
 	     tagger_utils.cc \
 	     tagger_word.cc \
 	     tmx_aligner_tool.cc \
@@ -148,7 +163,8 @@ cc_sources = a.cc \
 	     trx_reader.cc \
 	     tsx_reader.cc \
 	     utf_converter.cc \
-	     wchar_t_exception_type.cc
+	     wchar_t_exception_type.cc\
+	     xml_reader.cc
 #DEPR.:
 #	     lextor.cc
 #	     lextor_data.cc

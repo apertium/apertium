@@ -34,9 +34,7 @@ TSXReader::destroy()
 {
 }
 
-TSXReader::TSXReader() :
-reader(0),
-type(0)
+TSXReader::TSXReader()
 {
   open_class = &(tdata.getOpenClass());
   forbid_rules = &(tdata.getForbidRules());
@@ -73,18 +71,6 @@ TSXReader::clearTagIndex()
   newTagIndex(L"kUNDEF");
 }
 
-void
-TSXReader::step()
-{
-  int retval = xmlTextReaderRead(reader);
-  if(retval != 1)
-  {
-    parseError(L"unexpected EOF");
-  }
-  name = XMLParseUtil::towstring(xmlTextReaderConstName(reader));
-  type = xmlTextReaderNodeType(reader);
-}
-
 TSXReader &
 TSXReader::operator =(TSXReader const &o)
 {
@@ -94,20 +80,6 @@ TSXReader::operator =(TSXReader const &o)
     copy(o);
   }
   return *this;
-}
-
-wstring
-TSXReader::attrib(wstring const &name)
-{
-  return XMLParseUtil::attrib(reader, name);
-} 
-
-void
-TSXReader::parseError(wstring const &message)
-{
-  wcerr << L"Error: (" << xmlTextReaderGetParserLineNumber(reader);
-  wcerr << L"): " << message << L"." << endl;
-  exit(EXIT_FAILURE);
 }
 
 void
@@ -176,7 +148,7 @@ TSXReader::procDiscardOnAmbiguity()
     }
     else
     {
-      parseError(L"unexpected '<" + name + L">' tag");
+      unexpectedTag();
     }
   }
 }
@@ -219,7 +191,7 @@ TSXReader::procDefLabel()
     }
     else
     {
-      parseError(L"unexpected '<" + name + L">' tag");
+      unexpectedTag();
     }
   }
 }
@@ -292,7 +264,7 @@ TSXReader::procDefMult()
     }
     else
     {
-      parseError(L"unexpected '<" + name + L">' tag");
+      unexpectedTag();
     }
   }
 }
@@ -305,7 +277,7 @@ TSXReader::procTagset()
     step();
     if(name != L"#text" && name != L"tagger" && name != L"tagset")
     {
-      parseError(L"'<" + name + L">' tag unexpected");
+      unexpectedTag();
     }
   }
   
@@ -340,7 +312,7 @@ TSXReader::procTagset()
     }
     else
     {
-      parseError(L"Unexpected '<" + name + L">' tag");
+      unexpectedTag();
     }
   }
 }
@@ -513,15 +485,8 @@ TSXReader::procPreferences()
 }
 
 void
-TSXReader::read(string const &filename)
+TSXReader::parse()
 {
-  reader = xmlReaderForFile(filename.c_str(), NULL, 0);
-  if(reader == NULL)
-  {
-    wcerr << "Error: Cannot open '" << filename << "'." << endl;
-    exit(EXIT_FAILURE);
-  }
-
   open_class->clear();
   forbid_rules->clear();
   clearTagIndex();
@@ -568,9 +533,6 @@ TSXReader::read(string const &filename)
       procDiscardOnAmbiguity();
     }
   }
-
-  xmlFreeTextReader(reader);
-  xmlCleanupParser();
 
   newConstant(L"kMOT");
   newConstant(L"kDOLLAR");

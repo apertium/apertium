@@ -34,7 +34,7 @@ public:
   apertium_tagger(int &argc, char **&argv);
 
 private:
-  enum FunctionTypeType { Unigram, SlidingWindow };
+  enum FunctionTypeType { Unigram, SlidingWindow, Perceptron };
   enum UnigramType { Stream_5_3_1, Stream_5_3_2, Stream_5_3_3 };
   enum FunctionType { Tagger, Retrain, Supervised, Train };
   static void help();
@@ -71,8 +71,8 @@ private:
     char *DicFn, char *CgTaggedFn, char *UntaggedFn,
     FILE *Dictionary, FILE *UntaggedCorpus, FILE *CgTaggedCorpus);
 
-  void g_StreamTagger(basic_StreamTagger &StreamTagger_);
-  void s_StreamTaggerTrainer(basic_StreamTaggerTrainer &StreamTaggerTrainer_);
+  void g_StreamTagger(StreamTagger &StreamTagger_);
+  void s_StreamTaggerTrainer(StreamTaggerTrainer &StreamTaggerTrainer_);
   void g_FILE_Tagger(FILE_Tagger &FILE_Tagger_);
   void r_FILE_Tagger(FILE_Tagger &FILE_Tagger_);
   void s_FILE_Tagger(FILE_Tagger &FILE_Tagger_);

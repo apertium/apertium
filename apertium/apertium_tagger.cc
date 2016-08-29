@@ -32,6 +32,7 @@
 #include "stream_5_3_2_tagger_trainer.h"
 #include "stream_5_3_3_tagger.h"
 #include "stream_5_3_3_tagger_trainer.h"
+#include <apertium/perceptron_tagger.h>
 #include <apertium/hmm.cc>
 #include <apertium/lswpost.h>
 #include <apertium/tagger_word.h>
@@ -72,7 +73,7 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
       TheFunctionTypeOptionArgument(0), CgAugmentedMode(0), TheFlags() {
   try {
     while (true) {
-      The_val = getopt_long(argc, argv, "c:dfgmpr:s:t:u:wz", longopts, &The_indexptr);
+      The_val = getopt_long(argc, argv, "c:dfgmpr:s:t:u:wxz", longopts, &The_indexptr);
 
       if (The_val == -1)
         break;
@@ -133,6 +134,9 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
         break;
       case 'w':
         functionTypeTypeOptionCase(SlidingWindow);
+        break;
+      case 'x':
+        functionTypeTypeOptionCase(Perceptron);
         break;
       case 'g':
         functionTypeOptionCase(Tagger);
@@ -195,6 +199,10 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
         LSWPoST SlidingWindowTagger_;
         g_FILE_Tagger(SlidingWindowTagger_);
       } break;
+      case Perceptron: {
+        PerceptronTagger perceptron(TheFlags);
+        g_StreamTagger(perceptron);
+      } break;
       default:
         std::abort();
       }
@@ -252,7 +260,11 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
         std::stringstream what_;
         what_ << "invalid option -- 'w'";
         throw Exception::apertium_tagger::InvalidOption(what_);
-      }
+      } break;
+      case Perceptron: {
+        PerceptronTagger perceptron(TheFlags);
+        s_StreamTaggerTrainer(perceptron);
+      } break;
       default:
         std::abort();
       }
@@ -379,6 +391,7 @@ const struct option apertium_tagger::longopts[] = {
     {"null-flush", no_argument, 0, 'z'},
     {"unigram", required_argument, 0, 'u'},
     {"sliding-window", no_argument, 0, 'w'},
+    {"perceptron", required_argument, 0, 'x'},
     {"tagger", no_argument, 0, 'g'},
     {"retrain", required_argument, 0, 'r'},
     {"supervised", required_argument, 0, 's'},
@@ -700,7 +713,7 @@ void apertium_tagger::close_untagged_files(
 
 /** Implementation of flags/subcommands */
 
-void apertium_tagger::g_StreamTagger(basic_StreamTagger &StreamTagger_) {
+void apertium_tagger::g_StreamTagger(StreamTagger &StreamTagger_) {
   locale_global_();
 
   expect_file_arguments(1, 4);
@@ -741,7 +754,7 @@ void apertium_tagger::g_StreamTagger(basic_StreamTagger &StreamTagger_) {
 }
 
 void apertium_tagger::s_StreamTaggerTrainer(
-    basic_StreamTaggerTrainer &StreamTaggerTrainer_) {
+    StreamTaggerTrainer &StreamTaggerTrainer_) {
   locale_global_();
 
   if (TheFunctionTypeOptionArgument != 0) {
@@ -757,7 +770,16 @@ void apertium_tagger::s_StreamTaggerTrainer(
   try_open_fstream("TAGGED_CORPUS", argv[optind + 1], TaggedCorpus_stream);
 
   Stream TaggedCorpus(TheFlags, TaggedCorpus_stream, argv[optind]);
-  StreamTaggerTrainer_.train(TaggedCorpus);
+
+  if (*TheFunctionTypeType == Perceptron) {
+    std::wifstream UntaggedCorpus_stream;
+    try_open_fstream("UNTAGGED_CORPUS", argv[optind + 2], TaggedCorpus_stream);
+    Stream UntaggedCorpus(TheFlags, UntaggedCorpus_stream, argv[optind + 2]);
+
+    dynamic_cast<PerceptronTagger&>(StreamTaggerTrainer_).train(TaggedCorpus, UntaggedCorpus, TheFunctionTypeOptionArgument);
+  } else {
+    StreamTaggerTrainer_.train(TaggedCorpus);
+  }
 
   std::ofstream Serialised_basic_Tagger;
   try_open_fstream("SERIALISED_TAGGER", argv[optind],
