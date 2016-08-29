@@ -26,7 +26,7 @@
 #include "tag.h"
 
 #include <lttoolbox/serialiser.h>
-#include <lttoolbox/stdint_shim.h>
+#include <stdint.h>
 #include <apertium/perceptron_spec.h>
 #include <cstddef>
 #include <limits>

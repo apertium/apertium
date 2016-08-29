@@ -1,4 +1,4 @@
-#include <lttoolbox/stdint_shim.h>
+#include <stdint.h>
 #include <apertium/feature_vec.h>
 #include <apertium/deserialiser.h>
 #include <apertium/serialiser.h>
