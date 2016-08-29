@@ -94,10 +94,8 @@ void MTXReader::procCoarseTags()
   }
   TSXReader tsx_reader;
   tsx_reader.read(tsx_fn);
-  std::wcerr << "blah" << std::endl;
   spec.coarse_tags = Optional<TaggerDataPercepCoarseTags>(
       tsx_reader.getTaggerData());
-  std::wcerr << "far" << std::endl;
   stepPastSelfClosingTag(L"coarse-tags");
 }
 
@@ -330,9 +328,7 @@ bool MTXReader::tryProcArg(ExprType expr_type, bool allow_fail)
     if (in_global_defn) {
       VarNVMap::const_iterator arg_name_it = template_arg_names.find(var_name);
       if (arg_name_it != template_arg_names.end()) {
-        std::wcerr << "Push replacement " << arg_name_it->second << " ";
         printTypeExpr(expr_type);
-        std::wcerr << "\n";
         cur_replacements->push_back(make_pair(arg_name_it->second, expr_type));
         stepPastSelfClosingTag(L"var");
         return true;
@@ -366,11 +362,10 @@ bool MTXReader::tryProcVar(VM::StackValueType svt)
     // Get template data
     std::wstring var_name = attrib(L"name");
     VarNVMap::const_iterator template_name_it = template_slot_names.find(var_name);
-    if (template_name_it == template_arg_names.end()) {
+    if (template_name_it == template_slot_names.end()) {
       parseError(L"No such macro " + var_name);
     }
     size_t templ_idx = template_name_it->second;
-    std::wcerr << "Template index " << templ_idx << "\n";
     if (template_slot_types[templ_idx] != svt) {
       parseError(L"Macro " + var_name + L" returns the wrong type");
     }
@@ -383,7 +378,6 @@ bool MTXReader::tryProcVar(VM::StackValueType svt)
     for (; templ_repl_it != templ_defn.second.end(); templ_repl_it++) {
       arg_values.push_back(VM::FeatureDefn());
       cur_feat = &arg_values.back();
-      printTypeExpr(templ_repl_it->second);
       procTypeExpr(templ_repl_it->second);
     }
     cur_feat = saved_feat;
@@ -422,7 +416,6 @@ bool MTXReader::tryProcVar(VM::StackValueType svt)
     }
     // Finally emit a reference to the relevant global
     emitOpcode(VM::GETGVAR);
-    std::wcerr << "Emit GETGVAR: " << templ_instcia_it->second << "\n";
     emitUInt(templ_instcia_it->second);
     // Step past end
     assert(name == L"macro" && type == XML_READER_TYPE_END_ELEMENT);
@@ -876,6 +869,33 @@ MTXReader::printTmplDefn(const TemplateDefn &tmpl_defn)
 }
 
 void
+MTXReader::printStackValueType(VM::StackValueType svt)
+{
+  switch (svt) {
+    case VM::INTVAL:
+      std::wcerr << "INT";
+      break;
+    case VM::BVAL:
+      std::wcerr << "BOOL";
+      break;
+    case VM::STRVAL:
+      std::wcerr << "STR";
+      break;
+    case VM::STRARRVAL:
+      std::wcerr << "STRARR";
+      break;
+    case VM::WRDVAL:
+      std::wcerr << "WRD";
+      break;
+    case VM::WRDARRVAL:
+      std::wcerr << "WRDARR";
+      break;
+    default:
+      assert(false);
+  }
+}
+
+void
 MTXReader::printTypeExpr(ExprType expr_type)
 {
   switch (expr_type) {
@@ -1046,7 +1066,6 @@ MTXReader::procDefMacro()
     }
     template_arg_names[arg_name] = arg_i;
   }
-  std::wcerr << "Length of template_arg_names " << template_arg_names.size() << "\n";
   stepToNextTag();
 
   bool has_expr = false;

@@ -100,6 +100,7 @@ private:
   bool procStrExpr(bool allow_fail=false);
   bool procBoolExpr(bool allow_fail=false);
   void printTmplDefn(const TemplateDefn &tmpl_defn);
+  void printStackValueType(VM::StackValueType svt);
   void printTypeExpr(ExprType expr_type);
   void procTypeExpr(ExprType type);
   void procOut();
