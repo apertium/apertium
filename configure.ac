@@ -199,4 +199,4 @@ AX_CHECK_COMPILE_FLAG([-std=c++17], [CXXFLAGS="$CXXFLAGS -std=c++17"], [
  ])
 ])
 
-AC_OUTPUT([Makefile apertium.pc apertium/Makefile])
+AC_OUTPUT([Makefile apertium.pc apertium/Makefile tests/Makefile tests/tagger/Makefile])
