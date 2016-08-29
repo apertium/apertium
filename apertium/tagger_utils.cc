@@ -20,6 +20,8 @@
 
 #include <stdio.h>
 #include <sstream>
+#include <algorithm>
+#include <climits>
 #include <apertium/string_utils.h>
 #ifdef _MSC_VER
 #define wcstok wcstok_s
@@ -167,25 +169,16 @@ tagger_utils::read_dictionary(FILE *fdic, TaggerData &td) {
 
 set<TTag>
 tagger_utils::find_similar_ambiguity_class(TaggerData &td, set<TTag> &c) {
-  int size_ret = -1;
-  set<TTag> ret = td.getOpenClass(); // return open-class as default, if no better is found.
-  bool skip_class;
+  set<TTag> &ret = td.getOpenClass();
   Collection &output = td.getOutput();
 
-  for(int k=0; k<output.size(); k++) {
-    if ((((int)output[k].size())>((int)size_ret)) && (((int)output[k].size())<((int)c.size()))) {
-      skip_class = false;
-      // Test if output[k] is a subset of class
-      for(set<TTag>::const_iterator it=output[k].begin(); it!=output[k].end(); it++) {
-        if (c.find(*it)==c.end()) {
-           skip_class = true; //output[k] is not a subset of class
-           break;
-        }
-      }
-      if (!skip_class) {
-        size_ret = output[k].size();
-             ret = output[k];
-      }
+  for (int k=0; k<output.size(); k++) {
+    const set<TTag> &ambg_class = output[k];
+    if (ambg_class.size() >= ret.size()) {
+      continue;
+    }
+    if (includes(ambg_class.begin(), ambg_class.end(), c.begin(), c.end())) {
+      ret = ambg_class;
     }
   }
   return ret;
