@@ -10,6 +10,19 @@
 #include <map>
 #include <apertium/sentence_stream.h>
 #include <apertium/feature_vec.h>
+#include <apertium/tagger_data_percep_coarse_tags.h>
+
+/* The main part of the perceptron spec is the feature templates.  These are
+ * represented as a bytecode for an simple intepreted stack virtual machine.
+ * Instructions and data words are stored in 8-bit octets.  More complex
+ * constants than 8 bit indegers such as sets or strings are references into
+ * arrays which are part of this PerceptronSpec object.
+ *
+ * This class handles the execution of feature template programs to gather
+ * features from a token/position in the prediction process and its context as
+ * well as serialisation and.deserialisation.
+ *
+ * Compiling from the MTX XML format into bytecode is handled by MTXReader. */
 
 using namespace Apertium::SentenceStream;
 
@@ -18,6 +31,8 @@ typedef std::set<std::string> VMSet;
 class PerceptronSpec
 {
 public:
+  typedef std::vector<unsigned char> FeatureDefn;
+  template <typename OStream> static void printFeature(OStream &out, const PerceptronSpec::FeatureDefn &feat_defn);
   template <typename OStream> friend OStream& operator<<(OStream & out, PerceptronSpec const &pt);
   PerceptronSpec();
   #define OPCODES \
@@ -88,6 +103,10 @@ public:
     X(EXTOKSURF)\
     /* Wordoid -> str */\
     X(EXWRDLEMMA)\
+    /* Wordoid -> str */\
+    X(EXWRDCOARSETAG)\
+    /* tokaddr -> str[] */\
+    X(EXAMBGSET)\
     /* Wordoid -> str[] */\
     X(EXTAGS)\
     /* -> int */\
@@ -160,6 +179,42 @@ public:
   };
   class StackValue {
   public:
+    friend std::wostream& operator<<(std::wostream& out, StackValue const &val) {
+      switch (val.type) {
+        case INTVAL:
+          out << val.intVal();
+          break;
+        case BVAL:
+          out << val.boolVal();
+          break;
+        case STRVAL:
+          out << val.str().c_str();
+          break;
+        case STRARRVAL: {
+          out << "[";
+          std::vector<std::string> &str_arr = val.strArr();
+          std::vector<std::string>::const_iterator it = str_arr.begin();
+          for (; it != str_arr.end(); it++) {
+            out << it->c_str();
+          }
+          out << "]";
+        } break;
+        case WRDVAL:
+          out << val.wrd();
+          break;
+        case WRDARRVAL: {
+          out << "[";
+          std::vector<Morpheme> &wrd_arr = val.wrdArr();
+          std::vector<Morpheme>::const_iterator it = wrd_arr.begin();
+          for (; it != wrd_arr.end(); it++) {
+            out << *it;
+          }
+          out << "]";
+        } break;
+        default: assert(false); break;
+      }
+      return out;
+    }
     friend void swap(StackValue &a, StackValue &b) {
       using std::swap;
 
@@ -268,31 +323,31 @@ public:
         default: break;
       }
     }
-    int intVal() {
+    int intVal() const {
       assert(type == INTVAL);
       return payload.intval;
     }
-    bool boolVal() {
+    bool boolVal() const {
       assert(type == BVAL);
       return payload.bval;
     }
-    std::string& str() {
+    std::string& str() const {
       assert(type == STRVAL);
       return *payload.strval;
     }
-    std::vector<std::string>& strArr() {
+    std::vector<std::string>& strArr() const {
       assert(type == STRARRVAL);
       return *payload.strarrval;
     }
-    Morpheme& wrd() {
+    Morpheme& wrd() const {
       assert(type == WRDVAL);
       return *payload.wrdval;
     }
-    std::vector<Morpheme>& wrdArr() {
+    std::vector<Morpheme>& wrdArr() const {
       assert(type == WRDARRVAL);
       return *payload.wrdarrval;
     }
-    size_t size() {
+    size_t size() const {
       if (type == STRARRVAL) {
         return strArr().size();
       } else if (type == WRDARRVAL) {
@@ -301,7 +356,7 @@ public:
         assert(false);
       }
     }
-    StackValue operator[](int n) {
+    StackValue operator[](int n) const {
       if (type == STRARRVAL) {
         return StackValue(strArr()[n]);
       } else if (type == WRDARRVAL) {
@@ -325,11 +380,11 @@ public:
     unsigned char uintbyte : 8;
     signed char intbyte : 8;
   };
+  Optional<TaggerDataPercepCoarseTags> coarse_tags;
   static std::string dot;
   std::vector<std::string> str_consts;
   std::vector<VMSet> set_consts;
   mutable std::vector<StackValue> global_results;
-  typedef std::vector<unsigned char> FeatureDefn;
   std::vector<FeatureDefn> global_defns;
   std::vector<FeatureDefn> features;
   FeatureDefn global_pred;

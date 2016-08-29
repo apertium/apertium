@@ -70,6 +70,9 @@ public:
    *  @param input the input stream
    */
   void read(FILE *input);
+
+  void serialise(std::ostream &serialised) const;
+  void deserialise(std::istream &serialised);
 };
 
 

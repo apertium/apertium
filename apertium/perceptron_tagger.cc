@@ -243,6 +243,7 @@ void PerceptronTagger::train(
     Stream &tagged,
     Stream &untagged,
     int iterations) {
+  std::wcerr << *this;
   FeatureVecAverager avg_weights(weights);
   TrainingCorpus tc(tagged, untagged, TheFlags.getSkipErrors(), TheFlags.getSentSeg());
   size_t avail_skipped;
@@ -262,6 +263,7 @@ void PerceptronTagger::train(
                << "tagged token being unavailable in untagged file out of "
                << tc.sentences.size() << " total sentences.\n";
   }
+  std::wcerr << *this;
 }
 
 void PerceptronTagger::serialise(std::ostream &serialised) const

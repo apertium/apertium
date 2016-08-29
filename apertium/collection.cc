@@ -17,6 +17,8 @@
 #include <lttoolbox/compression.h>
 #include <apertium/collection.h>
 #include <apertium/string_utils.h>
+#include <apertium/serialiser.h>
+#include <apertium/deserialiser.h>
 
 using namespace Apertium;
 
@@ -85,5 +87,25 @@ Collection::read(FILE *input)
       myset.insert(Compression::multibyte_read(input));
     }
     add(myset);
+  }
+}
+
+void
+Collection::serialise(std::ostream &serialised) const
+{
+  Serialiser<size_t>::serialise(element.size(), serialised);
+  for (size_t i = 0; i < element.size(); i++) {
+    Serialiser<set<int> >::serialise(*element[i], serialised);
+  }
+}
+
+void
+Collection::deserialise(std::istream &serialised)
+{
+  size_t size = Deserialiser<size_t>::deserialise(serialised);
+  for (size_t i = 0; i < size; i++) {
+    set<int> deserialised_set =
+      Deserialiser<set<int> >::deserialise(serialised);
+    add(deserialised_set);
   }
 }

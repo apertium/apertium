@@ -65,6 +65,12 @@ TaggerData::getOpenClass()
   return open_class;
 }
 
+const set<TTag> &
+TaggerData::getOpenClass() const
+{
+  return open_class;
+}
+
 void
 TaggerData::setOpenClass(set<TTag> const &oc)
 {
@@ -73,6 +79,12 @@ TaggerData::setOpenClass(set<TTag> const &oc)
 
 vector<TForbidRule> &
 TaggerData::getForbidRules()
+{
+  return forbid_rules;
+}
+
+const vector<TForbidRule> &
+TaggerData::getForbidRules() const
 {
   return forbid_rules;
 }
@@ -89,6 +101,12 @@ TaggerData::getTagIndex()
   return tag_index;
 }
 
+const map<wstring, TTag, Ltstr> &
+TaggerData::getTagIndex() const
+{
+  return tag_index;
+}
+
 void
 TaggerData::setTagIndex(map<wstring, TTag, Ltstr> const &ti)
 {
@@ -97,6 +115,12 @@ TaggerData::setTagIndex(map<wstring, TTag, Ltstr> const &ti)
   
 vector<wstring> &
 TaggerData::getArrayTags()
+{
+  return array_tags;
+}
+
+const vector<wstring> &
+TaggerData::getArrayTags() const
 {
   return array_tags;
 }
@@ -113,6 +137,12 @@ TaggerData::getEnforceRules()
   return enforce_rules;
 }
 
+const vector<TEnforceAfterRule> &
+TaggerData::getEnforceRules() const
+{
+  return enforce_rules;
+}
+
 void
 TaggerData::setEnforceRules(vector<TEnforceAfterRule> const &tear)
 {
@@ -125,6 +155,12 @@ TaggerData::getPreferRules()
   return prefer_rules;
 }
 
+const vector<wstring> &
+TaggerData::getPreferRules() const
+{
+  return prefer_rules;
+}
+
 void
 TaggerData::setPreferRules(vector<wstring> const &pr)
 {
@@ -133,6 +169,12 @@ TaggerData::setPreferRules(vector<wstring> const &pr)
 
 vector<wstring> &
 TaggerData::getDiscardRules()
+{
+  return discard;
+}
+
+const vector<wstring> &
+TaggerData::getDiscardRules() const
 {
   return discard;
 }
@@ -161,6 +203,12 @@ TaggerData::getOutput()
   return output;
 }
 
+const Collection &
+TaggerData::getOutput() const
+{
+  return output;
+}
+
 void
 TaggerData::setOutput(Collection const &c)
 {
@@ -169,6 +217,12 @@ TaggerData::setOutput(Collection const &c)
 
 PatternList &
 TaggerData::getPatternList()
+{
+  return plist;
+}
+
+const PatternList &
+TaggerData::getPatternList() const
 {
   return plist;
 }
@@ -187,6 +241,12 @@ TaggerData::setAmbgClassCounts(vector<unsigned int> const &acc)
 
 vector<unsigned int> &
 TaggerData::getAmbgClassCounts()
+{
+  return ambg_class_counts;
+}
+
+const vector<unsigned int> &
+TaggerData::getAmbgClassCounts() const
 {
   return ambg_class_counts;
 }

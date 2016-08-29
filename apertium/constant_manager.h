@@ -40,6 +40,8 @@ public:
   int getConstant(wstring const &constant);
   void write(FILE *output);
   void read(FILE *input);
+  void serialise(std::ostream &serialised) const;
+  void deserialise(std::istream &serialised);
 };
 
 #endif

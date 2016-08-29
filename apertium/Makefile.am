@@ -59,6 +59,7 @@ h_sources = a.h \
 	    tagger_data.h \
 	    tagger_data_hmm.h \
 	    tagger_data_lsw.h \
+	    tagger_data_percep_coarse_tags.h \
 	    tagger_utils.h \
 	    tagger_word.h \
 	    tmx_aligner_tool.h \
@@ -87,6 +88,7 @@ h_sources = a.h \
 	    ttag.h \
 	    unlocked_cstdio.h \
 	    utf_converter.h \
+	    utils.h \
 	    wchar_t_exception.h \
 	    wchar_t_exception_type.h\
 	    xml_reader.h
@@ -146,6 +148,7 @@ cc_sources = a.cc \
 	     tagger_data.cc \
 	     tagger_data_hmm.cc \
 	     tagger_data_lsw.cc \
+	     tagger_data_percep_coarse_tags.cc \
 	     tagger_utils.cc \
 	     tagger_word.cc \
 	     tmx_aligner_tool.cc \

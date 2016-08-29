@@ -93,6 +93,7 @@ XMLReader::unexpectedTag()
 void
 XMLReader::read(string const &filename)
 {
+  path = filename;
   XmlTextReaderResource reader_resource(filename, reader);
   parse();
 }

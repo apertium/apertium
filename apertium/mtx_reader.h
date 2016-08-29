@@ -30,6 +30,12 @@
 #include <string>
 #include <vector>
 
+/* This class compiles Meta-Tagger XML description into a PerceptronSpec. Tree
+ * of expressions are lowered to stack instructions. Named variables/references
+ * are lowered to integer indices. Literals are lowered put into constant
+ * vectors and lowered to integer indices. Some higher level features such as
+ * macros are handled entirely by this class and not part of the runtime at all. */
+
 namespace Apertium {
 class MTXReader : public XMLReader
 {
@@ -41,6 +47,7 @@ class MTXReader : public XMLReader
   typedef std::map<std::wstring, size_t> VarNVMap;
   typedef std::vector<std::pair<size_t, ExprType> > TemplateReplacements;
   typedef std::map<std::pair<size_t, std::vector<VM::FeatureDefn> >, size_t> InstanciationMap;
+  typedef std::pair<VM::FeatureDefn, TemplateReplacements> TemplateDefn;
 public:
   MTXReader(VM &spec);
   VM &spec;
@@ -63,14 +70,12 @@ private:
   void pokeBytecode(size_t addr, VM::Bytecode bc);
   void emitInt(int val);
   void emitUInt(int val);
-  bool emitPushTokAddrFromAttr(bool is_tagged);
-  void emitPushTokAddrFromAttr();
-  void emitPushAddrFromAttr();
   int getInt(std::string attr_name, bool& exists);
   int getInt(bool& exists);
   int getInt(std::string attr_name);
   int getInt();
 
+  void procCoarseTags();
   void procSetDef();
   void procStrDef();
   void procDefns();
@@ -94,6 +99,8 @@ private:
   bool procStrArrExpr(bool allow_fail=false);
   bool procStrExpr(bool allow_fail=false);
   bool procBoolExpr(bool allow_fail=false);
+  void printTmplDefn(const TemplateDefn &tmpl_defn);
+  void printTypeExpr(ExprType expr_type);
   void procTypeExpr(ExprType type);
   void procOut();
   void procOutMany();
@@ -125,7 +132,7 @@ private:
   VarNVMap template_slot_names;
   std::vector<VM::StackValueType> template_slot_types;
   VarNVMap template_arg_names;
-  std::vector<std::pair<VM::FeatureDefn, TemplateReplacements> > template_defns;
+  std::vector<TemplateDefn> template_defns;
   InstanciationMap template_instanciations;
   std::stack<size_t> loop_stack;
   VM::FeatureDefn *cur_feat;

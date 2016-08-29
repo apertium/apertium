@@ -726,7 +726,6 @@ void apertium_tagger::s_StreamTaggerTrainer(
     PerceptronTagger &pt = dynamic_cast<PerceptronTagger&>(StreamTaggerTrainer_);
     pt.read_spec(argv[optind + 3]);
     pt.train(TaggedCorpus, UntaggedCorpus, TheFunctionTypeOptionArgument);
-    //std::wcerr << pt;
   } else {
     StreamTaggerTrainer_.train(TaggedCorpus);
   }

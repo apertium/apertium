@@ -17,6 +17,8 @@
 #include <apertium/constant_manager.h>
 #include <lttoolbox/compression.h>
 #include <apertium/string_utils.h>
+#include <apertium/serialiser.h>
+#include <apertium/deserialiser.h>
 
 using namespace Apertium;
 void
@@ -89,4 +91,16 @@ ConstantManager::read(FILE *input)
     wstring mystr = Compression::wstring_read(input);
     constants[mystr] = Compression::multibyte_read(input);
   }
+}
+
+void
+ConstantManager::serialise(std::ostream &serialised) const
+{
+  Serialiser<map<wstring, int> >::serialise(constants, serialised);
+}
+
+void
+ConstantManager::deserialise(std::istream &serialised)
+{
+  constants = Deserialiser<map<wstring, int> >::deserialise(serialised);
 }

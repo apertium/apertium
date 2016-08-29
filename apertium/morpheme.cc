@@ -34,6 +34,16 @@ bool operator<(const Morpheme &a, const Morpheme &b) {
   return a.TheTags < b.TheTags;
 }
 
+std::wostream& operator<<(std::wostream& out, const Morpheme &morph) {
+  out << morph.TheLemma;
+  const std::vector<Tag> &tags = morph.TheTags;
+  std::vector<Tag>::const_iterator it = tags.begin();
+  for (; it != tags.end(); it++) {
+    out << L"<" << it->TheTag << L">";
+  }
+  return out;
+}
+
 Morpheme::operator std::wstring() const {
   if (TheTags.empty())
     throw Exception::Morpheme::TheTags_empty("can't convert Morpheme "

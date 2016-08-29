@@ -19,6 +19,8 @@
 #include <lttoolbox/compression.h>
 #include <apertium/string_utils.h>
 #include <apertium/utils.h>
+#include <apertium/tsx_reader.h>
+#include <apertium/perceptron_spec.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -79,6 +81,26 @@ void MTXReader::emitUInt(int val)
   emitBytecode((VM::Bytecode){.uintbyte = (unsigned char)val});
 }
 
+void MTXReader::procCoarseTags()
+{
+  std::string tsx_fn = attrib("tag");
+  bool is_abs = ((tsx_fn.size() >= 1 && tsx_fn[0] == '/') ||
+                 (tsx_fn.size() >= 2 && tsx_fn[1] == ':'));
+  if (!is_abs) {
+    size_t last_slash_pos = path.rfind("/");
+    if (last_slash_pos != string::npos) {
+      tsx_fn = path.substr(0, last_slash_pos + 1) + tsx_fn;
+    }
+  }
+  TSXReader tsx_reader;
+  tsx_reader.read(tsx_fn);
+  std::wcerr << "blah" << std::endl;
+  spec.coarse_tags = Optional<TaggerDataPercepCoarseTags>(
+      tsx_reader.getTaggerData());
+  std::wcerr << "far" << std::endl;
+  stepPastSelfClosingTag(L"coarse-tags");
+}
+
 void MTXReader::procSetDef()
 {
   std::wstring name = attrib(L"name");
@@ -109,7 +131,6 @@ void MTXReader::procStrDef()
   str_names[name] = pushStrConst(tag != "" ? tag : str);
   stepPastSelfClosingTag(L"def-str");
 }
-
 
 void
 MTXReader::procDefns()
@@ -181,50 +202,53 @@ bool
 MTXReader::procIntExpr(bool allow_fail)
 {
   /* Self-closing tags */
-  if (name == L"sentlen") {
-    emitOpcode(VM::SENTLENTOK);
-    stepPastSelfClosingTag(L"sentlen");
-  } else if (name == L"pathlen") {
-    emitOpcode(VM::SENTLENWRD);
-    stepPastSelfClosingTag(L"pathlen");
-  } else if (name == L"tokaddr") {
-    emitOpcode(VM::PUSHTOKADDR);
-    stepPastSelfClosingTag(L"tokaddr");
-  } else if (name == L"wrdidx") {
-    emitOpcode(VM::PUSHWRDADDR);
-    stepPastSelfClosingTag(L"wrdidx");
-  } else if (name == L"int") {
-    emitOpcode(VM::PUSHINT);
-    getAndEmitInt();
-    stepPastSelfClosingTag(L"int");
-  /* Other tags */
-  } else if (name == L"add") {
-    stepToNextTag();
-    procIntExpr();
-    procIntExpr();
-    assert(name == L"add" && type == XML_READER_TYPE_END_ELEMENT);
-    emitOpcode(VM::ADD);
-    stepToNextTag();
-  } else if (name == L"toklen") {
-    procIntExpr();
-    assert(name == L"toklen" && type == XML_READER_TYPE_END_ELEMENT);
-    emitOpcode(VM::TOKLENWRD);
-    stepToNextTag();
-  } else if (name == L"strlen") {
-    procStrExpr();
-    assert(name == L"strlen" && type == XML_READER_TYPE_END_ELEMENT);
-    emitOpcode(VM::STRLEN);
-    stepToNextTag();
-  } else if (name == L"arrlen") {
-    procStrArrExpr();
-    assert(name == L"arrlen" && type == XML_READER_TYPE_END_ELEMENT);
-    procBinCompareOp(VM::ARRLEN);
-    stepToNextTag();
-  } else {
-    if (allow_fail) {
-      return false;
+  if (!tryProcArg(INTEXPR, true)
+      && !tryProcVar(VM::INTVAL)) {
+    if (name == L"sentlen") {
+      emitOpcode(VM::SENTLENTOK);
+      stepPastSelfClosingTag(L"sentlen");
+    } else if (name == L"pathlen") {
+      emitOpcode(VM::SENTLENWRD);
+      stepPastSelfClosingTag(L"pathlen");
+    } else if (name == L"tokaddr") {
+      emitOpcode(VM::PUSHTOKADDR);
+      stepPastSelfClosingTag(L"tokaddr");
+    } else if (name == L"wrdidx") {
+      emitOpcode(VM::PUSHWRDADDR);
+      stepPastSelfClosingTag(L"wrdidx");
+    } else if (name == L"int") {
+      emitOpcode(VM::PUSHINT);
+      getAndEmitInt();
+      stepPastSelfClosingTag(L"int");
+    /* Other tags */
+    } else if (name == L"add") {
+      stepToNextTag();
+      procIntExpr();
+      procIntExpr();
+      assert(name == L"add" && type == XML_READER_TYPE_END_ELEMENT);
+      emitOpcode(VM::ADD);
+      stepToNextTag();
+    } else if (name == L"toklen") {
+      procIntExpr();
+      assert(name == L"toklen" && type == XML_READER_TYPE_END_ELEMENT);
+      emitOpcode(VM::TOKLENWRD);
+      stepToNextTag();
+    } else if (name == L"strlen") {
+      procStrExpr();
+      assert(name == L"strlen" && type == XML_READER_TYPE_END_ELEMENT);
+      emitOpcode(VM::STRLEN);
+      stepToNextTag();
+    } else if (name == L"arrlen") {
+      procStrArrExpr();
+      assert(name == L"arrlen" && type == XML_READER_TYPE_END_ELEMENT);
+      procBinCompareOp(VM::ARRLEN);
+      stepToNextTag();
+    } else {
+      if (allow_fail) {
+        return false;
+      }
+      parseError(L"Expected an integer expression.");
     }
-    parseError(L"Expected an integer expression.");
   }
   return true;
 }
@@ -241,6 +265,10 @@ MTXReader::procStrArrExpr(bool allow_fail)
       procWordoidExpr();
       assert(type == XML_READER_TYPE_END_ELEMENT);
       emitOpcode(VM::EXTAGS);
+    } else if (name == L"ex-ambgset") {
+      stepToNextTag();
+      procIntExpr();
+      emitOpcode(VM::EXAMBGSET);
     } else if (name == L"for-each") {
       procForEach(STREXPR);
     } else {
@@ -302,7 +330,11 @@ bool MTXReader::tryProcArg(ExprType expr_type, bool allow_fail)
     if (in_global_defn) {
       VarNVMap::const_iterator arg_name_it = template_arg_names.find(var_name);
       if (arg_name_it != template_arg_names.end()) {
+        std::wcerr << "Push replacement " << arg_name_it->second << " ";
+        printTypeExpr(expr_type);
+        std::wcerr << "\n";
         cur_replacements->push_back(make_pair(arg_name_it->second, expr_type));
+        stepPastSelfClosingTag(L"var");
         return true;
       }
       if (!allow_fail) {
@@ -338,6 +370,10 @@ bool MTXReader::tryProcVar(VM::StackValueType svt)
       parseError(L"No such macro " + var_name);
     }
     size_t templ_idx = template_name_it->second;
+    std::wcerr << "Template index " << templ_idx << "\n";
+    if (template_slot_types[templ_idx] != svt) {
+      parseError(L"Macro " + var_name + L" returns the wrong type");
+    }
     std::pair<VM::FeatureDefn, TemplateReplacements> &templ_defn = template_defns[templ_idx];
     // Get arg values
     stepToNextTag();
@@ -347,6 +383,7 @@ bool MTXReader::tryProcVar(VM::StackValueType svt)
     for (; templ_repl_it != templ_defn.second.end(); templ_repl_it++) {
       arg_values.push_back(VM::FeatureDefn());
       cur_feat = &arg_values.back();
+      printTypeExpr(templ_repl_it->second);
       procTypeExpr(templ_repl_it->second);
     }
     cur_feat = saved_feat;
@@ -410,6 +447,10 @@ MTXReader::procStrExpr(bool allow_fail)
       stepToNextTag();
       procWordoidExpr();
       emitOpcode(VM::EXWRDLEMMA);
+    } else if (name == L"ex-coarse") {
+      stepToNextTag();
+      procWordoidExpr();
+      emitOpcode(VM::EXWRDCOARSETAG);
     } else if (name == L"join") {
       bool has_attr;
       size_t str_idx = getStrRef(has_attr);
@@ -822,6 +863,53 @@ MTXReader::procOutMany()
 }
 
 void
+MTXReader::printTmplDefn(const TemplateDefn &tmpl_defn)
+{
+  PerceptronSpec::printFeature(std::wcerr, tmpl_defn.first);
+  std::wcerr << "Replacements:\n";
+  TemplateReplacements::const_iterator it = tmpl_defn.second.begin();
+  for (; it != tmpl_defn.second.end(); it++) {
+    std::wcerr << "Index: " << it->first << " ";
+    printTypeExpr(it->second);
+    std::wcerr << "\n";
+  }
+}
+
+void
+MTXReader::printTypeExpr(ExprType expr_type)
+{
+  switch (expr_type) {
+    case VOIDEXPR:
+      std::wcerr << "VOID";
+      break;
+    case INTEXPR:
+      std::wcerr << "INT";
+      break;
+    case BEXPR:
+      std::wcerr << "BOOL";
+      break;
+    case STREXPR:
+      std::wcerr << "STR";
+      procStrExpr();
+      break;
+    case STRARREXPR:
+      std::wcerr << "STRARR";
+      break;
+    case WRDEXPR:
+      std::wcerr << "WRD";
+      break;
+    case WRDARREXPR:
+      std::wcerr << "WRDARR";
+      break;
+    case ADDREXPR:
+      std::wcerr << "ADDR";
+      break;
+    default:
+      assert(false);
+  }
+}
+
+void
 MTXReader::procTypeExpr(ExprType expr_type)
 {
   switch (expr_type) {
@@ -838,7 +926,7 @@ MTXReader::procTypeExpr(ExprType expr_type)
       procStrExpr();
       break;
     case STRARREXPR:
-      procStrExpr();
+      procStrArrExpr();
       break;
     case WRDEXPR:
       procWordoidExpr();
@@ -959,7 +1047,6 @@ MTXReader::procDefMacro()
     template_arg_names[arg_name] = arg_i;
   }
   std::wcerr << "Length of template_arg_names " << template_arg_names.size() << "\n";
-  cur_replacements->resize(arg_i);
   stepToNextTag();
 
   bool has_expr = false;
@@ -1038,6 +1125,9 @@ MTXReader::parse()
     parseError(L"expected <metatag> tag");
   }
   stepToNextTag();
+  if (name == L"coarse-tags") {
+    procCoarseTags();
+  }
   if (name == L"beam-width") {
     size_t val;
     std::istringstream val_ss(attrib("val"));
@@ -1048,6 +1138,11 @@ MTXReader::parse()
   }
   if (name == L"defns") {
     procDefns();
+  }
+  std::vector<TemplateDefn>::const_iterator it = template_defns.begin();
+  for (; it != template_defns.end(); it++) {
+    std::wcerr << "Template " << it - template_defns.begin() << "\n";
+    printTmplDefn(*it);
   }
   if (name == L"global-pred") {
     procGlobalPred();

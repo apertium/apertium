@@ -46,6 +46,7 @@ protected:
   virtual void parse() = 0;
 
 public:
+  string path;
   void read(const string &filename);
 };
 

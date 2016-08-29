@@ -2,27 +2,46 @@
 #include <apertium/utf_converter.h>
 #include <apertium/deserialiser.h>
 #include <apertium/serialiser.h>
+#include <lttoolbox/match_state.h>
 
 
 namespace Apertium {
 
 template <typename OStream>
+void PerceptronSpec::printFeature(OStream &out, const PerceptronSpec::FeatureDefn &feat_defn)
+{
+  for (size_t j = 0; j < feat_defn.size(); j++) {
+    out << std::hex << feat_defn[j] << std::dec << " ";
+  }
+  out << "\n";
+  for (size_t j = 0; j < feat_defn.size(); j++) {
+    if (feat_defn[j] < PerceptronSpec::num_opcodes) {
+      out << PerceptronSpec::opcode_names[feat_defn[j]].c_str() << " ";
+    } else {
+      out << "XX ";
+    }
+  }
+  out << "\n";
+}
+
+template
+void PerceptronSpec::printFeature(std::wostream &out, const PerceptronSpec::FeatureDefn &feat_defn);
+
+template
+void PerceptronSpec::printFeature(std::ostream &out, const PerceptronSpec::FeatureDefn &feat_defn);
+
+template <typename OStream>
 OStream&
-operator<<(OStream & out, PerceptronSpec const &ps) {
+operator<<(OStream &out, PerceptronSpec const &ps) {
+  out << "Global pred\n";
+  PerceptronSpec::printFeature(out, ps.global_pred);
+  for (size_t i = 0; i < ps.global_defns.size(); i++) {
+    out << "Global " << i << "\n";
+    PerceptronSpec::printFeature(out, ps.global_defns[i]);
+  }
   for (size_t i = 0; i < ps.features.size(); i++) {
     out << "Feature " << i << "\n";
-    for (size_t j = 0; j < ps.features[i].size(); j++) {
-      out << std::hex << ps.features[i][j] << " ";
-    }
-    out << "\n";
-    for (size_t j = 0; j < ps.features[i].size(); j++) {
-      if (ps.features[i][j] < PerceptronSpec::num_opcodes) {
-        out << PerceptronSpec::opcode_names[ps.features[i][j]].c_str() << " ";
-      } else {
-        out << "XX ";
-      }
-    }
-    out << "\n";
+    PerceptronSpec::printFeature(out, ps.features[i]);
   }
   return out;
 }
@@ -384,6 +403,7 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
     } break;
     case GETGVAR: {
       int slot = get_uint_operand();
+      //std::wcerr << "GETGVAR " << slot << " " << spec.global_results[slot] << "\n";
       stack.push(spec.global_results[slot]);
     } break;
     case GETVAR: {
@@ -454,6 +474,29 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
     case EXWRDLEMMA: {
       std::wstring lemma = stack.pop_off().wrd().TheLemma;
       stack.push(new std::string(UtfConverter::toUtf8(lemma)));
+    } break;
+    case EXWRDCOARSETAG: {
+      assert(spec.coarse_tags);
+      Morpheme &wrd = stack.top().wrd();
+      std::string coarse_tag = UtfConverter::toUtf8(spec.coarse_tags->coarsen(wrd));
+      stack.pop();
+      stack.push(coarse_tag);
+    } break;
+    case EXAMBGSET: {
+      assert(spec.coarse_tags);
+      std::vector<std::string> ambgset;
+      const std::vector<Analysis> &analyses = get_token(untagged).TheAnalyses;
+      std::vector<Analysis>::const_iterator analy_it;
+      for (analy_it = analyses.begin(); analy_it != analyses.end(); analy_it++) {
+        ambgset.push_back(std::string());
+        const std::vector<Morpheme> &wrds = analy_it->TheMorphemes;
+        std::vector<Morpheme>::const_iterator wrd_it;
+        for (wrd_it = wrds.begin(); wrd_it != wrds.end(); wrd_it++) {
+          ambgset.back() += UtfConverter::toUtf8(spec.coarse_tags->coarsen(*wrd_it));
+          ambgset.back() += "+";
+        }
+      }
+      stack.push(ambgset);
     } break;
     case EXTAGS: {
       const std::vector<Tag> &tags = stack.top().wrd().TheTags;
@@ -743,12 +786,25 @@ void PerceptronSpec::deserialiseFeatDefnVec(
 }
 
 void PerceptronSpec::serialise(std::ostream &serialised) const {
+  std::wcerr << "Serialise beam width\n";
   Serialiser<size_t>::serialise(beam_width, serialised);
+  std::wcerr << "Serialise string constants\n";
   Serialiser<std::vector<std::string> >::serialise(str_consts, serialised);
+  std::wcerr << "Serialise set constants\n";
   Serialiser<std::vector<VMSet> >::serialise(set_consts, serialised);
+  std::wcerr << "Serialise features\n";
   serialiseFeatDefnVec(serialised, features);
+  std::wcerr << "Serialise globals\n";
   serialiseFeatDefnVec(serialised, global_defns);
+  std::wcerr << "Serialise global pred\n";
   serialiseFeatDefn(serialised, global_pred);
+  if (coarse_tags) {
+    std::wcerr << "Serialise coarse tags\n";
+    Serialiser<size_t>::serialise(1, serialised);
+    coarse_tags->serialise(serialised);
+  } else {
+    Serialiser<size_t>::serialise(0, serialised);
+  }
 }
 
 void PerceptronSpec::deserialise(std::istream &serialised) {
@@ -758,6 +814,14 @@ void PerceptronSpec::deserialise(std::istream &serialised) {
   deserialiseFeatDefnVec(serialised, features);
   deserialiseFeatDefnVec(serialised, global_defns);
   deserialiseFeatDefn(serialised, global_pred);
+  if (serialised.eof()) {
+    return;
+  }
+  size_t has_coarse_tags = Deserialiser<size_t>::deserialise(serialised);
+  if (has_coarse_tags == 1) {
+    coarse_tags = Optional<TaggerDataPercepCoarseTags>(TaggerDataPercepCoarseTags());
+    coarse_tags->deserialise(serialised);
+  }
 }
 
 }
