@@ -175,59 +175,16 @@ tagger_utils::add_neccesary_ambg_classes(TaggerData &td) {
   }
 }
 
-void
-tagger_utils::init_ambg_class_freq(TaggerData &td) {
-  Collection &output = td.getOutput();
-  vector<unsigned int> &acc = td.getAmbgClassCounts();
-  acc.assign(output.size(), 0);
-}
-
-void
-tagger_utils::count_ambg_class_freq(FILE *fdic, TaggerData &td) {
-  Collection &output = td.getOutput();
-  vector<unsigned int> &acc = td.getAmbgClassCounts();
-  FileMorphoStream morpho_stream(fdic, true, &td);
-  count_ambg_class_freq(output, acc, morpho_stream);
-}
-
-void
-tagger_utils::count_ambg_class_freq(Collection &output,
-                                    vector<unsigned int> &acc,
-                                    MorphoStream &morpho_stream) {
-  int nw = 0;
-  set <TTag> tags;
-  TaggerWord *word = NULL;
-
-  word = morpho_stream.get_next_word();
-
-  while (word) {
-    if (++nw % 10000 == 0)
-      wcerr << L'.' << flush;
-
-    tags = word->get_tags();
-
-    if (tags.size() > 0 && !output.has_not(tags)) {
-      acc[output[tags]]++;
-    }
-
-    delete word;
-    word = morpho_stream.get_next_word();
-  }
-  wcerr << L"\n";
-}
-
 set<TTag> &
 tagger_utils::find_similar_ambiguity_class(TaggerData &td, set<TTag> &c) {
   set<TTag> &ret = td.getOpenClass();
   Collection &output = td.getOutput();
   int ret_idx = output[ret];
-  vector<unsigned int> &acc = td.getAmbgClassCounts();
 
   for (int k=0; k<output.size(); k++) {
     const set<TTag> &ambg_class = output[k];
     if (ambg_class.size() > ret.size() ||
-        (ambg_class.size() == ret.size() &&
-         acc[ret_idx] > acc[k])) {
+        (ambg_class.size() == ret.size())) {
       continue;
     }
     if (includes(ambg_class.begin(), ambg_class.end(), c.begin(), c.end())) {

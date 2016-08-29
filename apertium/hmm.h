@@ -143,8 +143,7 @@ public:
     *  @param out the output stream with the tagged text
     */
    void tagger(MorphoStream &morpho_stream, FILE *Output,
-               const bool &First = false,
-               MorphoStream *cg_morpho_stream = NULL);
+               const bool &First = false);
 
    /** Prints the A matrix.
     */

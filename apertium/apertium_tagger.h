@@ -54,20 +54,18 @@ private:
   unsigned long optarg_unsigned_long(const char *metavar);
   void get_file_arguments(
     bool get_crp_fn,
-    unsigned long* ambg_class_count,
     char **DicFn, char **CrpFn,
-    char **TaggedFn, char **UntaggedFn, char **CgTaggedFn,
+    char **TaggedFn, char **UntaggedFn,
     char **TsxFn, char **ProbFn);
   void init_FILE_Tagger(FILE_Tagger &FILE_Tagger_, string const &TsxFn);
 
   MorphoStream* setup_untagged_morpho_stream(
     FILE_Tagger &FILE_Tagger_,
-    char *DicFn, char *CgTaggedFn, char *UntaggedFn,
-    FILE **Dictionary, FILE **UntaggedCorpus, FILE **CgTaggedCorpus,
-    unsigned int ambg_class_count);
+    char *DicFn, char *UntaggedFn,
+    FILE **Dictionary, FILE **UntaggedCorpus);
   void close_untagged_files(
-    char *DicFn, char *CgTaggedFn, char *UntaggedFn,
-    FILE *Dictionary, FILE *UntaggedCorpus, FILE *CgTaggedCorpus);
+    char *DicFn, char *UntaggedFn,
+    FILE *Dictionary, FILE *UntaggedCorpus);
 
   void g_StreamTagger(StreamTagger &StreamTagger_);
   void s_StreamTaggerTrainer(StreamTaggerTrainer &StreamTaggerTrainer_);

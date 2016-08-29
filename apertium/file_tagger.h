@@ -32,11 +32,9 @@ public:
   void set_debug(const bool &Debug);
   void set_show_sf(const bool &ShowSuperficial);
   void setNullFlush(const bool &NullFlush);
-  void set_allow_similar_ambg_class(const bool &asac);
   virtual void tagger(FILE *Input, FILE *Output, const bool &First = false);
   virtual void tagger(MorphoStream &morpho_stream, FILE *Output,
-                      const bool &First = false,
-                      MorphoStream *cg_morpho_stream = NULL) = 0;
+                      const bool &First = false) = 0;
   virtual std::vector<std::wstring> &getArrayTags() = 0;
   void init_and_train(MorphoStream &lexmorfo, unsigned long Count);
   void init_and_train(FILE *Corpus, unsigned long Count);
@@ -58,15 +56,6 @@ public:
    *  @param is the input stream with the expanded dictionary to read
    */
   void read_dictionary(FILE *is);
-  void scan_and_count_ambg_classes(FILE *crp, Collection &all_ambg_classes,
-                                   vector<unsigned int> &all_acc);
-  void use_pop_ambg_class(Collection &all_ambg_classes,
-                          vector<unsigned int> &all_acc,
-                          unsigned int n);
-  void read_dictionary_and_counts_poptrim(FILE *crp, unsigned int n);
-  void init_ambg_class_freq();
-  void count_ambg_class_freq(FILE *crp);
-  void read_dictionary_and_counts(FILE *crp);
 
   virtual TaggerData& get_tagger_data() = 0;
 
@@ -76,7 +65,6 @@ protected:
   bool debug;
   bool show_sf;
   bool null_flush;
-  bool allow_similar_ambg_class;
 };
 }
 

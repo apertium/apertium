@@ -35,7 +35,6 @@ h_sources = a.h \
 	    morpheme.h \
 	    morpho_stream.h \
 	    mtx_reader.h \
-	    dual_morpho_stream.h \
 	    file_morpho_stream.h \
 	    optional.h \
 	    perceptron_spec.h \
@@ -127,7 +126,6 @@ cc_sources = a.cc \
 	     morpheme.cc \
 	     morpho_stream.cc \
 	     mtx_reader.cc \
-	     dual_morpho_stream.cc \
 	     file_morpho_stream.cc \
 	     perceptron_spec.cc \
 	     perceptron_tagger.cc \

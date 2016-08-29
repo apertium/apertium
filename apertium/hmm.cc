@@ -200,11 +200,7 @@ HMM::init_probabilities_kupiec(MorphoStream &lexmorfo)
       tags = tdhmm.getOpenClass();
     }
     else {
-      if (allow_similar_ambg_class) {
-	tags = require_similar_ambiguity_class(tdhmm, tags);
-      } else {
-        require_ambiguity_class(tdhmm, tags, *word, nw);
-      }
+      require_ambiguity_class(tdhmm, tags, *word, nw);
     }
 
     k2=output[tags];
@@ -330,11 +326,7 @@ HMM::init_probabilities_from_tagged_text(MorphoStream &stream_tagged,
       tags = tdhmm.getOpenClass();
     }
     else {
-      if (allow_similar_ambg_class) {
-	tags = require_similar_ambiguity_class(tdhmm, tags);
-      } else {
-        require_ambiguity_class(tdhmm, word_untagged->get_tags(), *word_untagged, nw);
-      }
+      require_ambiguity_class(tdhmm, word_untagged->get_tags(), *word_untagged, nw);
       tags = word_untagged->get_tags();
     }
 
@@ -497,11 +489,7 @@ HMM::train(MorphoStream &morpho_stream) {
       ndesconocidas++;
     }
 
-    if (allow_similar_ambg_class) {
-      tags = require_similar_ambiguity_class(tdhmm, tags);
-    } else {
-      require_ambiguity_class(tdhmm, tags, *word, nw);
-    }
+    require_ambiguity_class(tdhmm, tags, *word, nw);
     
     k = output[tags];    
     len = pending.size();
@@ -681,12 +669,12 @@ HMM::train(MorphoStream &morpho_stream) {
 }
 
 void 
-HMM::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First, MorphoStream *cg_morpho_stream) {
+HMM::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First) {
   int i, j, k, nw;
-  TaggerWord *word = NULL, *cg_word = NULL;
+  TaggerWord *word = NULL;
   TTag tag;
   
-  set <TTag> ambg_class_tags, *cg_tags, tags, pretags;
+  set <TTag> ambg_class_tags, tags, pretags;
   set <TTag>::iterator itag, jtag;
   
   double prob, loli, x;
@@ -709,11 +697,6 @@ HMM::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First, Morpho
    
   word = morpho_stream.get_next_word();
 
-  if (cg_morpho_stream != NULL) {
-    cg_word = cg_morpho_stream->get_next_word();
-    cg_tags = &cg_word->get_tags();
-  }
- 
   while (word) {
     wpend.push_back(*word);    	    
     nwpend = wpend.size();
@@ -737,11 +720,7 @@ HMM::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First, Morpho
       i=*itag;
       for (jtag=pretags.begin(); jtag!=pretags.end(); jtag++) {	//For all tags from the previous word
 	j=*jtag;
-	if (cg_morpho_stream != NULL && cg_tags->find(i) == cg_tags->end()) {
-	  x = 0;
-	} else {
-	  x = alpha[1-nwpend%2][j]*(tdhmm.getA())[j][i]*(tdhmm.getB())[i][k];
-	}
+	x = alpha[1-nwpend%2][j]*(tdhmm.getA())[j][i]*(tdhmm.getB())[i][k];
 	if (alpha[nwpend%2][i]<=x) {
 	  if (nwpend>1) 
 	    best[nwpend%2][i] = best[1-nwpend%2][j];
@@ -752,17 +731,8 @@ HMM::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First, Morpho
     }
     
     //Backtracking
-    bool backtrack = false;
-    if (cg_morpho_stream != NULL && cg_tags->size() == 1) {
-      backtrack = true;
-      tag = *cg_tags->begin();
-    } else {
-      backtrack = tags.size() == 1;
-      if (backtrack) {
-        tag = *tags.begin();
-      }
-    }
-    if (backtrack) {
+    if (tags.size() == 1) {
+      tag = *tags.begin();
       prob = alpha[nwpend%2][tag];
       
       if (prob>0) 
@@ -789,9 +759,6 @@ HMM::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First, Morpho
     }
     
     delete word;
-    if (cg_word) {
-      delete cg_word;
-    }
     
     if(morpho_stream.getEndOfFile())
     {
@@ -807,13 +774,6 @@ HMM::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First, Morpho
       morpho_stream.setEndOfFile(false);
     }
     word = morpho_stream.get_next_word();    
-
-    if (cg_morpho_stream != NULL) {
-      cg_word = cg_morpho_stream->get_next_word();
-      if (cg_word) {
-        cg_tags = &cg_word->get_tags();
-      }
-    }
   }
   
   if ((tags.size()>1)&&(debug)) {

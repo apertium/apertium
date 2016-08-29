@@ -205,20 +205,6 @@ TaggerDataLSW::read(FILE *in)
   discard.clear();
 
   unsigned int limit = Compression::multibyte_read(in);  
-  // In band signalling for backwards compatibility
-  if (limit == 0x3fffffff)
-  {
-    for(int i = output.size(); i != 0; i--)
-    {
-      ambg_class_counts.push_back(Compression::multibyte_read(in));
-    }
-    limit = Compression::multibyte_read(in);
-  } else {
-    for(int i = output.size(); i != 0; i--)
-    {
-      ambg_class_counts.push_back(0);
-    }
-  }
   if(feof(in))
   {
     return;
@@ -324,13 +310,6 @@ TaggerDataLSW::write(FILE *out)
   // write pattern list
   plist.write(out);
 
-  // write ambg class counts
-  Compression::multibyte_write(0x3fffffff, out);
-  for(unsigned int i = 0, limit = ambg_class_counts.size(); i != limit; i++)
-  {
-    Compression::multibyte_write(ambg_class_counts[i], out);
-  }
-  
   // write discard list
   
   if(discard.size() != 0)

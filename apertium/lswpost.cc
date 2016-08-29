@@ -116,11 +116,7 @@ LSWPoST::init_probabilities(MorphoStream &morpho_stream) {
     tags_left = tdlsw.getOpenClass();
   }
 
-  if (allow_similar_ambg_class) {
-    tags_left = find_similar_ambiguity_class(tdlsw, tags_left);
-  } else {
-    require_ambiguity_class(tdlsw, tags_left, *word, nw);
-  }
+  require_ambiguity_class(tdlsw, tags_left, *word, nw);
   ++nw;
   delete word;
   word = morpho_stream.get_next_word();  // word for tags mid
@@ -128,11 +124,7 @@ LSWPoST::init_probabilities(MorphoStream &morpho_stream) {
   if (tags_mid.size()==0) { //This is an unknown word
     tags_mid = tdlsw.getOpenClass();
   }
-  if (allow_similar_ambg_class) {
-    tags_mid = find_similar_ambiguity_class(tdlsw, tags_mid);
-  } else {
-    require_ambiguity_class(tdlsw, tags_mid, *word, nw);
-  }
+  require_ambiguity_class(tdlsw, tags_mid, *word, nw);
   ++nw;
   delete word;
   if (morpho_stream.getEndOfFile()) {
@@ -151,11 +143,7 @@ LSWPoST::init_probabilities(MorphoStream &morpho_stream) {
     if (tags_right.size()==0) { //This is an unknown word
       tags_right = tdlsw.getOpenClass();
     }
-    if (allow_similar_ambg_class) {
-      tags_right = find_similar_ambiguity_class(tdlsw, tags_right);
-    } else {
-      require_ambiguity_class(tdlsw, tags_right, *word, nw);
-    }
+    require_ambiguity_class(tdlsw, tags_right, *word, nw);
 
     num_valid_seq = tags_left.size() * tags_mid.size() * tags_right.size();
     for (iter_left = tags_left.begin(); iter_left != tags_left.end(); ++iter_left) {
@@ -264,11 +252,7 @@ LSWPoST::train(MorphoStream &morpho_stream) {
   if (tags_left.size()==0) { //This is an unknown word
     tags_left = tdlsw.getOpenClass();
   }
-  if (allow_similar_ambg_class) {
-    tags_left = find_similar_ambiguity_class(tdlsw, tags_left);
-  } else {
-    require_ambiguity_class(tdlsw, tags_left, *word, nw);
-  }
+  require_ambiguity_class(tdlsw, tags_left, *word, nw);
   ++nw;
   delete word;
   word = morpho_stream.get_next_word();  // word for tags mid
@@ -276,11 +260,7 @@ LSWPoST::train(MorphoStream &morpho_stream) {
   if (tags_mid.size()==0) { //This is an unknown word
     tags_mid = tdlsw.getOpenClass();
   }
-  if (allow_similar_ambg_class) {
-    tags_mid = find_similar_ambiguity_class(tdlsw, tags_mid);
-  } else {
-    require_ambiguity_class(tdlsw, tags_mid, *word, nw);
-  }
+  require_ambiguity_class(tdlsw, tags_mid, *word, nw);
   ++nw;
   delete word;
   if (morpho_stream.getEndOfFile()) {
@@ -298,11 +278,7 @@ LSWPoST::train(MorphoStream &morpho_stream) {
     if (tags_right.size()==0) { //This is an unknown word
       tags_right = tdlsw.getOpenClass();
     }
-    if (allow_similar_ambg_class) {
-      tags_right = find_similar_ambiguity_class(tdlsw, tags_right);
-    } else {
-      require_ambiguity_class(tdlsw, tags_right, *word, nw);
-    }
+    require_ambiguity_class(tdlsw, tags_right, *word, nw);
 
     double normalization = 0;
 
@@ -354,11 +330,9 @@ LSWPoST::print_para_matrix() {
 }
 
 void 
-LSWPoST::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First,
-                MorphoStream *cg_morpho_stream) {
-  TaggerWord *word_left = NULL, *word_mid = NULL, *word_right = NULL,
-             *cg_word_mid = NULL;
-  set<TTag> tags_left, tags_mid, tags_right, *cg_tags_mid;
+LSWPoST::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First) {
+  TaggerWord *word_left = NULL, *word_mid = NULL, *word_right = NULL;
+  set<TTag> tags_left, tags_mid, tags_right;
   set<TTag>::iterator iter_left, iter_mid, iter_right;
   morpho_stream.setNullFlush(null_flush);                      
  
@@ -371,18 +345,11 @@ LSWPoST::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First,
   word_mid = morpho_stream.get_next_word(); // word mid
   word_mid->set_show_sf(show_sf);
   tags_mid = word_mid->get_tags();          // tags mid
-  if (cg_morpho_stream) {
-    cg_word_mid = cg_morpho_stream->get_next_word();
-    cg_tags_mid = &cg_word_mid->get_tags();
-  }
 
   warn_absent_ambiguity_class(tdlsw, tags_mid, *word_mid, debug);
   if (morpho_stream.getEndOfFile()) {
     delete word_left;
     delete word_mid;
-    if (cg_morpho_stream) {
-      delete cg_word_mid;
-    }
     return;
   }
   word_right = morpho_stream.get_next_word(); // word_right
@@ -395,11 +362,7 @@ LSWPoST::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First,
     warn_absent_ambiguity_class(tdlsw, tags_right, *word_right, debug);
 
     set<TTag> *tags_avail;
-    if (cg_morpho_stream) {
-      tags_avail = cg_tags_mid;
-    } else {
-      tags_avail = &tags_mid;
-    }
+    tags_avail = &tags_mid;
     double max = -1;
     TTag tag_max = *tags_avail->begin();
     for (iter_mid = tags_avail->begin(); iter_mid != tags_avail->end(); ++iter_mid) {
@@ -426,10 +389,6 @@ LSWPoST::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First,
     }
   
     delete word_left;
-    if (cg_morpho_stream) {
-      cg_word_mid = cg_morpho_stream->get_next_word();
-      cg_tags_mid = &cg_word_mid->get_tags();
-    }
     word_left = word_mid;
     tags_left = tags_mid;
     word_mid = word_right;
@@ -441,7 +400,4 @@ LSWPoST::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First,
   }
   delete word_left;
   delete word_mid;
-  if (cg_morpho_stream) {
-    delete cg_word_mid;
-  }
 }

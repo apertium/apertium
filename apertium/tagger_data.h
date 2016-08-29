@@ -43,7 +43,6 @@ protected:
   ConstantManager constants;
   Collection output;
   PatternList plist;
-  vector<unsigned int> ambg_class_counts;
   vector<wstring> discard;
   
   void copy(TaggerData const &o);
@@ -92,10 +91,6 @@ public:
   void setPatternList(PatternList const &pl);
   PatternList & getPatternList();
   const PatternList & getPatternList() const;
-
-  void setAmbgClassCounts(vector<unsigned int> const &acc);
-  vector<unsigned int> & getAmbgClassCounts();
-  const vector<unsigned int> & getAmbgClassCounts() const;
 
   void addDiscard(wstring const &tags);
 };
