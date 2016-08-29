@@ -7,4 +7,8 @@ node {
 
    stage 'Test'
    sh "make test"
+
+   stage 'Archive'
+   sh "rm apertium.zip"
+   zip zipFile: 'apertium.zip', archive: true, dir: 'apertium'
 }
