@@ -43,7 +43,11 @@ FeatureVecAverager::average() {
        weights_it != weights.data.end(); weights_it++) {
     const FeatureKey &fk = weights_it->first;
     updateTotal(fk);
-    weights_it->second = totals[fk] / iterations;
+    if (totals[fk] == 0) {
+      weights.data.erase(weights_it);
+    } else {
+      weights_it->second = totals[fk] / iterations;
+    }
   }
 }
 }

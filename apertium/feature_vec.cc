@@ -57,13 +57,12 @@ OStream&
 operator<<(OStream & out, FeatureVec const &fv) {
   FeatureVec::Map::const_iterator feat_it = fv.data.begin();
   for (; feat_it != fv.data.end(); feat_it++) {
-    FeatureKey::const_iterator bc_it;
-    for (bc_it = feat_it->first.begin();
-         bc_it != feat_it->first.end(); bc_it++) {
-      if (bc_it == feat_it->first.begin()) {
-        out << "<prg> ";
-      } else {
-        out << bc_it->c_str();
+    FeatureKey::const_iterator bc_it = feat_it->first.begin();
+    out << std::dec << (int)(*(bc_it++))[0] << "; ";
+    for (;bc_it != feat_it->first.end(); bc_it++) {
+      out << bc_it->c_str();
+      if (bc_it + 1 != feat_it->first.end()) {
+        out << ", ";
       }
     }
     out << ": " << feat_it->second << "\n";

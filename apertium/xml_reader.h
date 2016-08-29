@@ -40,6 +40,8 @@ protected:
   void parseError(wstring const &message);
   void unexpectedTag();
   void stepToTag();
+  void stepPastSelfClosingTag(wstring const &tag);
+  void stepToNextTag();
   void step();
   virtual void parse() = 0;
 

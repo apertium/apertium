@@ -17,7 +17,7 @@
 
 #include "exception.h"
 
-#include <string>
+#include <iostream>
 
 namespace Apertium {
 bool operator==(const Tag &a, const Tag &b) { return a.TheTag == b.TheTag; }

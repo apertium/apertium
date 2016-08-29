@@ -30,11 +30,11 @@ public:
     X(ADI)\
     /* int, int -> int */\
     X(ADD)\
+    /* int, int, int, int -> int, int */\
+    X(ADD2)\
     /* int(operand) -> int */\
     X(PUSHINT)\
-    /* -> int */\
-    X(PUSHZERO)\
-    /* int, int(operand) -> bool */\
+    /* int, int -> bool */\
     X(LT) X(LTE) X(GT) X(GTE) X(EQ) X(NEQ)\
     \
     /** Stack manipulation */\
@@ -48,6 +48,18 @@ public:
     /** Flow control */\
     /* bool -> */\
     X(DIEIFFALSE)\
+    /* -> */\
+    X(FOREACHINIT)\
+    /* int(operand), int(operand, slot), 'a[] -> {env: slot: 'a) */\
+    X(FOREACH)\
+    /* int(operand) -> */\
+    X(ENDFOREACH)\
+    \
+    /** Registers/environment */\
+    /* int(operand, slot), {globals: slot: 'b} -> 'b */\
+    X(GETGVAR)\
+    /* int(operand, slot), {env: slot: 'b} -> 'b */\
+    X(GETVAR)\
     \
     /** Input addressing */\
     /* str, str(operand) -> bool */\
@@ -70,14 +82,14 @@ public:
     X(CLAMPTOKADDR)\
     \
     /* Input fetching and characterisation */\
+    /* tokaddr, wrdaddr -> Wordoid */\
+    X(GETWRD)\
     /* tokaddr -> str */\
-    X(GETTOKLF)\
-    /* tokaddr, wrdaddr -> str */\
-    X(GETWRDLF)\
-    /* tokaddr, wrdaddr -> str[] */\
-    X(GETTAGS)\
-    /* tokaddr, wrdaddr -> str */\
-    X(GETTAGSFLAT)\
+    X(EXTOKSURF)\
+    /* Wordoid -> str */\
+    X(EXWRDLEMMA)\
+    /* Wordoid -> str[] */\
+    X(EXTAGS)\
     /* -> int */\
     X(SENTLENTOK)\
     /* -> int */\
@@ -92,6 +104,8 @@ public:
     X(ISVALIDTAGGEDTOKADDR)\
     /* tokaddr, wrdaddr -> bool */\
     X(ISVALIDADDR)\
+    /* tokaddr -> Wordoid[] */\
+    X(EXWRDARR)\
     \
     /** String/string array manipulation */\
     /* str[], setaddr(operand) -> str[] */\
@@ -106,16 +120,18 @@ public:
     X(HASANYSUBSTR)\
     /* str -> str */\
     X(CPYSTR) X(LOWER)\
-    /* str, int(operand) -> str */\
-    X(SLICEBEGIN) X(SLICEEND)\
-    /* str, int(operand), int(operand) -> str */\
-    X(SLICEOFFBEGIN) X(SLICEOFFEND)\
+    /* a'[], int(operand), int(operand) -> a'[] (a' can be str) */\
+    X(SLICE)\
+    /* a'[], int(operand) -> a' (a' can not be str) */\
+    X(SUBSCRIPT)\
     /* str[] -> str[] */\
     X(LOWERARR)\
     /* str -> int */\
     X(STRLEN)\
     /* str[] -> int */\
     X(ARRLEN)\
+    /* str[], int(operand, str ref) -> str */\
+    X(JOIN)\
     \
     /** Feature building */\
     /* str[] -> */\
@@ -134,19 +150,28 @@ public:
   static bool static_constructed;
   static unsigned char num_opcodes;
   static const std::string opcode_names[];
+  static const std::string type_names[];
   static std::map<const std::string, Opcode> opcode_values;
   static std::vector<Morpheme> untagged_sentinel;
-  template <typename T> struct CountPtr {
-    int count;
-    T *ptr;
+  static LexicalUnit token_wordoids_underflow;
+  static LexicalUnit token_wordoids_overflow;
+  enum StackValueType {
+    INTVAL, BVAL, STRVAL, STRARRVAL, WRDVAL, WRDARRVAL
   };
   class StackValue {
   public:
+    friend void swap(StackValue &a, StackValue &b) {
+      using std::swap;
+
+      swap(a.payload, b.payload);
+      swap(a.type, b.type);
+    }
     // Smart pointer + tagged union safe to store in STL types
     StackValue() {}
     StackValue(const StackValue &other) {
       // C++11: Probably reference counting with shared_ptr would be better
       // than all this copying if it were available
+      //std::wcerr << "StackValue init\n";
       type = other.type;
       switch (type) {
         case STRVAL:
@@ -156,13 +181,20 @@ public:
           payload.strarrval =
               new std::vector<std::string>(*other.payload.strarrval);
           break;
+        case WRDVAL:
+          payload.wrdval = new Morpheme(*other.payload.wrdval);
+          break;
+        case WRDARRVAL:
+          payload.wrdarrval = new std::vector<Morpheme>(*other.payload.wrdarrval);
+          break;
         default:
           payload = other.payload;
           break;
       }
     }
     StackValue& operator=(StackValue other) {
-      std::swap(*this, other);
+      //std::wcerr << "StackValue assign\n";
+      swap(*this, other);
       return *this;
     }
     StackValue(int intval) {
@@ -181,6 +213,28 @@ public:
       payload.strarrval = new std::vector<std::string>(strarrval);
       type = STRARRVAL;
     }
+    StackValue(const Morpheme &wordoid) {
+      /*std::wcerr << L"Before ";
+      std::vector<Tag>::const_iterator it = wordoid.TheTags.begin();
+      for (;it != wordoid.TheTags.end(); it++) {
+        std::wcerr << &(*it) << " ";
+      }
+      std::wcerr << L"\n";
+      std::wcerr << L"Copy morpheme " << &wordoid;*/
+      payload.wrdval = new Morpheme(wordoid);
+      /*std::wcerr << L" to " << payload.wrdval << "\n";
+      std::wcerr << L"After ";
+      it = payload.wrdval->TheTags.begin();
+      for (;it != payload.wrdval->TheTags.end(); it++) {
+        std::wcerr << &(*it) << " ";
+      }
+      std::wcerr << L"\n";*/
+      type = WRDVAL;
+    }
+    StackValue(const std::vector<Morpheme> &wordoids) {
+      payload.wrdarrval = new std::vector<Morpheme>(wordoids);
+      type = WRDARRVAL;
+    }
     StackValue(std::string *strval) {
       payload.strval = strval;
       type = STRVAL;
@@ -189,6 +243,14 @@ public:
       payload.strarrval = strarrval;
       type = STRARRVAL;
     }
+    StackValue(Morpheme *wordoid) {
+      payload.wrdval = wordoid;
+      type = WRDVAL;
+    }
+    StackValue(std::vector<Morpheme> *wordoids) {
+      payload.wrdarrval = wordoids;
+      type = WRDARRVAL;
+    }
     ~StackValue() {
       switch (type) {
         case STRVAL:
@@ -196,6 +258,12 @@ public:
           break;
         case STRARRVAL:
           delete payload.strarrval;
+          break;
+        case WRDVAL:
+          delete payload.wrdval;
+          break;
+        case WRDARRVAL:
+          delete payload.wrdarrval;
           break;
         default: break;
       }
@@ -216,24 +284,53 @@ public:
       assert(type == STRARRVAL);
       return *payload.strarrval;
     }
-    union {
+    Morpheme& wrd() {
+      assert(type == WRDVAL);
+      return *payload.wrdval;
+    }
+    std::vector<Morpheme>& wrdArr() {
+      assert(type == WRDARRVAL);
+      return *payload.wrdarrval;
+    }
+    size_t size() {
+      if (type == STRARRVAL) {
+        return strArr().size();
+      } else if (type == WRDARRVAL) {
+        return wrdArr().size();
+      } else {
+        assert(false);
+      }
+    }
+    StackValue operator[](int n) {
+      if (type == STRARRVAL) {
+        return StackValue(strArr()[n]);
+      } else if (type == WRDARRVAL) {
+        return StackValue(wrdArr()[n]);
+      } else {
+        assert(false);
+      }
+    }
+    union StackValueUnion {
       int intval;
       bool bval;
       std::string* strval;
       std::vector<std::string>* strarrval;
+      Morpheme* wrdval;
+      std::vector<Morpheme>* wrdarrval;
     } payload;
-    enum {
-      INTVAL, BVAL, STRVAL, STRARRVAL
-    } type;
+    StackValueType type;
   };
   union Bytecode {
     Opcode op : 8;
     unsigned char uintbyte : 8;
     signed char intbyte : 8;
   };
+  static std::string dot;
   std::vector<std::string> str_consts;
   std::vector<VMSet> set_consts;
+  mutable std::vector<StackValue> global_results;
   typedef std::vector<unsigned char> FeatureDefn;
+  std::vector<FeatureDefn> global_defns;
   std::vector<FeatureDefn> features;
   void get_features(
     const TaggedSentence &tagged, const Sentence &untagged,
@@ -255,39 +352,74 @@ private:
     void pop() {
       data.pop_back();
     }
-    void push(const StackValue &val) {
+    /*void push(StackValue val) {
+      std::wcerr << "before copy push\n";
       data.push_back(val);
+      std::wcerr << "after copy push\n";
+    }*/
+    void push(const StackValue &val) {
+      //std::wcerr << "before push\n";
+      data.push_back(val);
+      //std::wcerr << "after push\n";
     }
     StackValue& top() {
       return data.back();
     }
     StackValue pop_off() {
+      //std::wcerr << L"Top value: " << top().payload.intval << "\n";
       StackValue ret = top();
       pop();
       return ret;
     }
+    size_t size() {
+      return data.size();
+    }
+    bool empty() {
+      return data.empty();
+    }
   };
   class Machine {
-    std::vector<FeatureDefn>::const_iterator feat_iter;
-    std::vector<unsigned char>::const_iterator bytecode_iter;
     const PerceptronSpec &spec;
+    bool is_feature;
+    const FeatureDefn &feat;
+    const size_t &feat_idx;
+    std::vector<unsigned char>::const_iterator bytecode_iter;
+    const TaggedSentence &tagged;
+    const Sentence &untagged;
+    int token_idx;
+    int wordoid_idx;
     MachineStack stack;
+    struct LoopState {
+      size_t initial_stack;
+      StackValue iterable;
+      size_t iteration;
+      StackValue accumulator;
+    };
+    std::deque<LoopState> loop_stack;
+    std::vector<StackValue> slots;
     void unimplemented_opcode(std::string opstr);
     const LexicalUnit& get_token(const Sentence &untagged);
     const std::vector<Morpheme>& tagged_to_wordoids(const TaggedToken &tt);
     const Morpheme& get_wordoid(const TaggedSentence &tagged);
     const VMSet& get_set_operand();
     int get_int_operand();
+    unsigned int get_uint_operand();
     const std::string& get_str_operand();
     static std::string get_tag(const Tag &in);
+    bool execCommonOp(Opcode op);
   public:
-    void get_feature(
-      const TaggedSentence &tagged, const Sentence &untagged,
-      int token_idx, int wordoid_idx,
-      UnaryFeatureVec &feat_vec_out);
+    void traceMachineState();
+    void getFeature(UnaryFeatureVec &feat_vec_out);
+    StackValue getValue();
     Machine(
       const PerceptronSpec &spec,
-      std::vector<FeatureDefn>::const_iterator feat_iter);
+      const FeatureDefn &feat,
+      size_t feat_idx,
+      bool is_feature,
+      const TaggedSentence &tagged,
+      const Sentence &untagged,
+      int token_idx,
+      int wordoid_idx);
   };
   struct In : public std::unary_function<const std::string&, bool> {
     const VMSet& haystack;
@@ -299,8 +431,10 @@ private:
   static void appendStr(UnaryFeatureVec::iterator begin,
                         UnaryFeatureVec::iterator end,
                         const std::string &tail_str);
-  static bool inRange(int lower, int upper, int x);
-  static int clamp(int lower, int upper, int x);
+  void serialiseFeatDefnVec(
+    std::ostream &serialised, const std::vector<FeatureDefn> &defn_vec) const;
+  void deserialiseFeatDefnVec(
+    std::istream &serialised, std::vector<FeatureDefn> &defn_vec);
 public:
   void serialise(std::ostream &serialised) const;
   void deserialise(std::istream &serialised);

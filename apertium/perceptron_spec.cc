@@ -39,6 +39,41 @@ const std::string PerceptronSpec::opcode_names[] = {
 };
 #undef X
 
+const std::string PerceptronSpec::type_names[] = {
+  "integer", "boolean", "string", "string array", "wordoid", "wordoid array"
+};
+
+static Morpheme make_sentinel_wordoid(
+    const std::wstring &lemma_str,
+    const std::wstring &tag_str) {
+  Morpheme morpheme;
+  morpheme.TheLemma = lemma_str;
+  Tag tag;
+  tag.TheTag = tag_str;
+  morpheme.TheTags.push_back(tag);
+  return morpheme;
+}
+
+static std::vector<Morpheme> make_sentinel_wordoids(
+    const std::wstring &lemma_str,
+    const std::wstring &tag_str) {
+  std::vector<Morpheme> morphemes;
+  morphemes.push_back(make_sentinel_wordoid(lemma_str, tag_str));
+  return morphemes;
+}
+
+static LexicalUnit make_sentinel_token(
+    const std::wstring &surf,
+    const std::wstring &lemma_str,
+    const std::wstring &tag_str) {
+  Analysis analy;
+  analy.TheMorphemes = make_sentinel_wordoids(lemma_str, tag_str);
+  LexicalUnit lu;
+  lu.TheSurfaceForm = surf;
+  lu.TheAnalyses.push_back(analy);
+  return lu;
+}
+
 PerceptronSpec::PerceptronSpec() {
   if (!static_constructed) {
     num_opcodes = sizeof(opcode_names) / sizeof(opcode_names[0]);
@@ -46,12 +81,9 @@ PerceptronSpec::PerceptronSpec() {
       opcode_values[opcode_names[i]] = (Opcode)i;
     }
 
-    Morpheme untagged_morpheme;
-    untagged_morpheme.TheLemma = L"!!UNTAGGED";
-    Tag untagged_tag;
-    untagged_tag.TheTag = L"!ut";
-    untagged_morpheme.TheTags.push_back(untagged_tag);
-    untagged_sentinel.push_back(untagged_morpheme);
+    untagged_sentinel = make_sentinel_wordoids(L"!UNTAGGED!", L"!UT!");
+    token_wordoids_underflow = make_sentinel_token(L"!SURF_UNDERFLOW!", L"!TOK_UNDERFLOW!", L"!TUF!");
+    token_wordoids_overflow = make_sentinel_token(L"!SURF_UNDERFLOW!", L"!TOK_OVERFLOW!", L"!TOF!");
 
     static_constructed = true;
   }
@@ -62,28 +94,49 @@ bool PerceptronSpec::static_constructed = false;
 std::map<const std::string, PerceptronSpec::Opcode>
 PerceptronSpec::opcode_values;
 std::vector<Morpheme> PerceptronSpec::untagged_sentinel;
+LexicalUnit PerceptronSpec::token_wordoids_underflow;
+LexicalUnit PerceptronSpec::token_wordoids_overflow;
 
 void PerceptronSpec::get_features(
     const TaggedSentence &tagged, const Sentence &untagged,
     int token_idx, int wordoid_idx,
     UnaryFeatureVec &feat_vec_out) const {
+  size_t i;
+  global_results.clear();
+  for (i = 0; i < global_defns.size(); i++) {
+    Machine machine(
+      *this, global_defns[i], i, false,
+      tagged, untagged, token_idx, wordoid_idx);
+    global_results.push_back(machine.getValue());
+  }
   std::vector<FeatureDefn>::const_iterator feat_it;
   UnaryFeatureVec feat_vec_delta;
-  for (feat_it = features.begin(); feat_it != features.end(); feat_it++) {
+  for (i = 0; i < features.size(); i++) {
+    //feat_it = features.begin(); feat_it != features.end(); feat_it++) {
     feat_vec_delta.clear();
     feat_vec_delta.push_back(FeatureKey());
     FeatureKey &fk = feat_vec_delta.back();
-    fk.push_back(std::string((char*)&(feat_it->front()), feat_it->size()));
-    Machine machine(*this, feat_it);
-    machine.get_feature(tagged, untagged, token_idx, wordoid_idx, feat_vec_delta);
+    std::string prg_id;
+    prg_id = i;
+    fk.push_back(prg_id); // Each feature is tagged with the <feat> which created it to avoid collisions
+    Machine machine(
+      *this, features[i], i, true,
+      tagged, untagged, token_idx, wordoid_idx);
+    machine.getFeature(feat_vec_delta);
     feat_vec_out.insert(feat_vec_out.end(),
                         feat_vec_delta.begin(), feat_vec_delta.end());
   }
 }
 
+std::string PerceptronSpec::dot = ".";
+
 const std::string&
 PerceptronSpec::Machine::get_str_operand() {
-  return spec.str_consts[*(++bytecode_iter)];
+  size_t idx = *(++bytecode_iter);
+  if (idx == 255) {
+    return dot;
+  }
+  return spec.str_consts[idx];
 }
 
 const VMSet&
@@ -96,10 +149,20 @@ PerceptronSpec::Machine::get_int_operand() {
   return (Bytecode){.uintbyte=*(++bytecode_iter)}.intbyte;
 }
 
+unsigned int
+PerceptronSpec::Machine::get_uint_operand() {
+  return (Bytecode){.uintbyte=*(++bytecode_iter)}.uintbyte;
+}
+
 const LexicalUnit&
 PerceptronSpec::Machine::get_token(const Sentence &untagged) {
   int target_token_idx = stack.pop_off().intVal();
-  assert(0 <= target_token_idx && (size_t)target_token_idx < untagged.size());
+  if (target_token_idx < 0) {
+    return token_wordoids_underflow;
+  }
+  if ((size_t)target_token_idx >= untagged.size()) {
+    return token_wordoids_overflow;
+  }
   return *untagged[target_token_idx].TheLexicalUnit;
 }
 
@@ -116,261 +179,427 @@ const Morpheme&
 PerceptronSpec::Machine::get_wordoid(const TaggedSentence &tagged) {
   int target_wordoid_idx = stack.pop_off().intVal();
   int target_token_idx = stack.pop_off().intVal();
-  assert(0 <= target_token_idx && (size_t)target_token_idx < tagged.size());
+  if (target_token_idx < 0) {
+    return token_wordoids_underflow.TheAnalyses[0].TheMorphemes[0];
+  }
+  if ((size_t)target_token_idx >= tagged.size()) {
+    return token_wordoids_overflow.TheAnalyses[0].TheMorphemes[0];
+  }
 
   const vector<Morpheme> &wordoids = tagged_to_wordoids(tagged[target_token_idx]);
-  assert(0 <= target_wordoid_idx && (size_t)target_wordoid_idx < wordoids.size());
+  if (target_wordoid_idx < 0) {
+    return token_wordoids_underflow.TheAnalyses[0].TheMorphemes[0];
+  }
+  if ((size_t)target_wordoid_idx >= wordoids.size()) {
+    return token_wordoids_overflow.TheAnalyses[0].TheMorphemes[0];
+  }
 
   return wordoids[target_wordoid_idx];
 }
 
 PerceptronSpec::Machine::Machine(
     const PerceptronSpec &spec,
-    std::vector<FeatureDefn>::const_iterator feat_iter)
-  : feat_iter(feat_iter), bytecode_iter(feat_iter->begin()), spec(spec) {}
+    const FeatureDefn &feat,
+    size_t feat_idx,
+    bool is_feature,
+    const TaggedSentence &tagged,
+    const Sentence &untagged,
+    int token_idx,
+    int wordoid_idx
+    )
+  : spec(spec), is_feature(is_feature), feat(feat), feat_idx(feat_idx),
+    bytecode_iter(feat.begin()), tagged(tagged), untagged(untagged),
+    token_idx(token_idx), wordoid_idx(wordoid_idx) {}
 
-void PerceptronSpec::Machine::get_feature(
-    const TaggedSentence &tagged, const Sentence &untagged,
-    int token_idx, int wordoid_idx,
+
+static bool
+inRange(int lower, int upper, int x) {
+  return lower <= x && x < upper;
+}
+
+static int
+clamp(int lower, int upper, int x) {
+  return std::min(std::max(x, lower), upper);
+}
+
+template <typename T> static void
+slice(T vec, int begin, int end) {
+  if (begin < 0) {
+    begin = vec.size() - begin;
+  }
+  if (end < 0) {
+    end = vec.size() - end;
+  }
+  begin = clamp(begin, 0, vec.size() - 1);
+  end = clamp(end, 0, vec.size() - 1);
+  vec.assign(vec.begin() + begin, vec.begin() + end);
+}
+
+template <typename T> static T
+subscript(std::vector<T> vec, int idx) {
+  if (idx < 0) {
+    idx = vec.size() - idx;
+  }
+  idx = clamp(idx, 0, vec.size() - 1);
+  return vec[idx];
+}
+
+void
+PerceptronSpec::Machine::traceMachineState()
+{
+  std::wcerr << "pc: " << bytecode_iter - feat.begin() << "\n";
+  std::wcerr << "peek: ";
+  std::wcerr << *bytecode_iter;
+  if (*bytecode_iter < num_opcodes) {
+    std::wcerr << " (" << opcode_names[*bytecode_iter].c_str() << ")";
+  }
+  std::wcerr << "\n";
+  std::wcerr << "stack: " << stack << "\n";
+}
+
+bool
+PerceptronSpec::Machine::execCommonOp(Opcode op)
+{
+  //traceMachineState();
+  switch (op) {
+    case OR:
+      stack.push(stack.pop_off().boolVal() || stack.pop_off().boolVal());
+      break;
+    case AND:
+      stack.push(stack.pop_off().boolVal() && stack.pop_off().boolVal());
+      break;
+    case NOT:
+      stack.push(!stack.pop_off().boolVal());
+      break;
+    case ADI:
+      stack.push(stack.pop_off().intVal() + get_int_operand());
+      break;
+    case ADD:
+      stack.push(stack.pop_off().intVal() + stack.pop_off().intVal());
+      break;
+    case ADD2: {
+      int b2 = stack.pop_off().intVal();
+      int b1 = stack.pop_off().intVal();
+      int a2 = stack.pop_off().intVal();
+      int a1 = stack.pop_off().intVal();
+      stack.push(a1 + b1);
+      stack.push(a2 + b2);
+    } break;
+    case PUSHINT:
+      stack.push(get_int_operand());
+      break;
+    case LT:
+      stack.push(stack.pop_off().intVal() < stack.pop_off().intVal());
+      break;
+    case LTE:
+      stack.push(stack.pop_off().intVal() <= stack.pop_off().intVal());
+      break;
+    case GT:
+      stack.push(stack.pop_off().intVal() > stack.pop_off().intVal());
+      break;
+    case GTE:
+      stack.push(stack.pop_off().intVal() >= stack.pop_off().intVal());
+      break;
+    case EQ:
+      stack.push(stack.pop_off().intVal() == stack.pop_off().intVal());
+      break;
+    case NEQ:
+      stack.push(stack.pop_off().intVal() != stack.pop_off().intVal());
+      break;
+    case DUP:
+      stack.push(stack.top());
+      break;
+    case DUP2: {
+      StackValue b = stack.pop_off();
+      StackValue a = stack.pop_off();
+      stack.push(a);
+      stack.push(b);
+      stack.push(a);
+      stack.push(b);
+    } break;
+    case FOREACHINIT: {
+      loop_stack.push_back((LoopState){
+          .initial_stack=stack.size() - 1,
+          .iterable=stack.pop_off(),
+          .iteration=0,
+          .accumulator=StackValue(0)});
+    } break;
+    case FOREACH: {
+      //std::wcerr << "size: " << loop_stack.back().iterable.size()
+                 //<< " iteration: " << loop_stack.back().iteration << "\n";
+      //std::wcerr << "foreach pc: " << bytecode_iter - feat.begin() << "\n";
+      size_t slot = get_uint_operand();
+      size_t end_offset = get_uint_operand();
+      //std::wcerr << "after foreach pc: " << bytecode_iter - feat.begin() << "\n";
+      if (loop_stack.back().iteration == loop_stack.back().iterable.size()) {
+        stack.push(loop_stack.back().accumulator);
+        loop_stack.pop_back();
+        bytecode_iter += end_offset;
+        break;
+      }
+      if (slots.size() <= slot) {
+        slots.resize(slot + 1);
+      }
+      slots[slot] = loop_stack.back().iterable[loop_stack.back().iteration];
+    } break;
+    case ENDFOREACH: {
+      // Is a map (produces vector)
+      LoopState &loop_state = loop_stack.back();
+      if (stack.size() > loop_state.initial_stack) {
+        // First iteration
+        if (loop_state.iteration == 0) {
+          if (stack.top().type == WRDVAL) {
+            loop_state.accumulator = StackValue(std::vector<Morpheme>());
+            //std::wcerr << "Wordoid array size " << loop_state.iterable.size() << "\n";
+          } else if (stack.top().type == STRVAL) {
+            loop_state.accumulator = StackValue(std::vector<std::string>());
+            //std::wcerr << "String array size " << loop_state.iterable.size() << "\n";
+          } else {
+            assert(false);
+          }
+        }
+        if (stack.top().type == WRDVAL) {
+          loop_state.accumulator.wrdArr().push_back(stack.top().wrd());
+        } else if (stack.top().type == STRVAL) {
+          //std::wcerr << "String array size " << loop_state.accumulator.size() << "\n";
+          loop_state.accumulator.strArr().push_back(stack.top().str());
+        } else {
+          assert(false);
+        }
+        stack.pop();
+        loop_state.iteration++;
+      }
+      size_t begin_offset = get_uint_operand();
+      bytecode_iter -= begin_offset;
+    } break;
+    case GETGVAR: {
+      int slot = get_uint_operand();
+      stack.push(spec.global_results[slot]);
+    } break;
+    case GETVAR: {
+      int slot = get_uint_operand();
+      stack.push(slots[slot]);
+    } break;
+    case STREQ:
+      stack.push(get_str_operand() == stack.pop_off().str());
+      break;
+    case STRIN: {
+      stack.push(In(get_set_operand())(stack.pop_off().str()));
+    } break;
+    case PUSHTOKADDR:
+      stack.push(token_idx);
+      break;
+    case PUSHWRDADDR:
+      stack.push(wordoid_idx);
+      break;
+    case PUSHADDR:
+      stack.push(token_idx);
+      stack.push(wordoid_idx);
+      break;
+    case ADJADDR: {
+      int wordoid_idx = stack.pop_off().intVal();
+      int token_idx = stack.pop_off().intVal();
+      int token_len = tagged.size();
+      int wordoid_len;
+      if (0 <= token_idx && token_idx < token_len) {
+        while (wordoid_idx < 0 && token_idx > 0) {
+          token_idx--;
+          wordoid_len = tagged_to_wordoids(tagged[token_idx]).size();
+          wordoid_idx += wordoid_len;
+        }
+        wordoid_len = tagged_to_wordoids(tagged[token_idx]).size();
+        while (wordoid_idx >= wordoid_len && token_idx < (token_len - 1)) {
+          token_idx++;
+          wordoid_idx -= wordoid_len;
+          wordoid_len = tagged_to_wordoids(tagged[token_idx]).size();
+        }
+      }
+      stack.push(token_idx);
+      stack.push(wordoid_idx);
+    } break;
+    case CLAMPADDR: {
+      int wordoid_idx = stack.pop_off().intVal();
+      int token_idx = stack.pop_off().intVal();
+      token_idx = clamp(0, (int)tagged.size() - 1, token_idx);
+      int wordoid_len = tagged_to_wordoids(tagged[token_idx]).size();
+      wordoid_idx = clamp(0, wordoid_len - 1, wordoid_idx);
+      stack.push(token_idx);
+      stack.push(wordoid_idx);
+    } break;
+    case CLAMPTAGGEDTOKADDR:
+      stack.push(clamp(0, (int)tagged.size() - 1, stack.pop_off().intVal()));
+      break;
+    case CLAMPTOKADDR:
+      stack.push(clamp(0, (int)untagged.size() - 1, stack.pop_off().intVal()));
+      break;
+    case GETWRD: {
+      //std::wcerr << "GETWRD start\n";
+      stack.push(get_wordoid(tagged));
+      //std::wcerr << "GETWRD done\n";
+    } break;
+    case EXTOKSURF: {
+      std::wstring surf = get_token(untagged).TheSurfaceForm;
+      stack.push(new std::string(UtfConverter::toUtf8(surf)));
+    } break;
+    case EXWRDLEMMA: {
+      std::wstring lemma = stack.pop_off().wrd().TheLemma;
+      stack.push(new std::string(UtfConverter::toUtf8(lemma)));
+    } break;
+    case EXTAGS: {
+      const std::vector<Tag> &tags = stack.top().wrd().TheTags;
+      /*std::vector<Tag>::const_iterator it = tags.begin();
+      std::wcerr << "tags: ";
+      for (;it != tags.end(); it++) {
+        std::wcerr << &(*it) << " " << it->TheTag << ", ";
+      }
+      std::wcerr << "\n";*/
+      std::vector<std::string> *tags_str = new std::vector<std::string>;
+      tags_str->resize(tags.size());
+      transform(tags.begin(), tags.end(), tags_str->begin(), get_tag);
+      stack.pop();
+      stack.push(tags_str);
+    } break;
+    case SENTLENTOK:
+      stack.push((int)untagged.size());
+      break;
+    case SENTLENTAGGEDTOK:
+      stack.push((int)tagged.size());
+      break;
+    case SENTLENWRD: unimplemented_opcode("SENTLENWRD"); break; // How can we know?
+    case TOKLENWRD: {
+      int target_token_idx = stack.pop_off().intVal();
+      assert(0 <= target_token_idx && (size_t)target_token_idx < tagged.size());
+      stack.push((int)tagged_to_wordoids(tagged[target_token_idx]).size());
+    } break;
+    case ISVALIDTOKADDR: {
+      int token_idx = stack.pop_off().intVal();
+      stack.push((bool)(0 <= token_idx && (size_t)token_idx < untagged.size()));
+    } break;
+    case ISVALIDTAGGEDTOKADDR: {
+      int token_idx = stack.pop_off().intVal();
+      stack.push((bool)(0 <= token_idx && (size_t)token_idx < tagged.size()));
+    } break;
+    case ISVALIDADDR: {
+      int wordoid_idx = stack.pop_off().intVal();
+      int token_idx = stack.pop_off().intVal();
+      bool tokaddr_valid = 0 <= token_idx && (size_t)token_idx < tagged.size();
+      if (!tokaddr_valid) {
+        stack.push(false);
+        break;
+      }
+      int wordoid_len = tagged_to_wordoids(tagged[token_idx]).size();
+      stack.push(0 <= wordoid_idx && wordoid_idx < wordoid_len);
+    } break;
+    case EXWRDARR: {
+      int token_idx = stack.pop_off().intVal();
+      if (0 < token_idx) {
+        stack.push(token_wordoids_underflow.TheAnalyses[0].TheMorphemes);
+      } else if ((size_t)token_idx >= tagged.size()) {
+        stack.push(token_wordoids_overflow.TheAnalyses[0].TheMorphemes);
+      } else {
+        stack.push(tagged_to_wordoids(tagged[token_idx]));
+      }
+    } break;
+    case FILTERIN: {
+      const VMSet& set_op = get_set_operand();
+      std::vector<std::string> &str_arr = stack.top().strArr();
+      str_arr.erase(std::remove_if(
+          str_arr.begin(), str_arr.end(), std::not1(In(set_op))));
+    } break;
+    case SETHAS: {
+      const VMSet& set_op = get_set_operand();
+      std::string str = stack.pop_off().str();
+      stack.push(set_op.find(str) != set_op.end());
+    } break;
+    case SETHASANY: {
+      const VMSet& set_op = get_set_operand();
+      std::vector<std::string> str_arr = stack.pop_off().strArr();
+      stack.push(
+        std::find_if(str_arr.begin(), str_arr.end(), In(set_op)) !=
+        str_arr.end()
+      );
+    } break;
+    case SETHASALL: {
+      const VMSet& set_op = get_set_operand();
+      std::vector<std::string> str_arr = stack.pop_off().strArr();
+      stack.push(
+        std::find_if(str_arr.begin(), str_arr.end(), std::not1(In(set_op))) ==
+        str_arr.end()
+      );
+    } break;
+    case HASSUBSTR: {
+      std::string haystack = stack.pop_off().str();
+      std::string needle = get_str_operand();
+      stack.push(haystack.find(needle) != std::string::npos);
+    } break;
+    case HASANYSUBSTR: unimplemented_opcode("HASANYSUBSTR"); break;
+    case CPYSTR: unimplemented_opcode("CPYSTR"); break;
+    case LOWER: {
+      // XXX: Eek! Bad! No Unicode. ICU please.
+      std::string &str = stack.top().str();
+      std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+    } break;
+    case SLICE: {
+      int begin = get_int_operand();
+      int end = get_int_operand();
+      if (stack.top().type == STRVAL) {
+        slice(stack.top().str(), begin, end);
+      } else if (stack.top().type == STRARRVAL) {
+        slice(stack.top().strArr(), begin, end);
+      } else if (stack.top().type == WRDARRVAL) {
+        slice(stack.top().wrdArr(), begin, end);
+      }
+    } break;
+    case SUBSCRIPT: {
+      size_t idx = get_uint_operand();
+      if (stack.top().type == STRARRVAL) {
+        stack.push(subscript(stack.pop_off().strArr(), idx));
+      } else if (stack.top().type == WRDARRVAL) {
+        stack.push(subscript(stack.pop_off().wrdArr(), idx));
+      }
+    } break;
+    case STRLEN: {
+      std::string str = stack.pop_off().str();
+      stack.push((int)str.length());
+    } break;
+    case ARRLEN: {
+      int str_arr_len = stack.pop_off().strArr().size();
+      stack.push(str_arr_len);
+    } break;
+    case JOIN: {
+      const std::string &sep = get_str_operand();
+      std::stringstream ss;
+      std::vector<std::string> str_arr = stack.pop_off().strArr();
+      std::vector<std::string>::const_iterator it;
+      for (it = str_arr.begin(); it != str_arr.end(); it++) {
+        ss << *it;
+        if (it + 1 != str_arr.end()) {
+          ss << sep;
+        }
+      }
+      stack.push(StackValue(ss.str()));
+    } break;
+    default:
+      return false;
+  }
+  return true;
+}
+
+void
+PerceptronSpec::Machine::getFeature(
     UnaryFeatureVec &feat_vec_out) {
-  for (; bytecode_iter != feat_iter->end(); bytecode_iter++) {
-    /*
-    std::wcerr << "pc: " << bytecode_iter - feat_iter->begin() << "\n";
-    std::wcerr << "peek: ";
-    std::wcerr << bytecode_iter->uintbyte;
-    if (bytecode_iter->uintbyte < num_opcodes) {
-      std::wcerr << " (" << opcode_names[bytecode_iter->uintbyte].c_str() << ")";
+  for (; bytecode_iter != feat.end(); bytecode_iter++) {
+    Opcode op = (Bytecode){.intbyte=*bytecode_iter}.op;
+    if (execCommonOp(op)) {
+      continue;
     }
-    std::wcerr << "\n";
-    std::wcerr << "stack: " << stack << "\n";
-    */
     switch ((Bytecode){.intbyte=*bytecode_iter}.op) {
-      case OR:
-        stack.push(stack.pop_off().boolVal() || stack.pop_off().boolVal());
-        break;
-      case AND:
-        stack.push(stack.pop_off().boolVal() && stack.pop_off().boolVal());
-        break;
-      case NOT:
-        stack.push(!stack.pop_off().boolVal());
-        break;
-      case ADI:
-        stack.push(stack.pop_off().intVal() + get_int_operand());
-        break;
-      case ADD:
-        stack.push(stack.pop_off().intVal() + stack.pop_off().intVal());
-        break;
-      case PUSHINT:
-        stack.push(get_int_operand());
-        break;
-      case PUSHZERO:
-        stack.push(0);
-        break;
-      case LT:
-        stack.push(stack.pop_off().intVal() < stack.pop_off().intVal());
-        break;
-      case LTE:
-        stack.push(stack.pop_off().intVal() <= stack.pop_off().intVal());
-        break;
-      case GT:
-        stack.push(stack.pop_off().intVal() > stack.pop_off().intVal());
-        break;
-      case GTE:
-        stack.push(stack.pop_off().intVal() >= stack.pop_off().intVal());
-        break;
-      case EQ:
-        stack.push(stack.pop_off().intVal() == stack.pop_off().intVal());
-        break;
-      case NEQ:
-        stack.push(stack.pop_off().intVal() != stack.pop_off().intVal());
-        break;
-      case DUP:
-        stack.push(stack.top());
-        break;
-      case DUP2: {
-        StackValue b = stack.pop_off();
-        StackValue a = stack.pop_off();
-        stack.push(a);
-        stack.push(b);
-        stack.push(a);
-        stack.push(b);
-      } break;
       case DIEIFFALSE:
         if (!stack.pop_off().boolVal()) {
           feat_vec_out.clear();
           return;
         }
         break;
-      case STREQ:
-        stack.push(get_str_operand() == stack.pop_off().str());
-        break;
-      case STRIN: {
-        stack.push(In(get_set_operand())(stack.pop_off().str()));
-      } break;
-      case PUSHTOKADDR:
-        stack.push(token_idx);
-        break;
-      case PUSHWRDADDR:
-        stack.push(wordoid_idx);
-        break;
-      case PUSHADDR:
-        stack.push(token_idx);
-        stack.push(wordoid_idx);
-        break;
-      case ADJADDR: {
-        int wordoid_idx = stack.pop_off().intVal();
-        int token_idx = stack.pop_off().intVal();
-        int token_len = tagged.size();
-        int wordoid_len;
-        if (0 <= token_idx && token_idx < token_len) {
-          while (wordoid_idx < 0 && token_idx > 0) {
-            token_idx--;
-            wordoid_len = tagged_to_wordoids(tagged[token_idx]).size();
-            wordoid_idx += wordoid_len;
-          }
-          wordoid_len = tagged_to_wordoids(tagged[token_idx]).size();
-          while (wordoid_idx >= wordoid_len && token_idx < (token_len - 1)) {
-            token_idx++;
-            wordoid_idx -= wordoid_len;
-            wordoid_len = tagged_to_wordoids(tagged[token_idx]).size();
-          }
-        }
-        stack.push(token_idx);
-        stack.push(wordoid_idx);
-      } break;
-      case CLAMPADDR: {
-        int wordoid_idx = stack.pop_off().intVal();
-        int token_idx = stack.pop_off().intVal();
-        token_idx = clamp(0, (int)tagged.size() - 1, token_idx);
-        int wordoid_len = tagged_to_wordoids(tagged[token_idx]).size();
-        wordoid_idx = clamp(0, wordoid_len - 1, wordoid_idx);
-        stack.push(token_idx);
-        stack.push(wordoid_idx);
-      } break;
-      case CLAMPTAGGEDTOKADDR:
-        stack.push(clamp(0, (int)tagged.size() - 1, stack.pop_off().intVal()));
-        break;
-      case CLAMPTOKADDR:
-        stack.push(clamp(0, (int)untagged.size() - 1, stack.pop_off().intVal()));
-        break;
-      case GETTOKLF: {
-        std::wstring lf = get_token(untagged).TheSurfaceForm;
-        stack.push(new std::string(UtfConverter::toUtf8(lf)));
-      } break;
-      case GETWRDLF: {
-        std::wstring lf = get_wordoid(tagged).TheLemma;
-        stack.push(new std::string(UtfConverter::toUtf8(lf)));
-      } break;
-      case GETTAGS: {
-        const std::vector<Tag> &tags = get_wordoid(tagged).TheTags;
-        std::vector<std::string> *tags_str = new std::vector<std::string>;
-        transform(tags.begin(), tags.end(), tags_str->begin(), get_tag);
-        stack.push(tags_str);
-      } break;
-      case GETTAGSFLAT: {
-        const std::vector<Tag> &tags = get_wordoid(tagged).TheTags;
-        std::stringstream ss;
-        std::vector<Tag>::const_iterator ti = tags.begin();
-        for (; ti != tags.end(); ti++) {
-          ss << "<";
-          ss << UtfConverter::toUtf8(ti->TheTag);
-          ss << ">";
-        }
-        stack.push(StackValue(ss.str()));
-      } break;
-      case SENTLENTOK:
-        stack.push((int)untagged.size());
-        break;
-      case SENTLENTAGGEDTOK:
-        stack.push((int)tagged.size());
-      case SENTLENWRD: unimplemented_opcode("SENTLENWRD"); break; // How can we know?
-      case TOKLENWRD: {
-        int target_token_idx = stack.pop_off().intVal();
-        assert(0 <= target_token_idx && (size_t)target_token_idx < tagged.size());
-        stack.push((int)tagged_to_wordoids(tagged[target_token_idx]).size());
-      } break;
-      case ISVALIDTOKADDR: {
-        int token_idx = stack.pop_off().intVal();
-        stack.push((bool)(0 <= token_idx && (size_t)token_idx < untagged.size()));
-      } break;
-      case ISVALIDTAGGEDTOKADDR: {
-        int token_idx = stack.pop_off().intVal();
-        stack.push((bool)(0 <= token_idx && (size_t)token_idx < tagged.size()));
-      }
-      case ISVALIDADDR: {
-        int wordoid_idx = stack.pop_off().intVal();
-        int token_idx = stack.pop_off().intVal();
-        bool tokaddr_valid = 0 <= token_idx && (size_t)token_idx < tagged.size();
-        if (!tokaddr_valid) {
-          stack.push(false);
-          break;
-        }
-        int wordoid_len = tagged_to_wordoids(tagged[token_idx]).size();
-        stack.push(0 <= wordoid_idx && wordoid_idx < wordoid_len);
-      } break;
-      case FILTERIN: {
-        const VMSet& set_op = get_set_operand();
-        std::vector<std::string> &str_arr = stack.top().strArr();
-        str_arr.erase(std::remove_if(
-            str_arr.begin(), str_arr.end(), std::not1(In(set_op))));
-      } break;
-      case SETHAS: {
-        const VMSet& set_op = get_set_operand();
-        std::string str = stack.pop_off().str();
-        stack.push(set_op.find(str) != set_op.end());
-      } break;
-      case SETHASANY: {
-        const VMSet& set_op = get_set_operand();
-        std::vector<std::string> str_arr = stack.pop_off().strArr();
-        stack.push(
-          std::find_if(str_arr.begin(), str_arr.end(), In(set_op)) !=
-          str_arr.end()
-        );
-      } break;
-      case SETHASALL: {
-        const VMSet& set_op = get_set_operand();
-        std::vector<std::string> str_arr = stack.pop_off().strArr();
-        stack.push(
-          std::find_if(str_arr.begin(), str_arr.end(), std::not1(In(set_op))) ==
-          str_arr.end()
-        );
-      } break;
-      case HASSUBSTR: {
-        std::string haystack = stack.pop_off().str();
-        std::string needle = get_str_operand();
-        stack.push(haystack.find(needle) != std::string::npos);
-      } break;
-      case HASANYSUBSTR: unimplemented_opcode("HASANYSUBSTR"); break;
-      case CPYSTR: unimplemented_opcode("CPYSTR"); break;
-      case LOWER: {
-        // XXX: Eek! Bad! No Unicode. ICU please.
-        std::string &str = stack.top().str();
-        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
-      } break;
-      case SLICEBEGIN: {
-        int len = get_int_operand();
-        std::string &str = stack.top().str();
-        assert(0 < len && (size_t)len <= str.length());
-        str.assign(str, 0, len);
-      } break;
-      case SLICEEND: {
-        int len = get_int_operand();
-        std::string &str = stack.top().str();
-        size_t str_len = str.length();
-        assert(0 < len && (size_t)len <= str.length());
-        str.assign(str, str_len - len, len);
-      } break;
-      case SLICEOFFBEGIN: unimplemented_opcode("SLICEOFFBEGIN"); break;
-      case SLICEOFFEND: unimplemented_opcode("SLICEOFFEND"); break;
-      case LOWERARR: unimplemented_opcode("LOWERARR"); break;
-      case STRLEN: {
-        std::string str = stack.pop_off().str();
-        stack.push((int)str.length());
-      } break;
-      case ARRLEN: {
-        int str_arr_len = stack.pop_off().strArr().size();
-        stack.push(str_arr_len);
-      } break;
       case FCATSTRARR: {
         std::vector<std::string> &str_arr = stack.top().strArr();
         if (str_arr.size() == 0) {
@@ -413,15 +642,30 @@ void PerceptronSpec::Machine::get_feature(
         break;
     }
   }
+  assert(stack.empty());
+}
+
+PerceptronSpec::StackValue
+PerceptronSpec::Machine::getValue()
+{
+  for (; bytecode_iter != feat.end(); bytecode_iter++) {
+    Opcode op = (Bytecode){.intbyte=*bytecode_iter}.op;
+    if (execCommonOp(op)) {
+      continue;
+    }
+    unimplemented_opcode(opcode_names[*bytecode_iter]);
+  }
+  StackValue result = stack.pop_off();
+  assert(stack.empty());
+  return result;
 }
 
 void
 PerceptronSpec::Machine::unimplemented_opcode(std::string opstr) {
-  int feat_idx = feat_iter - spec.features.begin();
-  int bytecode_idx = bytecode_iter - feat_iter->begin();
+  int bytecode_idx = bytecode_iter - feat.begin();
   std::stringstream msg;
   msg << "Unimplemented opcode: " << opstr
-      << " at feature #" << feat_idx<< " address #" << bytecode_idx;
+      << " at " << (is_feature ? "feature" : "global") << " #" << feat_idx << " address #" << bytecode_idx;
   throw Apertium::Exception::apertium_tagger::UnimplementedOpcode(msg);
 }
 
@@ -450,35 +694,23 @@ PerceptronSpec::Machine::get_tag(const Tag &in) {
   return UtfConverter::toUtf8(in.TheTag);
 }
 
-bool PerceptronSpec::inRange(int lower, int upper, int x) {
-  return lower <= x && x < upper;
-}
-
-int PerceptronSpec::clamp(int lower, int upper, int x) {
-  return std::min(std::max(x, lower), upper);
-}
-
-void PerceptronSpec::serialise(std::ostream &serialised) const {
-  Serialiser<size_t>::serialise(beam_width, serialised);
-  Serialiser<std::vector<std::string> >::serialise(str_consts, serialised);
-  Serialiser<std::vector<VMSet> >::serialise(set_consts, serialised);
-  Serialiser<size_t>::serialise(features.size(), serialised);
+void PerceptronSpec::serialiseFeatDefnVec(
+    std::ostream &serialised, const std::vector<FeatureDefn> &defn_vec) const {
+  Serialiser<size_t>::serialise(defn_vec.size(), serialised);
   std::vector<FeatureDefn>::const_iterator feat_it;
-  for (feat_it = features.begin(); feat_it != features.end(); feat_it++) {
+  for (feat_it = defn_vec.begin(); feat_it != defn_vec.end(); feat_it++) {
     Serialiser<std::string>::serialise(
         std::string((char*)&(feat_it->front()), feat_it->size()),
         serialised);
   }
 }
 
-void PerceptronSpec::deserialise(std::istream &serialised) {
-  beam_width = Deserialiser<size_t>::deserialise(serialised);
-  str_consts = Deserialiser<std::vector<std::string> >::deserialise(serialised);
-  set_consts = Deserialiser<std::vector<VMSet> >::deserialise(serialised);
+void PerceptronSpec::deserialiseFeatDefnVec(
+    std::istream &serialised, std::vector<FeatureDefn> &defn_vec) {
   size_t num_features = Deserialiser<size_t>::deserialise(serialised);
   while (num_features-- > 0) {
-    features.push_back(FeatureDefn());
-    FeatureDefn &feat = features.back();
+    defn_vec.push_back(FeatureDefn());
+    FeatureDefn &feat = defn_vec.back();
     std::string feat_str = Deserialiser<std::string>::deserialise(serialised);
     feat.reserve(feat_str.size());
     std::string::iterator feat_str_it;
@@ -486,6 +718,22 @@ void PerceptronSpec::deserialise(std::istream &serialised) {
       feat.push_back(*feat_str_it);
     }
   }
+}
+
+void PerceptronSpec::serialise(std::ostream &serialised) const {
+  Serialiser<size_t>::serialise(beam_width, serialised);
+  Serialiser<std::vector<std::string> >::serialise(str_consts, serialised);
+  Serialiser<std::vector<VMSet> >::serialise(set_consts, serialised);
+  serialiseFeatDefnVec(serialised, features);
+  serialiseFeatDefnVec(serialised, global_defns);
+}
+
+void PerceptronSpec::deserialise(std::istream &serialised) {
+  beam_width = Deserialiser<size_t>::deserialise(serialised);
+  str_consts = Deserialiser<std::vector<std::string> >::deserialise(serialised);
+  set_consts = Deserialiser<std::vector<VMSet> >::deserialise(serialised);
+  deserialiseFeatDefnVec(serialised, features);
+  deserialiseFeatDefnVec(serialised, global_defns);
 }
 
 }

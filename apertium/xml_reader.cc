@@ -43,6 +43,26 @@ XMLReader::step()
   std::wcerr << name << L": " << type << "\n";
 }
 
+void
+XMLReader::stepPastSelfClosingTag(wstring const &tag)
+{
+  // libxml2 expands <foo /> to <foo></foo> inside entities.
+  // This method exists to work around this difference.
+  step();
+  if (name == tag && type ==  XML_READER_TYPE_END_ELEMENT) {
+    step();
+  }
+  stepToTag();
+}
+
+void
+XMLReader::stepToNextTag()
+{
+  stepToTag();
+  step();
+  stepToTag();
+}
+
 wstring
 XMLReader::attrib(wstring const &name)
 {
@@ -58,8 +78,9 @@ XMLReader::attrib(string const &name)
 void
 XMLReader::parseError(wstring const &message)
 {
-  wcerr << L"Error: (" << xmlTextReaderGetParserLineNumber(reader);
-  wcerr << L"): " << message << L"." << endl;
+  wcerr << L"Error at line " << xmlTextReaderGetParserLineNumber(reader)
+        << L", column " << xmlTextReaderGetParserColumnNumber(reader)
+        << L": " << message << L"." << endl;
   exit(EXIT_FAILURE);
 }
 

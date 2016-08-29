@@ -42,22 +42,24 @@ protected:
   virtual void parse();
 
 private:
-  typedef std::map<std::wstring, size_t> ConstNVMap;
+  typedef std::map<std::wstring, size_t> VarNVMap;
 
   size_t pushSetConst(std::string &val);
   size_t pushStrConst(std::string &val);
   size_t getConstRef(const std::wstring &ref_attr, const std::string &lit_attr,
-                     const std::wstring &what, ConstNVMap &const_map,
+                     const std::wstring &what, VarNVMap &const_map,
                      size_t (MTXReader::*push_new)(std::string&), bool& exists);
   size_t getSetRef(bool& exists);
   size_t getStrRef(bool& exists);
   void emitBytecode(VM::Bytecode bc);
   void emitOpcode(VM::Opcode op);
+  void pokeBytecode(size_t addr, VM::Bytecode bc);
   void emitInt(int val);
   void emitUInt(int val);
   bool emitPushTokAddrFromAttr(bool is_tagged);
   void emitPushTokAddrFromAttr();
   void emitPushAddrFromAttr();
+  int getInt(std::string attr_name, bool& exists);
   int getInt(bool& exists);
 
   void procSetDef();
@@ -69,25 +71,43 @@ private:
   void emitStrImmOp(VM::Opcode op);
   void procBinCompareOp(VM::Opcode op);
   void procCommBoolOp(VM::Opcode op);
-  void procIntExpr();
-  void procStrArrExpr();
-  void procStrExpr();
-  void procBoolExpr();
+  bool procVoidExpr(bool allow_fail=false);
+  void procDefGlobal();
+  bool tryProcSubscript(bool (MTXReader::*proc_inner)(bool));
+  bool tryProcSlice(bool (MTXReader::*proc_inner)(bool));
+  bool tryProcVar(VM::StackValueType);
+  void procAddrExpr();
+  bool procWordoidArrExpr(bool allow_fail=false);
+  bool procWordoidExpr(bool allow_fail=false);
+  bool procIntExpr(bool allow_fail=false);
+  bool procStrArrExpr(bool allow_fail=false);
+  bool procStrExpr(bool allow_fail=false);
+  bool procBoolExpr(bool allow_fail=false);
+  void procOut();
+  void procOutMany();
+  void procForEach(Optional<VM::StackValueType> svt);
   void procPred();
   template<typename GetT, typename EmitT> void emitAttr(
       std::wstring what, GetT (MTXReader::*getter)(bool&),
       void (MTXReader::*emitter)(EmitT));
-  void emitStrRef();
-  void emitSetRef();
-  void emitInt();
+  void getAndEmitStrRef();
+  void getAndEmitSetRef();
+  void getAndEmitInt();
   void procInst();
   void procFeat();
   void procFeats();
   void copy(MTXReader const &o);
   MTXReader(MTXReader const &o);
 
-  static ConstNVMap set_names;
-  static ConstNVMap str_names;
+  size_t slot_counter;
+  size_t global_slot_counter;
+  VarNVMap set_names;
+  VarNVMap str_names;
+  VarNVMap slot_names;
+  std::vector<VM::StackValueType> slot_types;
+  VarNVMap global_slot_names;
+  std::vector<VM::StackValueType> global_slot_types;
+  std::stack<size_t> loop_stack;
   VM::FeatureDefn *cur_feat;
 };
 }

@@ -18,6 +18,7 @@
 #include "exception.h"
 #include "tag.h"
 
+#include <iostream>
 #include <string>
 #include <vector>
 
