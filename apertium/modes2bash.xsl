@@ -61,6 +61,11 @@
 
 <xsl:template match="pipeline">
   <xsl:param name="dir" />
+  <xsl:for-each select="distinct-values(./*/pipe/@name)">
+    <xsl:text>
+mkfifo /tmp/</xsl:text>
+    <xsl:value-of select="."/>
+  </xsl:for-each>
   <xsl:for-each select="./*">
     <xsl:if test="not(position()=1)">
       <xsl:text>| </xsl:text>
@@ -68,6 +73,11 @@
     <xsl:apply-templates select=".">
       <xsl:with-param name="dir"><xsl:value-of select="$dir"/></xsl:with-param>
     </xsl:apply-templates>
+  </xsl:for-each>
+  <xsl:for-each select="distinct-values(./*/pipe/@name)">
+    <xsl:text>
+rm /tmp/</xsl:text>
+    <xsl:value-of select="."/>
   </xsl:for-each>
 </xsl:template>
 
@@ -95,5 +105,10 @@
   <xsl:text>' </xsl:text>
 </xsl:template>
 
+<xsl:template match="pipe">
+  <xsl:text>'/tmp/</xsl:text>
+  <xsl:value-of select="./@name"/>
+  <xsl:text>' </xsl:text>
+</xsl:template>
 
 </xsl:stylesheet>

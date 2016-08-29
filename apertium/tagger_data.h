@@ -20,6 +20,7 @@
 #include <apertium/constant_manager.h>
 #include <apertium/ttag.h>
 #include <apertium/collection.h>
+#include <apertium/collection.h>
 #include <lttoolbox/pattern_list.h>
 #include <lttoolbox/ltstr.h>
 
@@ -42,7 +43,7 @@ protected:
   ConstantManager constants;
   Collection output;
   PatternList plist;
-
+  vector<unsigned int> ambg_class_counts;
   vector<wstring> discard;
   
   void copy(TaggerData const &o);
@@ -80,8 +81,12 @@ public:
   void setOutput(Collection const &c);
  
   void setPatternList(PatternList const &pl);
-  void addDiscard(wstring const &tags);
   PatternList & getPatternList();
+
+  void setAmbgClassCounts(vector<unsigned int> const &acc);
+  vector<unsigned int> & getAmbgClassCounts();
+
+  void addDiscard(wstring const &tags);
 };
 
 #endif

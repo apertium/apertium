@@ -16,7 +16,7 @@
  */
 
 #include <apertium/tagger_utils.h>
-#include <apertium/morpho_stream.h>
+#include <apertium/file_morpho_stream.h>
 
 #include <stdio.h>
 #include <sstream>
@@ -125,16 +125,18 @@ wstring tagger_utils::trim(wstring s)
   return s;
 }
 
-void
-tagger_utils::read_dictionary(FILE *fdic, TaggerData &td) {
-  int i, k, nw = 0;
-  TaggerWord *word = NULL;
-  set <TTag> tags;
+void tagger_utils::scan_for_ambg_classes(FILE *fdic, TaggerData &td) {
   Collection &output = td.getOutput();
+  FileMorphoStream morpho_stream(fdic, true, &td);
+  tagger_utils::scan_for_ambg_classes(output, morpho_stream);
+}
 
-  MorphoStream morpho_stream(fdic, true, &td);
+void tagger_utils::scan_for_ambg_classes(Collection &output, MorphoStream &morpho_stream) {
+  int nw = 0;
+  set <TTag> tags;
+  TaggerWord *word = NULL;
 
-  // In the input dictionary there must be all punctuation marks, including the end-of-sentece mark
+  // In the input dictionary there must be all punctuation marks, including the end-of-sentence mark
 
   word = morpho_stream.get_next_word();
 
@@ -145,17 +147,23 @@ tagger_utils::read_dictionary(FILE *fdic, TaggerData &td) {
     tags = word->get_tags();
 
     if (tags.size() > 0)
-      k = output[tags];
+      output[tags];
 
     delete word;
     word = morpho_stream.get_next_word();
   }
   wcerr << L"\n";
+}
+
+void
+tagger_utils::add_neccesary_ambg_classes(TaggerData &td) {
+  int i;
+  Collection &output = td.getOutput();
 
   // OPEN AMBIGUITY CLASS
   // It contains all tags that are not closed.
   // Unknown words are assigned the open ambiguity class
-  k = output[td.getOpenClass()];
+  output[td.getOpenClass()];
 
   // Create ambiguity class holding one single tag for each tag.
   // If not created yet
@@ -163,21 +171,67 @@ tagger_utils::read_dictionary(FILE *fdic, TaggerData &td) {
   for(i = 0; i != N; i++) {
     set<TTag> amb_class;
     amb_class.insert(i);
-    k = output[amb_class];
+    output[amb_class];
   }
 }
 
-set<TTag>
+void
+tagger_utils::init_ambg_class_freq(TaggerData &td) {
+  Collection &output = td.getOutput();
+  vector<unsigned int> &acc = td.getAmbgClassCounts();
+  acc.assign(output.size(), 0);
+}
+
+void
+tagger_utils::count_ambg_class_freq(FILE *fdic, TaggerData &td) {
+  Collection &output = td.getOutput();
+  vector<unsigned int> &acc = td.getAmbgClassCounts();
+  FileMorphoStream morpho_stream(fdic, true, &td);
+  count_ambg_class_freq(output, acc, morpho_stream);
+}
+
+void
+tagger_utils::count_ambg_class_freq(Collection &output,
+                                    vector<unsigned int> &acc,
+                                    MorphoStream &morpho_stream) {
+  int nw = 0;
+  set <TTag> tags;
+  TaggerWord *word = NULL;
+
+  word = morpho_stream.get_next_word();
+
+  while (word) {
+    if (++nw % 10000 == 0)
+      wcerr << L'.' << flush;
+
+    tags = word->get_tags();
+
+    if (tags.size() > 0 && !output.has_not(tags)) {
+      acc[output[tags]]++;
+    }
+
+    delete word;
+    word = morpho_stream.get_next_word();
+  }
+  wcerr << L"\n";
+}
+
+set<TTag> &
 tagger_utils::find_similar_ambiguity_class(TaggerData &td, set<TTag> &c) {
   set<TTag> &ret = td.getOpenClass();
   Collection &output = td.getOutput();
+  int ret_idx = output[ret];
+  vector<unsigned int> &acc = td.getAmbgClassCounts();
 
   for (int k=0; k<output.size(); k++) {
     const set<TTag> &ambg_class = output[k];
-    if (ambg_class.size() >= ret.size()) {
+    if (ambg_class.size() > ret.size() ||
+        (ambg_class.size() == ret.size() &&
+         acc[ret_idx] > acc[k])) {
       continue;
     }
     if (includes(ambg_class.begin(), ambg_class.end(), c.begin(), c.end())) {
+      ret_idx = k;
       ret = ambg_class;
     }
   }
@@ -210,10 +264,10 @@ static void _warn_absent_ambiguity_class(TaggerWord &word) {
   wcerr << L"Error: " << errors;
 }
 
-set<TTag>
-tagger_utils::require_similar_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, bool debug) {
+set<TTag> &
+tagger_utils::require_similar_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, bool warn) {
   if (td.getOutput().has_not(tags)) {
-    if (debug) {
+    if (warn) {
       _warn_absent_ambiguity_class(word);
     }
     return find_similar_ambiguity_class(td, tags);
@@ -221,9 +275,17 @@ tagger_utils::require_similar_ambiguity_class(TaggerData &td, set<TTag> &tags, T
   return tags;
 }
 
+set<TTag> &
+tagger_utils::require_similar_ambiguity_class(TaggerData &td, set<TTag> &tags) {
+  if (td.getOutput().has_not(tags)) {
+    return find_similar_ambiguity_class(td, tags);
+  }
+  return tags;
+}
+
 void
-tagger_utils::warn_absent_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, bool debug) {
-  if (td.getOutput().has_not(tags) && debug) {
+tagger_utils::warn_absent_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, bool warn) {
+  if (warn && td.getOutput().has_not(tags)) {
     _warn_absent_ambiguity_class(word);
   }
 }

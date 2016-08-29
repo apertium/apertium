@@ -27,6 +27,7 @@
 #include <cstdlib>
 #include <apertium/tagger_data.h>
 #include <apertium/tagger_word.h>
+#include <apertium/morpho_stream.h>
 
 using namespace std;
 
@@ -73,7 +74,16 @@ int nguiones_fs(wstring const &cadena);
  *  @param fdic the input stream with the expanded dictionary to read
  *  @param td the tagger data instance to mutate
  */
-void read_dictionary(FILE *fdic, TaggerData &td);
+void scan_for_ambg_classes(FILE *fdic, TaggerData &td);
+void scan_for_ambg_classes(Collection &output, MorphoStream &morpho_stream);
+
+void add_neccesary_ambg_classes(TaggerData &td);
+
+void init_ambg_class_freq(TaggerData &td);
+
+void count_ambg_class_freq(FILE *fdic, TaggerData &td);
+void count_ambg_class_freq(Collection &output, vector<unsigned int> &acc,
+                           MorphoStream &morpho_stream);
 
 /** This method returns a known ambiguity class that is a subset of
 *  the one received as a parameter. This is useful when a new
@@ -82,17 +92,18 @@ void read_dictionary(FILE *fdic, TaggerData &td);
 *  @param c set of tags (ambiguity class)
 *  @return a known ambiguity class
 */
-set<TTag> find_similar_ambiguity_class(TaggerData &td, set<TTag> &c);
+set<TTag> & find_similar_ambiguity_class(TaggerData &td, set<TTag> &c);
 
 /** Dies with an error message if the tags aren't in the tagger data */
 void require_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, int nw);
 
 /** As with find_similar_ambiguity_class, but returns tags if it's already fine
- * & prints a warning if debug */
-set<TTag> require_similar_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, bool debug);
+ * & prints a warning if warn */
+set<TTag> & require_similar_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, bool warn);
+set<TTag> & require_similar_ambiguity_class(TaggerData &td, set<TTag> &tags);
 
-/** Just prints a warning if debug */
-void warn_absent_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, bool debug);
+/** Just prints a warning if warn */
+void warn_absent_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, bool warn);
 
 wstring trim(wstring s);
 

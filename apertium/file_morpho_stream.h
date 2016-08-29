@@ -20,14 +20,15 @@
  *  @author	Felipe Sánchez-Martínez 
  */
 
-#ifndef __MORPHOSTREAM_H
-#define __MORPHOSTREAM_H
+#ifndef __FILEMORPHOSTREAM_H
+#define __FILEMORPHOSTREAM_H
 
 #include <apertium/constant_manager.h>
 #include <lttoolbox/match_exe.h>
 #include <lttoolbox/match_state.h>
 #include <apertium/tagger_data.h>
 #include <apertium/tagger_word.h>
+#include <apertium/morpho_stream.h>
 
 #include <cstdio>
 #include <deque>
@@ -43,37 +44,55 @@ using namespace std;
  *  This class processes the output of class  yyFlexLexer (lex.yy.cc), and 
  *  builds the TaggerWord objects managed by the tagger 
  */
-class MorphoStream {
-public:
-   virtual ~MorphoStream();
-   /** Get next word in the input stream
-    *  @return  A pointer to the next word in the input stream 
-    */
-   virtual TaggerWord* get_next_word() = 0;
-   
-   /** 
-    * Set up the flag to detect '\0' characters
-    * @param nf the null_flush value
-    */
-   virtual void setNullFlush(bool nf) = 0;
-   
-   /**
-    * Return true if the last reading is end of file of '\0' when null_flush 
-    * is true
-    * @returns the value of end_of_file
-    */
-   virtual bool getEndOfFile(void) = 0;
-   
-   /**
-    * Sets a new value for the end_of_file_flag
-    * @param eof the new value for end_of_file
-    */
-   virtual void setEndOfFile(bool eof) = 0;
+class FileMorphoStream : public MorphoStream {
+private:
+  bool foundEOF;
+  wstring last_string_tag;
+  bool debug;
+  FILE *input;
+  int ca_any_char;
+  int ca_any_tag;
+  int ca_kignorar;
+  int ca_kbarra;
+  int ca_kdollar;
+  int ca_kbegin;
+  int ca_kmot;
+  int ca_kmas;
+  int ca_kunknown;
+  int ca_tag_keof;
+  int ca_tag_kundef;
 
-   /**
-    * Rewind the underlying FILE* and unset the end_of_file flag
+  vector<TaggerWord *> vwords; //Vector used to implement a buffer
+                             //to treat ambiguous multiword units
+
+  MatchExe *me;
+  TaggerData *td;
+  Alphabet alphabet;
+  MatchState ms;
+
+  bool null_flush;
+  bool end_of_file;
+
+  void readRestOfWord(int &ivwords);
+  void lrlmClassify(wstring const &str, int &ivwords);
+public:
+
+   /** Constructor 
+    *  @param is the input stream.
     */
-   virtual void rewind() = 0;
+   FileMorphoStream(FILE *ftxt, bool d, TaggerData *t);
+  
+   /** 
+    *  Destructor 
+    */
+   ~FileMorphoStream();
+  
+   /** See interface */
+   TaggerWord* get_next_word();  
+   void setNullFlush(bool nf);
+   bool getEndOfFile(void);
+   void setEndOfFile(bool eof);
+   void rewind();
 };
 
 #endif

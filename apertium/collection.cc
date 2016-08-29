@@ -52,9 +52,7 @@ Collection::operator[](const set<int> &t)
 int &
 Collection::add(const set<int> &t)
 {
-  index[t] = index.size()-1;
-  element.push_back(&(index.find(t)->first));
-  return index[t];
+  return (*this)[t];
 }
 
 void

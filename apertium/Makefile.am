@@ -32,6 +32,8 @@ h_sources = a.h \
 	    lswpost.h \
 	    morpheme.h \
 	    morpho_stream.h \
+	    dual_morpho_stream.h \
+	    file_morpho_stream.h \
 	    optional.h \
 	    postchunk.h \
 	    serialiser.h \
@@ -110,6 +112,8 @@ cc_sources = a.cc \
 	     lswpost.cc \
 	     morpheme.cc \
 	     morpho_stream.cc \
+	     dual_morpho_stream.cc \
+	     file_morpho_stream.cc \
 	     postchunk.cc \
 	     stream.cc \
 	     stream_5_3_1_tagger.cc \

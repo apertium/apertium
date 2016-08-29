@@ -38,35 +38,46 @@ private:
   enum UnigramType { Stream_5_3_1, Stream_5_3_2, Stream_5_3_3 };
   enum FunctionType { Tagger, Retrain, Supervised, Train };
   static void help();
-
+  static const struct option longopts[];
 
   static std::string option_string(const int &indexptr_);
   static std::string option_string(const struct option &option_);
-
-
   static void locale_global_();
-
-
-  static const struct option longopts[];
-
-
-
   void set_indexptr();
-
-
   void flagOptionCase(bool (basic_Tagger::Flags::*GetFlag)() const,
                       void (basic_Tagger::Flags::*SetFlag)(const bool &));
   std::string option_string();
   void functionTypeTypeOptionCase(const FunctionTypeType &FunctionTypeType_);
   void functionTypeOptionCase(const FunctionType &FunctionType_);
+  void getCgAugmentedModeArgument();
   void getIterationsArgument();
-  unsigned long optarg_unsigned_long() const;
+  unsigned long optarg_unsigned_long(const char *metavar);
+  void expect_file_arguments(int lower, int upper);
+  void expect_file_arguments(int exactly);
+  void get_file_arguments(
+    bool get_crp_fn,
+    unsigned long* ambg_class_count,
+    char **DicFn, char **CrpFn,
+    char **TaggedFn, char **UntaggedFn, char **CgTaggedFn,
+    char **TsxFn, char **ProbFn);
+  void init_FILE_Tagger(FILE_Tagger &FILE_Tagger_, string const &TsxFn);
+
+  MorphoStream* setup_untagged_morpho_stream(
+    FILE_Tagger &FILE_Tagger_,
+    char *DicFn, char *CgTaggedFn, char *UntaggedFn,
+    FILE **Dictionary, FILE **UntaggedCorpus, FILE **CgTaggedCorpus,
+    unsigned int ambg_class_count);
+  void close_untagged_files(
+    char *DicFn, char *CgTaggedFn, char *UntaggedFn,
+    FILE *Dictionary, FILE *UntaggedCorpus, FILE *CgTaggedCorpus);
+
   void g_StreamTagger(basic_StreamTagger &StreamTagger_);
   void s_StreamTaggerTrainer(basic_StreamTaggerTrainer &StreamTaggerTrainer_);
   void g_FILE_Tagger(FILE_Tagger &FILE_Tagger_);
   void r_FILE_Tagger(FILE_Tagger &FILE_Tagger_);
   void s_FILE_Tagger(FILE_Tagger &FILE_Tagger_);
   void t_FILE_Tagger(FILE_Tagger &FILE_Tagger_);
+  void c_FILE_Tagger(FILE_Tagger &FILE_Tagger_);
   int &argc;
   char **&argv;
   int The_val;
@@ -82,6 +93,7 @@ private:
   Optional<UnigramType> TheUnigramType;
   Optional<FunctionType> TheFunctionType;
   unsigned long TheFunctionTypeOptionArgument;
+  unsigned long CgAugmentedMode;
   basic_Tagger::Flags TheFlags;
 };
 }

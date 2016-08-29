@@ -52,16 +52,17 @@ class LSWPoST : public Apertium::FILE_Tagger {
 private:
   TaggerDataLSW tdlsw;
   TTag eos; // end-of-sentence tag
-
+protected:
+  void post_ambg_class_scan();
 public:
+  TaggerData& get_tagger_data();
   void deserialise(FILE *Serialised_FILE_Tagger);
   std::vector<std::wstring> &getArrayTags();
-  void train(FILE *Corpus, unsigned long Count);
   void serialise(FILE *Stream_);
   void deserialise(const TaggerData &Deserialised_FILE_Tagger);
-  void init_probabilities_from_tagged_text_(FILE *TaggedCorpus,
-                                            FILE *UntaggedCorpus);
-  void init_probabilities_kupiec_(FILE *Corpus);
+  void init_probabilities_from_tagged_text_(MorphoStream &, MorphoStream &);
+  void init_probabilities_kupiec_(MorphoStream &lexmorfo);
+  void train(MorphoStream &morpho_stream, unsigned long count);
   LSWPoST();
   LSWPoST(TaggerDataLSW *tdlsw);
 
@@ -78,12 +79,6 @@ public:
     */
    void set_eos(TTag t);
 
-   /** It reads the expanded dictionary received as a parameter and calculates
-    *  the set of ambiguity classes that the tagger will manage.
-    *  @param fdic the input stream with the expanded dictionary to read
-    */
-   void read_dictionary(FILE *fdic);
-
    /** Whether a tag sequence is valid, according to the forbid and enforce rules
     */
    bool is_valid_seq(TTag left, TTag mid, TTag right);
@@ -93,12 +88,12 @@ public:
     *  To do so, the joint probability of a tag sequence that contains a forbid
     *  rule, or doesn't satisfy a enforce rule, is set to 0.
     */
-   void init_probabilities(FILE *ftxt);
+   void init_probabilities(MorphoStream &morpho_stream);
 
    /** Unsupervised training algorithm (Baum-Welch implementation).
     *  @param ftxt the input stream with the untagged corpus to process
     */
-   void train (FILE *ftxt);
+   void train(MorphoStream &morpho_stream);
 
    /** Prints the para matrix.
     */
@@ -106,6 +101,8 @@ public:
 
    /** Do the tagging
     */
-   void tagger(FILE *Input, FILE *Output, const bool &First = false);
+   void tagger(MorphoStream &morpho_stream, FILE *Output,
+               const bool &First = false,
+               MorphoStream *cg_morpho_stream = NULL);
 };
 #endif

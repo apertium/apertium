@@ -32,6 +32,8 @@ namespace Exception {
     ~EXCEPTION_TYPE() throw() {}                                               \
   };
 
+EXCEPTION(UnalignedStreams);
+
 namespace Analysis {
 EXCEPTION(TheMorphemes_empty)
 }
@@ -45,6 +47,7 @@ EXCEPTION(optarg_eq_NULL)
 EXCEPTION(str_end_not_eq_NULL)
 EXCEPTION(ERANGE_)
 EXCEPTION(InvalidArgument)
+EXCEPTION(InvalidArgumentCombination)
 EXCEPTION(InvalidOption)
 EXCEPTION(UnexpectedFileArgumentCount)
 EXCEPTION(UnexpectedFlagOption)

@@ -26,7 +26,7 @@
 
 #include "getopt_long.h"
 #include <apertium/utf_converter.h>
-#include <apertium/morpho_stream.h>
+#include <apertium/file_morpho_stream.h>
 #include <apertium/tsx_reader.h>
 #include <apertium/tagger_data_hmm.h>
 #include <lttoolbox/lt_locale.h>
@@ -50,7 +50,7 @@ void check_file(FILE *f, const string& path) {
 }
 
 void readwords (FILE *is, int corpus_length) {
-  MorphoStream lexmorfo(is, true, &tagger_data_hmm);
+  FileMorphoStream lexmorfo(is, true, &tagger_data_hmm);
   TaggerWord *word=NULL;
   int nwords=0;
 

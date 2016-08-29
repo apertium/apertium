@@ -56,19 +56,22 @@ private:
    
    /** It allocs memory for the transition (a) and the emission (b) matrices.
     *  Before calling this method the number of ambiguity classes must be known.
-    *  This methos is called within read_ambiguity_classes and read_dictionary.
-    *  @see: read_ambiguity_classes, read_dictionary
+    *  This methos is called within read_ambiguity_classes and scan_for_ambiguity_classes.
+    *  @see: read_ambiguity_classes, scan_for_ambiguity_classes
     */
    void init(); 
+protected:
+   void post_ambg_class_scan();
 public:  
+   TaggerData& get_tagger_data();
    void deserialise(FILE *Serialised_FILE_Tagger);
    std::vector<std::wstring> &getArrayTags();
-   void train(FILE *Corpus, unsigned long Count);
    void serialise(FILE *Stream_);
    void deserialise(const TaggerData &Deserialised_FILE_Tagger);
-   void init_probabilities_from_tagged_text_(FILE *TaggedCorpus,
-                                            FILE *UntaggedCorpus);
-   void init_probabilities_kupiec_(FILE *Corpus);
+   void init_probabilities_from_tagged_text_(MorphoStream &stream_tagged,
+                                             MorphoStream &stream_untagged);
+   void init_probabilities_kupiec_(MorphoStream &lexmorfo);
+   void train(MorphoStream &morpho_stream, unsigned long count);
    HMM();
    HMM(TaggerDataHMM *tdhmm);
  
@@ -108,18 +111,12 @@ public:
     *  @param os the output stream
     */ 
    void write_probabilities(FILE *out);
-  
-   /** It reads the expanded dictionary received as a parameter and calculates
-    *  the set of ambiguity classes that the tagger will manage.
-    *  @param is the input stream with the expanded dictionary to read
-    */
-   void read_dictionary(FILE *is);  
            
    /** It initializes the transtion (a) and emission (b) probabilities
     *  from an untagged input text by means of Kupiec's method
     *  @param is the input stream with the untagged corpus to process
     */
-   void init_probabilities_kupiec (FILE *is);
+   void init_probabilities_kupiec(MorphoStream &lexmorfo);
   
    /** It initializes the transtion (a) and emission (b) probabilities
     *  from a tagged input text by means of the expected-likelihood 
@@ -127,7 +124,8 @@ public:
     *  @param ftagged the input stream with the tagged corpus to process
     *  @param funtagged the same corpus to process but untagged
     */   
-   void init_probabilities_from_tagged_text(FILE *ftagged, FILE *funtagged);
+   void init_probabilities_from_tagged_text(MorphoStream &stream_tagged,
+                                            MorphoStream &stream_untagged);
 
    /** It applies the forbid and enforce rules found in tagger specification.
     *  To do so the transition matrix is modified by introducing null probabilities
@@ -136,15 +134,17 @@ public:
    void apply_rules();
    
    /** Unsupervised training algorithm (Baum-Welch implementation).
-    *  @param is the input stream with the untagged corpus to process
+    *  @param morpho_stream the input stream with the untagged corpus to process
     */  
-   void train (FILE *is);  
-  
+   void train(MorphoStream &morpho_stream);
+
    /** Tagging algorithm (Viterbi implementation).
     *  @param in the input stream with the untagged text to tag
     *  @param out the output stream with the tagged text
     */
-   void tagger(FILE *Input, FILE *Output, const bool &First = false);
+   void tagger(MorphoStream &morpho_stream, FILE *Output,
+               const bool &First = false,
+               MorphoStream *cg_morpho_stream = NULL);
 
    /** Prints the A matrix.
     */

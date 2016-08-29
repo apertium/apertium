@@ -33,6 +33,7 @@ TaggerData::copy(TaggerData const &o)
   constants = o.constants;
   output = o.output;  
   plist = o.plist;
+  ambg_class_counts = o.ambg_class_counts;
 }
 
 TaggerData::TaggerData()
@@ -176,6 +177,18 @@ void
 TaggerData::setPatternList(PatternList const &pl)
 {
   plist = pl;
+}
+
+void
+TaggerData::setAmbgClassCounts(vector<unsigned int> const &acc)
+{
+  ambg_class_counts = acc;
+}
+
+vector<unsigned int> &
+TaggerData::getAmbgClassCounts()
+{
+  return ambg_class_counts;
 }
 
 void
