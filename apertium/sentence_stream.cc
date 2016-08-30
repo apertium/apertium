@@ -139,7 +139,7 @@ TrainingCorpus::TrainingCorpus(Stream &tagged, Stream &untagged,
       continue;
     }
     if (was_sentence_end) {
-      sentences.push_back(std::make_pair(0, 0));
+      sentences.push_back(std::make_pair(TaggedSentence(), Sentence()));
       training_sentence = &sentences.back();
       was_sentence_end = false;
     }
