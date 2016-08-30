@@ -29,21 +29,10 @@ TRXReader::ANY_TAG = L"<ANY_TAG>";
 wstring const
 TRXReader::ANY_CHAR = L"<ANY_CHAR>";
 
-void
-TRXReader::destroy()
-{
-  xmlFreeTextReader(reader);
-}
-
 TRXReader::TRXReader()
 {
   td.getAlphabet().includeSymbol(ANY_TAG);
   td.getAlphabet().includeSymbol(ANY_CHAR);
-}
-
-TRXReader::~TRXReader()
-{
-  destroy();
 }
 
 int

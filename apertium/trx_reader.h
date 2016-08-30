@@ -69,7 +69,6 @@ public:
 
 
   TRXReader();
-  ~TRXReader();
 
   void write(string const &filename);
 };
