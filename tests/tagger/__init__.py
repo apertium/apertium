@@ -7,8 +7,7 @@ import tempfile
 from os import devnull
 from os.path import join as pjoin
 from os.path import abspath, dirname
-from subprocess import (check_call, check_output, Popen, PIPE, TimeoutExpired,
-                        CalledProcessError)
+from subprocess import check_call, Popen, PIPE, CalledProcessError
 
 
 # Utilities
@@ -24,8 +23,35 @@ def rel(fn):
 
 APERTIUM_TAGGER = rel("../../apertium/apertium-tagger")
 
+def check_output(*popenargs, **kwargs):
+    # Essentially a copypasted version of check_output with input backported
+    # for Python 3.2 Can be significantly abridged with Python 3.5's run(...)
+    # or Python 3.3's check_output. Please remove and use stdlib version when
+    # Python 3.2/Wheezy is deprecated.
+    if 'stdout' in kwargs:
+        raise ValueError('stdout argument not allowed, it will be overridden.')
+    if 'input' in kwargs:
+        if 'stdin' in kwargs:
+            raise ValueError('stdin and input arguments may not both be used.')
+        inputdata = kwargs['input']
+        del kwargs['input']
+        kwargs['stdin'] = PIPE
+    else:
+        inputdata = None
+    with Popen(*popenargs, stdout=PIPE, **kwargs) as process:
+        try:
+            out, unused_err = process.communicate(inputdata)
+        except:
+            process.kill()
+            process.wait()
+            raise
+        retcode = process.poll()
+        if retcode:
+            raise CalledProcessError(retcode, process.args, output=out)
+    return out
 
-def check_stderr(*popenargs, timeout=None, **kwargs):
+
+def check_stderr(*popenargs, **kwargs):
     # Essentially a copypasted version of check_output.
     # Can be significantly abridged with Python 3.5's run(...)
     if 'stderr' in kwargs:
@@ -40,12 +66,7 @@ def check_stderr(*popenargs, timeout=None, **kwargs):
         inputdata = None
     with Popen(*popenargs, stderr=PIPE, **kwargs) as process:
         try:
-            unused_output, err = process.communicate(inputdata,
-                                                     timeout=timeout)
-        except TimeoutExpired:
-            process.kill()
-            unused_output, err = process.communicate()
-            raise TimeoutExpired(process.args, timeout, output=err)
+            unused_output, err = process.communicate(inputdata)
         except:
             process.kill()
             process.wait()
