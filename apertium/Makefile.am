@@ -210,6 +210,7 @@ bin_PROGRAMS = apertium-deshtml \
 	       apertium-filter-ambiguity \
 	       apertium-interchunk \
 	       apertium-multiple-translations \
+	       apertium-perceptron-trace \
 	       apertium-postchunk \
 	       apertium-postlatex \
 	       apertium-postlatex-raw \
