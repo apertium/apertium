@@ -4,10 +4,11 @@
 import functools
 import unittest
 import tempfile
+from os import devnull
 from os.path import join as pjoin
 from os.path import abspath, dirname
-from subprocess import (check_call, check_output, Popen, PIPE, DEVNULL,
-                        TimeoutExpired, CalledProcessError)
+from subprocess import (check_call, check_output, Popen, PIPE, TimeoutExpired,
+                        CalledProcessError)
 
 
 # Utilities
@@ -235,6 +236,7 @@ class AmbiguityClassTest(unittest.TestCase):
     def setUp(self):
         self.tsx_fn = tmp(TSX)
         self.dic_fn = tmp(DIC)
+        self.devnull = open(devnull, 'w')
 
     def changing_class_impl(self, flags, model_fn):
         test1 = tmp(TEST_SUCCESS)
@@ -242,12 +244,12 @@ class AmbiguityClassTest(unittest.TestCase):
         success_stderr = check_stderr(
             [APERTIUM_TAGGER, '-d'] + flags +
             ['-g', model_fn, test1],
-            stdout=DEVNULL)
+            stdout=self.devnull)
         self.assertEqual(success_stderr.strip(), "")
         subst_stderr = check_stderr(
             [APERTIUM_TAGGER, '-d'] + flags +
             ['-g', model_fn, test2],
-            stdout=DEVNULL)
+            stdout=self.devnull)
         subst_stderr = [line.strip()
                         for line in subst_stderr.strip().split("\n")]
         self.assertEqual(subst_stderr, EXPECTED_SUBST)
@@ -293,7 +295,7 @@ class AmbiguityClassTest(unittest.TestCase):
              model_fn, tagged, untagged])
         subst_stdout = check_output(
             [APERTIUM_TAGGER, '-d', '-g', model_fn, new_ambg_class],
-            stderr=DEVNULL)
+            stderr=self.devnull)
         acceptable = False
         for line in subst_stdout.split("\n"):
             if (line.startswith('^cat') and ('<adj>' in line or '<n>' in line)):
