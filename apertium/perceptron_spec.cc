@@ -658,11 +658,11 @@ void
 PerceptronSpec::Machine::getFeature(
     UnaryFeatureVec &feat_vec_out) {
   for (; bytecode_iter != feat.end(); bytecode_iter++) {
-    Opcode op = (Bytecode){.intbyte=*bytecode_iter}.op;
+    Opcode op = (Bytecode){.intbyte=static_cast<signed char>(*bytecode_iter)}.op;
     if (execCommonOp(op)) {
       continue;
     }
-    switch ((Bytecode){.intbyte=*bytecode_iter}.op) {
+    switch ((Bytecode){.intbyte=static_cast<signed char>(*bytecode_iter)}.op) {
       case DIEIFFALSE:
         if (!stack.pop_off().boolVal()) {
           feat_vec_out.clear();
@@ -718,7 +718,7 @@ PerceptronSpec::StackValue
 PerceptronSpec::Machine::getValue()
 {
   for (; bytecode_iter != feat.end(); bytecode_iter++) {
-    Opcode op = (Bytecode){.intbyte=*bytecode_iter}.op;
+    Opcode op = (Bytecode){.intbyte=static_cast<signed char>(*bytecode_iter)}.op;
     if (execCommonOp(op)) {
       continue;
     }
