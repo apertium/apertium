@@ -57,7 +57,7 @@ private:
                                    const TrainingAgendaItem &tai);
   friend std::wostream& operator<<(
       std::wostream &out, const std::vector<TrainingAgendaItem> &agenda);
-  friend bool operator<(AgendaItem &a, AgendaItem &b);
+  friend bool operator<(const AgendaItem &a, const AgendaItem &b);
   friend std::wostream& operator<<(
       std::wostream &out, const PerceptronTagger::AgendaItem &ai);
   friend std::wostream& operator<<(

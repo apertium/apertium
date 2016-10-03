@@ -339,8 +339,8 @@ operator<<(std::wostream &out, const std::vector<PerceptronTagger::AgendaItem> &
   return out;
 }
 
-bool operator<(PerceptronTagger::AgendaItem &a,
-               PerceptronTagger::AgendaItem &b) {
+bool operator<(const PerceptronTagger::AgendaItem &a,
+               const PerceptronTagger::AgendaItem &b) {
   return a.score > b.score;
 };
 }

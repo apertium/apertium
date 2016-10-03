@@ -358,7 +358,7 @@ typedef struct re_pattern_buffer regex_t;
 typedef int regoff_t;
 
 
-/* This is the structure we store register match data in.  See
+/* This is the structure we store match data in.  See
    regex.texinfo for a full description of what registers match.  */
 struct re_registers
 {
@@ -455,15 +455,15 @@ extern int re_match_2
 
 /* Set REGS to hold NUM_REGS registers, storing them in STARTS and
    ENDS.  Subsequent matches using BUFFER and REGS will use this memory
-   for recording register information.  STARTS and ENDS must be
+   for recording information.  STARTS and ENDS must be
    allocated with malloc, and must each be at least `NUM_REGS * sizeof
    (regoff_t)' bytes long.
 
    If NUM_REGS == 0, then subsequent matches should allocate their own
-   register data.
+   data.
 
    Unless this function is called, the first search or match using
-   PATTERN_BUFFER will allocate its own register data, without
+   PATTERN_BUFFER will allocate its own data, without
    freeing the old data.  */
 extern void re_set_registers
   _RE_ARGS ((struct re_pattern_buffer *buffer, struct re_registers *regs,

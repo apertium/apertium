@@ -10,7 +10,7 @@
 *                                                                        *
 *************************************************************************/
 #ifndef _ALIGNER_TOOL_H_
-#define _ALIGNER_TOOL_C_
+#define _ALIGNER_TOOL_H_
 
 #include <apertium/tmx_alignment.h>
 
