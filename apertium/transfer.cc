@@ -269,7 +269,12 @@ Transfer::checkIndex(xmlNode *element, int index, int limit)
 {
   if(index >= limit)
   {
-    wcerr << L"Error in " << UtfConverter::fromUtf8((char *) doc->URL) <<L": line " << element->line << endl;
+    wcerr << L"Error in " << UtfConverter::fromUtf8((char *) doc->URL) << L": line " << element->line << L": index >= limit" << endl;
+    return false;
+  }
+  if(word[index] == 0)
+  {
+    wcerr << L"Error in " << UtfConverter::fromUtf8((char *) doc->URL) << L": line " << element->line << L": Null access at word[index]" << endl;
     return false;
   }
   return true;
@@ -1092,13 +1097,14 @@ Transfer::processCallMacro(xmlNode *localroot)
       break;
     }
   }
-  
+
   // ToDo: Is it at all valid if npar <= 0 ?
 
   TransferWord **myword = NULL;
   if(npar > 0)
   {
     myword = new TransferWord *[npar];
+    std::fill(myword, myword+npar, (TransferWord *)(0));
   }
   string **myblank = NULL;
   if(npar > 0)
@@ -1139,7 +1145,7 @@ Transfer::processCallMacro(xmlNode *localroot)
   swap(myword, word);
   swap(myblank, blank);
   swap(npar, lword);
-  
+
   delete[] myword;
   delete[] myblank;
 }
@@ -2165,6 +2171,7 @@ Transfer::applyRule()
     if(i == 0)
     {
       word = new TransferWord *[limit];
+      std::fill(word, word+limit, (TransferWord *)(0));
       lword = limit;
       if(limit != 1)
       {
