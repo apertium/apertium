@@ -922,11 +922,15 @@ Transfer::processLet(xmlNode *localroot)
         return;
 
       case ti_clip_sl:
-        word[ti.getPos()]->setSource(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
+        if (checkIndex(leftSide, ti.getPos(), lword)) {
+          word[ti.getPos()]->setSource(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
+        }
         return;
 
       case ti_clip_tl:
-        word[ti.getPos()]->setTarget(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
+        if (checkIndex(leftSide, ti.getPos(), lword)) {
+          word[ti.getPos()]->setTarget(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
+        }
         return;
 
       default:
@@ -970,6 +974,15 @@ Transfer::processLet(xmlNode *localroot)
       {
         as = i->children->content;
       }
+    }
+
+    if (pos >= lword) {
+      wcerr << L"Error: Transfer::processLet() bad access on pos >= lword" << endl;
+      return;
+    }
+    if (word[pos] == 0) {
+      wcerr << L"Error: Transfer::processLet() null access on word[pos]" << endl;
+      return;
     }
 
     if(!xmlStrcmp(side, (const xmlChar *) "tl"))
@@ -2257,6 +2270,7 @@ Transfer::applyRule()
     for(unsigned int i = 0; i != limit; i++)
     {
       delete word[i];
+      word[i] = 0; // ToDo: That this changes things means there are much bigger problems elsewhere
     }
     delete[] word;
   }
@@ -2265,6 +2279,7 @@ Transfer::applyRule()
     for(unsigned int i = 0; i != limit - 1; i++)
     {
       delete blank[i];
+      blank[i] = 0;
     }
     delete[] blank;
   }
