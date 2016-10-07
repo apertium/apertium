@@ -1132,6 +1132,10 @@ Transfer::processCallMacro(xmlNode *localroot)
   {
     if(i->type == XML_ELEMENT_NODE)
     {
+      if (idx >= npar) {
+      	  wcerr << L"Error: processCallMacro() number of arguments >= npar at line " << i->line << endl;
+      	  return;
+      }
       int pos = atoi((const char *) i->properties->children->content)-1;
       myword[idx] = word[pos];
       if(idx-1 >= 0)
