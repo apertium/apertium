@@ -25,6 +25,10 @@
 #include <iostream>
 #include <stack>
 
+#ifdef _WIN32
+#include <utf8_fwrap.hpp>
+#endif
+
 using namespace std;
 
 void
@@ -68,7 +72,7 @@ TransferMult::tolower(string const &str) const
   return result;
 }
 
-void 
+void
 TransferMult::readData(FILE *in)
 {
   alphabet.read(in);
@@ -77,18 +81,18 @@ TransferMult::readData(FILE *in)
 
   Transducer t;
   t.read(in, alphabet.size());
-  
-  map<int, int> finals;  
-  
+
+  map<int, int> finals;
+
   // finals
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
   {
     int key = Compression::multibyte_read(in);
     finals[key] = Compression::multibyte_read(in);
-  }  
-  
+  }
+
   me = new MatchExe(t, finals);
- 
+
   // attr_items
   bool recompile_attrs = Compression::string_read(in) != string(pcre_version());
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
@@ -125,7 +129,7 @@ TransferMult::readData(FILE *in)
       wstring const cad_v = Compression::wstring_read(in);
       lists[cad_k].insert(UtfConverter::toUtf8(cad_v));
       listslow[cad_k].insert(UtfConverter::toUtf8(StringUtils::tolower(cad_v)));
-    }  
+    }
   }
 }
 
@@ -155,7 +159,7 @@ TransferMult::read(string const &datafile, string const &fstfile)
   }
   readData(in);
   fclose(in);
-  
+
   readBil(fstfile);
 }
 
@@ -176,7 +180,7 @@ TransferMult::readToken(FILE *in)
       return input_buffer.add(TransferToken(content, tt_eof));
     }
     if(val == L'\\')
-    {  
+    {
       content += L'\\';
       content += wchar_t(fgetwc_unlocked(in));
     }
@@ -224,7 +228,7 @@ TransferMult::transfer(FILE *in, FILE *out)
 
   output = out;
   ms.init(me->getInitial());
-  
+
   while(true)
   {
     if(ms.size() == 0)
@@ -246,7 +250,7 @@ TransferMult::transfer(FILE *in, FILE *out)
 	    if(multiword.size() > 1)
 	    {
 	      fputws_unlocked(L"[{]", output);
-	    }	    
+	    }
 	    for(unsigned int i = 0, limit = multiword.size(); i != limit; i++)
 	    {
 	      if(i > 0)
@@ -265,7 +269,7 @@ TransferMult::transfer(FILE *in, FILE *out)
 	  tmpword.clear();
 	  isRule = false;
 	  input_buffer.setPos(last);
-	  input_buffer.next();       
+	  input_buffer.next();
 	  last = input_buffer.getPos();
 	  ms.init(me->getInitial());
 	}
@@ -287,7 +291,7 @@ TransferMult::transfer(FILE *in, FILE *out)
     }
 
     TransferToken &current = readToken(in);
-   
+
     switch(current.getType())
     {
       case tt_word:
@@ -326,18 +330,18 @@ TransferMult::isDefaultWord(wstring const &str)
   return str.find(L" D<");
 }
 
-vector<wstring> 
+vector<wstring>
 TransferMult::acceptions(wstring str)
 {
   vector<wstring> result;
   int low = 0;
 
-  // removing '@'  
+  // removing '@'
   if(str[0] == L'@')
   {
     str = str.substr(1);
   }
-  
+
   for(unsigned int i = 0, limit = str.size(); i != limit; i++)
   {
      if(str[i] == L'\\')
@@ -347,7 +351,7 @@ TransferMult::acceptions(wstring str)
      else if(str[i] == L'/')
      {
        wstring new_word = str.substr(low, i-low);
-      
+
        if(result.size() > 1 && isDefaultWord(new_word))
        {
 	 result.push_back(result[0]);
@@ -360,7 +364,7 @@ TransferMult::acceptions(wstring str)
        low = i + 1;
      }
   }
-  
+
   wstring otherword = str.substr(low);
   if(result.size() > 0 && isDefaultWord(otherword))
   {
@@ -382,7 +386,7 @@ TransferMult::acceptions(wstring str)
       {
         result2.push_back(result[i]);
       }
-    } 
+    }
     if(result2.size() >= 2)
     {
       return result2;
@@ -392,10 +396,10 @@ TransferMult::acceptions(wstring str)
   return result;
 }
 
-void 
+void
 TransferMult::writeMultiple(list<vector<wstring> >::iterator itwords,
-                            list<wstring>::iterator itblanks, 
-                            list<vector<wstring> >::const_iterator limitwords, 
+                            list<wstring>::iterator itblanks,
+                            list<vector<wstring> >::const_iterator limitwords,
                             wstring acum , bool multiple)
 {
   if(itwords == limitwords)
@@ -403,7 +407,7 @@ TransferMult::writeMultiple(list<vector<wstring> >::iterator itwords,
     if(multiple)
     {
       output_string.append(L"[|]");
-    }      
+    }
     output_string.append(acum);
   }
   else
@@ -411,12 +415,12 @@ TransferMult::writeMultiple(list<vector<wstring> >::iterator itwords,
     vector<wstring> &refword = *itwords;
 
     itwords++;
-  
+
     if(itwords == limitwords)
     {
       for(unsigned int i = 0, limit = refword.size(); i != limit; i++)
       {
-        writeMultiple(itwords, itblanks, limitwords, 
+        writeMultiple(itwords, itblanks, limitwords,
                       acum + L"^" + refword[i] + L"$", multiple || (i > 0));
       }
     }
@@ -424,11 +428,11 @@ TransferMult::writeMultiple(list<vector<wstring> >::iterator itwords,
     {
       wstring &refblank = *itblanks;
       itblanks++;
-      
+
       for(unsigned int i = 0, limit = refword.size(); i != limit; i++)
       {
-        writeMultiple(itwords, itblanks, limitwords, 
-                      acum + L"^" + refword[i] + L"$" + refblank, 
+        writeMultiple(itwords, itblanks, limitwords,
+                      acum + L"^" + refword[i] + L"$" + refblank,
                       multiple || (i > 0));
       }
     }
@@ -439,21 +443,21 @@ void
 TransferMult::applyRule()
 {
   list<wstring> blanks;
-  list<vector<wstring> > words;  
+  list<vector<wstring> > words;
 
   pair<wstring, int> tr = fstp.biltransWithQueue(*tmpword[0], false);
   words.push_back(acceptions(tr.first));
-  
+
   for(unsigned int i = 1; i != numwords; i++)
   {
-    blanks.push_back(*tmpblank[i-1]);    
+    blanks.push_back(*tmpblank[i-1]);
     pair<wstring, int> tr = fstp.biltransWithQueue(*tmpword[i], false);
     words.push_back(acceptions(tr.first));
   }
 
   output_string = L"";
   writeMultiple(words.begin(), blanks.begin(), words.end());
-  
+
   if(output_string.find(L"[|]") != wstring::npos)
   {
     fputws_unlocked(L"[{]", output);
@@ -464,9 +468,9 @@ TransferMult::applyRule()
   {
     fputws_unlocked(output_string.c_str(), output);
   }
-  
+
   ms.init(me->getInitial());
-  
+
   tmpblank.clear();
   tmpword.clear();
   numwords = 0;
@@ -504,7 +508,7 @@ TransferMult::applyWord(wstring const &word_str)
 	  }
 	}
 	break;
-	
+
       default:
 	ms.step(towlower(word_str[i]), any_char);
 	break;

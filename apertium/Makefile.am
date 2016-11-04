@@ -331,7 +331,7 @@ apertium_tagger_readwords_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VER
 
 
 if WINDOWS
-INCLUDES = -I$(top_srcdir)/apertium/win32 -I$(top_srcdir) $(APERTIUM_CFLAGS)
+INCLUDES = -I$(top_srcdir)/utf8 -I$(top_srcdir)/apertium/win32 -I$(top_srcdir) $(APERTIUM_CFLAGS)
 else
 INCLUDES = -I$(top_srcdir) $(APERTIUM_CFLAGS)
 endif

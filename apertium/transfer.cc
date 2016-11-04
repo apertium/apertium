@@ -27,6 +27,10 @@
 #include <stack>
 #include <cerrno>
 
+#ifdef _WIN32
+#include <utf8_fwrap.hpp>
+#endif
+
 using namespace Apertium;
 using namespace std;
 

@@ -24,7 +24,7 @@
 #define fputs_unlocked fputs
 #endif
 
-#if !HAVE_DECL_FGETC_UNLOCKED 
+#if !HAVE_DECL_FGETC_UNLOCKED
 #define fgetc_unlocked fgetc
 #endif
 
@@ -56,6 +56,10 @@
 #include <cwchar>
 inline int wctomb(char *s, wchar_t wc) { return wcrtomb(s,wc,NULL); }
 inline int mbtowc(wchar_t *pwc, const char *s, size_t n) { return mbrtowc(pwc, s, n, NULL); }
+#endif
+
+#ifdef _WIN32
+#include <utf8_fwrap.hpp>
 #endif
 
 #endif
