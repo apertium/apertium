@@ -77,6 +77,22 @@ inline wint_t ungetwc_u8(wint_t wc, FILE *out) {
 	return wc;
 }
 
+inline int mbtowc_u8(wchar_t* dst, const char* src, std::size_t n) {
+	return MultiByteToWideChar(CP_UTF8, 0, s, -1, dst, 1);
+}
+
+inline std::size_t mbstowcs_u8(wchar_t* dst, const char* src, std::size_t len) {
+	return MultiByteToWideChar(CP_UTF8, 0, src, -1, dst, len);
+}
+
+inline int wctomb_u8(char *s, wchar_t wc) {
+	return WideCharToMultiByte(CP_UTF8, 0, &wc, 1, s, 4, 0, 0);
+}
+
+inline std::size_t wcstombs_u8(char* dst, const wchar_t* src, std::size_t len) {
+	return WideCharToMultiByte(CP_UTF8, 0, src, -1, dst, len, 0, 0);
+}
+
 #ifdef fgetwc_unlocked
 	#undef fgetwc_unlocked
 #endif
@@ -96,5 +112,25 @@ inline wint_t ungetwc_u8(wint_t wc, FILE *out) {
 	#undef ungetwc
 #endif
 #define ungetwc ungetwc_u8
+
+#ifdef mbtowc
+	#undef mbtowc
+#endif
+#define mbtowc mbtowc_u8
+
+#ifdef mbstowcs
+	#undef mbstowcs
+#endif
+#define mbstowcs mbstowcs_u8
+
+#ifdef wctomb
+	#undef wctomb
+#endif
+#define wctomb wctomb_u8
+
+#ifdef wcstombs
+	#undef wcstombs
+#endif
+#define wcstombs wcstombs_u8
 
 #endif

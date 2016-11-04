@@ -24,7 +24,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#ifdef WIN32
+#ifdef _WIN32
 #if defined(__MINGW32__)
 #define __MSVCRT_VERSION__  0x0800
 #endif
@@ -47,7 +47,7 @@ void message(char *progname)
 int main(int argc, char *argv[])
 {
   LtLocale::tryToSetLocale();
-  
+
   if(argc > 5 || argc <3)
   {
     message(argv[0]);
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
       exit(EXIT_FAILURE);
     }
   }
-  
+
   FILE *input = stdin, *output = stdout;
   if(argc >= 4)
   {
@@ -84,10 +84,10 @@ int main(int argc, char *argv[])
       }
     }
   }
-#ifdef WIN32
+#ifdef _MSC_VER
   _setmode(_fileno(input), _O_U8TEXT);
   _setmode(_fileno(output), _O_U8TEXT);
-#endif 
+#endif
 
   TransferMult t;
   t.read(argv[1], argv[2]);
