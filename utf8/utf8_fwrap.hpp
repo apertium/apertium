@@ -9,6 +9,14 @@
 #include <cwchar>
 #include <stdint.h>
 
+#define _SECURE_SCL 0
+#define _ITERATOR_DEBUG_LEVEL 0
+#define _CRT_SECURE_NO_DEPRECATE
+#define WIN32_LEAN_AND_MEAN
+#define VC_EXTRALEAN
+#define NOMINMAX
+#include <windows.h>
+
 inline wint_t fgetwc_u8(FILE *in) {
 	int32_t rv = 0;
 	int c = 0, i = 0;
