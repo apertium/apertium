@@ -86,15 +86,15 @@ inline wint_t ungetwc_u8(wint_t wc, FILE *out) {
 }
 
 inline int mbtowc_u8(wchar_t* dst, const char* src, std::size_t n) {
-	return MultiByteToWideChar(CP_UTF8, 0, s, -1, dst, 1);
+	return MultiByteToWideChar(CP_UTF8, 0, src, -1, dst, 1);
 }
 
 inline std::size_t mbstowcs_u8(wchar_t* dst, const char* src, std::size_t len) {
 	return MultiByteToWideChar(CP_UTF8, 0, src, -1, dst, len);
 }
 
-inline int wctomb_u8(char *s, wchar_t wc) {
-	return WideCharToMultiByte(CP_UTF8, 0, &wc, 1, s, 4, 0, 0);
+inline int wctomb_u8(char *dst, wchar_t src) {
+	return WideCharToMultiByte(CP_UTF8, 0, &src, 1, dst, 4, 0, 0);
 }
 
 inline std::size_t wcstombs_u8(char* dst, const wchar_t* src, std::size_t len) {
