@@ -72,10 +72,16 @@ using namespace std;
   <xsl:value-of select="string('&#xA;}&#xA;')"/>
 </xsl:for-each>
 
+string memconv;
+
 wstring convertir(char const *multibyte, int const length)
 {
   std::wstring rv;
-  utf8::utf8to32(multibyte, multibyte+length, std::back_inserter(rv));
+  memconv.append(multibyte, length);
+  if (utf8::is_valid(memconv.begin(), memconv.end())) {
+  	utf8::utf8to32(memconv.begin(), memconv.end(), std::back_inserter(rv));
+  	memconv.clear();
+  }
   return rv;
 }
 
