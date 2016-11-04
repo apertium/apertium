@@ -118,7 +118,7 @@ wstring convertir(char const *multibyte, int const length)
   filename = filename.substr(2, filename.size()-3);
   FILE *temp = fopen(filename.c_str(), "r");
   wint_t mychar;
-#ifdef _WIN32
+#ifdef _MSC_VER
   _setmode(_fileno(temp), _O_U8TEXT);
 #endif
 
@@ -219,7 +219,7 @@ int main(int argc, char *argv[])
     default:
       break;
   }
-#ifdef _WIN32
+#ifdef _MSC_VER
   _setmode(_fileno(yyin), _O_U8TEXT);
   _setmode(_fileno(yyout), _O_U8TEXT);
 #endif

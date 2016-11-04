@@ -461,7 +461,7 @@ int main(int argc, char *argv[])
       break;
   }
 
-#ifdef _WIN32
+#ifdef _MSC_VER
   _setmode(_fileno(yyin), _O_U8TEXT);
   _setmode(_fileno(yyout), _O_U8TEXT);
 #endif
