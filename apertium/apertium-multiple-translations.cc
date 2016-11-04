@@ -25,9 +25,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #ifdef _WIN32
-#if defined(__MINGW32__)
-#define __MSVCRT_VERSION__  0x0800
-#endif
 #include <io.h>
 #include <fcntl.h>
 #endif

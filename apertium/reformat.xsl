@@ -26,6 +26,7 @@
 #ifndef GENFORMAT
 #include "apertium_config.h"
 #endif
+#include &lt;utf8/utf8.h&gt;
 #include &lt;apertium/unlocked_cstdio.h&gt;
 
 #include &lt;cstdlib&gt;
@@ -41,6 +42,8 @@
 #ifdef _WIN32
 #include &lt;io.h&gt;
 #include &lt;fcntl.h&gt;
+#define utf8to32 utf8to16
+#define utf32to8 utf16to8
 #endif
 
 using namespace std;
@@ -69,36 +72,11 @@ using namespace std;
   <xsl:value-of select="string('&#xA;}&#xA;')"/>
 </xsl:for-each>
 
-string memconv;
-
 wstring convertir(char const *multibyte, int const length)
 {
-  memconv.append(multibyte, length);
-  int tam = memconv.size();
-  if (memconv == "")
-    return L"";
-  wchar_t *retval = new wchar_t[tam+1];
-  size_t l = mbstowcs(retval, memconv.c_str(), tam);
-
-  if(l == ((size_t) -1))
-  {
-    if(memconv.size() >= 4)
-    {
-      wcerr &lt;&lt; L"Warning: wrong encoding" &lt;&lt; endl;
-    }
-    if (retval != NULL)
-      delete[] retval;
-    return L"";
-  }
-  else
-  {
-    memconv = "";
-    retval[l] = 0;
-    wstring ret = retval;
-    if (retval != NULL)
-      delete[] retval;
-    return ret;
-  }
+  std::wstring rv;
+  utf8::utf8to32(multibyte, multibyte+length, std::back_inserter(rv));
+  return rv;
 }
 
 %}
@@ -116,7 +94,7 @@ wstring convertir(char const *multibyte, int const length)
 "[@"[^]]+"]"&#x9;{
   string filename = yytext;
   filename = filename.substr(2, filename.size()-3);
-  FILE *temp = fopen(filename.c_str(), "r");
+  FILE *temp = fopen(filename.c_str(), "rb");
   wint_t mychar;
 #ifdef _MSC_VER
   _setmode(_fileno(temp), _O_U8TEXT);
@@ -204,13 +182,13 @@ int main(int argc, char *argv[])
   switch(argc)
   {
     case 3:
-      yyout = fopen(argv[2], "w");
+      yyout = fopen(argv[2], "wb");
       if(!yyout)
       {
         usage(argv[0]);
       }
     case 2:
-      yyin = fopen(argv[1], "r");
+      yyin = fopen(argv[1], "rb");
       if(!yyin)
       {
         usage(argv[0]);
