@@ -184,8 +184,10 @@ regex_t names_regexp;
 void bufferAppend(wstring &amp;buf, string const &amp;str)
 {
   symbuf.append(str);
-  utf8::utf8to32(symbuf.begin(), symbuf.end(), std::back_inserter(buf));
-  symbuf.clear();
+  if (utf8::is_valid(symbuf.begin(), symbuf.end())) {
+  	utf8::utf8to32(symbuf.begin(), symbuf.end(), std::back_inserter(buf));
+  	symbuf.clear();
+  }
 }
 
 
