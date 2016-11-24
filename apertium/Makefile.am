@@ -333,7 +333,7 @@ apertium_tagger_readwords_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VER
 if WINDOWS
 INCLUDES = -I$(top_srcdir)/utf8 -I$(top_srcdir)/apertium/win32 -I$(top_srcdir) $(APERTIUM_CFLAGS)
 else
-INCLUDES = -I$(top_srcdir) $(APERTIUM_CFLAGS)
+AM_CPPFLAGS = -I$(top_srcdir) $(APERTIUM_CFLAGS)
 endif
 CLEANFILES = *~ apertium_destxt.cc apertium_retxt.cc apertium_deshtml.cc \
              apertium_rehtml.cc apertium_desrtf.cc apertium_rertf.cc \
