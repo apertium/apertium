@@ -235,7 +235,7 @@ bin_PROGRAMS = apertium-deshtml \
 	       apertium-tmxbuild \
 	       apertium-transfer
 
-bin_SCRIPTS =  $(GENERATEDSCRIPTS)
+bin_SCRIPTS =  $(GENERATEDSCRIPTS) apertium-get/apertium-get
 
 instdir = apertium
 
