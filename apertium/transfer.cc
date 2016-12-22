@@ -345,12 +345,11 @@ Transfer::evalString(xmlNode *element)
         return ti.getContent();
 
       case ti_b:
-        if(checkIndex(element, ti.getPos(), lblank))
+        if(ti.getPos() >= 0 && checkIndex(element, ti.getPos(), lblank))
         {
-          if(ti.getPos() >= 0)
-          {
-            return !blank?"":*(blank[ti.getPos()]);
-          }
+          return !blank?"":*(blank[ti.getPos()]);
+        }
+        else {
           return " ";
         }
         break;
@@ -688,7 +687,6 @@ Transfer::processChunk(xmlNode *localroot)
   string name, namefrom;
   string caseofchunk = "aa";
   string result;
-
 
   for(xmlAttr *i = localroot->properties; i != NULL; i = i->next)
   {
