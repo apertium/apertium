@@ -214,7 +214,16 @@ Interchunk::checkIndex(xmlNode *element, int index, int limit)
 {
   if(index >= limit)
   {
-    wcerr << L"Error in " << UtfConverter::fromUtf8((char *) doc->URL) <<L": line " << element->line << endl;
+    wcerr << L"Error in " << UtfConverter::fromUtf8((char *) doc->URL) << L": line " << element->line << L": index >= limit" << endl;
+    return false;
+  }
+  if(index < 0) {
+    wcerr << L"Error in " << UtfConverter::fromUtf8((char *) doc->URL) << L": line " << element->line << L": index < 0" << endl;
+    return false;
+  }
+  if(word[index] == 0)
+  {
+    wcerr << L"Error in " << UtfConverter::fromUtf8((char *) doc->URL) << L": line " << element->line << L": Null access at word[index]" << endl;
     return false;
   }
   return true;
@@ -259,12 +268,11 @@ Interchunk::evalString(xmlNode *element)
         return ti.getContent();
         
       case ti_b:
-        if(checkIndex(element, ti.getPos(), lblank))
+        if(ti.getPos() >= 0 && checkIndex(element, ti.getPos(), lblank))
         {
-          if(ti.getPos() >= 0)
-          {
-            return !blank?"":*(blank[ti.getPos()]);
-          }
+          return !blank?"":*(blank[ti.getPos()]);
+        }
+        else {
           return " ";
         }
         break;

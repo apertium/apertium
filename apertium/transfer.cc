@@ -276,6 +276,10 @@ Transfer::checkIndex(xmlNode *element, int index, int limit)
     wcerr << L"Error in " << UtfConverter::fromUtf8((char *) doc->URL) << L": line " << element->line << L": index >= limit" << endl;
     return false;
   }
+  if(index < 0) {
+    wcerr << L"Error in " << UtfConverter::fromUtf8((char *) doc->URL) << L": line " << element->line << L": index < 0" << endl;
+    return false;
+  }
   if(word[index] == 0)
   {
     wcerr << L"Error in " << UtfConverter::fromUtf8((char *) doc->URL) << L": line " << element->line << L": Null access at word[index]" << endl;
