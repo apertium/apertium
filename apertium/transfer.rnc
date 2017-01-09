@@ -159,9 +159,11 @@ attlist.section-rules &= empty
 # The rules section contains a sequence of one or more rules
 rule = element rule { attlist.rule, pattern, action }
 attlist.rule &= attribute comment { text }?
+attlist.rule &= attribute c { text }?
 # Each rule has a pattern and an action 
 # * attribute 'comment' allows to put in comments about the purpose of
-#   the rule being defined
+#   the rule being defined, this may be a rule specification in machine readable form
+# * attribute 'c' is for further comments in free form
 pattern = element pattern { attlist.pattern, pattern-item+ }
 attlist.pattern &= empty
 # The pattern is specified in terms of pattern items, each one

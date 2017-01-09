@@ -351,9 +351,16 @@
       <attribute name="comment"/>
     </optional>
   </define>
+  <define name="attlist.rule" combine="interleave">
+    <optional>
+      <attribute name="c"/>
+    </optional>
+  </define>
   <!--
-    Each rule has a pattern and an action 
-    * Attribute 'comment' allows to include a comment with the rule
+    Each rule has a pattern and an action
+    * attribute 'comment' allows to put in comments about the purpose of
+      the rule being defined, this may be a rule specification in machine readable form
+    * attribute 'c' is for further comments in free form
   -->
   <define name="pattern">
     <element name="pattern">
