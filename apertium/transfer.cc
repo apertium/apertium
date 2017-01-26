@@ -2142,7 +2142,7 @@ Transfer::transfer(FILE *in, FILE *out)
           {
             wcerr << L" ";
           }
-          wcerr << *tmpword[ind];
+          fputws_unlocked(tmpword[ind]->c_str(), stderr);
         }
         wcerr << endl;
       }
