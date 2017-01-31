@@ -41,7 +41,8 @@ void message(char *progname)
   wcerr << "  input      input file, standard input by default" << endl;
   wcerr << "  output     output file, standard output by default" << endl;
   wcerr << "OPTIONS" <<endl;
-  wcerr << "  -z         flush buffer on '\0'" << endl;
+  wcerr << "  -t         trace (show rule numbers and patterns matched)" << endl;
+  wcerr << "  -z         null-flushing output on '\0'" << endl;
   
   exit(EXIT_FAILURE);
 }
@@ -94,16 +95,21 @@ int main(int argc, char *argv[])
     static struct option long_options[] =
     {
       {"null-flush", no_argument, 0, 'z'},
+      {"trace", no_argument, 0, 't'},
       {"help", no_argument, 0, 'h'},
       {0, 0, 0, 0}
     };
 
-    int c=getopt_long(argc, argv, "zh", long_options, &option_index);
+    int c=getopt_long(argc, argv, "zht", long_options, &option_index);
     if (c == -1)
       break;
       
     switch (c)
     {
+      case 't':
+        p.setTrace(true);
+        break;
+ 
       case 'z':
         p.setNullFlush(true);
         break;

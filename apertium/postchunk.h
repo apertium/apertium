@@ -71,6 +71,7 @@ private:
   bool inword;
   bool null_flush;
   bool internal_null_flush;
+  bool trace;
 
   void destroy();
   void readData(FILE *input);
@@ -133,6 +134,7 @@ public:
   void postchunk(FILE *in, FILE *out);
   bool getNullFlush(void);
   void setNullFlush(bool null_flush);
+  void setTrace(bool trace);
 };
 
 #endif

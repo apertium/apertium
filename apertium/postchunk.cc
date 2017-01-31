@@ -63,6 +63,7 @@ nwords(0)
   inword = false;
   null_flush = false;
   internal_null_flush = false;
+  trace = false;
 }
 
 Postchunk::~Postchunk()
@@ -1538,6 +1539,12 @@ Postchunk::setNullFlush(bool null_flush)
 }
 
 void
+Postchunk::setTrace(bool trace)
+{
+  this->trace = trace;
+}
+
+void
 Postchunk::postchunk_wrapper_null_flush(FILE *in, FILE *out)
 {
   null_flush = false;
@@ -1605,6 +1612,20 @@ Postchunk::postchunk(FILE *in, FILE *out)
     {
       lastrule = rule_map[val-1];      
       last = input_buffer.getPos();
+
+      if(trace)
+      {
+        wcerr << endl << L"apertium-postchunk: Rule " << val << L" ";
+        for (unsigned int ind = 0; ind < tmpword.size(); ind++)
+        {
+          if (ind != 0)
+          {
+            wcerr << L" ";
+          }
+          fputws_unlocked(tmpword[ind]->c_str(), stderr);
+        }
+        wcerr << endl;
+      }
     }
 
     TransferToken &current = readToken(in);
