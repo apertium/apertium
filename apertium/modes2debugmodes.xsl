@@ -123,6 +123,9 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
       <xsl:when test="starts-with($p, 'apertium-interchunk')">
         <xsl:text> -t</xsl:text>
       </xsl:when>
+      <xsl:when test="starts-with($p, 'apertium-postchunk)">
+        <xsl:text> -t</xsl:text>
+      </xsl:when>
       <xsl:otherwise>
         <xsl:text></xsl:text>
       </xsl:otherwise>
