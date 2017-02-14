@@ -8,7 +8,7 @@ This tool is part of the apertium open-source machine translation
 toolbox: \fBhttp://www.apertium.org\fR.
 .SH SYNOPSIS
 .B apertium-deshtml
-[ \-h ] [ \-i ] [ \-n ]
+[ \-h ] [ \-i ] [ \-n ] [ \-o ]
 [ <input file> [ <output file> ] ]
 .PP
 .SH DESCRIPTION
@@ -22,11 +22,16 @@ processing with lt-proc. HTML tags and other format information are  enclosed in
 .TP
 .B \-h, \-\-help
 Display this help.
+.PP
 .B \-i
 Makes the addition of trailing sentence terminator (".") unconditional, often
 leading to duplicates.
+.PP
 .B \-n
 Suppresses the addition of a trailing sentence terminator.
+.PP
+.B \-o
+Inserts a "❡" (U+2761 CURVED STEM PARAGRAPH SIGN ORNAMENT) at the end of <h[1-6]> and <title> tags.
 .PP
 .SH EXAMPLE
 .TP

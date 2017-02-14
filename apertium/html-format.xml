@@ -62,7 +62,11 @@
     </format-rule>
 
     <format-rule type="close" eos="yes" priority="3"> 
-      <tag regexp='"&lt;/title"(" "[^&gt;]*)?"&gt;"|"&lt;/div"(" "[^&gt;]*)?"&gt;"|"&lt;/option"(" "[^&gt;]*)?"&gt;"|"&lt;/h"[1-6](" "[^&gt;]*)?"&gt;"'/>
+      <tag regexp='"&lt;/div"(" "[^&gt;]*)?"&gt;"|"&lt;/option"(" "[^&gt;]*)?"&gt;"'/>
+    </format-rule>
+
+    <format-rule type="close" eoh="yes" eos="yes" priority="3"> 
+      <tag regexp='"&lt;/title"(" "[^&gt;]*)?"&gt;"|"&lt;/h"[1-6](" "[^&gt;]*)?"&gt;"'/>
     </format-rule>
 
 <!-- La etiqueta DOCTYPE no la reconoce -->

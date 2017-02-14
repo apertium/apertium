@@ -51,6 +51,9 @@
       <xsl:if test="./@eos = string('yes')">
 	<xsl:value-of select="string('  isDot = true;&#xA;')"/>
       </xsl:if>
+      <xsl:if test="./@eoh = string('yes')">
+	<xsl:value-of select="string('  isEoh = true;&#xA;')"/>
+      </xsl:if>
       <xsl:value-of select="string('  bufferAppend(buffer, yytext);&#xA;}&#xA;')"/>
     </xsl:when>
     <xsl:otherwise>
@@ -59,6 +62,9 @@
       <xsl:value-of select="string('&#x9;{&#xA;')"/>
       <xsl:if test="./@eos = string('yes')">
 	<xsl:value-of select="string('  isDot = true;&#xA;')"/>
+      </xsl:if>
+      <xsl:if test="./@eoh = string('yes')">
+	<xsl:value-of select="string('  isEoh = true;&#xA;')"/>
       </xsl:if>
       <xsl:value-of select="string('  bufferAppend(buffer, yytext);&#xA;  yy_push_state(C')"/>
       <xsl:for-each select="/format/rules/format-rule/begin ">
@@ -79,6 +85,9 @@
       <xsl:if test="./@eos = string('yes')">
         <xsl:value-of select="string('  isDot = true;&#xA;')"/>
       </xsl:if>
+      <xsl:if test="./@eoh = string('yes')">
+	<xsl:value-of select="string('  isEoh = true;&#xA;')"/>
+      </xsl:if>
       <xsl:value-of select="string('  printBuffer();&#xA;')"/>
 
       <xsl:value-of select="string('  if (hasWrite_white) {&#xA;    fputws(L&quot; &quot;, yyout);&#xA;')"/>
@@ -97,6 +106,9 @@
       <xsl:if test="./@eos = string('yes')">
         <xsl:value-of select="string('  isDot = true;&#xA;')"/>
       </xsl:if>
+      <xsl:if test="./@eoh = string('yes')">
+	<xsl:value-of select="string('  isEoh = true;&#xA;')"/>
+      </xsl:if>
       <xsl:value-of select="string('  int ind=get_index(yytext);&#xA;')"/>
       <xsl:value-of select="string('  printBuffer(ind, yytext);&#xA;}&#xA;')"/>
     </xsl:when>
@@ -106,6 +118,9 @@
       <xsl:value-of select="string('&#x9;{&#xA;')"/>
       <xsl:if test="./@eos = string('yes')">
         <xsl:value-of select="string('  isDot = true;&#xA;')"/>
+      </xsl:if>
+      <xsl:if test="./@eoh = string('yes')">
+	<xsl:value-of select="string('  isEoh = true;&#xA;')"/>
       </xsl:if>
       <xsl:value-of select="string('  last = &quot;buffer&quot;;&#xA;')"/>
       <xsl:value-of select="string('  bufferAppend(buffer, yytext);&#xA;  yy_push_state(C')"/>
@@ -121,6 +136,9 @@
       <xsl:value-of select="string('&#x9;{&#xA;')"/>
       <xsl:if test="./@eos = string('yes')">
         <xsl:value-of select="string('  isDot = true;&#xA;')"/>
+      </xsl:if>
+      <xsl:if test="./@eoh = string('yes')">
+	<xsl:value-of select="string('  isEoh = true;&#xA;')"/>
       </xsl:if>
       <xsl:value-of select="string('  last = &quot;buffer&quot;;&#xA;')"/>
       <xsl:value-of select="string('  bufferAppend(buffer, yytext);&#xA;}&#xA;')"/>
@@ -165,9 +183,10 @@ using namespace std;
 
 wstring buffer;
 string symbuf;
-bool isDot, hasWrite_dot, hasWrite_white;
+bool isDot, isEoh, hasWrite_dot, hasWrite_white;
 bool eosIncond;
 bool noDot;
+bool markEoh;
 FILE *formatfile;
 string last;
 int current;
@@ -361,6 +380,7 @@ void printBuffer(int ind=-1, string end_tag="")
   }
   else
   {
+    // isEoh handling TODO matxin format
     if (hasWrite_dot &amp;&amp; isDot)
     {
       swprintf(tag, 250, L"&lt;empty-tag offset=\"%d\"/&gt;\n", offset+1);
@@ -459,6 +479,11 @@ void preDot()
 
 void printBuffer()
 {
+  if(isEoh &amp;&amp; markEoh)
+  {
+    fputws_unlocked(L"\x2761", yyout);
+    isEoh = false;
+  }
   if(isDot &amp;&amp; !eosIncond)
   {
     if(noDot)
@@ -656,7 +681,7 @@ void usage(string const &amp;progname)
   wcerr &lt;&lt; "USAGE: " &lt;&lt; progname &lt;&lt; " format_file [input_file [output_file]" &lt;&lt; ']' &lt;&lt; endl;
   </xsl:when>
   <xsl:otherwise>
-  wcerr &lt;&lt; "USAGE: " &lt;&lt; progname &lt;&lt; " [ -h | -i | -n ] [input_file [output_file]" &lt;&lt; ']' &lt;&lt; endl;
+  wcerr &lt;&lt; "USAGE: " &lt;&lt; progname &lt;&lt; " [ -h | -o | -i | -n ] [input_file [output_file]" &lt;&lt; ']' &lt;&lt; endl;
   </xsl:otherwise>
 </xsl:choose>
   wcerr &lt;&lt; "<xsl:value-of select="./@name"/> format processor " &lt;&lt; endl;
@@ -671,15 +696,27 @@ int main(int argc, char *argv[])
 
   if(argc &gt;= 2)
   {
-    if(!strcmp(argv[1],"-i"))
+    while(1+base &lt; argc)
     {
-      eosIncond = true;
-      base++;
-    }
-    else if(!strcmp(argv[1],"-n"))
-    {
-      noDot = true;
-      base++;
+      if(!strcmp(argv[1+base],"-i"))
+      {
+        eosIncond = true;
+        base++;
+      }
+      else if(!strcmp(argv[1+base],"-n"))
+      {
+        noDot = true;
+        base++;
+      }
+      else if(!strcmp(argv[1+base],"-o"))
+      {
+        markEoh = true;
+        base++;
+      }
+      else
+      {
+        break;
+      }
     }
   }
 <xsl:choose>
@@ -762,7 +799,7 @@ int main(int argc, char *argv[])
 
   last.clear();
   buffer.clear();
-  isDot = hasWrite_dot = hasWrite_white = false;
+  isEoh = isDot = hasWrite_dot = hasWrite_white = false;
   current=0;
   offset = 0;
   init_escape();
