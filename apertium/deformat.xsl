@@ -481,7 +481,7 @@ void printBuffer()
 {
   if(isEoh &amp;&amp; markEoh)
   {
-    fputws_unlocked(L"\x2761", yyout);
+    fputws_unlocked(L"[]\x2761", yyout);
     isEoh = false;
   }
   if(isDot &amp;&amp; !eosIncond)
