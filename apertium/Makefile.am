@@ -237,6 +237,11 @@ bin_PROGRAMS = apertium-deshtml \
 
 bin_SCRIPTS =  $(GENERATEDSCRIPTS) apertium-get/apertium-get
 
+# Workaround for git-svn clone not getting externals; should do
+# nothing in normal SVN checkouts
+apertium-get/apertium-get:
+	svn checkout https://github.com/unhammer/apertium-get/trunk apertium-get
+
 instdir = apertium
 
 apertiumdir = $(prefix)/share/apertium
