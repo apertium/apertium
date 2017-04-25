@@ -189,18 +189,19 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
   </xsl:template>
 
   <!-- For untrimmed modes, we assume they have the name
-       .deps/LANG1.automorf.bin corresponding to
+       LANG1-LANG2.automorf-untrimmed.bin corresponding to
        LANG1-LANG2.automorf.bin
   -->
   <xsl:template match="file" mode="untrim">
     <xsl:choose>
-      <xsl:when test="contains(@name, 'automorf') and contains(@name, '-')">
+      <xsl:when test="contains(@name, '.automorf.')">
         <file>
           <xsl:attribute name="name">
-            <xsl:text>.deps/</xsl:text>
-            <xsl:value-of select="substring-before(./@name, '-')"/>
-            <xsl:text>.</xsl:text>
-            <xsl:value-of select="substring-after(./@name, '.')"/>
+            <xsl:call-template name="replaceString">
+              <xsl:with-param name="haystack" select="./@name"/>
+              <xsl:with-param name="needle" select="'.automorf.'"/>
+              <xsl:with-param name="replacement" select="'.automorf-untrimmed.'"/>
+            </xsl:call-template>
           </xsl:attribute>
         </file>
       </xsl:when>
