@@ -756,6 +756,7 @@ Postchunk::processCallMacro(xmlNode *localroot)
 
   myword[0] = word[0];
   
+  bool indexesOK = false;
   int idx = 1;
   int lastpos = 0;
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
@@ -764,7 +765,8 @@ Postchunk::processCallMacro(xmlNode *localroot)
     {
       int pos = atoi((const char *) i->properties->children->content);
       if(!checkIndex(localroot, pos, lword)) {
-        pos=1; // for a rule to match, there has to be at least one word, so should be safe
+        indexesOK = false;      // avoid segfaulting on empty chunks, e.g. ^x<x>{}$
+        pos = 1;
       }
       myword[idx] = word[pos];
       if(blank)
@@ -781,12 +783,17 @@ Postchunk::processCallMacro(xmlNode *localroot)
   swap(myblank, blank);
   swap(npar, lword);
   
-  for(xmlNode *i = macro->children; i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
+  if(indexesOK) {
+    for(xmlNode *i = macro->children; i != NULL; i = i->next)
     {
-      processInstruction(i);
+      if(i->type == XML_ELEMENT_NODE)
+      {
+        processInstruction(i);
+      }
     }
+  }
+  else {
+    wcerr << "Warning: Not calling macro \"" << n << "\" from line " << localroot->line << " (empty word?)" << endl;
   }
 
   swap(myword, word);
