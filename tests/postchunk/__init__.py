@@ -3,7 +3,7 @@
 
 import unittest
 
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, call
 
 import signal
 
@@ -54,6 +54,9 @@ stuff) to create new postchunk tests."""
         return b"".join(output).decode('utf-8')
 
     def runTest(self):
+        compileCmd = ["../apertium/apertium-preprocess-transfer", self.t3xdata, self.bindata]
+        self.assertEqual(call(compileCmd),
+                         0)
         try:
             cmd = ["../apertium/apertium-postchunk"] + self.flags + [self.t3xdata, self.bindata]
             self.proc = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
