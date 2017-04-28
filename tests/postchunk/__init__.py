@@ -94,3 +94,8 @@ class EmptyNoMacroPostchunkTest(PostchunkTest):
 class EmptyMacroPostchunkTest(PostchunkTest):
     inputs =          ["^hasmacro<hasmacro>{}$"]
     expectedOutputs = [""]
+
+
+class UseMacroPostchunkTest(PostchunkTest):
+    inputs =          ["^thing<thing><sg>{^thing<thing><ND>$}$"]
+    expectedOutputs = ["^thing<thing><sg>$"]

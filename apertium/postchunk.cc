@@ -756,7 +756,7 @@ Postchunk::processCallMacro(xmlNode *localroot)
 
   myword[0] = word[0];
   
-  bool indexesOK = false;
+  bool indexesOK = true;
   int idx = 1;
   int lastpos = 0;
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)

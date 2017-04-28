@@ -8,8 +8,8 @@
     <def-cat n="hasmacro">
       <cat-item name="hasmacro"/>
     </def-cat>
-    <def-cat n="det">
-      <cat-item name="det"/>
+    <def-cat n="thing">
+      <cat-item name="thing"/>
     </def-cat>
     <def-cat n="nomacro">
       <cat-item name="nomacro"/>
@@ -69,6 +69,17 @@
 
       <out><lu><clip pos="1" part="whole"/></lu></out>
     </def-macro>
+
+    <def-macro n="default_to_chunk_number" npar="2"
+               c="arg1: lu, arg2: chunk">
+      <choose><when>
+        <test><and>
+          <not><equal><clip pos="2" part="nbr"/><lit v=""/></equal></not>
+          <equal><clip pos="1" part="nbr"/><lit-tag v="ND"/></equal>
+        </and></test>
+        <let><clip pos="1" part="nbr"/><clip pos="2" part="nbr"/></let>
+      </when></choose>
+    </def-macro>
   </section-def-macros>
 
 
@@ -110,20 +121,12 @@
       </action>
     </rule>
 
-    <rule comment="CHUNK: det">
+    <rule comment="CHUNK: thing">
       <pattern>
-        <pattern-item n="det"/>
+        <pattern-item n="thing"/>
       </pattern>
       <action>
-        <let><clip pos="1" part="nbr"/><clip pos="0" part="nbr"/></let>
-        <let><clip pos="1" part="gen"/><clip pos="0" part="gen"/></let>
-        <choose><when>
-          <test><or>
-            <equal><clip pos="1" part="gen"/><lit-tag v="GD"/></equal>
-            <equal><clip pos="1" part="gen"/><lit-tag v="mf"/></equal>
-          </or></test>
-          <let><clip pos="1" part="gen"/><lit-tag v="m"/></let>
-        </when></choose>
+        <call-macro n="default_to_chunk_number"><with-param pos="1"/><with-param pos="0"/></call-macro>
         <out>
           <lu><clip pos="1" part="whole"/></lu>
         </out>
