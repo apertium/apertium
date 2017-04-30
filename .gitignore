@@ -92,3 +92,4 @@
 /tests/**/.libs
 
 /tests/tagger/test-find-similar-ambiguity-class
+tests/data/nno-nob.t3x.bin
