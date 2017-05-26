@@ -30,7 +30,8 @@ TransferData::copy(TransferData const &o)
 {
   alphabet = o.alphabet;
   transducer = o.transducer;
-  finals = o.finals;
+  final_symbols = o.final_symbols;
+  seen_rules = o.seen_rules;
   attr_items = o.attr_items;
   macros = o.macros;
   lists = o.lists;
@@ -88,12 +89,6 @@ TransferData::getTransducer()
   return transducer;
 }
 
-map<int, int> &
-TransferData::getFinals()
-{
-  return finals;
-}
-
 map<wstring, wstring, Ltstr> &
 TransferData::getAttrItems()
 {
@@ -118,16 +113,57 @@ TransferData::getVariables()
   return variables;
 }
 
+int
+TransferData::countToFinalSymbol(const int count) {
+  const int symbol = alphabet(0, count);
+  final_symbols.insert(symbol);
+  return symbol;
+}
+
 void
 TransferData::write(FILE *output)
 {
   alphabet.write(output);
+
+  transducer.minimize();
+  set<int> old_finals = transducer.getFinals(); // copy for later removal
+  map<int, int> finals_rules;                   // node id -> rule number
+  map<int, multimap<int, int> >& transitions = transducer.getTransitions();
+  // Find all arcs with "final_symbols" in the transitions, let their source node instead be final,
+  // and extract the rule number from the arc. Record relation between source node and rule number
+  // in finals_rules. It is now no longer safe to minimize -- but we already did that.
+  for(map<int, multimap<int, int> >::const_iterator it = transitions.begin(),
+        limit = transitions.end(); it != limit; ++it)
+  {
+    const int src = it->first;
+    for(multimap<int, int>::const_iterator arc = it->second.begin(),
+          arclimit = it->second.end(); arc != arclimit; ++arc)
+    {
+      const int symbol = arc->first;
+      const int trg = arc->second;
+      if(final_symbols.count(symbol) == 0) {
+        continue;
+      }
+      if(!transducer.isFinal(trg)) {
+        continue;
+      }
+      transducer.setFinal(src);
+      finals_rules[src] = alphabet.decode(symbol).second; // see countToFinalSymbol()
+    }
+  }
+  // Remove the old finals:
+  for(set<int>::const_iterator it = old_finals.begin(), limit = old_finals.end();
+      it != limit; ++it)
+  {
+    transducer.setFinal(*it, false);
+  }
+
   transducer.write(output, alphabet.size());
 
-  // finals
+  // finals_rules
 
-  Compression::multibyte_write(finals.size(), output);
-  for(map<int, int>::const_iterator it = finals.begin(), limit = finals.end();
+  Compression::multibyte_write(finals_rules.size(), output);
+  for(map<int, int>::const_iterator it = finals_rules.begin(), limit = finals_rules.end();
       it != limit; it++)
   {
     Compression::multibyte_write(it->first, output);

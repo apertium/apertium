@@ -211,16 +211,18 @@ TRXReader::procRules()
         for(set<int>::iterator it = alive_states.begin(), limit = alive_states.end();
             it != limit; it++)
         {
-          td.getTransducer().setFinal(*it);
-          if(td.getFinals().find(*it) == td.getFinals().end())
+          if(td.seen_rules.find(*it) == td.seen_rules.end())
           {
-            td.getFinals()[*it] = count;
-          }       
+            const int symbol = td.countToFinalSymbol(count);
+            const int fin = td.getTransducer().insertSingleTransduction(symbol, *it);
+            td.getTransducer().setFinal(fin);
+            td.seen_rules[*it] = count;
+          }
           else
           {
             wcerr << L"Warning (" << xmlTextReaderGetParserLineNumber(reader);
             wcerr << L"): "
-              << L"Paths to rule " << count << " blocked by rule " << td.getFinals()[*it]
+              << L"Paths to rule " << count << " blocked by rule " << td.seen_rules[*it]
               << L"." << endl;
 
           }

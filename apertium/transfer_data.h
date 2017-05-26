@@ -36,10 +36,10 @@ private:
   map<wstring, int, Ltstr> macros;
   map<wstring, set<wstring, Ltstr>, Ltstr> lists;
   map<wstring, wstring, Ltstr> variables;
+  set<int> final_symbols;
   
   Alphabet alphabet;
   Transducer transducer;
-  map<int, int> finals;
 
   void writeRegexps(FILE *output);
  public:
@@ -50,13 +50,24 @@ private:
   
   Alphabet & getAlphabet();
   Transducer & getTransducer();
-  map<int, int> & getFinals();
   map<wstring, wstring, Ltstr> & getAttrItems();  
+
+  map<int, int> seen_rules;
 
   map<wstring, int, Ltstr> & getMacros();
   map<wstring, set<wstring, Ltstr>, Ltstr> & getLists();
   map<wstring, wstring, Ltstr> & getVariables();
   
+  /**
+   * Encode the rule count in an arc label/symbol (later extracted by
+   * write()), recording that it's been used in final_symbols, and
+   * return the resulting alphabet symbol.
+   *
+   * The symbol should be unique, since all other alphabet uses in
+   * trx_reader are tags (which have *negative* ints as symbols).
+   */
+  int countToFinalSymbol(const int count);
+
   void write(FILE *output);
 };
 
