@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- 
    Copyright (C) 2005 Universitat d'Alacant / Universidad de Alicante
   
@@ -154,11 +154,13 @@ patterns used in rules
 <!ELEMENT rule (pattern, action)>
 <!ATTLIST rule comment CDATA #IMPLIED>
 <!ATTLIST rule c CDATA #IMPLIED>
+<!ATTLIST rule id CDATA #IMPLIED>
 <!-- 
       Each rule has a pattern and an action 
       * attribute 'comment' allows to put in comments about the purpose of
         the rule being defined, this may be a rule specification in machine readable form
       * attribute 'c' is for further comments in free form
+      * attribute 'id' is for a rule id
 -->
 
 <!ELEMENT pattern (pattern-item+)>
