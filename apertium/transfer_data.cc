@@ -115,7 +115,9 @@ TransferData::getVariables()
 
 int
 TransferData::countToFinalSymbol(const int count) {
-  const int symbol = alphabet(0, count);
+  const wstring count_sym = L"<RULE_NUMBER:" + to_wstring(count) + L">";
+  alphabet.includeSymbol(count_sym);
+  const int symbol = alphabet(count_sym);
   final_symbols.insert(symbol);
   return symbol;
 }
@@ -132,6 +134,7 @@ TransferData::write(FILE *output)
   // Find all arcs with "final_symbols" in the transitions, let their source node instead be final,
   // and extract the rule number from the arc. Record relation between source node and rule number
   // in finals_rules. It is now no longer safe to minimize -- but we already did that.
+  const wstring rule_sym_pre = L"<RULE_NUMBER:"; // see countToFinalSymbol()
   for(map<int, multimap<int, int> >::const_iterator it = transitions.begin(),
         limit = transitions.end(); it != limit; ++it)
   {
@@ -147,8 +150,15 @@ TransferData::write(FILE *output)
       if(!transducer.isFinal(trg)) {
         continue;
       }
+      // Extract the rule number encoded by countToFinalSymbol():
+      wstring s;
+      alphabet.getSymbol(s, symbol);
+      if(s.compare(0, rule_sym_pre.size(), rule_sym_pre) != 0) {
+        continue;
+      }
+      const int rule_num = stoi(s.substr(rule_sym_pre.size()));
       transducer.setFinal(src);
-      finals_rules[src] = alphabet.decode(symbol).second; // see countToFinalSymbol()
+      finals_rules[src] = rule_num;
     }
   }
   // Remove the old finals:
