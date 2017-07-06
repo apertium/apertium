@@ -123,6 +123,7 @@ StreamedType Stream::get() {
             push_back_Character(TheStreamedType, Lemma, Character_);
             continue;
           case L']':
+          case L'#':
           case L'$':
             break;
           default:
