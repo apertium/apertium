@@ -394,6 +394,7 @@ StreamedType Stream::get() {
           switch (ThePreviousCase->ThePreviousCase) {
           case L'[':
           case L']':
+          case L'^':
           case L'$':
             push_back_Character(TheStreamedType, Lemma, Character_);
             continue;
