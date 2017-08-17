@@ -127,6 +127,7 @@ patterns used in rules
 <!ATTLIST def-macro n ID #REQUIRED>
 <!ATTLIST def-macro npar CDATA #REQUIRED
                     c CDATA #IMPLIED>
+<!ATTLIST def-macro comment CDATA #IMPLIED>
 <!-- 
      Macro definition:
      
