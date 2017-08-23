@@ -67,6 +67,7 @@ int perceptron_trace(int argc, char* argv[])
         {
           Optional<Analysis> saved_token = tagged_sent[token_idx];
           tagged_sent[token_idx] = lu.TheAnalyses[analy_idx];
+          std::wcout << L"LU:" << tagged_sent[token_idx] << std::endl ; 
           std::vector<Morpheme> &wordoids = lu.TheAnalyses[analy_idx].TheMorphemes;
           for (wrd_idx=0; wrd_idx<wordoids.size(); wrd_idx++) 
           {

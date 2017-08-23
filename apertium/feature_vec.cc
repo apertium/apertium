@@ -8,7 +8,9 @@
 
 namespace Apertium {
 
-bool CompareFeatureKey::operator() (FeatureKey const& lhs, FeatureKey const& rhs) const {
+bool 
+CompareFeatureKey::operator() (FeatureKey const& lhs, FeatureKey const& rhs) const 
+{
   size_t min_size = std::min(lhs.size(), rhs.size());
   for (size_t i = 0; i < min_size; i++) {
     if (lhs[i] < rhs[i]) {
@@ -57,14 +59,18 @@ FeatureVec::operator-=(const UnaryFeatureVec &other)
 
 template <typename OStream>
 OStream&
-operator<<(OStream & out, FeatureVec const &fv) {
+operator<<(OStream & out, FeatureVec const &fv) 
+{
   FeatureVec::Map::const_iterator feat_it = fv.data.begin();
-  for (; feat_it != fv.data.end(); feat_it++) {
+  for (; feat_it != fv.data.end(); feat_it++) 
+  {
     FeatureKey::const_iterator bc_it = feat_it->first.begin();
     out << std::dec << (int)(*(bc_it++))[0] << "; ";
-    for (;bc_it != feat_it->first.end(); bc_it++) {
+    for (;bc_it != feat_it->first.end(); bc_it++) 
+    {
       out << bc_it->c_str();
-      if (bc_it + 1 != feat_it->first.end()) {
+      if (bc_it + 1 != feat_it->first.end()) 
+      {
         out << ", ";
       }
     }
@@ -85,7 +91,8 @@ FeatureVec::operator-=(const FeatureVec &other)
   return inPlaceSubtract(other.data.begin(), other.data.end());
 }
 
-double FeatureVec::operator*(const UnaryFeatureVec &other) const
+double 
+FeatureVec::operator*(const UnaryFeatureVec &other) const
 {
   double result = 0.0L;
   UnaryFeatureVec::const_iterator other_it;
@@ -98,7 +105,8 @@ double FeatureVec::operator*(const UnaryFeatureVec &other) const
   return result;
 }
 
-double FeatureVec::operator*(const FeatureVec &other) const
+double 
+FeatureVec::operator*(const FeatureVec &other) const
 {
   // This is O(N) in the size of the largest vector.
   // With a hash table we would have O(n) in the size of the smaller vector.
@@ -195,11 +203,15 @@ FeatureVec::inPlaceSubtract(Iter first, Iter last)
   return *this;
 }
 
-void FeatureVec::serialise(std::ostream &serialised) const {
+void 
+FeatureVec::serialise(std::ostream &serialised) const 
+{
   Serialiser<FeatureVec::Map>::serialise(data, serialised);
 }
 
-void FeatureVec::deserialise(std::istream &serialised) {
+void 
+FeatureVec::deserialise(std::istream &serialised) 
+{
   data = Deserialiser<FeatureVec::Map>::deserialise(serialised);
 }
 
