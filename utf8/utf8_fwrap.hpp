@@ -10,11 +10,25 @@
 #include <stdint.h>
 
 #ifdef _WIN32
-	#define utf8to32 utf8to16
 	#define utf32to8 utf16to8
 #endif
 
 inline wint_t fgetwc_u8(FILE *in) {
+#ifdef _WIN32
+	struct _cps {
+		FILE *f = 0;
+		wchar_t c = 0;
+	};
+	static _cps cps[4];
+
+	for (auto& cp : cps) {
+		if (cp.f == in) {
+			cp.f = 0;
+			return cp.c;
+		}
+	}
+#endif
+
 	int32_t rv = 0;
 	int c = 0, i = 0;
 	char buf[4];
@@ -43,7 +57,24 @@ inline wint_t fgetwc_u8(FILE *in) {
 		rv = WEOF;
 	}
 	else {
+#ifdef _WIN32
+		wchar_t u16[2] = {};
+		utf8::unchecked::utf8to16(buf, buf+i, u16);
+
+		if (u16[1]) {
+			for (auto& cp : cps) {
+				if (cp.f == 0) {
+					cp.f = in;
+					cp.c = u16[1];
+					return u16[0];
+				}
+			}
+			throw std::runtime_error("Not enough space to store UTF-16 high surrogate");
+		}
+		rv = u16[0];
+#else
 		utf8::unchecked::utf8to32(buf, buf+i, &rv);
+#endif
 	}
 	return static_cast<wint_t>(rv);
 }
@@ -103,7 +134,6 @@ inline wint_t ungetwc_u8(wint_t wc, FILE *out) {
 #define ungetwc ungetwc_u8
 
 #ifdef _WIN32
-	#undef utf8to32
 	#undef utf32to8
 #endif
 
