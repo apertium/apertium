@@ -59,7 +59,7 @@ inline int mbtowc(wchar_t *pwc, const char *s, size_t n) { return mbrtowc(pwc, s
 #endif
 
 #ifdef _WIN32
-#include <utf8_fwrap.hpp>
+#include <utf8_fwrap.h>
 #endif
 
 #endif
