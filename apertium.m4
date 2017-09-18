@@ -45,6 +45,14 @@ AS_HELP_STRING([--with-lang][$1],dnl
       AP_SRC$1=$withval
       echo "Using $2 from $withval"
       AP_SUBDIRS="$AP_SUBDIRS $withval"
+      module="$2"
+      if test "${module%%-*}" = apertium && ! test -f "$withval/$2.pc.in"; then
+          AC_MSG_WARN([$2 looks like an apertium dependency, but couldn't find $withval/$2.pc.in -- wrong directory, or not compiled yet?])
+      elif test "${module%%-*}" = giella && ! grep -x -q "PACKAGE = $2" "$withval/Makefile"; then
+          AC_MSG_WARN([$2 looks like a giella dependency, but couldn't find PACKAGE = $2 in $withval/Makefile -- wrong directory, or not compiled yet?])
+      elif test "${module%%-*}" = giella && ! grep -x -q "subdir = tools/mt/apertium" "$withval/Makefile"; then
+          AC_MSG_WARN([$2 looks like a giella dependency, but couldn't find subdir = tools/mt/apertium in $withval/Makefile -- wrong directory, or not compiled yet?])
+      fi
     ],
     [
       # TODO: PKG_CHECK_MODULES sets useless variables, while _EXISTS
