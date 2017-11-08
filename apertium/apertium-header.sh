@@ -192,7 +192,6 @@ translate_odt ()
 
   if [ "$REDIR" == "" ]; then cat "$OTRASALIDA"; else cat "$OTRASALIDA" > "$SALIDA"; fi
   rm -Rf "$OTRASALIDA"
-  rm -Rf "$TMCOMPFILE"
 }
 
 translate_docx ()
@@ -249,7 +248,6 @@ translate_docx ()
 
   if [ "$REDIR" == "" ]; then cat "$OTRASALIDA"; else cat "$OTRASALIDA" > "$SALIDA"; fi
   rm -Rf "$OTRASALIDA"
-  rm -Rf "$TMCOMPFILE"
 }
 
 translate_pptx ()
@@ -306,7 +304,6 @@ translate_pptx ()
 
   if [ "$REDIR" == "" ]; then cat "$OTRASALIDA"; else cat "$OTRASALIDA" > "$SALIDA"; fi
   rm -Rf "$OTRASALIDA"
-  rm -Rf "$TMCOMPFILE"
 }
 
 
@@ -350,7 +347,6 @@ translate_xlsx ()
 
   if [ "$REDIR" == "" ]; then cat "$OTRASALIDA"; else cat "$OTRASALIDA" > "$SALIDA"; fi
   rm -Rf "$OTRASALIDA"
-  rm -Rf "$TMCOMPFILE"
 }
 
 translate_htmlnoent ()
@@ -366,8 +362,6 @@ translate_htmlnoent ()
     if [ "$REDIR" == "" ]; then cat; else cat > "$SALIDA"; fi
   else if [ "$REDIR" == "" ]; then "$APERTIUM_PATH/apertium-rehtml-noent"; else "$APERTIUM_PATH/apertium-rehtml-noent" > "$SALIDA"; fi
   fi
-
-  rm -Rf "$TMCOMPFILE"
 }
 
 
