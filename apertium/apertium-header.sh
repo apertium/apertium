@@ -21,7 +21,7 @@ message ()
   echo "USAGE: $(basename $0) [-d datadir] [-f format] [-u] <direction> [in [out]]"
   echo " -d datadir       directory of linguistic data"
   echo " -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx, pptx,"
-  echo "                  xpresstag, html-noent, latex, latex-raw"
+  echo "                  xpresstag, html-noent, latex, latex-raw, line"
   echo " -a               display ambiguity"
   echo " -u               don't display marks '*' for unknown words"
   echo " -n               don't insert period before possible sentence-ends"
@@ -364,6 +364,28 @@ translate_htmlnoent ()
   fi
 }
 
+translate_line ()
+{
+  # TODO: lt-proc inserts spaces before parts of mwe's that cross
+  # lines, even though the parts get output as individual lu's
+  "$APERTIUM_PATH/apertium-destxt" -n "$INFILE" | \
+      sed 's/[[:space:]]*\[$/[][/' |\
+      if [ "$TRANSLATION_MEMORY_FILE" = "" ]; then
+          cat
+      else
+        "$APERTIUM_PATH/lt-tmxproc" "$TMCOMPFILE";
+      fi | \
+          if [ ! -x "$DATADIR/modes/$PAIR.mode" ]; then
+              sh "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
+          else
+            "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
+          fi | \
+              if [ "$REDIR" == "" ]; then
+                  "$APERTIUM_PATH/apertium-retxt"
+              else
+                  "$APERTIUM_PATH/apertium-retxt" > "$SALIDA"
+              fi
+}
 
 
 
@@ -518,6 +540,13 @@ case "$FORMAT" in
     else OPTION="-g";
     fi;
     translate_latex_raw
+    exit 0
+    ;;
+  line)
+    if [ "$UWORDS" = "no" ]; then OPTION="-n";
+    else OPTION="-g";
+    fi;
+    translate_line
     exit 0
     ;;
   
