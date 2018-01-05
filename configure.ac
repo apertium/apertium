@@ -6,7 +6,6 @@ AC_PREREQ(2.52)
 m4_define([required_lttoolbox_version], [3.3.3])
 m4_define([required_libxml_version], [2.6.17])
 m4_define([required_libpcre_version], [6.4])
-#m4_define([required_pkg_config_version], [0.15])
 
 AC_INIT([apertium], [3.4.2], [sortiz@users.sourceforge.net])
 AC_CONFIG_HEADER([apertium/apertium_config.h])
@@ -108,16 +107,6 @@ fi
 if test x$ac_cv_path_FLEX = xno
 then
   AC_MSG_ERROR([You don't have flex installed.])
-fi
-
-AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
-if test x$ac_cv_path_PKG_CONFIG = x
-then
-  AC_MSG_ERROR([You don't have pkg-config installed.])
-fi
-if test x$ac_cv_path_PKG_CONFIG = xno
-then
-  AC_MSG_ERROR([You don't have pkg-config installed.])
 fi
 
 AC_CHECK_FUNCS(strcasecmp)
