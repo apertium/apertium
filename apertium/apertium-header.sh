@@ -44,19 +44,20 @@ list_directions ()
 
 locale_utf8 ()
 {
-  export LC_CTYPE=$(locale -a|grep -i "utf[.]*8"|head -1);
-  if [ LC_CTYPE = "" ]; then
-    echo "Error: Install an UTF-8 locale in your system";
-    exit 1;
+  export LC_CTYPE=$(locale -a|grep -i "utf[.]*8"|head -1)
+  if [[ -z ${LC_CTYPE} ]]; then
+    echo "Error: Install an UTF-8 locale in your system"
+    exit 1
   fi
 }
 
-locale_latin1 ()
-{
-  export LC_CTYPE=$(locale -a|grep -i -e "8859-1" -e "@euro"|head -1);
-  if [ LC_CTYPE = "" ]; then
-    echo "Error: Install a Latin-1 locale in your system";
-    exit 1;
+check_encoding () {
+  local file=$1
+  local encoding
+  encoding=$(file -b --mime-encoding "${file}")
+  if [[ "${encoding}" != utf-8 ]]; then
+    echo "Input seems to be non-UTF-8, please convert to UTF-8 (e.g. with 'iconv -f ${encoding} -t utf-8')" >&2
+    exit 1
   fi
 }
 
@@ -87,17 +88,15 @@ translate_latex()
 {
   test_gawk
 
-  if [ "$INFILE" = ""  -o "$INFILE" = /dev/stdin ]; then
+  if [ "$INFILE" = "" -o "$INFILE" = /dev/stdin ]; then
     INFILE=$(mktemp "$TMPDIR/apertium.XXXXXXXX")
     cat > "$INFILE"
     BORRAFICHERO="true"
   fi
+  check_encoding "${INFILE}"
+  locale_utf8
 
-  if [ "$(file -b --mime-encoding "$INFILE")" == "utf-8" ]; then
-    locale_latin1
-  else locale_utf8
-  fi
-
+  set -o pipefail
   "$APERTIUM_PATH/apertium-prelatex" "$INFILE" | \
     "$APERTIUM_PATH/apertium-utils-fixlatex" | \
     "$APERTIUM_PATH/apertium-deslatex" ${FORMAT_OPTIONS} | \
@@ -128,12 +127,10 @@ translate_latex_raw()
     cat > "$INFILE"
     BORRAFICHERO="true"
   fi
+  check_encoding "${INFILE}"
+  locale_utf8
 
-  if [ "$(file -b --mime-encoding "$INFILE")" = "utf-8" ]; then
-    locale_latin1
-  else locale_utf8
-  fi
-
+  set -o pipefail
   "$APERTIUM_PATH/apertium-prelatex" "$INFILE" | \
     "$APERTIUM_PATH/apertium-utils-fixlatex" | \
     "$APERTIUM_PATH/apertium-deslatex" ${FORMAT_OPTIONS} | \
