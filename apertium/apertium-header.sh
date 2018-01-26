@@ -117,38 +117,12 @@ translate_latex()
     fi
 }
 
-
+# TODO: What was the intended difference between this and
+# translate_latex? They were identical, apart from one not cleaning up
+# tmp files
 translate_latex_raw()
 {
-  test_gawk
-
-  if [ "$INFILE" = "" -o "$INFILE" = /dev/stdin ]; then
-    INFILE=$(mktemp "$TMPDIR/apertium.XXXXXXXX")
-    cat > "$INFILE"
-    BORRAFICHERO="true"
-  fi
-  check_encoding "${INFILE}"
-  locale_utf8
-
-  set -o pipefail
-  "$APERTIUM_PATH/apertium-prelatex" "$INFILE" | \
-    "$APERTIUM_PATH/apertium-utils-fixlatex" | \
-    "$APERTIUM_PATH/apertium-deslatex" ${FORMAT_OPTIONS} | \
-    if [ "$TRANSLATION_MEMORY_FILE" = "" ];
-    then cat;
-    else "$APERTIUM_PATH/lt-tmxproc" "$TMCOMPFILE";
-    fi | \
-      if [ ! -x "$DATADIR/modes/$PAIR.mode" ]; then
-      sh "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
-    else "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
-    fi | \
-      "$APERTIUM_PATH/apertium-relatex"| \
-      awk '{gsub("</CONTENTS-noeos>", "</CONTENTS>"); print;}' | \
-      if [ "$REDIR" == "" ]; then "$APERTIUM_PATH/apertium-postlatex-raw"; else "$APERTIUM_PATH/apertium-postlatex-raw" > "$SALIDA"; fi
-
-    if [ "$BORRAFICHERO" = "true" ]; then
-      rm -Rf "$INFILE"
-    fi
+  translate_latex "$@"
 }
 
 
