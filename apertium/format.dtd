@@ -43,6 +43,8 @@
 <!ATTLIST input encoding CDATA #REQUIRED>
 <!--  
       Reserved for future extensions
+
+      The "encoding" attribute currently has no effect on the generated output, and is only metadata/documentation in case the XML performs string replacements.
 -->
 		
 <!ELEMENT output EMPTY>
@@ -50,6 +52,8 @@
 <!ATTLIST output encoding CDATA #REQUIRED>
 <!--
       Reserved for future extensions
+
+      The "encoding" attribute currently has no effect on the generated output, and is only metadata/documentation in case the XML performs string replacements.
 -->
 
 <!ELEMENT tag-name EMPTY>
