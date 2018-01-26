@@ -55,7 +55,7 @@ check_encoding () {
   local file=$1
   local encoding
   encoding=$(file -b --mime-encoding "${file}")
-  if [[ "${encoding}" != utf-8 ]]; then
+  if [[ "${encoding}" != utf-8 && "${encoding}" != us-ascii ]]; then
     echo "Input seems to be non-UTF-8, please convert to UTF-8 (e.g. with 'iconv -f ${encoding} -t utf-8')" >&2
     exit 1
   fi
