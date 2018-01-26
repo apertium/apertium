@@ -145,6 +145,10 @@ translate_latex_raw()
       "$APERTIUM_PATH/apertium-relatex"| \
       awk '{gsub("</CONTENTS-noeos>", "</CONTENTS>"); print;}' | \
       if [ "$REDIR" == "" ]; then "$APERTIUM_PATH/apertium-postlatex-raw"; else "$APERTIUM_PATH/apertium-postlatex-raw" > "$SALIDA"; fi
+
+    if [ "$BORRAFICHERO" = "true" ]; then
+      rm -Rf "$INFILE"
+    fi
 }
 
 
