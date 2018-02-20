@@ -19,7 +19,7 @@
 
 message ()
 {
-  echo "USAGE: $(basename $0) [-d datadir] [-f format] [-u] <direction> [in [out]]"
+  echo "USAGE: $(basename "$0") [-d datadir] [-f format] [-u] <direction> [in [out]]"
   echo " -d datadir       directory of linguistic data"
   echo " -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx, pptx,"
   echo "                  xpresstag, html-noent, latex, latex-raw, line"
@@ -45,7 +45,8 @@ list_directions ()
 
 locale_utf8 ()
 {
-  export LC_CTYPE=$(locale -a|grep -i "utf[.-]*8"|head -1)
+  export LC_CTYPE
+  LC_CTYPE=$(locale -a|grep -i "utf[.-]*8"|head -1)
   if [[ -z ${LC_CTYPE} ]]; then
     echo "Error: Install an UTF-8 locale in your system"
     exit 1
@@ -89,7 +90,7 @@ translate_latex()
 {
   test_gawk
 
-  if [ "$INFILE" = "" -o "$INFILE" = /dev/stdin ]; then
+  if [[ -z "$INFILE" || "$INFILE" = /dev/stdin ]]; then
     INFILE=$(mktemp "$TMPDIR/apertium.XXXXXXXX")
     cat > "$INFILE"
     BORRAFICHERO="true"
@@ -123,7 +124,7 @@ translate_latex()
 # tmp files
 translate_latex_raw()
 {
-  translate_latex "$@"
+  translate_latex
 }
 
 
@@ -328,15 +329,16 @@ translate_xlsx ()
 translate_htmlnoent ()
 {
   "$APERTIUM_PATH/apertium-deshtml" ${FORMAT_OPTIONS} "$INFILE" | \
-    if [ "$TRANSLATION_MEMORY_FILE" = "" ]; then
-    cat
-  else "$APERTIUM_PATH/lt-tmxproc" "$TMCOMPFILE";
-  fi | if [ ! -x "$DATADIR/modes/$PAIR.mode" ]; then
-    sh "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
+      if [ "$TRANSLATION_MEMORY_FILE" = "" ]; then
+          cat
+      else "$APERTIUM_PATH/lt-tmxproc" "$TMCOMPFILE";
+      fi | if [ ! -x "$DATADIR/modes/$PAIR.mode" ]; then
+      sh "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
   else "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
   fi | if [ "$FORMAT" = "none" ]; then
-    if [ "$REDIR" == "" ]; then cat; else cat > "$SALIDA"; fi
-  else if [ "$REDIR" == "" ]; then "$APERTIUM_PATH/apertium-rehtml-noent"; else "$APERTIUM_PATH/apertium-rehtml-noent" > "$SALIDA"; fi
+      if [ "$REDIR" == "" ]; then cat; else cat > "$SALIDA"; fi
+  else
+    if [ "$REDIR" == "" ]; then "$APERTIUM_PATH/apertium-rehtml-noent"; else "$APERTIUM_PATH/apertium-rehtml-noent" > "$SALIDA"; fi
   fi
 }
 
@@ -384,10 +386,11 @@ LIST_MODES_AND_EXIT=false
 FORMAT_OPTIONS=""
 
 # Skip (but store) non-option arguments that come before options:
-declare -a ARGS_PREOPT
+declare -a ARGS_PREOPT ARGS_ALL
 declare -i OPTIND=1
+ARGS_ALL=( $@ )              # so we can index into it with a variable
 while [[ $OPTIND -le $# ]]; do
-  arg=${@:$OPTIND:1}
+  arg=${ARGS_ALL[$OPTIND-1]}
   case $arg in
     -*) break ;;
     *) ARGS_PREOPT+=($arg); (( OPTIND++ )) ;;
@@ -410,7 +413,7 @@ while getopts ":uahlf:d:m:o:n" opt; do
     :) echo "ERROR: $OPTARG requires an argument" >&2; message >&2 ;;
   esac
 done
-shift $(($OPTIND-1))
+shift $(( OPTIND-1 ))
 
 if $LIST_MODES_AND_EXIT; then list_directions; exit 0; fi
 
@@ -446,8 +449,7 @@ esac
 
 
 if [[ -n $TRANSLATION_MEMORY_FILE ]]; then
-  "$APERTIUM_PATH/lt-tmxcomp" "$TRANSLATION_MEMORY_DIRECTION" "$TRANSLATION_MEMORY_FILE" "$TMCOMPFILE" >/dev/null
-  if [ "$?" != "0" ]; then
+  if ! "$APERTIUM_PATH/lt-tmxcomp" "$TRANSLATION_MEMORY_DIRECTION" "$TRANSLATION_MEMORY_FILE" "$TMCOMPFILE" >/dev/null; then
     echo "Error: Cannot compile TM '$TRANSLATION_MEMORY_FILE'" >&2
     echo"   hint: use -o parameter" >&2
     message >&2
