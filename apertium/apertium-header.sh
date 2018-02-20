@@ -1,3 +1,4 @@
+#!/bin/bash
 # -*- sh-basic-offset: 2 -*-
 
 # Copyright (C) 2005 Universitat d'Alacant / Universidad de Alicante
@@ -44,7 +45,7 @@ list_directions ()
 
 locale_utf8 ()
 {
-  export LC_CTYPE=$(locale -a|grep -i "utf[.]*8"|head -1)
+  export LC_CTYPE=$(locale -a|grep -i "utf[.-]*8"|head -1)
   if [[ -z ${LC_CTYPE} ]]; then
     echo "Error: Install an UTF-8 locale in your system"
     exit 1
