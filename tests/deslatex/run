@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e -u
+
+cd "$(dirname "$0")"
+
+expected='.[][<documentclass\/>
+]'
+input='<documentclass/>'
+result=$(../../apertium/apertium-deslatex <<< "${input}")
+
+diff <(echo "$expected") <(echo "$result")
+

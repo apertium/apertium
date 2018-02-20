@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS=-I m4
 
-SUBDIRS = $(GENERIC_LIBRARY_NAME)
+SUBDIRS = $(GENERIC_LIBRARY_NAME) tests
 DIST_SUBDIRS = $(GENERIC_LIBRARY_NAME) tests
 
 modesdir=$(prefix)/share/apertium/modes
@@ -17,6 +17,5 @@ install-data-local:
 	mkdir -p $(DESTDIR)$(modesdir)
 	$(INSTALL_DATA) README-MODES  $(DESTDIR)$(modesdir)/README
 
-test: tests/run_tests.py
-	cd tests && make
-	$<
+# just a synonym:
+test: check
