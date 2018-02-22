@@ -1,7 +1,10 @@
+# This is expected to be built before the parent dir, which depends on
+# tagger/test-find-similar-ambiguity-class for run_tests.py
+
 library_includedir = $(includedir)/$(GENERIC_LIBRARY_NAME)-$(GENERIC_API_VERSION)/$(GENERIC_LIBRARY_NAME)
 
-bin_PROGRAMS = test-find-similar-ambiguity-class
-bin_SCRIPTS =  $(GENERATEDSCRIPTS)
+check_PROGRAMS = test-find-similar-ambiguity-class
+check_SCRIPTS =  $(GENERATEDSCRIPTS)
 
 AM_CPPFLAGS = -I$(top_srcdir)
 
