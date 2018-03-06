@@ -23,6 +23,7 @@ h_sources = a.h \
 	    feature_vec.h \
 	    feature_vec_averager.h \
 	    file_tagger.h \
+	    getopt_long.h \
 	    hmm.h \
 	    i.h \
 	    interchunk.h \
@@ -52,6 +53,7 @@ h_sources = a.h \
 	    stream_tagger.h \
 	    stream_tagger_trainer.h \
 	    streamed_type.h \
+	    string_to_wostream.h \
 	    string_utils.h \
 	    shell_utils.h \
 	    tag.h \
