@@ -7,7 +7,7 @@ m4_define([required_lttoolbox_version], [3.4.0])
 m4_define([required_libxml_version], [2.6.17])
 m4_define([required_libpcre_version], [6.4])
 
-AC_INIT([apertium], [3.5.0], [sortiz@users.sourceforge.net])
+AC_INIT([apertium], [3.5.1], [sortiz@users.sourceforge.net])
 AC_CONFIG_HEADER([apertium/apertium_config.h])
 
 AC_CANONICAL_SYSTEM
