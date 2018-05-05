@@ -89,6 +89,9 @@ TrainingCorpus::TrainingCorpus(Stream &tagged, Stream &untagged,
                                bool skip_on_error, bool sent_seg)
   : sent_seg(sent_seg), skipped(0)
 {
+  std::random_device rd;
+  rnd.seed(rd());
+
   TrainingSentence *training_sentence;
   bool was_sentence_end = true;
   unsigned int tagged_line = 0;
@@ -182,7 +185,7 @@ void TrainingCorpus::prematureEnd()
 
 void TrainingCorpus::shuffle()
 {
-  random_shuffle(sentences.begin(), sentences.end());
+  std::shuffle(sentences.begin(), sentences.end(), rnd);
 }
 
 }

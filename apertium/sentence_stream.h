@@ -2,6 +2,7 @@
 #define _SENTENCE_STREAM_H
 
 #include <memory>
+#include <random>
 #include <apertium/optional.h>
 #include <apertium/stream.h>
 #include <apertium/streamed_type.h>
@@ -42,6 +43,7 @@ namespace SentenceStream {
     bool contToEndOfSent(Stream &stream, StreamedType token,
                          unsigned int &line);
     bool sent_seg;
+    std::mt19937 rnd;
   public:
     unsigned int skipped;
     TrainingCorpus(Stream &tagged, Stream &untagged, bool skip_on_error, bool sent_seg);
