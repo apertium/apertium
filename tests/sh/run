@@ -1,0 +1,10 @@
+#!/bin/sh
+
+cd "$(dirname "$0")" || exit 1
+
+if command -v shellcheck >/dev/null; then
+    shellcheck ../../apertium/apertium
+else
+    echo "shellcheck not installed, skipping shellcheck tests" >&2
+    exit 77
+fi
