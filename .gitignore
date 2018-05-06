@@ -3,8 +3,9 @@
 *.o
 *.pyc
 
-**.deps/
-**.dirstamp
+**/.deps/
+**/.dirstamp
+test-driver
 
 # /
 /autom4te.cache
