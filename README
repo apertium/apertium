@@ -1,14 +1,17 @@
-REQUIREMENTS
+Apertium
 ===============================================================================
 
-* This package needs the package lttoolbox-3.5 installed in the
+Requirements
+-------------------------------------------------------------------------------
+
+* This package needs the package [lttoolbox-3.5][1] installed in the
 system, as well as `libxml` and `libpcre`.
 
 See http://www.apertium.org and http://wiki.apertium.org for more information 
 on installing.
 
-DESCRIPTION
-===============================================================================
+Description
+-------------------------------------------------------------------------------
 
 When building, this package generates, among others, the following
 modules:
@@ -20,8 +23,8 @@ modules:
 * `apertium`
   Translator program.  Execute without parameters to see the usage.
 
-QUICK START
-===============================================================================
+Quick Start
+-------------------------------------------------------------------------------
 
 1) Download the packages for `lttoolbox-VERSION.tar.gz` and
    `apertium-VERSION.tar.gz` and linguistic data
@@ -73,3 +76,5 @@ QUICK START
 
    $ apertium -f txt es-ca <input >output
 ```
+
+[1]: https://github.com/apertium/lttoolbox
