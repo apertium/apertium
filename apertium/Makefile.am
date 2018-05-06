@@ -527,13 +527,13 @@ apertium-gen-deformat: Makefile.am deformat-header.sh
 	@echo "Creating apertium-gen-deformat script"
 	@echo "#!$(BASH)" > $@
 	@cat deformat-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/format.dtd --noout \$$FILE1 && \\" >> $@
+	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/format.dtd --noout \"\$$FILE1\" && \\" >> $@
 	@if [ `basename $(XSLTPROC)` == xsltproc ]; \
-	  then echo "$(XSLTPROC) --stringparam mode \$$MODE \"$(apertiumdir)\"/deformat.xsl \$$FILE1 >/tmp/\$$\$$.deformat.l && \\"; \
-          else echo "$(XSLTPROC) \"$(apertiumdir)\"/deformat.xsl \$$FILE1 \"\\\$$mode=\$$MODE\" >/tmp/\$$\$$.deformat.l && \\"; \
+	  then echo "$(XSLTPROC) --stringparam mode \$$MODE \"$(apertiumdir)\"/deformat.xsl \"\$$FILE1\" >/tmp/\$$\$$.deformat.l && \\"; \
+          else echo "$(XSLTPROC) \"$(apertiumdir)\"/deformat.xsl \"\$$FILE1\" \"\\\$$mode=\$$MODE\" >/tmp/\$$\$$.deformat.l && \\"; \
           fi >> $@
 	@echo "$(FLEX) \$$FLEXOPTS -o/tmp/\$$\$$.lex.cc /tmp/\$$\$$.deformat.l && \\" >> $@
-	@echo "$(CXX) -DGENFORMAT $(CXXFLAGS) -w $(APERTIUM_CFLAGS) -I $(apertiuminclude) -o \$$FILE2 /tmp/\$$\$$.lex.cc $(APERTIUM_LIBS) 2>/dev/null && \\" >> $@
+	@echo "$(CXX) -DGENFORMAT $(CXXFLAGS) -w $(APERTIUM_CFLAGS) -I $(apertiuminclude) -o \"\$$FILE2\" /tmp/\$$\$$.lex.cc $(APERTIUM_LIBS) 2>/dev/null && \\" >> $@
 	@echo "rm /tmp/\$$\$$.deformat.l /tmp/\$$\$$.lex.cc" >> $@
 	@chmod a+x $@
 
@@ -541,10 +541,10 @@ apertium-gen-reformat: Makefile.am gen-header.sh
 	@echo "Creating apertium-gen-reformat script"
 	@echo "#!$(BASH)" > $@
 	@cat gen-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/format.dtd --noout \$$FILE1 && \\" >> $@
-	@echo "$(XSLTPROC) \"$(apertiumdir)\"/reformat.xsl \$$FILE1 >/tmp/\$$\$$.reformat.l && \\" >> $@
+	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/format.dtd --noout \"\$$FILE1\" && \\" >> $@
+	@echo "$(XSLTPROC) \"$(apertiumdir)\"/reformat.xsl \"\$$FILE1\" >/tmp/\$$\$$.reformat.l && \\" >> $@
 	@echo "$(FLEX) \$$FLEXOPTS -o/tmp/\$$\$$.lex.cc /tmp/\$$\$$.reformat.l && \\" >> $@
-	@echo "$(CXX) -DGENFORMAT $(CXXFLAGS) -w $(APERTIUM_CFLAGS) -I $(apertiuminclude) -o \$$FILE2 /tmp/\$$\$$.lex.cc $(APERTIUM_LIBS) 2>/dev/null &&\\" >> $@
+	@echo "$(CXX) -DGENFORMAT $(CXXFLAGS) -w $(APERTIUM_CFLAGS) -I $(apertiuminclude) -o \"\$$FILE2\" /tmp/\$$\$$.lex.cc $(APERTIUM_LIBS) 2>/dev/null &&\\" >> $@
 	@echo "rm /tmp/\$$\$$.reformat.l /tmp/\$$\$$.lex.cc" >> $@
 	@chmod a+x $@
 
@@ -574,8 +574,6 @@ apertium-unformat: Makefile.am apertium-unformat-header.sh
 	@echo "Creating apertium-unformat script"
 	@echo "#!$(BASH)" > $@
 	@echo "APERTIUM_PATH=\"$(prefix)/bin\"" >>$@
-	@echo "LTTOOLBOX_PATH=\"$(prefix)/bin\"" >>$@
-	@echo "DEFAULT_DIRECTORY=\"$(prefix)/share/apertium\"" >>$@
 	@cat apertium-unformat-header.sh >>$@
 	@chmod a+x $@
 

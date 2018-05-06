@@ -1,4 +1,3 @@
-PAIR=""
 INPUT_FILE="/dev/stdin"
 OUTPUT_FILE="/dev/stdout"
 
@@ -7,7 +6,7 @@ OUTPUT_FILE="/dev/stdout"
 
 message ()
 {
-  echo "USAGE: $(basename $0) [-f format] [in [out]]"
+  echo "USAGE: $(basename "$0") [-f format] [in [out]]"
   echo " -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx, pptx"
   echo " in               input file (stdin by default)"
   echo " out              output file (stdout by default)"
@@ -16,7 +15,8 @@ message ()
 
 locale_utf8 ()
 {
-  export LC_CTYPE=$(locale -a|grep -i "utf[.]*8"|head -1);
+  LC_CTYPE=$(locale -a|grep -i "utf[.]*8"|head -1)
+  export LC_CTYPE
   if [ "$LC_CTYPE" = "" ]
   then echo "Error: Install an UTF-8 locale in your system";
        exit 1;
@@ -29,11 +29,11 @@ test_zip ()
   then echo "Error: Install 'zip' command in your system";
        exit 1;
   fi
-  
+
   if [ "$(which unzip)" = "" ]
   then echo "Error: Install 'unzip' command in your system";
        exit 1;
-  fi 
+  fi
 }
 
 test_gawk ()
@@ -49,19 +49,19 @@ test_gawk ()
 unformat_latex()
 {
   test_gawk
-  
+
   if [ "$FICHERO" = "" ]
   then FICHERO=$(mktemp $TMPDIR/apertium.XXXXXXXX)
-       cat > $FICHERO
+       cat > "$FICHERO"
        BORRAFICHERO="true"
   fi
 
-  $APERTIUM_PATH/apertium-prelatex $FICHERO | \
-  $APERTIUM_PATH/apertium-utils-fixlatex | \
-  $APERTIUM_PATH/apertium-deslatex  >$SALIDA
-  
+  "$APERTIUM_PATH/apertium-prelatex" "$FICHERO" | \
+  "$APERTIUM_PATH/apertium-utils-fixlatex" | \
+  "$APERTIUM_PATH/apertium-deslatex"  >"$SALIDA"
+
   if [ "$BORRAFICHERO" = "true" ]
-  then rm -Rf $FICHERO
+  then rm -Rf "$FICHERO"
   fi
 }
 
@@ -72,12 +72,12 @@ unformat_odt ()
 
   locale_utf8
   test_zip
-  
-  unzip -q -o -d $INPUT_TMPDIR $FICHERO
-  find $INPUT_TMPDIR | grep content\\\.xml |\
+
+  unzip -q -o -d "$INPUT_TMPDIR" "$FICHERO"
+  find "$INPUT_TMPDIR" | grep content\\\.xml |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
-  $APERTIUM_PATH/apertium-desodt >$SALIDA
-  rm -Rf $INPUT_TMPDIR
+  "$APERTIUM_PATH/apertium-desodt" >"$SALIDA"
+  rm -Rf "$INPUT_TMPDIR"
 }
 
 unformat_docx ()
@@ -86,21 +86,21 @@ unformat_docx ()
 
   locale_utf8
   test_zip
-  
-  unzip -q -o -d $INPUT_TMPDIR $FICHERO
-  
-  for i in $(find $INPUT_TMPDIR|grep "xlsx$");
+
+  unzip -q -o -d "$INPUT_TMPDIR" "$FICHERO"
+
+  for i in $(find "$INPUT_TMPDIR"|grep "xlsx$");
   do LOCALTEMP=$(mktemp $TMPDIR/apertium.XXXXXXXX)
-     $APERTIUM_PATH/apertium -f xlsx -d $DIRECTORY $OPCIONU $PREFIJO <$i >$LOCALTEMP;
-     cp $LOCALTEMP $i;
-     rm $LOCALTEMP;
+     "$APERTIUM_PATH/apertium" -f xlsx -d "$DIRECTORY" "$OPCIONU" "$PREFIJO" <"$i" >"$LOCALTEMP";
+     cp "$LOCALTEMP" "$i";
+     rm "$LOCALTEMP";
   done;
-  
-  find $INPUT_TMPDIR | grep "xml" |\
+
+  find "$INPUT_TMPDIR" | grep "xml" |\
   grep -v -i \\\(settings\\\|theme\\\|styles\\\|font\\\|rels\\\|docProps\\\) |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
-  $APERTIUM_PATH/apertium-deswxml >$SALIDA
-  rm -Rf $INPUT_TMPDIR
+  "$APERTIUM_PATH/apertium-deswxml" >"$SALIDA"
+  rm -Rf "$INPUT_TMPDIR"
 }
 
 unformat_pptx ()
@@ -109,21 +109,21 @@ unformat_pptx ()
 
   locale_utf8
   test_zip
-    
-  unzip -q -o -d $INPUT_TMPDIR $FICHERO
-  
-  for i in $(find $INPUT_TMPDIR|grep "xlsx$");
+
+  unzip -q -o -d "$INPUT_TMPDIR" "$FICHERO"
+
+  for i in $(find "$INPUT_TMPDIR"|grep "xlsx$");
   do LOCALTEMP=$(mktemp $TMPDIR/apertium.XXXXXXXX)
-     $APERTIUM_PATH/apertium -f xlsx -d $DIRECTORY $OPCIONU $PREFIJO <$i >$LOCALTEMP
-     cp $LOCALTEMP $i
-     rm $LOCALTEMP
+     "$APERTIUM_PATH/apertium" -f xlsx -d "$DIRECTORY" "$OPCIONU" "$PREFIJO" <"$i" >"$LOCALTEMP"
+     cp "$LOCALTEMP" "$i"
+     rm "$LOCALTEMP"
   done;
-  
-  find $INPUT_TMPDIR | grep "xml$" |\
+
+  find "$INPUT_TMPDIR" | grep "xml$" |\
   grep "slides\/slide" |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
-  $APERTIUM_PATH/apertium-despptx >$SALIDA
-  rm -Rf $INPUT_TMPDIR
+  "$APERTIUM_PATH/apertium-despptx" >"$SALIDA"
+  rm -Rf "$INPUT_TMPDIR"
 }
 
 
@@ -133,38 +133,36 @@ unformat_xlsx ()
 
   locale_utf8
   test_zip
-  
-  unzip -q -o -d $INPUT_TMPDIR $FICHERO
-  find $INPUT_TMPDIR | grep "sharedStrings.xml" |\
+
+  unzip -q -o -d "$INPUT_TMPDIR" "$FICHERO"
+  find "$INPUT_TMPDIR" | grep "sharedStrings.xml" |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
-  $APERTIUM_PATH/apertium-desxlsx >$SALIDA
-  rm -Rf $INPUT_TMPDIR
+  "$APERTIUM_PATH/apertium-desxlsx" >"$SALIDA"
+  rm -Rf "$INPUT_TMPDIR"
 
 }
 
 
-ARGS=$(getopt "f:" $*)
-set -- $ARGS
-for i
-do
-  case "$i" in 
-    -f) shift; FORMAT=$1; shift;;
-    --) shift; break;;
-  esac
+while getopts "f:" opt; do
+    case "$opt" in
+        f) FORMAT=$OPTARG ;;
+        \?) echo "ERROR: Unknown option $OPTARG" >&2; message >&2 ;;
+        :) echo "ERROR: $OPTARG requires an argument" >&2; message >&2 ;;
+    esac
 done
 
-case "$#" in 
+case "$#" in
      2)
-       OUTPUT_FILE=$2; 
+       OUTPUT_FILE=$2;
        INPUT_FILE=$1;
-       if [ ! -e $INPUT_FILE ];
+       if [ ! -e "$INPUT_FILE" ];
        then echo "Error: file '$INPUT_FILE' not found."
             message;
        fi
        ;;
      1)
        INPUT_FILE=$1;
-       if [ ! -e $INPUT_FILE ];
+       if [ ! -e "$INPUT_FILE" ];
        then echo "Error: file '$INPUT_FILE' not found."
             message;
        fi
@@ -172,18 +170,18 @@ case "$#" in
      0)
        ;;
      *)
-       message 
+       message
        ;;
-esac    
+esac
 
-if [ x$FORMAT = x ]; then FORMAT="txt"; fi
+if [ -z "$FORMAT" ]; then FORMAT="txt"; fi
 
 FORMATADOR=$FORMAT;
 FICHERO=$INPUT_FILE;
 SALIDA=$OUTPUT_FILE;
 
 
-case "$FORMATADOR" in 
+case "$FORMATADOR" in
         rtf)
 		MILOCALE=$(locale -a|grep -i -v "utf\|^C$\|^POSIX$"|head -1);
 		if [ "$MILOCALE" = "" ]
@@ -195,12 +193,12 @@ case "$FORMATADOR" in
         html-noent)
         	FORMATADOR="html"
         	;;
-        
+
         latex)
                 unformat_latex
                 exit 0
                 ;;
-                
+
         odt)
 		unformat_odt
 		exit 0
@@ -217,13 +215,13 @@ case "$FORMATADOR" in
 		unformat_pptx
 		exit 0
 		;;
-		
+
 	wxml)
 	        locale_utf8
 	        ;;
 	*)
 	        ;;
-	        	
+
 esac
 
-$APERTIUM_PATH/apertium-des$FORMATADOR $FICHERO >$SALIDA
+"$APERTIUM_PATH/apertium-des$FORMATADOR" "$FICHERO" >"$SALIDA"

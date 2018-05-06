@@ -60,7 +60,7 @@ if [[ ! -e "${xmlfile}" ]]; then
     echo "ERROR: '${xmlfile}' file not found"
     exit 1
 fi
-xmldir=$(cd "$(dirname "${xmlfile}")"; pwd)
+xmldir=$(cd "$(dirname "${xmlfile}")" && pwd)
 
 case $# in
     1) installdir="${xmldir}";;

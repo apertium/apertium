@@ -1,7 +1,7 @@
 INPUT_FILE=/dev/stdin
 OUTPUT_FILE=/dev/stdout
 
-cat $INPUT_FILE | \
+< "$INPUT_FILE" \
 gawk '
 function is_inline_tag(str,                      aux, val)
 {
