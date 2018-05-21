@@ -256,7 +256,7 @@ translate_pptx ()
   done;
 
   find "$INPUT_TMPDIR" | grep "xml$" |\
-  grep "slides\/slide" |\
+  grep "slides\\/slide" |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
   "$APERTIUM_PATH/apertium-despptx" "${FORMAT_OPTIONS[@]}" |\
   if [ "$TRANSLATION_MEMORY_FILE" = "" ];
@@ -388,12 +388,12 @@ FORMAT_OPTIONS=()
 # Skip (but store) non-option arguments that come before options:
 declare -a ARGS_PREOPT ARGS_ALL
 declare -i OPTIND=1
-ARGS_ALL=( $@ )              # so we can index into it with a variable
+ARGS_ALL=( "$@" )              # so we can index into it with a variable
 while [[ $OPTIND -le $# ]]; do
   arg=${ARGS_ALL[$OPTIND-1]}
   case $arg in
     -*) break ;;
-    *) ARGS_PREOPT+=($arg); (( OPTIND++ )) ;;
+    *) ARGS_PREOPT+=( "$arg" ); (( OPTIND++ )) ;;
   esac
 done
 
@@ -487,18 +487,6 @@ case "$FORMAT" in
     else OPTION="-g";
     fi;
     ;;
-  rtf)
-    if [ "$UWORDS" = "no" ]; then OPTION="-n";
-    else OPTION="-g";
-    fi;
-    MILOCALE=$(locale -a|grep -i -v "utf\|^C$\|^POSIX$"|head -1);
-    if [ "$MILOCALE" = "" ]; then
-      echo "Error: Install a ISO-8859-1 compatible locale in your system";
-      exit 1;
-    fi
-    export LC_CTYPE=$MILOCALE
-    ;;
-
   odt)
     if [ "$UWORDS" = "no" ]; then OPTION="-n";
     else OPTION="-g";
@@ -580,7 +568,7 @@ case "$FORMAT" in
   rtfu)
     FORMAT="rtf";
     OPTION="-n";
-    MILOCALE=$(locale -a|grep -i -v "utf\|^C$\|^POSIX$"|head -1);
+    MILOCALE=$(locale -a|grep -i -v "utf\\|^C$\\|^POSIX$"|head -1);
     if [ "$MILOCALE" = "" ]; then
       echo "Error: Install a ISO-8859-1 compatible locale in your system";
       exit 1;
