@@ -29,7 +29,8 @@ TRXReader::ANY_TAG = L"<ANY_TAG>";
 wstring const
 TRXReader::ANY_CHAR = L"<ANY_CHAR>";
 
-TRXReader::TRXReader()
+TRXReader::TRXReader():
+default_weight(0.0000)
 {
   td.getAlphabet().includeSymbol(ANY_TAG);
   td.getAlphabet().includeSymbol(ANY_CHAR);
@@ -42,10 +43,10 @@ TRXReader::insertLemma(int const base, wstring const &lemma)
   static int const any_char = td.getAlphabet()(ANY_CHAR);
   if(lemma == L"")
   {
-    retval = td.getTransducer().insertSingleTransduction(any_char, retval);
-    td.getTransducer().linkStates(retval, retval, any_char);
-    int another = td.getTransducer().insertSingleTransduction(L'\\', retval);
-    td.getTransducer().linkStates(another, retval, any_char);
+    retval = td.getTransducer().insertSingleTransduction(any_char, retval, default_weight);
+    td.getTransducer().linkStates(retval, retval, any_char, default_weight);
+    int another = td.getTransducer().insertSingleTransduction(L'\\', retval, default_weight);
+    td.getTransducer().linkStates(another, retval, any_char, default_weight);
   }
   else
   {
@@ -53,20 +54,22 @@ TRXReader::insertLemma(int const base, wstring const &lemma)
     {
       if(lemma[i] == L'\\')
       {
-        retval = td.getTransducer().insertSingleTransduction(L'\\', retval);
-	i++;
+        retval = td.getTransducer().insertSingleTransduction(L'\\', retval, default_weight);
+        i++;
         retval = td.getTransducer().insertSingleTransduction(int(lemma[i]), 
-							     retval);
+                                                             retval,
+                                                             default_weight);
       }
       else if(lemma[i] == L'*')
       {
-	retval = td.getTransducer().insertSingleTransduction(any_char, retval);
-	td.getTransducer().linkStates(retval, retval, any_char);
+        retval = td.getTransducer().insertSingleTransduction(any_char, retval, default_weight);
+        td.getTransducer().linkStates(retval, retval, any_char, default_weight);
       }
       else
       {
-	retval = td.getTransducer().insertSingleTransduction(int(lemma[i]), 
-							     retval);
+        retval = td.getTransducer().insertSingleTransduction(int(lemma[i]), 
+                                                             retval,
+                                                             default_weight);
       }
     }
   }
@@ -85,8 +88,8 @@ TRXReader::insertTags(int const base, wstring const &tags)
     {
       if(tags[i] == L'*')
       {
-        retval = td.getTransducer().insertSingleTransduction(any_tag, retval);
-        td.getTransducer().linkStates(retval, retval, any_tag);
+        retval = td.getTransducer().insertSingleTransduction(any_tag, retval, default_weight);
+        td.getTransducer().linkStates(retval, retval, any_tag, default_weight);
         i++;
       }  
       else
@@ -109,7 +112,7 @@ TRXReader::insertTags(int const base, wstring const &tags)
         }
         symbol += L'>';
         td.getAlphabet().includeSymbol(symbol);
-        retval = td.getTransducer().insertSingleTransduction(td.getAlphabet()(symbol), retval);
+        retval = td.getTransducer().insertSingleTransduction(td.getAlphabet()(symbol), retval, default_weight);
       }
     }
   }
@@ -196,7 +199,7 @@ TRXReader::procRules()
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
-	count++;
+        count++;
       }
     }
     else if(name == L"pattern")
@@ -214,8 +217,8 @@ TRXReader::procRules()
           if(td.seen_rules.find(*it) == td.seen_rules.end())
           {
             const int symbol = td.countToFinalSymbol(count);
-            const int fin = td.getTransducer().insertSingleTransduction(symbol, *it);
-            td.getTransducer().setFinal(fin);
+            const int fin = td.getTransducer().insertSingleTransduction(symbol, *it, default_weight);
+            td.getTransducer().setFinal(fin, default_weight);
             td.seen_rules[*it] = count;
           }
           else
@@ -253,12 +256,12 @@ TRXReader::procRules()
               it != limit; it++)
           {
             // mark of begin of word
-            int tmp = td.getTransducer().insertSingleTransduction(L'^', *it);
+            int tmp = td.getTransducer().insertSingleTransduction(L'^', *it, default_weight);
             if(*it != td.getTransducer().getInitial())
             {
               // insert optional blank between two words
-              int alt = td.getTransducer().insertSingleTransduction(L' ', *it);
-              td.getTransducer().linkStates(alt, tmp, L'^');
+              int alt = td.getTransducer().insertSingleTransduction(L' ', *it, default_weight);
+              td.getTransducer().linkStates(alt, tmp, L'^', default_weight);
             }
             
             // insert word
@@ -266,7 +269,7 @@ TRXReader::procRules()
             tmp = insertTags(tmp, range.first->second.tags);
             
             // insert mark of end of word
-            tmp = td.getTransducer().insertSingleTransduction(L'$', tmp);
+            tmp = td.getTransducer().insertSingleTransduction(L'$', tmp, default_weight);
             
             // set as alive_state
             alive_states_new.insert(tmp);
@@ -274,7 +277,7 @@ TRXReader::procRules()
         } 
         
         // copy new alive states on alive_states set
-        alive_states = alive_states_new;      
+        alive_states = alive_states_new;
       }
     }
     else if(name == L"let")
@@ -327,7 +330,7 @@ TRXReader::procDefAttrs()
   wstring attrname;
 
   while(type != XML_READER_TYPE_END_ELEMENT || 
-	name != L"section-def-attrs")
+        name != L"section-def-attrs")
   {
     step();
     if(name == L"attr-item")
@@ -381,11 +384,11 @@ TRXReader::procDefCats()
       unexpectedTag();
     }
   }
-  
+
   wstring catname;
 
   while(type != XML_READER_TYPE_END_ELEMENT || 
-	name != L"section-def-cats")
+        name != L"section-def-cats")
   {
     step();
     if(name == L"cat-item")
@@ -436,7 +439,7 @@ void
 TRXReader::procDefVars()
 {
   while(type != XML_READER_TYPE_END_ELEMENT || 
-	name != L"section-def-vars")
+        name != L"section-def-vars")
   {
     step();
     if(name == L"def-var")
@@ -534,7 +537,7 @@ TRXReader::createMacro(wstring const &name, int const value)
 {
   if(td.getMacros().find(name) != td.getMacros().end())
   {
-    parseError(L"Macro '" + name + L"' defined at least twice");    
+    parseError(L"Macro '" + name + L"' defined at least twice");
   }
   td.getMacros()[name] = value;
 }
@@ -553,7 +556,7 @@ TRXReader::createVar(wstring const &name, wstring const &initial_value)
 
 void
 TRXReader::insertCatItem(wstring const &name, wstring const &lemma, 
-			 wstring const &tags)
+                         wstring const &tags)
 {
   LemmaTags lt;
   lt.lemma = lemma;
@@ -567,7 +570,7 @@ TRXReader::insertAttrItem(wstring const &name, wstring const &tags)
   if(td.getAttrItems()[name].size() != 0)
   {
     td.getAttrItems()[name] += L'|';
-  }  
+  }
   
   td.getAttrItems()[name] += '<';
 
@@ -579,7 +582,7 @@ TRXReader::insertAttrItem(wstring const &name, wstring const &tags)
     }
     else
     {
-	td.getAttrItems()[name] += tags[i];
+      td.getAttrItems()[name] += tags[i];
     }
   }
   td.getAttrItems()[name] += L'>';

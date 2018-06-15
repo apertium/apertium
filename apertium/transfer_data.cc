@@ -128,22 +128,23 @@ TransferData::write(FILE *output)
   alphabet.write(output);
 
   transducer.minimize();
-  set<int> old_finals = transducer.getFinals(); // copy for later removal
+  map<int, double> old_finals = transducer.getFinals(); // copy for later removal
   map<int, int> finals_rules;                   // node id -> rule number
-  map<int, multimap<int, int> >& transitions = transducer.getTransitions();
+  map<int, multimap<int, pair<int, double> > >& transitions = transducer.getTransitions();
   // Find all arcs with "final_symbols" in the transitions, let their source node instead be final,
   // and extract the rule number from the arc. Record relation between source node and rule number
   // in finals_rules. It is now no longer safe to minimize -- but we already did that.
   const wstring rule_sym_pre = L"<RULE_NUMBER:"; // see countToFinalSymbol()
-  for(map<int, multimap<int, int> >::const_iterator it = transitions.begin(),
+  for(map<int, multimap<int, pair<int, double> > >::const_iterator it = transitions.begin(),
         limit = transitions.end(); it != limit; ++it)
   {
     const int src = it->first;
-    for(multimap<int, int>::const_iterator arc = it->second.begin(),
+    for(multimap<int, pair<int, double> >::const_iterator arc = it->second.begin(),
           arclimit = it->second.end(); arc != arclimit; ++arc)
     {
       const int symbol = arc->first;
-      const int trg = arc->second;
+      const int trg = arc->second.first;
+      const double wgt = arc->second.second;
       if(final_symbols.count(symbol) == 0) {
         continue;
       }
@@ -157,15 +158,15 @@ TransferData::write(FILE *output)
         continue;
       }
       const int rule_num = stoi(s.substr(rule_sym_pre.size()));
-      transducer.setFinal(src);
+      transducer.setFinal(src, wgt);
       finals_rules[src] = rule_num;
     }
   }
   // Remove the old finals:
-  for(set<int>::const_iterator it = old_finals.begin(), limit = old_finals.end();
+  for(map<int, double>::const_iterator it = old_finals.begin(), limit = old_finals.end();
       it != limit; ++it)
   {
-    transducer.setFinal(*it, false);
+    transducer.setFinal(it->first, it->second, false);
   }
 
   transducer.write(output, alphabet.size());
