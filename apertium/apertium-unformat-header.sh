@@ -151,6 +151,8 @@ while getopts "f:" opt; do
     esac
 done
 
+shift "$((OPTIND-1))"
+
 case "$#" in
      2)
        OUTPUT_FILE=$2;
