@@ -1,0 +1,10 @@
+* text eol=lf
+*.dix linguist-language=XML linguist-detectable=true
+*.dtd linguist-language=XML linguist-detectable=true
+*.lrx linguist-language=XML linguist-detectable=true
+*.lsx linguist-language=XML linguist-detectable=true
+*.rng linguist-language=XML linguist-detectable=true
+*.tsx linguist-language=XML linguist-detectable=true
+*.t[[:digit:]]x linguist-language=XML linguist-detectable=true
+*.xml linguist-language=XML linguist-detectable=true
+*.xsd linguist-language=XML linguist-detectable=true
