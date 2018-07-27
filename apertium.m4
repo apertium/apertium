@@ -124,7 +124,7 @@ install-modes:
 		fi
 
 .deps/.d:
-	test -d .deps || mkdir .deps
+	\$(MKDIR_P) .deps
 	touch \$[]@
 
 .PRECIOUS: .deps/.d
