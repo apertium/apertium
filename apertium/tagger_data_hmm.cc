@@ -237,7 +237,7 @@ TaggerDataHMM::read(FILE *in)
     a[i] = new double[N];
     b[i] = new double[M];
   }
-   
+
   // read a
   for(int i = 0; i != N; i++)
   {
@@ -268,7 +268,7 @@ TaggerDataHMM::read(FILE *in)
 
   // read pattern list
   plist.read(in);
-    
+
   // read discards on ambiguity
   discard.clear();
 
