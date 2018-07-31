@@ -78,7 +78,7 @@ Interchunk::readData(FILE *in)
   any_tag = alphabet(TRXReader::ANY_TAG);
 
   Transducer t;
-  t.read(in, alphabet.size());
+  t.read(in, alphabet.size(), false);
   
   map<int, int> finals;  
   

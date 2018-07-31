@@ -36,6 +36,7 @@ private:
     wstring tags;
   };
 
+  double default_weight;
   multimap<wstring, LemmaTags, Ltstr> cat_items;
   TransferData td;
 

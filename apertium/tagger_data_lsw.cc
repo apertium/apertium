@@ -35,7 +35,7 @@ TaggerDataLSW::destroy()
   delete [] d;
   }
   d = NULL;
-  
+
   N = 0;
 }
 
@@ -104,9 +104,9 @@ TaggerDataLSW::getD() {
   return d;
 }
 
-int 
+int
 TaggerDataLSW::getN()
-{  
+{
   return N;
 }
 
@@ -122,7 +122,7 @@ TaggerDataLSW::read(FILE *in)
     val += Compression::multibyte_read(in);
     open_class.insert(val);
   }
-  
+
   // forbid_rules
   for(int i = Compression::multibyte_read(in); i != 0; i--)
   {
@@ -132,13 +132,13 @@ TaggerDataLSW::read(FILE *in)
     forbid_rules.push_back(aux);
   }
 
-  
+
   // array_tags
   for(int i = Compression::multibyte_read(in); i != 0; i--)
   {
     array_tags.push_back(Compression::wstring_read(in));
   }
-  
+
   // tag_index
   for(int i = Compression::multibyte_read(in); i != 0; i--)
   {
@@ -197,10 +197,10 @@ TaggerDataLSW::read(FILE *in)
     int k = Compression::multibyte_read(in);
     d[i][j][k] = EndianDoubleUtil::read(in);
   }
-   
+
   // read pattern list
   plist.read(in);
-    
+
   // read discards on ambiguity
   discard.clear();
 
@@ -209,7 +209,7 @@ TaggerDataLSW::read(FILE *in)
   {
     return;
   }
-  
+
   for(unsigned int i = 0; i < limit; i++)
   {
     discard.push_back(Compression::wstring_read(in));
@@ -219,7 +219,7 @@ TaggerDataLSW::read(FILE *in)
 void
 TaggerDataLSW::write(FILE *out)
 {
-  
+
   // open_class
   Compression::multibyte_write(open_class.size(), out);  
   int val = 0;
@@ -229,7 +229,7 @@ TaggerDataLSW::write(FILE *out)
     Compression::multibyte_write(*it-val, out);    
     val = *it;
   }
-  
+
   // forbid_rules
   Compression::multibyte_write(forbid_rules.size(), out);
   for(unsigned int i = 0, limit = forbid_rules.size(); i != limit; i++)
@@ -237,7 +237,7 @@ TaggerDataLSW::write(FILE *out)
     Compression::multibyte_write(forbid_rules[i].tagi, out);
     Compression::multibyte_write(forbid_rules[i].tagj, out);
   }
-  
+
   // array_tags
   Compression::multibyte_write(array_tags.size(), out);
   for(unsigned int i = 0, limit = array_tags.size(); i != limit; i++)
@@ -253,7 +253,7 @@ TaggerDataLSW::write(FILE *out)
     Compression::wstring_write(it->first, out);
     Compression::multibyte_write(it->second, out);
   }
-  
+
   // enforce_rules
   Compression::multibyte_write(enforce_rules.size(), out);
   for(unsigned int i = 0, limit = enforce_rules.size(); i != limit; i++)
@@ -272,7 +272,7 @@ TaggerDataLSW::write(FILE *out)
   {
     Compression::wstring_write(prefer_rules[i], out);
   }
-  
+
   // constants
   constants.write(out);  
 
@@ -306,12 +306,12 @@ TaggerDataLSW::write(FILE *out)
       }
     }
   }
-  
+
   // write pattern list
   plist.write(out);
 
   // write discard list
-  
+
   if(discard.size() != 0)
   {
     Compression::multibyte_write(discard.size(), out);
