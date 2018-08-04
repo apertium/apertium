@@ -30,7 +30,7 @@
 using namespace std;
 
 /** Class LexTor (Lexical Selector class)
- */  
+ */
 
 class LexTor {
 private:
@@ -53,9 +53,9 @@ public:
   static double angleth;
 
   LexTor();
-  
+
   LexTor(const LexTor& lt);
-  
+
   ~LexTor();
 
   void set_lextor_data(LexTorData* ltd);
@@ -67,20 +67,20 @@ public:
 
   void trainwrd(wistream& wis, int left, int right, double weigth_exponent=0);
 
-  void trainlch(wistream& wis, int left, int right, LexTorData& wordmodel, 
+  void trainlch(wistream& wis, int left, int right, LexTorData& wordmodel,
                 FSTProcessor& dic, FSTProcessor& bildic, double weigth_exponent=0);
 
-  void lexical_selector(wistream& wis, FSTProcessor &fstp, int left, int right, 
+  void lexical_selector(wistream& wis, FSTProcessor &fstp, int left, int right,
                         double weigth_exponent=0, LexTorEval* lteval=NULL);
 
   /** NOTE on the weigth_exponent parameter: This parameter is used to
       change the influence of surrounding words on the decision to
       take on an ambiguous word (word with more than one lexical
       choice). For example, if a decision is being take on word w_i,
-      the the weigth of the surrounding words is: 
-      Score(w_i-2) = count(w_i-2)/pow(2,weigth_exponent), 
-      Score(w_i-1) = count(w_i-1)/pow(1,weigth_exponent), 
-      Score(w_i+1) = count(w_i+1)/pow(1,weigth_exponent), 
+      the the weigth of the surrounding words is:
+      Score(w_i-2) = count(w_i-2)/pow(2,weigth_exponent),
+      Score(w_i-1) = count(w_i-1)/pow(1,weigth_exponent),
+      Score(w_i+1) = count(w_i+1)/pow(1,weigth_exponent),
       Score(w_i+2) = count(w_i+2)/pow(2,weigth_exponent).
   */
 };

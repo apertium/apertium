@@ -45,7 +45,7 @@ public:
   // Division is by the maximum of the Hungarian and English intervals.
   // This is a somewhat arbritary decision, and goes very badly with the
   // scoring of the knight's moves. But we really have no better choice.
-  // 
+  //
   // Also, the method applies some very ugly hacks to avoid the effect of
   // paragraph-delimiters. It strips both intervals of <p>s, and
   // modifies the dynMatrix-based score assuming that all <p>s got paired.
@@ -90,7 +90,7 @@ void removeRundles( Trail& trail, const std::set<int>& rundlesToKill );
 // This of course dramatically improves precision while slightly degrading recall.
 void cautiouslyFilterTrail( Trail& bestTrail );
 
-void spaceOutBySentenceLength( Trail& bestTrail, 
+void spaceOutBySentenceLength( Trail& bestTrail,
                  const SentenceList& huSentenceListPretty,
                  const SentenceList& enSentenceList,
 		 bool utfCharCountingMode );
@@ -112,8 +112,8 @@ void postprocessTrailStartAndEnd( Trail& bestTrail,
 // The function gets a nonconst reference to bestTrail.
 // On the other hand, it gets a const reference to bestTrail, through trailScoresInterval.
 // Therefore, the function may only modify bestTrail after it finished reading trailScoresInterval.
-void postprocessTrail( Trail& bestTrail, 
-                       const TrailScoresInterval& trailScoresInterval, 
+void postprocessTrail( Trail& bestTrail,
+                       const TrailScoresInterval& trailScoresInterval,
                        double qualityThreshold );
 
 

@@ -56,17 +56,17 @@ ConstantManager::operator =(ConstantManager const &o)
   }
   return *this;
 }
-void 
+void
 ConstantManager::setConstant(wstring const &constant, int const value)
 {
   constants[constant] = value;
 }
 
-int 
+int
 ConstantManager::getConstant(wstring const &constant)
 {
   return constants[constant];
-}  
+}
 
 void
 ConstantManager::write(FILE *output)

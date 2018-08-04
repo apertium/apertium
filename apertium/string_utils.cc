@@ -26,9 +26,9 @@
 #endif
 
 //Delete white spaces from the end and the begining of the string
-wstring 
-StringUtils::trim(wstring const &str) 
-{ 
+wstring
+StringUtils::trim(wstring const &str)
+{
   if(str == L"")
   {
     return L"";
@@ -50,12 +50,12 @@ StringUtils::trim(wstring const &str)
   {
     end++;
   }
- 
+
   return str.substr(begin, end-begin);
 }
 
 vector<wstring>
-StringUtils::split_wstring(wstring const &input, wstring const &delimiter) 
+StringUtils::split_wstring(wstring const &input, wstring const &delimiter)
 {
   unsigned pos;
   int new_pos;
@@ -80,7 +80,7 @@ StringUtils::split_wstring(wstring const &input, wstring const &delimiter)
   return result;
 }
 
-wstring 
+wstring
 StringUtils::vector2wstring(vector<wstring> const &v)
 {
   wstring s = L"";
@@ -93,7 +93,7 @@ StringUtils::vector2wstring(vector<wstring> const &v)
   return s;
 }
 
-wstring 
+wstring
 StringUtils::substitute(wstring const &source, wstring const &olds, wstring const &news) {
   wstring s = source;
 

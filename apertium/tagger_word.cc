@@ -66,7 +66,7 @@ TaggerWord::set_superficial_form(const wstring &sf){
   superficial_form = sf;
 }
 
-wstring& 
+wstring&
 TaggerWord::get_superficial_form() {
   return superficial_form;
 }
@@ -81,7 +81,7 @@ TaggerWord::match(wstring const &s, wstring const &pattern)
   {
     string utfpattern = UtfConverter::toUtf8(pattern);
     string regexp = "";
-    
+
     while(true)
     {
       size_t pos = utfpattern.find("<*>");
@@ -112,7 +112,7 @@ TaggerWord::add_tag(TTag &t, const wstring &lf, vector<wstring> const &prefer_ru
     //Take a look at the prefer rules
     for(int i=0; i < (int) prefer_rules.size(); i++)
     {
-      if (match(lf, prefer_rules[i])) 
+      if (match(lf, prefer_rules[i]))
       {
 	lexical_forms[t]=lf;
 	break;
@@ -136,16 +136,16 @@ wstring
 TaggerWord::get_string_tags() {
   wstring st;
   set<TTag>::iterator itag = tags.begin();
-  
-  st=L"{";  
+
+  st=L"{";
   for(itag=tags.begin(); itag!=tags.end(); itag++) {
     if (itag!=tags.begin())
       st+=L',';
     st+=array_tags[*itag];
   }
-  st += L'}';  
-  
-  return st;  
+  st += L'}';
+
+  return st;
 }
 
 wstring
@@ -154,7 +154,7 @@ TaggerWord::get_lexical_form(TTag &t, int const TAG_kEOF) {
 
   if (show_ignored_string)
     ret.append(ignored_string);
-   
+
   if(t==TAG_kEOF)
     return ret;
 
@@ -170,7 +170,7 @@ TaggerWord::get_lexical_form(TTag &t, int const TAG_kEOF) {
 
     if(get_show_sf()){   // append the superficial form
       ret.append(superficial_form);
-      ret+=L'/'; 
+      ret+=L'/';
     }
   }
 
@@ -188,12 +188,12 @@ TaggerWord::get_lexical_form(TTag &t, int const TAG_kEOF) {
   } else {
     ret.append(lexical_forms[t]);
   }
-  
+
   if (ret != ignored_string) {
     if (plus_cut)
       ret+=L'+';
     else {
-      ret += L'$';	
+      ret += L'$';
     }
   }
 
@@ -203,20 +203,20 @@ TaggerWord::get_lexical_form(TTag &t, int const TAG_kEOF) {
   //   //o '/'. De no hacerlo en la traducción aparecerán dos palabras sin blanco alguno.
   //   ret+=" "; //Quizá este no sea el sitio apropiado para hacer esto, lo suyo sería un módulo
   //             //antes del tagger o del anmor.
-     
+
   return ret;
 }
 
-wstring 
+wstring
 TaggerWord::get_all_chosen_tag_first(TTag &t, int const TAG_kEOF) {
   wstring ret=L"";
 
   if (show_ignored_string)
     ret.append(ignored_string);
-   
+
   if(t==TAG_kEOF)
     return ret;
- 
+
   if (!previous_plus_cut)
   {
     if(TaggerWord::generate_marks && isAmbiguous())
@@ -228,9 +228,9 @@ TaggerWord::get_all_chosen_tag_first(TTag &t, int const TAG_kEOF) {
       ret += L'^';
     }
   }
- 
+
   ret.append(superficial_form);
- 
+
   if (lexical_forms.size()==0) { // This is an UNKNOWN WORD
     ret+=L"/*";
     ret.append(superficial_form);
@@ -247,7 +247,7 @@ TaggerWord::get_all_chosen_tag_first(TTag &t, int const TAG_kEOF) {
       }
     }
   }
-   
+
   if (ret != ignored_string) {
     if (plus_cut)
       ret+=L"+";
@@ -255,7 +255,7 @@ TaggerWord::get_all_chosen_tag_first(TTag &t, int const TAG_kEOF) {
       ret+=L"$";
     }
   }
-      
+
   return ret;
 }
 
@@ -263,10 +263,10 @@ TaggerWord::get_all_chosen_tag_first(TTag &t, int const TAG_kEOF) {
 wstring
 TaggerWord::get_lexical_form_without_ignored_string(TTag &t, int const TAG_kEOF) {
   wstring ret;
-   
+
   if(t==TAG_kEOF)
      return ret;
- 
+
   if (lexical_forms.size()==0) { //This is an unknown word
       ret.append(L"*^");
       ret.append(superficial_form);
@@ -277,12 +277,12 @@ TaggerWord::get_lexical_form_without_ignored_string(TTag &t, int const TAG_kEOF)
     ret += L'^';
     ret.append(lexical_forms[t]);
   }
-  
+
   if (ret.length() != 0) {
     if (plus_cut)
       ret+=L'+';
     else {
-      ret +=L'$';	
+      ret +=L'$';
     }
   }
 
@@ -294,7 +294,7 @@ TaggerWord::add_ignored_string(wstring const &s) {
   ignored_string.append(s);
 }
 
-void 
+void
 TaggerWord::set_plus_cut(const bool &c) {
   plus_cut=c;
 }
@@ -310,7 +310,7 @@ operator<< (wostream& os, TaggerWord &w) {
   return os;
 }
 
-void 
+void
 TaggerWord::setArrayTags(vector<wstring> const &at)
 {
   array_tags = at;
@@ -368,7 +368,7 @@ TaggerWord::discardOnAmbiguity(wstring const &tags)
       {
         newsettag.insert(it->first);
       }
-        
+
       if(lexical_forms.size() == 1)
       {
         newsettag.insert(lexical_forms.begin()->first);
@@ -377,7 +377,7 @@ TaggerWord::discardOnAmbiguity(wstring const &tags)
       it++;
     }
     if(tags.size() != newsettag.size())
-    { 
+    {
       this->tags = newsettag;
     }
   }

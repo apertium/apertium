@@ -38,7 +38,7 @@
 using namespace std;
 
 /** Class LexTorData. (Lexical Selector Data class)
- */  
+ */
 
 class LexTorData{
 private:
@@ -62,7 +62,7 @@ private:
   //For a given lexical choice it contains the sum of all co-appearing words
   map<WORD_DATA_TYPE, COUNT_DATA_TYPE> lexchoice_sum;
 
-  //For a given lexical choice it contains its probability  
+  //For a given lexical choice it contains its probability
   //map<WORD_DATA_TYPE, double> lexchoice_prob;
 
   //Set of stopwords
@@ -73,16 +73,16 @@ private:
 
   //For a given word it contains its set of lexical-choices (when available)
   map<wstring, set<wstring> > lexical_choices;
-  
+
   set<wstring> reduced_lexical_choices;
 
   void new_word_register(const wstring& w);
 public:
 
   LexTorData();
-  
+
   LexTorData(const LexTorData& ltd);
-  
+
   ~LexTorData();
 
   COUNT_DATA_TYPE vote_from_word(const wstring& lexical_choice, const wstring& word);
@@ -110,7 +110,7 @@ public:
 
   void set_nwords_per_set(int i);
 
-  void set_cooccurrence_context(const wstring& lexical_choice, 
+  void set_cooccurrence_context(const wstring& lexical_choice,
                                 const vector<pair<wstring, COUNT_DATA_TYPE> >& context);
 
   //vector<pair<WORD_DATA_TYPE, double> >
@@ -123,7 +123,7 @@ public:
 
   set<wstring> get_lexical_choices(const wstring& word);
 
-  //Used to ensure that none of the stopwords are in the set 
+  //Used to ensure that none of the stopwords are in the set
   //of words from which co-occurrence models are being estimated
   void ensure_stopwords_ok();
 

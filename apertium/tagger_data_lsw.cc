@@ -142,11 +142,11 @@ TaggerDataLSW::read(FILE *in)
   // tag_index
   for(int i = Compression::multibyte_read(in); i != 0; i--)
   {
-    wstring tmp = Compression::wstring_read(in);    
+    wstring tmp = Compression::wstring_read(in);
     tag_index[tmp] = Compression::multibyte_read(in);
   }
 
-  // enforce_rules  
+  // enforce_rules
   for(int i = Compression::multibyte_read(in); i != 0; i--)
   {
     TEnforceAfterRule aux;
@@ -168,7 +168,7 @@ TaggerDataLSW::read(FILE *in)
   constants.read(in);
 
   // output
-  output.read(in); 
+  output.read(in);
 
   // dimensions
   N = Compression::multibyte_read(in);
@@ -204,7 +204,7 @@ TaggerDataLSW::read(FILE *in)
   // read discards on ambiguity
   discard.clear();
 
-  unsigned int limit = Compression::multibyte_read(in);  
+  unsigned int limit = Compression::multibyte_read(in);
   if(feof(in))
   {
     return;
@@ -221,12 +221,12 @@ TaggerDataLSW::write(FILE *out)
 {
 
   // open_class
-  Compression::multibyte_write(open_class.size(), out);  
+  Compression::multibyte_write(open_class.size(), out);
   int val = 0;
   for(set<TTag>::const_iterator it = open_class.begin(), limit = open_class.end();
       it != limit; it++)
   {
-    Compression::multibyte_write(*it-val, out);    
+    Compression::multibyte_write(*it-val, out);
     val = *it;
   }
 
@@ -274,7 +274,7 @@ TaggerDataLSW::write(FILE *out)
   }
 
   // constants
-  constants.write(out);  
+  constants.write(out);
 
   // output
   output.write(out);
@@ -319,6 +319,6 @@ TaggerDataLSW::write(FILE *out)
     {
       Compression::wstring_write(discard[i], out);
     }
-  }  
+  }
 }
 

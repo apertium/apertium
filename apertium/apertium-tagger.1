@@ -7,20 +7,20 @@ apertium-tagger \- This application is part of  (
 This tool is part of the apertium open-source machine translation
 architecture: \fBhttp://www.apertium.org\fR.
 .SH SYNOPSIS
-.B apertium-tagger \-\-train|\-t 
-{n} DIC CRP TSX PROB [\-\-debug|\-d]\fR 
+.B apertium-tagger \-\-train|\-t
+{n} DIC CRP TSX PROB [\-\-debug|\-d]\fR
 .PP
-.B apertium-tagger \-\-supervised|\-s 
-{n} DIC [CRP] TSX PROB HTAG UNTAG [\-\-debug|\-d]\fR 
+.B apertium-tagger \-\-supervised|\-s
+{n} DIC [CRP] TSX PROB HTAG UNTAG [\-\-debug|\-d]\fR
 .PP
-.B apertium-tagger \-\-retrain|\-r 
+.B apertium-tagger \-\-retrain|\-r
 {n} CRP PROB [\-\-debug|\-d] \fR
 .PP
-.B apertium-tagger \-\-tagger|\-g 
+.B apertium-tagger \-\-tagger|\-g
 [\-\-first|\-f] PROB [\-\-debug|\-d] [INPUT [OUTPUT]] \fR
 .PP
 .SH DESCRIPTION
-.BR apertium-tagger 
+.BR apertium-tagger
 is the application responsible for the apertium part-of-speech tagger
 training or tagging, depending on the calling options.  This command
 only reads from the standard input if the option \fB\-\-tagger\fR or
@@ -74,20 +74,20 @@ Training text corpus file
 .B TSX
 Tagger specification file, in XML format
 .PP
-.B PROB 
+.B PROB
 Tagger data file, built in the training and used while tagging
 .PP
-.B  HTAG        
+.B  HTAG
 Hand-tagged text corpus
 .PP
-.B UNTAG       
+.B UNTAG
 Untagged text corpus, morphological analysis of HTAG corpus to use
 both jointly with \-s option
 .PP
-.B INPUT       
+.B INPUT
 Input file, stdin by default
 .PP
-.B OUTPUT      
+.B OUTPUT
 Output file, stdout by default
 .PP
 .SH SEE ALSO

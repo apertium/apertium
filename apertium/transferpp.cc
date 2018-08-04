@@ -37,6 +37,6 @@ int main(int argc, char *argv[])
   TRXReader myReader;
   myReader.read(argv[1]);
   myReader.write(argv[2]);
-  
+
   return EXIT_SUCCESS;
 }

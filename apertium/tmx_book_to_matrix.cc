@@ -154,7 +154,7 @@ double scoreByIdentity( const Phrase& hu, const Phrase& en )
     // But we make silly mistakes because we give higher scores to some invalid 1-to-1 segments like this:
     // Kocogtam. -Like I said, I was out jogging-- -ObviousIy, you weren't jogging.
     // Remember the day that they threw you out?
-    // 
+    //
     // Hopefully Gale-Church scoring compensates for this. Sometimes does not compensate enough.
     score /= ( (hu.size()<en.size() ? hu.size() : en.size() ) + 1 ) ;
     score *= maximumScore ;
@@ -218,7 +218,7 @@ double scoreByTranslation( const Phrase& hu, const Phrase& en, const TransLex& t
 }
 
 // This is much-much slower, but instead of identity, uses a many-to-many dictionary.
-// For performance reasons, by convention does not calculate the similarity if the 
+// For performance reasons, by convention does not calculate the similarity if the
 // alignMatrix element contains outsideOfRadiusValue, a big negative number.
 void sentenceListsToAlignMatrixTranslation(
                                            const SentenceList& huSentenceList, const SentenceList& enSentenceList,
@@ -316,7 +316,7 @@ int characterLength( const Word& word, bool utfCharCountingMode )
     for ( size_t i=0; i<word.size(); ++i )
     {
       // A code is the start of an utf-8 byte-sequence describing a character
-      // iff it is not in the [128,192) range. 
+      // iff it is not in the [128,192) range.
       if (((unsigned char)word[i]<(unsigned char)128)||((unsigned char)word[i]>=(unsigned char)192))
       {
         ++length;

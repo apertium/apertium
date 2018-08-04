@@ -13,10 +13,10 @@ FILE1=$1;
 FILE2=$2;
 
 if [ $# = 2 ]
-then if [ ! -e "$1" ] 
+then if [ ! -e "$1" ]
      then echo "ERROR: '$1' file not found";
           exit 1;
-     fi 
+     fi
 fi
 
 if [ $# = 3 ]

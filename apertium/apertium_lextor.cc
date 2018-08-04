@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2006 Universitat d'Alacant / Universidad de Alicante
- * 
+ *
  * author: Felipe Sánchez-Martínez
  *
  * This program is free software; you can redistribute it and/or
@@ -46,7 +46,7 @@ void help(char *name) {
   wcerr<<name<<" --trainwrd stopwords words n left right corpus model [--weightexp w]\nOR\n";
   wcerr<<name<<" --trainlch stopwords lexchoices n left right corpus wordmodel dic bildic model [--weightexp w]\nOR\n";
   wcerr<<name<<" --lextor model dic left right [--debug] [--weightexp w]\n\n";
-  //wcerr<<name<<" --lextortl stopwords words tlmodel dic bildic left right [--debug] [--weightexp w]\n\n"; 
+  //wcerr<<name<<" --lextortl stopwords words tlmodel dic bildic left right [--debug] [--weightexp w]\n\n";
   wcerr<<"ARGUMENTS: \n"
       <<"   --trainwrd|-t: Train word co-occurrences model.\n"
       <<"   Required parameters:\n"
@@ -142,7 +142,7 @@ int main(int argc, char* argv[]) {
     c=getopt_long(argc, argv, "t:r:l:e:w:dhv",long_options, &option_index);
     if (c==-1)
       break;
-      
+
     switch (c) {
     case 't':
       mode=MODE_TRAINWRD;
@@ -191,7 +191,7 @@ int main(int argc, char* argv[]) {
     case 'd':
       LexTor::debug=true;
       break;
-    case 'h': 
+    case 'h':
       help(argv[0]);
       exit(EXIT_SUCCESS);
       break;
@@ -211,7 +211,7 @@ int main(int argc, char* argv[]) {
 	  <<L"   You should have received a copy of the GNU General Public License\n"
 	  <<L"   along with this program; if not, see <http://www.gnu.org/licenses/>.\n";
       exit(EXIT_SUCCESS);
-      break;    
+      break;
     default:
       help(argv[0]);
       exit(EXIT_FAILURE);
@@ -296,7 +296,7 @@ int main(int argc, char* argv[]) {
            <<UtfConverter::fromUtf8(model_file)<<L"'\n";
       exit(EXIT_FAILURE);
     }
-    
+
     LexTorData lextor_data;
 
     lextor_data.read_stopwords(fstopwords);
@@ -320,7 +320,7 @@ int main(int argc, char* argv[]) {
     //Write parameters
     lextor_data.write(fmodel);
     fclose(fmodel);
-  } 
+  }
 
   else if (mode==MODE_TRAINLCH) {
     if(stopwords_file=="") {
@@ -522,7 +522,7 @@ int main(int argc, char* argv[]) {
     lexical_selector.set_lextor_data(&lextor_model);
 
     lexical_selector.lexical_selector(wcin, fstp, nwords_left, nwords_right, weight_exponent);
-  } 
+  }
 
   else if (mode==MODE_LEXTORTL) {
     if(stopwords_file=="") {
@@ -636,7 +636,7 @@ int main(int argc, char* argv[]) {
     lexical_selector.set_bildic(&fstpbildic);
 
     lexical_selector.lexical_selector(wcin, fstpdic, nwords_left, nwords_right, weight_exponent);
-  } 
+  }
 
   else {
     wcerr<<L"Error: No operation mode was provided\n";

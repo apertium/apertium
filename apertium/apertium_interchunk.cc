@@ -68,9 +68,9 @@ FILE * open_input(string const &filename)
     wcerr << filename.c_str() << "'." << endl;
     exit(EXIT_FAILURE);
   }
-  
+
   return input;
-}  
+}
 
 FILE * open_output(string const &filename)
 {
@@ -87,7 +87,7 @@ FILE * open_output(string const &filename)
 int main(int argc, char *argv[])
 {
   LtLocale::tryToSetLocale();
-  
+
   Interchunk i;
 
   int option_index=0;
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
     int c=getopt_long(argc, argv, "zth", long_options, &option_index);
     if (c == -1)
       break;
-      
+
     switch (c)
     {
       case 'z':
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
       default:
         message(argv[0]);
         break;
-    }    
+    }
   }
 
   FILE *input = stdin, *output = stdout;
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
       f1 = argv[argc-4];
       f2 = argv[argc-3];
       break;
-      
+
     case 4:
       input = open_input(argv[argc-1]);
       testfile(argv[argc-2]);
@@ -149,11 +149,11 @@ int main(int argc, char *argv[])
       f1 = argv[argc-2];
       f2 = argv[argc-1];
       break;
-    
+
     default:
       message(argv[0]);
       break;
-  }  
+  }
 
 #ifdef _MSC_VER
   _setmode(_fileno(input), _O_U8TEXT);

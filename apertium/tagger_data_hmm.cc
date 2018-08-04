@@ -80,7 +80,7 @@ TaggerDataHMM::TaggerDataHMM(TaggerData const &o)
   b = NULL;
   N = 0;
   M = 0;
-  
+
   TaggerData::copy(o);
 }
 
@@ -95,15 +95,15 @@ TaggerDataHMM::operator =(TaggerDataHMM const &o)
   }
   return *this;
 }
-  
+
 void
-TaggerDataHMM::setProbabilities(int const myN, int const myM, 
+TaggerDataHMM::setProbabilities(int const myN, int const myM,
                              double **myA, double **myB)
 {
   this->destroy();
   N = myN;
   M = myM;
-  
+
   if(N != 0 && M != 0)
   {
     // NxN matrix
@@ -114,12 +114,12 @@ TaggerDataHMM::setProbabilities(int const myN, int const myM,
       if(myA != NULL)
       {
         for(int j = 0; j != N; j++) // ToDo: N should be M? Check use of N and M in this function
-        { 
+        {
           a[i][j] = myA[i][j];
         }
       }
     }
-  
+
     // NxM matrix
     b = new double * [N];
     for(int i = 0; i != N; i++)
@@ -138,24 +138,24 @@ TaggerDataHMM::setProbabilities(int const myN, int const myM,
   {
     a = NULL;
     b = NULL;
-  }  
+  }
 }
 
-double ** 
+double **
 TaggerDataHMM::getA()
 {
   return a;
 }
 
-double ** 
+double **
 TaggerDataHMM::getB()
 {
   return b;
 }
 
-int 
+int
 TaggerDataHMM::getN()
-{  
+{
   return N;
 }
 
@@ -177,7 +177,7 @@ TaggerDataHMM::read(FILE *in)
     val += Compression::multibyte_read(in);
     open_class.insert(val);
   }
-  
+
   // forbid_rules
   for(int i = Compression::multibyte_read(in); i != 0; i--)
   {
@@ -187,21 +187,21 @@ TaggerDataHMM::read(FILE *in)
     forbid_rules.push_back(aux);
   }
 
-  
+
   // array_tags
   for(int i = Compression::multibyte_read(in); i != 0; i--)
   {
     array_tags.push_back(Compression::wstring_read(in));
   }
-  
+
   // tag_index
   for(int i = Compression::multibyte_read(in); i != 0; i--)
   {
-    wstring tmp = Compression::wstring_read(in);    
+    wstring tmp = Compression::wstring_read(in);
     tag_index[tmp] = Compression::multibyte_read(in);
   }
 
-  // enforce_rules  
+  // enforce_rules
   for(int i = Compression::multibyte_read(in); i != 0; i--)
   {
     TEnforceAfterRule aux;
@@ -223,13 +223,13 @@ TaggerDataHMM::read(FILE *in)
   constants.read(in);
 
   // output
-  output.read(in); 
+  output.read(in);
 
   // dimensions
   N = Compression::multibyte_read(in);
   M = Compression::multibyte_read(in);
 
-  
+
   a = new double * [N];
   b = new double * [N];
   for(int i = 0; i != N; i++)
@@ -272,12 +272,12 @@ TaggerDataHMM::read(FILE *in)
   // read discards on ambiguity
   discard.clear();
 
-  unsigned int limit = Compression::multibyte_read(in);  
+  unsigned int limit = Compression::multibyte_read(in);
   if(feof(in))
   {
     return;
   }
-  
+
   for(unsigned int i = 0; i < limit; i++)
   {
     discard.push_back(Compression::wstring_read(in));
@@ -287,17 +287,17 @@ TaggerDataHMM::read(FILE *in)
 void
 TaggerDataHMM::write(FILE *out)
 {
-  
+
   // open_class
-  Compression::multibyte_write(open_class.size(), out);  
+  Compression::multibyte_write(open_class.size(), out);
   int val = 0;
   for(set<TTag>::const_iterator it = open_class.begin(), limit = open_class.end();
       it != limit; it++)
   {
-    Compression::multibyte_write(*it-val, out);    
+    Compression::multibyte_write(*it-val, out);
     val = *it;
   }
-  
+
   // forbid_rules
   Compression::multibyte_write(forbid_rules.size(), out);
   for(unsigned int i = 0, limit = forbid_rules.size(); i != limit; i++)
@@ -305,7 +305,7 @@ TaggerDataHMM::write(FILE *out)
     Compression::multibyte_write(forbid_rules[i].tagi, out);
     Compression::multibyte_write(forbid_rules[i].tagj, out);
   }
-  
+
   // array_tags
   Compression::multibyte_write(array_tags.size(), out);
   for(unsigned int i = 0, limit = array_tags.size(); i != limit; i++)
@@ -321,7 +321,7 @@ TaggerDataHMM::write(FILE *out)
     Compression::wstring_write(it->first, out);
     Compression::multibyte_write(it->second, out);
   }
-  
+
   // enforce_rules
   Compression::multibyte_write(enforce_rules.size(), out);
   for(unsigned int i = 0, limit = enforce_rules.size(); i != limit; i++)
@@ -340,9 +340,9 @@ TaggerDataHMM::write(FILE *out)
   {
     Compression::wstring_write(prefer_rules[i], out);
   }
-  
+
   // constants
-  constants.write(out);  
+  constants.write(out);
 
   // output
   output.write(out);
@@ -359,7 +359,7 @@ TaggerDataHMM::write(FILE *out)
   }
 
   // b matrix, writing only useful values
-  
+
   int nval = 0;
   for(int i = 0; i != N; i++)
   {
@@ -384,13 +384,13 @@ TaggerDataHMM::write(FILE *out)
         EndianDoubleUtil::write(out, b[i][j]);
       }
     }
-  }  
-  
+  }
+
   // write pattern list
   plist.write(out);
 
   // write discard list
-  
+
   if(discard.size() != 0)
   {
     Compression::multibyte_write(discard.size(), out);
@@ -398,6 +398,6 @@ TaggerDataHMM::write(FILE *out)
     {
       Compression::wstring_write(discard[i], out);
     }
-  }  
+  }
 }
 

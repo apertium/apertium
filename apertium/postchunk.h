@@ -39,7 +39,7 @@ using namespace std;
 class Postchunk
 {
 private:
-  
+
   Alphabet alphabet;
   MatchExe *me;
   MatchState ms;
@@ -65,7 +65,7 @@ private:
 
   xmlNode *lastrule;
   unsigned int nwords;
-  
+
   map<xmlNode *, TransferInstr> evalStringCache;
 
   bool inword;
@@ -118,18 +118,18 @@ private:
   static vector<wstring> getVecTags(wstring const &chunk);
   static int beginChunk(wstring const &chunk);
   static int endChunk(wstring const &chunk);
-  static void splitWordsAndBlanks(wstring const &chunk, 
+  static void splitWordsAndBlanks(wstring const &chunk,
 				  vector<wstring *> &words,
 				  vector<wstring *> &blanks);
   static wstring pseudolemma(wstring const &chunk);
   static wstring wordzero(wstring const &chunk);
-  bool checkIndex(xmlNode *element, int index, int limit);  
+  bool checkIndex(xmlNode *element, int index, int limit);
   void postchunk_wrapper_null_flush(FILE *in, FILE *out);
 
 public:
   Postchunk();
   ~Postchunk();
-  
+
   void read(string const &transferfile, string const &datafile);
   void postchunk(FILE *in, FILE *out);
   bool getNullFlush(void);

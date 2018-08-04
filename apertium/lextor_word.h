@@ -30,7 +30,7 @@
 using namespace std;
 
 /** Class LexTorWord. (Lexical Selector Word)
- */  
+ */
 
 class LexTorWord{
 private:
@@ -38,16 +38,16 @@ private:
   wstring ignored_string;
   vector<wstring> lexical_choices;
   int default_choice;
-  
+
   void extract_lexical_choices(FSTProcessor *fstp);
 public:
 
   LexTorWord();
-  
+
   LexTorWord(const LexTorWord& ltw);
 
   LexTorWord(const wstring& str, FSTProcessor *fstp);
-  
+
   ~LexTorWord();
 
   /** Return the lexical choice at position 'choice', if 'choice' is not
@@ -55,7 +55,7 @@ public:
    */
   wstring get_lexical_choice(int choice=-1, bool include_ignored=true);
 
-  /** Returns the number of lexical choices for this word 
+  /** Returns the number of lexical choices for this word
    */
   int n_lexical_choices();
 

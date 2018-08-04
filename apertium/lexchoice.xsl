@@ -113,8 +113,8 @@
     </xsl:choose>
 
     </xsl:otherwise>
-  </xsl:choose> 
-  </p> 
+  </xsl:choose>
+  </p>
 </xsl:template>
 
 

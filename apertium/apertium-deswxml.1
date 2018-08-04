@@ -1,7 +1,7 @@
 .TH apertium-deswxml 1 2006-03-21 "" ""
 .SH NAME
 apertium-deswxml \- This application is part of (
-.B apertium 
+.B apertium
 )
 .PP
 This tool is part of the apertium open-source machine translation
@@ -12,8 +12,8 @@ toolbox: \fBhttp://www.apertium.org\fR.
 [ <input file> [ <output file> ] ]
 .PP
 .SH DESCRIPTION
-.BR apertium-deswxml 
-is an WXML format processor. Data should be passed through this 
+.BR apertium-deswxml
+is an WXML format processor. Data should be passed through this
 processor before being piped to lt-proc. The program takes input
 in the form of an WXML document and produces output suitable for
 processing with lt-proc. WXML tags and other format information are  enclosed in brackets so that lt-proc treats them as whitespace between words.
@@ -30,7 +30,7 @@ Suppresses the addition of a trailing sentence terminator.
 .PP
 .SH EXAMPLE
 .TP
-You could write the following to show how the word "gener" is analysed: 
+You could write the following to show how the word "gener" is analysed:
 .TP
 echo "<b>gener</b>" | apertium-deswxml | lt-proc ca-es.automorf.bin
 .PP

@@ -25,7 +25,7 @@ LexTorWord::LexTorWord() {
   word = L"";
   default_choice = 0;
 }
-  
+
 LexTorWord::LexTorWord(const LexTorWord& ltw) {
   word=ltw.word;
   ignored_string=ltw.ignored_string;
@@ -38,26 +38,26 @@ LexTorWord::LexTorWord(const wstring &str, FSTProcessor *fstp) {
   ignored_string=L"";
   extract_lexical_choices(fstp);
 }
-  
+
 LexTorWord::~LexTorWord() {
 }
 
-wstring 
+wstring
 LexTorWord::get_word_string() {
   return word;
 }
 
-int 
+int
 LexTorWord::n_lexical_choices() {
   return lexical_choices.size();
 }
 
-wstring 
+wstring
 LexTorWord::get_lexical_choice(int choice, bool include_ignored) {
   if (word == L"") {
     if (include_ignored)
       return ignored_string;
-    else 
+    else
       return L"";
   }
 
@@ -79,7 +79,7 @@ LexTorWord::get_lexical_choice(int choice, bool include_ignored) {
     return lexical_choices[choice];
 }
 
-wstring 
+wstring
 LexTorWord::translate(FSTProcessor& bildic, int lexchoice) {
   wstring t;
 
@@ -103,7 +103,7 @@ LexTorWord::translate(FSTProcessor& bildic, int lexchoice) {
   return t;
 }
 
-void 
+void
 LexTorWord::extract_lexical_choices(FSTProcessor *fstp) {
 
   lexical_choices=StringUtils::split_wstring(fstp->biltrans(word,false), L"/");
@@ -125,7 +125,7 @@ LexTorWord::extract_lexical_choices(FSTProcessor *fstp) {
   }
 }
 
-LexTorWord* 
+LexTorWord*
 LexTorWord::next_word(wistream& is, FSTProcessor *fstp) {
   LexTorWord w;
   wchar_t c, prev_c=L' ';
@@ -145,7 +145,7 @@ LexTorWord::next_word(wistream& is, FSTProcessor *fstp) {
 	  if(fstp!=NULL)
 	    w.extract_lexical_choices(fstp);
 	  return new LexTorWord(w);
-	} else 
+	} else
 	  return NULL;
       }
     }

@@ -36,7 +36,7 @@ using namespace std;
 class TransferMult
 {
 private:
-  
+
   Alphabet alphabet;
   MatchExe *me;
   MatchState ms;
@@ -50,7 +50,7 @@ private:
   Buffer<TransferToken> input_buffer;
   vector<wstring *> tmpword;
   vector<wstring *> tmpblank;
-  wstring output_string;  
+  wstring output_string;
 
   FSTProcessor fstp;
   FILE *output;
@@ -58,13 +58,13 @@ private:
   int any_tag;
   bool isRule;
   unsigned int numwords;
-  
+
   unsigned int nwords;
-  
+
   enum OutputType{lu,chunk};
-  
+
   OutputType defaultAttrs;
-  
+
   void destroy();
   void readData(FILE *input);
   void readBil(string const &filename);
@@ -82,15 +82,15 @@ private:
   void applyRule();
   TransferToken & readToken(FILE *in);
   void writeMultiple(list<vector<wstring> >::iterator itwords,
-                     list<wstring>::iterator itblanks, 
-                     list<vector<wstring> >::const_iterator limitwords, 
+                     list<wstring>::iterator itblanks,
+                     list<vector<wstring> >::const_iterator limitwords,
                      wstring acum = L"", bool multiple = false);
   vector<wstring> acceptions(wstring str);
   bool isDefaultWord(wstring const &str);
 public:
   TransferMult();
   ~TransferMult();
-  
+
   void read(string const &datafile, string const &fstfile);
   void transfer(FILE *in, FILE *out);
 };

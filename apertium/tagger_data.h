@@ -44,14 +44,14 @@ protected:
   Collection output;
   PatternList plist;
   vector<wstring> discard;
-  
+
   void copy(TaggerData const &o);
 public:
   TaggerData();
   virtual ~TaggerData();
   TaggerData(TaggerData const &o);
   TaggerData & operator =(TaggerData const &o);
-  
+
   set<TTag> & getOpenClass();
   const set<TTag> & getOpenClass() const;
   void setOpenClass(set<TTag> const &oc);
@@ -59,11 +59,11 @@ public:
   vector<TForbidRule> & getForbidRules();
   const vector<TForbidRule> & getForbidRules() const;
   void setForbidRules(vector<TForbidRule> &fr);
-  
+
   map<wstring, TTag, Ltstr> & getTagIndex();
   const map<wstring, TTag, Ltstr> & getTagIndex() const;
   void setTagIndex(map<wstring, TTag, Ltstr> const &ti);
-  
+
   vector<wstring> & getArrayTags();
   const vector<wstring> & getArrayTags() const;
   void setArrayTags(vector<wstring> const &at);
@@ -75,7 +75,7 @@ public:
   vector<wstring> & getPreferRules();
   const vector<wstring> & getPreferRules() const;
   void setPreferRules(vector<wstring> const &pr);
-  
+
   vector<wstring> & getDiscardRules();
   const vector<wstring> & getDiscardRules() const;
   void setDiscardRules(vector<wstring> const &dr);
@@ -83,11 +83,11 @@ public:
   ConstantManager & getConstants();
   const ConstantManager & getConstants() const;
   void setConstants(ConstantManager const &c);
-  
+
   virtual Collection & getOutput();
   const virtual Collection & getOutput() const;
   void setOutput(Collection const &c);
- 
+
   void setPatternList(PatternList const &pl);
   PatternList & getPatternList();
   const PatternList & getPatternList() const;

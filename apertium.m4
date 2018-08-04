@@ -83,7 +83,7 @@ AS_HELP_STRING([--with-lang][$1],dnl
 # in your Makefile.am with _at most one mode_ (the others will be
 # created even if you list only one, listing several will lead to
 # trouble with parallell make).
-# 
+#
 # Install the modes by making install-data-local dependent on
 # install-modes, ie.
 #
@@ -94,7 +94,7 @@ AS_HELP_STRING([--with-lang][$1],dnl
 # dependent on .deps/.d, e.g.
 #
 #     .deps/intermediate.dix: original.dix .deps/.d
-# 
+#
 # ------------------------------------------
 AC_DEFUN([AP_MKINCLUDE],
 [

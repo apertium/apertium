@@ -42,14 +42,14 @@ public:
    * @returns the first element readed from the current position of the stream
    */
   static double read(istream &is);
-  
+
   /**
    * Write procedure.
    * @param output the stream to write to
    * @param val the value of the generic object to write to the stream
    */
   static void write(FILE *output, double const &val);
-  
+
   /**
    * Write procedure, C++ I/O version.
    * @param output the stream to write to

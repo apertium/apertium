@@ -31,13 +31,13 @@ class TransferData
 private:
   void copy(TransferData const &o);
   void destroy();
-  
+
   map<wstring, wstring, Ltstr> attr_items;
   map<wstring, int, Ltstr> macros;
   map<wstring, set<wstring, Ltstr>, Ltstr> lists;
   map<wstring, wstring, Ltstr> variables;
   set<int> final_symbols;
-  
+
   Alphabet alphabet;
   Transducer transducer;
 
@@ -47,17 +47,17 @@ private:
   ~TransferData();
   TransferData(TransferData const &o);
   TransferData & operator =(TransferData const &o);
-  
+
   Alphabet & getAlphabet();
   Transducer & getTransducer();
-  map<wstring, wstring, Ltstr> & getAttrItems();  
+  map<wstring, wstring, Ltstr> & getAttrItems();
 
   map<int, int> seen_rules;
 
   map<wstring, int, Ltstr> & getMacros();
   map<wstring, set<wstring, Ltstr>, Ltstr> & getLists();
   map<wstring, wstring, Ltstr> & getVariables();
-  
+
   /**
    * Encode the rule count in an arc label/symbol (later extracted by
    * write()), recording that it's been used in final_symbols, and

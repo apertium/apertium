@@ -68,7 +68,7 @@ void procWord(FILE *input, FILE *output, bool surface_forms)
   if(surface_forms)
   {
     while((mychar = fgetwc_unlocked(input)) != L'/') ;
-  } 
+  }
 
   while((mychar = fgetwc_unlocked(input)) != L'$')
   {
@@ -77,7 +77,7 @@ void procWord(FILE *input, FILE *output, bool surface_forms)
       wcerr << L"ERROR: Unexpected EOF" << endl;
       exit(EXIT_FAILURE);
     }
-  
+
     switch(mychar)
     {
     case L'<':
@@ -87,11 +87,11 @@ void procWord(FILE *input, FILE *output, bool surface_forms)
         buffer_mode = true;
       }
       break;
-      
+
     case L'>':
       in_tag = false;
       break;
-      
+
     case L'#':
       if(buffer_mode)
       {
@@ -102,8 +102,8 @@ void procWord(FILE *input, FILE *output, bool surface_forms)
     }
 
     if(buffer_mode)
-    { 
-      if((mychar != L'+' || (mychar == L'+' && in_tag == true)) && 
+    {
+      if((mychar != L'+' || (mychar == L'+' && in_tag == true)) &&
          (mychar != L'~' || (mychar == L'~' && in_tag == true)))
       {
         buffer += static_cast<wchar_t>(mychar);
@@ -119,12 +119,12 @@ void procWord(FILE *input, FILE *output, bool surface_forms)
     }
     else
     {
-      if(mychar == L'+' && queuing == true)  
+      if(mychar == L'+' && queuing == true)
       {
         buffer.append(L"$ ^");
         buffer_mode = true;
       }
-      else 
+      else
       {
         fputwc_unlocked(mychar, output);
       }
@@ -150,27 +150,27 @@ void processStream(FILE *input, FILE *output, bool null_flush, bool surface_form
         readAndWriteUntil(input, output, L']');
         fputwc_unlocked(L']', output);
         break;
- 
+
       case L'\\':
         fputwc_unlocked(mychar, output);
         fputwc_unlocked(fgetwc_unlocked(input), output);
         break;
- 
+
       case L'^':
         fputwc_unlocked(mychar, output);
         procWord(input, output, surface_forms);
         fputwc_unlocked(L'$', output);
         break;
-      
+
       case L'\0':
         fputwc_unlocked(mychar, output);
-        
+
         if(null_flush)
         {
           fflush(output);
         }
-        break;  
- 
+        break;
+
       default:
         fputwc_unlocked(mychar, output);
         break;
@@ -192,11 +192,11 @@ void usage(char *progname)
 
 
 int main(int argc, char *argv[])
-{ 
+{
   LtLocale::tryToSetLocale();
   bool null_flush = false;
   bool surface_forms = false;
-  
+
   int option_index=0;
 
   while (true) {
@@ -212,7 +212,7 @@ int main(int argc, char *argv[])
     int c=getopt_long(argc, argv, "enzh", long_options, &option_index);
     if (c==-1)
       break;
-      
+
     switch (c)
     {
       case 'z':
@@ -222,11 +222,11 @@ int main(int argc, char *argv[])
       case 'e':
         compound_sep = true;
         break;
-     
+
       case 'n':
         surface_forms = true;
         break;
-       
+
       case 'h':
       default:
         usage(argv[0]);
@@ -240,7 +240,7 @@ int main(int argc, char *argv[])
   }
 
   FILE *input, *output;
-  
+
   if((argc-optind+1) == 1)
   {
     input = stdin;

@@ -82,7 +82,7 @@ private:
   bool trace;
   bool trace_att;
   string emptyblank;
-  
+
   void destroy();
   void readData(FILE *input);
   void readBil(string const &filename);
@@ -132,7 +132,7 @@ private:
 public:
   Transfer();
   ~Transfer();
-  
+
   void read(string const &transferfile, string const &datafile,
 	    string const &fstfile = "");
   void transfer(FILE *in, FILE *out);

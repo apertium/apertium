@@ -32,10 +32,10 @@ public:
   std::string handAlignFilename;
 
   bool utfCharCountingMode;
-  
+
   std::string autoDictionaryDumpFilename; // Empty string means do not dump.
 
-AlignParameters() : justSentenceIds(true), 
+AlignParameters() : justSentenceIds(true),
     justBisentences(false), cautiousMode(false),
     realignType(NoRealign),
     qualityThreshold(-100000),

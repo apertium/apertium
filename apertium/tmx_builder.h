@@ -47,17 +47,17 @@ private:
   static vector<wstring> reverseList(vector<wstring> const &v);
   static vector<wstring> sentenceList(FILE *file);
   static int argmin(int nw, int n, int w);
-  static int * levenshteinTable(vector<wstring> &l1, vector<wstring> &l2, 
+  static int * levenshteinTable(vector<wstring> &l1, vector<wstring> &l2,
 				unsigned int diagonal_width, unsigned int max_edit);
   void printTU(FILE *output, wstring const &tu1, wstring const &tu2) const;
   static wstring filter(wstring const &s);
-  static int weight(wstring const &s);  
+  static int weight(wstring const &s);
   static void printTable(int *table, unsigned int nrows, unsigned int ncols);
   static int editDistance(wstring const &s1, wstring const &s2, unsigned int max_edit);
   static int min3(int i1, int i2, int i3);
   static int min2(int i1, int i2);
   void printTUCond(FILE *output, wstring const &s1, wstring const &s2, bool secure_zone);
-  static vector<wstring> extractFragment(vector<wstring> const &text, unsigned int base, 
+  static vector<wstring> extractFragment(vector<wstring> const &text, unsigned int base,
 					 unsigned int width);
 
   static bool isRemovablePunct(wchar_t const &c);
@@ -68,9 +68,9 @@ public:
   TMXBuilder(wstring const &l1, wstring const &l2);
   ~TMXBuilder();
   static bool check(string const &file1, string const &file2, bool lazy = false);
-  void generate(string const &file1, string const &file2, 
+  void generate(string const &file1, string const &file2,
                 string const &outfile="");
-                
+
   void setMaxEdit(int me);
   void setDiagonalWidth(int dw);
   void setWindowSize(int ws);

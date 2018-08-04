@@ -240,7 +240,7 @@ void DictionaryItems::read( std::istream& is )
       {
         is.ignore();
       }
-      
+
       if (is.peek()=='\n')
       {
         is.ignore();
@@ -467,7 +467,7 @@ void removeHungarianStopwords( SentenceList& huSentenceList )
   std::set<Word> stopwords;
   cStyleStringsToStringSet( huStopwordsC, stopwords );
 
-  
+
   for ( size_t i=0; i<huSentenceList.size(); ++i )
   {
 
@@ -490,7 +490,7 @@ void removeHungarianStopwords( SentenceList& huSentenceList )
 void removeEnglishStopwords( SentenceList& enSentenceList )
 {
   // Mar megbocsasson mindenki, hogy ezt programkodban rogzitem, de rogzitem.
-  const char* enStopwordsC[] = 
+  const char* enStopwordsC[] =
   {
     "the", "it",
 
@@ -645,7 +645,7 @@ void IBMModelOne::reestimate( const SentenceList& huSentenceList, const Sentence
   throw "unimplemented";
 }
 
-// 
+//
 double IBMModelOne::distance( const Phrase& hu, const Phrase& en ) const
 {
   double val = log(1.0+hu.size()) / en.size() ;

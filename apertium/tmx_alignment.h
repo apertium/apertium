@@ -56,7 +56,7 @@ typedef std::vector< std::pair<int,int> > BisentenceList;
 
 // OBSOLETE:
 // Has the exactly same relation to BisentenceList as
-// a TrailValues has to a Trail. But note that these 
+// a TrailValues has to a Trail. But note that these
 // scores mark the confidence in a bisentence. This is
 // very different from the confidence in a rundle.
 // typedef std::vector<double> BisentenceValues;

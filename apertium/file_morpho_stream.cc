@@ -14,10 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-/** 
+/**
  *  Word class and MorphoStream class definitions
  *
- *  @author	Felipe Sánchez-Martínez 
+ *  @author	Felipe Sánchez-Martínez
  */
 
 #include <apertium/file_morpho_stream.h>
@@ -38,7 +38,7 @@ FileMorphoStream::FileMorphoStream(FILE *ftxt, bool d, TaggerData *t) :
   input = ftxt;
   ca_any_char = alphabet(PatternList::ANY_CHAR);
   ca_any_tag = alphabet(PatternList::ANY_TAG);
-  
+
   ConstantManager &constants = td->getConstants();
   ca_kignorar = constants.getConstant(L"kIGNORAR");
   ca_kbarra = constants.getConstant(L"kBARRA");
@@ -47,16 +47,16 @@ FileMorphoStream::FileMorphoStream(FILE *ftxt, bool d, TaggerData *t) :
   ca_kmot = constants.getConstant(L"kMOT");
   ca_kmas = constants.getConstant(L"kMAS");
   ca_kunknown = constants.getConstant(L"kUNKNOWN");
-  
+
   map<wstring, int, Ltstr> &tag_index = td->getTagIndex();
-  ca_tag_keof = tag_index[L"TAG_kEOF"];  
-  ca_tag_kundef = tag_index[L"TAG_kUNDEF"]; 
+  ca_tag_keof = tag_index[L"TAG_kEOF"];
+  ca_tag_kundef = tag_index[L"TAG_kUNDEF"];
 
   end_of_file = false;
   null_flush = false;
 }
 
-FileMorphoStream::~FileMorphoStream() 
+FileMorphoStream::~FileMorphoStream()
 {
   delete me;
 }
@@ -68,7 +68,7 @@ FileMorphoStream::get_next_word()
   {
     TaggerWord* word=vwords.front();
     vwords.erase(vwords.begin());
-    
+
     if(word->isAmbiguous())
     {
       vector<wstring> &ref = td->getDiscardRules();
@@ -85,7 +85,7 @@ FileMorphoStream::get_next_word()
   {
     return NULL;
   }
-  
+
   int ivwords = 0;
   vwords.push_back(new TaggerWord());
 
@@ -117,7 +117,7 @@ FileMorphoStream::get_next_word()
       {
         str += static_cast<wchar_t>(symbol);
       }
-      
+
       while(symbol != L'^')
       {
 	symbol = fgetwc_unlocked(input);
@@ -215,14 +215,14 @@ FileMorphoStream::lrlmClassify(wstring const &str, int &ivwords)
     {
       if(last_pos != floor)
       {
-        vwords[ivwords]->add_tag(last_type, 
+        vwords[ivwords]->add_tag(last_type,
                                  str.substr(floor, last_pos - floor + 1),
                                  td->getPreferRules());
 	if(str[last_pos+1] == L'+' && last_pos+1 < limit )
-	{	
+	{
 	  floor = last_pos + 1;
 	  last_pos = floor;
-          vwords[ivwords]->set_plus_cut(true); 
+          vwords[ivwords]->set_plus_cut(true);
           if (((int)vwords.size())<=((int)(ivwords+1)))
             vwords.push_back(new TaggerWord(true));
           ivwords++;
@@ -247,14 +247,14 @@ FileMorphoStream::lrlmClassify(wstring const &str, int &ivwords)
       {
 	if(last_pos != floor)
 	{
-	  vwords[ivwords]->add_tag(last_type, 
+	  vwords[ivwords]->add_tag(last_type,
                                    str.substr(floor, last_pos - floor + 1),
                                    td->getPreferRules());
           if(str[last_pos+1] == L'+' && last_pos+1 < limit )
-          {	
+          {
             floor = last_pos + 1;
 	    last_pos = floor;
-            vwords[ivwords]->set_plus_cut(true); 
+            vwords[ivwords]->set_plus_cut(true);
             if (((int)vwords.size())<=((int)(ivwords+1)))
               vwords.push_back(new TaggerWord(true));
             ivwords++;
@@ -275,7 +275,7 @@ FileMorphoStream::lrlmClassify(wstring const &str, int &ivwords)
       }
     }
   }
-  
+
   int val = ms.classifyFinals(me->getFinals());
   if(val == -1)
   {
@@ -286,7 +286,7 @@ FileMorphoStream::lrlmClassify(wstring const &str, int &ivwords)
       wcerr<<L"         This is because of an incomplete tagset definition or a dictionary error\n";
     }
 
-  }    
+  }
   vwords[ivwords]->add_tag(val, str.substr(floor), td->getPreferRules());
 }
 
@@ -295,7 +295,7 @@ FileMorphoStream::readRestOfWord(int &ivwords)
 {
   // first we have the superficial form
   wstring  str = L"";
-  
+
   while(true)
   {
     int symbol = fgetwc_unlocked(input);
@@ -320,7 +320,7 @@ FileMorphoStream::readRestOfWord(int &ivwords)
     }
     else if(symbol == L'/')
     {
-      vwords[ivwords]->set_superficial_form(str); 
+      vwords[ivwords]->set_superficial_form(str);
       str = L"";
       break;
     }
@@ -370,7 +370,7 @@ FileMorphoStream::readRestOfWord(int &ivwords)
     }
     else if(symbol == L'$')
     {
-      if(str[0] != L'*')// do nothing with unknown words 
+      if(str[0] != L'*')// do nothing with unknown words
       {
 	lrlmClassify(str, ivwords);
       }
@@ -379,7 +379,7 @@ FileMorphoStream::readRestOfWord(int &ivwords)
     else
     {
       str += static_cast<wchar_t>(symbol);
-    }    
+    }
   }
 }
 

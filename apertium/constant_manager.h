@@ -26,7 +26,7 @@ using namespace std;
 class ConstantManager
 {
 private:
-  map<wstring, int> constants; 
+  map<wstring, int> constants;
 
   void copy(ConstantManager const &o);
   void destroy();
@@ -35,7 +35,7 @@ public:
   ~ConstantManager();
   ConstantManager(ConstantManager const &o);
   ConstantManager & operator =(ConstantManager const &o);
-  
+
   void setConstant(wstring const &constant, int const value);
   int getConstant(wstring const &constant);
   void write(FILE *output);

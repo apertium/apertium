@@ -32,7 +32,7 @@ double TrailScores::operator()( int j ) const
     dynMatrix[trail[j+1].first][trail[j+1].second] ;
 }
 
-BisentenceListScores::BisentenceListScores( const BisentenceList& bisentenceList_, const AlignMatrix& dynMatrix_ ) 
+BisentenceListScores::BisentenceListScores( const BisentenceList& bisentenceList_, const AlignMatrix& dynMatrix_ )
   : bisentenceList(bisentenceList_), dynMatrix(dynMatrix_) {}
 
 double BisentenceListScores::operator()( int j ) const
@@ -52,7 +52,7 @@ TrailScoresInterval::TrailScoresInterval( const Trail& trail_, const AlignMatrix
 // Division is by the maximum of the Hungarian and English intervals.
 // This is a somewhat arbritary decision, and goes very badly with the
 // scoring of the knight's moves. But we really have no better choice.
-// 
+//
 // Also, the method applies some very ugly hacks to avoid the effect of
 // paragraph-delimiters. It strips both intervals of <p>s, and
 // modifies the dynMatrix-based score assuming that all <p>s got paired.
@@ -62,7 +62,7 @@ double TrailScoresInterval::scoreSegmentum( const Rundle& start, const Rundle& e
   int huDiff = end.first  - start.first  ;
   int enDiff = end.second - start.second ;
 
-  double score = 
+  double score =
     dynMatrix[start.first][start.second]
     -
     dynMatrix[end.  first][end.  second] ;
@@ -156,7 +156,7 @@ void cautiouslyFilterTrail( Trail& bestTrail )
   {
     if (
          (pos==0)
-           || 
+           ||
          ( oneToOne(bestTrail,pos-1) && oneToOne(bestTrail,pos) )
        )
     {
@@ -177,10 +177,10 @@ inline double absValue( double x )
 // Egy zero-to-nonzero hole valamelyik oldalan levo rundle-t kiirtom, ha a
 // rundle torlese kozeliti az uj hezagban a magyar karakterszam / angol karakterszam
 // hanyadost egyhez. A bal es a jobb kozul azt valasztom, amelyik tobbet javit.
-// 
+//
 // Meg akkor is olvasztok, ha ezzel kicsit rontok, mivel a valodi zero-to-one eleg ritka.
 // Legalabbis regenyekben. Az improvementSlack konstansnak domainfuggonek kellene lennie.
-void spaceOutBySentenceLength( Trail& bestTrail, 
+void spaceOutBySentenceLength( Trail& bestTrail,
                  const SentenceList& huSentenceListPretty,
                  const SentenceList& enSentenceList,
 		 bool utfCharCountingMode )
@@ -216,7 +216,7 @@ void spaceOutBySentenceLength( Trail& bestTrail,
       double huRightBlock  = characterLength( bestTrail[i+1].first, bestTrail[i+2].first, huSentenceListPretty, utfCharCountingMode );
       double huMiddleBlock = characterLength( bestTrail[i].first,   bestTrail[i+1].first, huSentenceListPretty, utfCharCountingMode );
       double huLeftBlock   = characterLength( bestTrail[i-1].first, bestTrail[i].first,   huSentenceListPretty, utfCharCountingMode );
-    
+
       double enRightBlock  = characterLength( bestTrail[i+1].second, bestTrail[i+2].second, enSentenceList, utfCharCountingMode );
       double enMiddleBlock = characterLength( bestTrail[i].second,   bestTrail[i+1].second, enSentenceList, utfCharCountingMode );
       double enLeftBlock   = characterLength( bestTrail[i-1].second, bestTrail[i].second,   enSentenceList, utfCharCountingMode );

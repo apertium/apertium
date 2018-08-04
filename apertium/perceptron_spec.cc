@@ -108,22 +108,22 @@ std::vector<Morpheme> PerceptronSpec::untagged_sentinel;
 LexicalUnit PerceptronSpec::token_wordoids_underflow;
 LexicalUnit PerceptronSpec::token_wordoids_overflow;
 
-void 
+void
 PerceptronSpec::get_features(
     const TaggedSentence &tagged, const Sentence &untagged,
     int token_idx, int wordoid_idx,
-    UnaryFeatureVec &feat_vec_out) const 
+    UnaryFeatureVec &feat_vec_out) const
 {
   size_t i;
   global_results.clear();
-  if (global_pred.size() > 0) 
+  if (global_pred.size() > 0)
   {
     Machine machine(
       *this, global_pred, 0, false,
       tagged, untagged, token_idx, wordoid_idx);
     StackValue result = machine.getValue();
     assert(result.type == BVAL);
-    if (!result.boolVal()) 
+    if (!result.boolVal())
     {
       return;
     }
@@ -660,7 +660,7 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
 
 void
 PerceptronSpec::Machine::getFeature(
-    UnaryFeatureVec &feat_vec_out) 
+    UnaryFeatureVec &feat_vec_out)
 {
   for (; bytecode_iter != feat.end(); bytecode_iter++) {
     Opcode op = (Bytecode){.intbyte=static_cast<signed char>(*bytecode_iter)}.op;
@@ -722,10 +722,10 @@ PerceptronSpec::Machine::getFeature(
 PerceptronSpec::StackValue
 PerceptronSpec::Machine::getValue()
 {
-  for (; bytecode_iter != feat.end(); bytecode_iter++) 
+  for (; bytecode_iter != feat.end(); bytecode_iter++)
   {
     Opcode op = (Bytecode){.intbyte=static_cast<signed char>(*bytecode_iter)}.op;
-    if (execCommonOp(op)) 
+    if (execCommonOp(op))
     {
       continue;
     }

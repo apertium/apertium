@@ -54,13 +54,13 @@ void usage(char *progname)
   wcerr << L"  code1, code2 codes of the languages (i.e. ISO-631 ones)" << endl;
   wcerr << L"  doc1, doc2    unformatted docs to build the TMX file" << endl;
   wcerr << L"  output_file   if not specified, the result will be printed to stdout" << endl;
-  
+
   exit(EXIT_FAILURE);
 }
 
 
 int main(int argc, char *argv[])
-{ 
+{
   LtLocale::tryToSetLocale();
   string output_file = "";
   string doc1 = "", doc2 = "";
@@ -89,14 +89,14 @@ int main(int argc, char *argv[])
       {"window", required_argument, 0, 'w'},
       {"step", required_argument, 0, 's'},
       {"translation", required_argument, 0, 't'},
-      {"help",       no_argument,       0, 'h'}, 
+      {"help",       no_argument,       0, 'h'},
       {0, 0, 0, 0}
     };
 
     int c=getopt_long(argc, argv, "p:e:l:m:d:w:s:t:h", long_options, &option_index);
     if (c==-1)
       break;
-      
+
     switch (c)
     {
       case 'p':
@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
           usage(argv[0]);
         }
         break;
-        
+
       case 'l':
         low_limit = atoi(optarg);
         if(low_limit < 0)
@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
           usage(argv[0]);
         }
         break;
-     
+
       case 't':
 	translation = optarg;
 	break;
@@ -163,33 +163,33 @@ int main(int argc, char *argv[])
         //wcerr<<L"Error: getopt() returned the char code '"<<c<<L"'\n";
         usage(argv[0]);
         break;
-    }    
+    }
   }
 
   switch(argc - optind + 1)
   {
     case 6:
       output_file = argv[optind - 1 + 5];
-      // continued down  
+      // continued down
     case 5:
       doc1 = argv[optind - 1 + 3];
       doc2 = argv[optind - 1 + 4];
       lang1 = argv[optind - 1 + 1];
       lang2 = argv[optind - 1 + 2];
       break;
-      
+
     default:
       usage(argv[0]);
       return EXIT_FAILURE;
-  } 
-  
+  }
+
   TMXBuilder tmxb(UtfConverter::fromUtf8(lang1), UtfConverter::fromUtf8(lang2));
 //  if(!tmxb.check(doc1, doc2))
 //  {
 //    wcerr << L"Error: The two files are incompatible for building a TMX." << endl;
 //    exit(EXIT_FAILURE);
 //  }
-   
+
   // Set parameters
 
   tmxb.setPercent(percent);
@@ -201,9 +201,9 @@ int main(int argc, char *argv[])
   tmxb.setLowLimit(low_limit);
   if(translation != "")
   {
-    tmxb.setTranslation(translation);  
+    tmxb.setTranslation(translation);
   }
-  
+
   tmxb.generate(doc1, doc2, output_file);
   return EXIT_SUCCESS;
 }

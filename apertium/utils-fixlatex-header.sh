@@ -13,19 +13,19 @@ function is_inline_tag(str,                      aux, val)
       return 1;
     }
   }
-  
+
   return 0;
 }
 
 BEGIN{
-  RS="</CONTENTS>";  
-  
+  RS="</CONTENTS>";
+
   INLINETAGS[1]="<textit/>";
   INLINETAGS[2]="<textbf/>";
   INLINETAGS[3]="<emph/>";
 }
 {
-  MYRECORD[++nline] = $0;  
+  MYRECORD[++nline] = $0;
 }
 END{
   for(i=1; i < nline; i++)
@@ -40,13 +40,13 @@ END{
       {
         printf("%s</CONTENTS>", MYRECORD[i]);
       }
-    } 
+    }
     else
     {
       printf("%s</CONTENTS>", MYRECORD[i]);
     }
   }
-  
+
   printf("%s", MYRECORD[nline]);
 }' > $OUTPUT_FILE
 

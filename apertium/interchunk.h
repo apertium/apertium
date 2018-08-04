@@ -40,7 +40,7 @@ using namespace std;
 class Interchunk
 {
 private:
-  
+
   Alphabet alphabet;
   MatchExe *me;
   MatchState ms;
@@ -66,14 +66,14 @@ private:
 
   xmlNode *lastrule;
   unsigned int nwords;
-  
+
   map<xmlNode *, TransferInstr> evalStringCache;
   bool inword;
   bool null_flush;
   bool internal_null_flush;
   bool trace;
   string emptyblank;
-  
+
   void destroy();
   void readData(FILE *input);
   void readInterchunk(string const &input);
@@ -115,13 +115,13 @@ private:
   void applyWord(wstring const &word_str);
   void applyRule();
   TransferToken & readToken(FILE *in);
-  bool checkIndex(xmlNode *element, int index, int limit); 
+  bool checkIndex(xmlNode *element, int index, int limit);
   void interchunk_wrapper_null_flush(FILE *in, FILE *out);
 
 public:
   Interchunk();
   ~Interchunk();
-  
+
   void read(string const &transferfile, string const &datafile);
   void interchunk(FILE *in, FILE *out);
   bool getNullFlush(void);

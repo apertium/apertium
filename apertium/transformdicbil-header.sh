@@ -6,7 +6,7 @@ fi
 FILE1=$1;
 FILE2=$2;
 
-if [ ! -e $1 ] 
+if [ ! -e $1 ]
 then echo "ERROR: '$1' file not found";
      exit 1;
 fi

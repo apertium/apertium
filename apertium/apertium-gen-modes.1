@@ -14,20 +14,20 @@ modes-file [package name]
 This is an intermediate tool from Apertium level 2 engine. You should
 never have to use it independently.
 .PP
-It creates a series of \fI.mode\fR files from a \fImodes-file\fR 
+It creates a series of \fI.mode\fR files from a \fImodes-file\fR
 these files are then put into the current directory if they are marked
-as \fIinstall\fR, and for modes that are not to be installed, for 
-example debugging modes, these are put into a \fImodes\fR directory 
-inside the linguistic data. 
+as \fIinstall\fR, and for modes that are not to be installed, for
+example debugging modes, these are put into a \fImodes\fR directory
+inside the linguistic data.
 .SH OPTIONS
 If a package name is specified, it creates the modes with the apertium
-install prefix plus the package name. If you wish to install the modes, 
+install prefix plus the package name. If you wish to install the modes,
 you should specify the package name. If you don't want to install the modes,
 leave it off.
 .SH FILES
 .B modes-file
 A XML file that tells \fBapertium\-gen\-modes\fR which scripts must
-be created in the directory \fImodes\fR.	
+be created in the directory \fImodes\fR.
 .SH SEE ALSO
 .I apertium\-interchunk\fR(1),
 .I apertium\-postchunk\fR(1),

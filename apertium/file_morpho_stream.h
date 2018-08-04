@@ -14,10 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-/** 
+/**
  *  Word class and MorphoStream class definitions
  *
- *  @author	Felipe Sánchez-Martínez 
+ *  @author	Felipe Sánchez-Martínez
  */
 
 #ifndef __FILEMORPHOSTREAM_H
@@ -40,9 +40,9 @@
 
 using namespace std;
 
-/** Class MorphoStream.  
- *  This class processes the output of class  yyFlexLexer (lex.yy.cc), and 
- *  builds the TaggerWord objects managed by the tagger 
+/** Class MorphoStream.
+ *  This class processes the output of class  yyFlexLexer (lex.yy.cc), and
+ *  builds the TaggerWord objects managed by the tagger
  */
 class FileMorphoStream : public MorphoStream {
 private:
@@ -77,18 +77,18 @@ private:
   void lrlmClassify(wstring const &str, int &ivwords);
 public:
 
-   /** Constructor 
+   /** Constructor
     *  @param is the input stream.
     */
    FileMorphoStream(FILE *ftxt, bool d, TaggerData *t);
-  
-   /** 
-    *  Destructor 
+
+   /**
+    *  Destructor
     */
    ~FileMorphoStream();
-  
+
    /** See interface */
-   TaggerWord* get_next_word();  
+   TaggerWord* get_next_word();
    void setNullFlush(bool nf);
    bool getEndOfFile(void);
    void setEndOfFile(bool eof);

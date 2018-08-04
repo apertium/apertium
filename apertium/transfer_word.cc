@@ -99,7 +99,7 @@ TransferWord::target(ApertiumRE const &part, bool with_queue)
 }
 
 void
-TransferWord::setSource(ApertiumRE const &part, string const &value, 
+TransferWord::setSource(ApertiumRE const &part, string const &value,
 			bool with_queue)
 {
   if(with_queue)
@@ -115,7 +115,7 @@ TransferWord::setSource(ApertiumRE const &part, string const &value,
 }
 
 void
-TransferWord::setTarget(ApertiumRE const &part, string const &value, 
+TransferWord::setTarget(ApertiumRE const &part, string const &value,
 			bool with_queue)
 {
   if(with_queue)

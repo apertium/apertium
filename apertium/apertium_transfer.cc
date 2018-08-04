@@ -54,7 +54,7 @@ void message(char *progname)
   wcerr << "  -T         trace, for apertium-transfer-tools (also sets -t)" << endl;
   wcerr << "  -z         null-flushing output on '\0'" << endl;
   wcerr << "  -h         shows this message" << endl;
-  
+
 
   exit(EXIT_FAILURE);
 }
@@ -79,9 +79,9 @@ FILE * open_input(string const &filename)
     wcerr << filename.c_str() << "'." << endl;
     exit(EXIT_FAILURE);
   }
-  
+
   return input;
-}  
+}
 
 FILE * open_output(string const &filename)
 {
@@ -98,7 +98,7 @@ FILE * open_output(string const &filename)
 int main(int argc, char *argv[])
 {
   LtLocale::tryToSetLocale();
- 
+
   Transfer t;
 
   int option_index=0;
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
     int c=getopt_long(argc, argv, "nbx:cztTh", long_options, &option_index);
     if (c==-1)
       break;
-      
+
     switch (c)
     {
       case 'b':
@@ -131,24 +131,24 @@ int main(int argc, char *argv[])
       case 'n':
         t.setUseBilingual(false);
         break;
-        
+
       case 'x':
         t.setExtendedDictionary(optarg);
         break;
-        
+
       case 'c':
         t.setCaseSensitiveness(true);
         break;
-      
+
       case 't':
         t.setTrace(true);
         break;
-      
+
       case 'T':
         t.setTrace(true);
         t.setTraceATT(true);
         break;
-      
+
       case 'z':
         t.setNullFlush(true);
         break;
@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
       default:
         message(argv[0]);
         break;
-    }    
+    }
   }
 
   FILE *input = stdin, *output = stdout;
@@ -172,7 +172,7 @@ int main(int argc, char *argv[])
       testfile(argv[argc-5]);
       t.read(argv[argc-5], argv[argc-4], argv[argc-3]);
       break;
-      
+
     case 5:
       if(t.getUseBilingual() == false || t.getPreBilingual() == true)
       {
@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
         t.read(argv[argc-4], argv[argc-3], argv[argc-2]);
       }
       break;
-      
+
     case 4:
       if(t.getUseBilingual() == false || t.getPreBilingual() == true)
       {
@@ -220,17 +220,17 @@ int main(int argc, char *argv[])
         message(argv[0]);
       }
       break;
-    
+
     default:
       message(argv[0]);
       break;
-  }  
-  
+  }
+
 #ifdef _MSC_VER
   _setmode(_fileno(input), _O_U8TEXT);
   _setmode(_fileno(output), _O_U8TEXT);
-#endif 
+#endif
 
   t.transfer(input, output);
-  return EXIT_SUCCESS; 
+  return EXIT_SUCCESS;
 }

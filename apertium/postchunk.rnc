@@ -1,22 +1,22 @@
 # Copyright (C) 2005 Universitat d'Alacant / Universidad de Alicante
-# 
+#
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
 # published by the Free Software Foundation; either version 2 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
-# 
-#  Draft of DTD for the structural transfer rule files 
-# 
-#  Sergio Ortiz, Gema Ramírez-Sánchez, Mireia Ginestí, Mikel L. Forcada, 
-#  2005.07.29. 
+#
+#  Draft of DTD for the structural transfer rule files
+#
+#  Sergio Ortiz, Gema Ramírez-Sánchez, Mireia Ginestí, Mikel L. Forcada,
+#  2005.07.29.
 
 condition =
   and
@@ -56,7 +56,7 @@ postchunk =
   }
 attlist.postchunk &= empty
 # 'postchunk' is the root element containing the whole structural
-# postchunk rule file.  
+# postchunk rule file.
 section-def-cats =
   element section-def-cats { attlist.section-def-cats, def-cat+ }
 attlist.section-def-cats &= empty
@@ -70,19 +70,19 @@ attlist.def-cat &=
 # category items and has a unique name 'n', which is mandatory
 cat-item = element cat-item { attlist.cat-item, empty }
 attlist.cat-item &= attribute name { text }
-# In addition, a required attribute, "name", is used to specify 
+# In addition, a required attribute, "name", is used to specify
 # wich chunk name is detected by this cat-item
 section-def-attrs =
   element section-def-attrs { attlist.section-def-attrs, def-attr+ }
 attlist.section-def-attrs &= empty
 # The 'def-attrs' section defines the attributes that will be
-# identified in matched lexical forms 
+# identified in matched lexical forms
 def-attr = element def-attr { attlist.def-attr, attr-item+ }
 attlist.def-attr &=
   attribute n { xsd:ID },
   attribute c { text }?
 # Each def-attr defines one attribute in terms of a list of
-# attribute items and has a mandatory unique name n 
+# attribute items and has a mandatory unique name n
 attr-item = element attr-item { attlist.attr-item, empty }
 attlist.attr-item &=
   attribute tags { text }?,
@@ -111,18 +111,18 @@ def-list = element def-list { attlist.def-list, list-item+ }
 attlist.def-list &=
   attribute n { xsd:ID },
   attribute c { text }?
-# The 'def-list' element defines a named list to search with the 'in' 
+# The 'def-list' element defines a named list to search with the 'in'
 # element.  Attribute 'n' sets the name of the list
 list-item = element list-item { attlist.list-item, empty }
 attlist.list-item &=
   attribute v { text },
   attribute c { text }?
-# Attribute 'v' of 'list-item' element contains the value to be added to 
-# the list being defined     
+# Attribute 'v' of 'list-item' element contains the value to be added to
+# the list being defined
 section-def-macros =
   element section-def-macros { attlist.section-def-macros, def-macro+ }
 attlist.section-def-macros &= empty
-# 
+#
 # The 'def-macros' section defines macros containing portions of
 # code frequently used in the action part of rules
 #
@@ -132,9 +132,9 @@ attlist.def-macro &=
   attribute npar { text },
   attribute c { text }?
 # Macro definition:
-# 
+#
 # A macro has a mandatory name (the value of 'n'), a number of parameters
-# (the value of 'npar') and a body containing arguments and statements.  
+# (the value of 'npar') and a body containing arguments and statements.
 section-rules = element section-rules { attlist.section-rules, rule+ }
 attlist.section-rules &= empty
 # The rules section contains a sequence of one or more rules
@@ -148,10 +148,10 @@ attlist.rule &= attribute c { text }?
 pattern = element pattern { attlist.pattern, pattern-item }
 attlist.pattern &= empty
 # The pattern is specified in terms of pattern items, each one
-# representing a lexical form in the matched pattern 
+# representing a lexical form in the matched pattern
 pattern-item = element pattern-item { attlist.pattern-item, empty }
 attlist.pattern-item &= attribute n { xsd:IDREF }
-# Each attribute to be activated is referred to by its name in the def-cats section 
+# Each attribute to be activated is referred to by its name in the def-cats section
 action = element action { attlist.action, sentence* }
 attlist.action &= attribute c { text }?
 # Encloses the procedural part of a rule
@@ -159,31 +159,31 @@ choose = element choose { attlist.choose, when+, otherwise? }
 attlist.choose &= attribute c { text }?
 # The choose statement is a selection statement (similar to a case
 # statement) composed of one or more tested cases and an optional
-# otherwise 
+# otherwise
 when = element when { attlist.when, test, sentence* }
 attlist.when &= attribute c { text }?
-# Each tested case is a block of zero or more statements 
+# Each tested case is a block of zero or more statements
 otherwise = element otherwise { attlist.otherwise, sentence+ }
 attlist.otherwise &= attribute c { text }?
-# The otherwise case is also a block of one or more statements 
+# The otherwise case is also a block of one or more statements
 test = element test { attlist.test, condition }
 attlist.test &= attribute c { text }?
 # The test in a tested case may be a conjunction, a disjunction, or
 # a negation of simpler tests, as well as a simple equality test
 and = element and { attlist.and, condition, condition+ }
 attlist.and &= empty
-# Each conjuntion test contains two or more simpler tests 
+# Each conjuntion test contains two or more simpler tests
 or = element or { attlist.or, condition, condition+ }
 attlist.or &= empty
-# Each disjunction test contains two or more simpler tests 
+# Each disjunction test contains two or more simpler tests
 not = element not { attlist.not, condition }
 attlist.not &= empty
-# The negation of a simpler test is a test itself 
+# The negation of a simpler test is a test itself
 equal = element equal { attlist.equal, value, value }
 attlist.equal &= attribute caseless { "no" | "yes" }?
 # The simplest test is an equality test. The right part and the
 # left part of the equality may both be a clip (see below), a
-# literal string ('lit'), a literal tag ('lit-tag') or the value of 
+# literal string ('lit'), a literal tag ('lit-tag') or the value of
 # a variable ('var') defined in the def-vars section.  When the attribute
 # 'caseless' is set to 'yes', the comparison is made without attending
 # to the case.
@@ -191,7 +191,7 @@ begins-with = element begins-with { attlist.begins-with, value, value }
 attlist.begins-with &= attribute caseless { "no" | "yes" }?
 # Tests if the left part contains the right part at the beginning.
 # Both parts of the test may both be a clip (see below), a
-# literal string ('lit'), a literal tag ('lit-tag') or the value of 
+# literal string ('lit'), a literal tag ('lit-tag') or the value of
 # a variable ('var') defined in the def-vars section.  When the attribute
 # 'caseless' is set to 'yes', the comparison is made without attending
 # to the case.
@@ -199,7 +199,7 @@ ends-with = element ends-with { attlist.ends-with, value, value }
 attlist.ends-with &= attribute caseless { "no" | "yes" }?
 # Tests if the left part contains the right part at the end.
 # Both parts of the test may both be a clip (see below), a
-# literal string ('lit'), a literal tag ('lit-tag') or the value of 
+# literal string ('lit'), a literal tag ('lit-tag') or the value of
 # a variable ('var') defined in the def-vars section.  When the attribute
 # 'caseless' is set to 'yes', the comparison is made without attending
 # to the case.
@@ -208,7 +208,7 @@ begins-with-list =
 attlist.begins-with-list &= attribute caseless { "no" | "yes" }?
 # Tests if the left part contains the right part at the beginning.
 # First parts of the test may be a clip (see below), a
-# literal string ('lit'), a literal tag ('lit-tag') or the value of 
+# literal string ('lit'), a literal tag ('lit-tag') or the value of
 # a variable ('var') defined in the def-vars section. The second part
 # must be always a list.  When the attribute
 # 'caseless' is set to 'yes', the comparison is made without attending
@@ -218,7 +218,7 @@ ends-with-list =
 attlist.ends-with-list &= attribute caseless { "no" | "yes" }?
 # Tests if the left part contains the right part at the end.
 # First parts of the test may be a clip (see below), a
-# literal string ('lit'), a literal tag ('lit-tag') or the value of 
+# literal string ('lit'), a literal tag ('lit-tag') or the value of
 # a variable ('var') defined in the def-vars section. The second part
 # must be always a list.  When the attribute
 # 'caseless' is set to 'yes', the comparison is made without attending
@@ -230,7 +230,7 @@ contains-substring =
 attlist.contains-substring &= attribute caseless { "no" | "yes" }?
 # Tests if the left part contains the right part.
 # Both parts of the test may both be a clip (see below), a
-# literal string ('lit'), a literal tag ('lit-tag') or the value of 
+# literal string ('lit'), a literal tag ('lit-tag') or the value of
 # a variable ('var') defined in the def-vars section.  When the attribute
 # 'caseless' is set to 'yes', the comparison is made without attending
 # to the case.
@@ -245,14 +245,14 @@ attlist.list &= attribute n { xsd:IDREF }
 let = element let { attlist.let, container, value }
 attlist.let &= empty
 # An assignment statement ('let') assigns the value of a clip (see
-# below), a literal string ('lit'), a literal tag('lit-tag') or the 
-# value of a global variable ('var') to either a global variable ('var') 
+# below), a literal string ('lit'), a literal tag('lit-tag') or the
+# value of a global variable ('var') to either a global variable ('var')
 # or a clip
 append = element append { attlist.append, value+ }
 attlist.append &= attribute n { xsd:IDREF }
 # This instruction appends the value of a clip (see
-# below), a literal string ('lit'), a literal tag('lit-tag') or the 
-# value of a global variable ('var') to either a global variable ('var') 
+# below), a literal string ('lit'), a literal tag('lit-tag') or the
+# value of a global variable ('var') to either a global variable ('var')
 # or a clip, identified by the "n" attribute
 out = element out { attlist.out, (b | lu | mlu | var)+ }
 attlist.out &= attribute c { text }?
@@ -260,7 +260,7 @@ attlist.out &= attribute c { text }?
 modify-case =
   element modify-case { attlist.modify-case, container, stringvalue }
 attlist.modify-case &= empty
-# The first argument of 'modify-case' copy the case of the second 
+# The first argument of 'modify-case' copy the case of the second
 # argument.
 call-macro = element call-macro { attlist.call-macro, with-param* }
 attlist.call-macro &= attribute n { xsd:IDREF }
@@ -274,7 +274,7 @@ attlist.with-param &= attribute pos { text }
 # it may be used with arguments 1 and 2 in a noun-adjective rule,
 # with arguments 2, 3 and 1 in a determiner-noun-adjective rule, with
 # arguments 1 and 3 in a noun-adverb-adjective rule, and with
-# arguments 2 and 1 in an adjective-noun rule 
+# arguments 2 and 1 in an adjective-noun rule
 clip = element clip { attlist.clip, empty }
 attlist.clip &=
   attribute pos { text },
@@ -282,10 +282,10 @@ attlist.clip &=
   attribute c { text }?
 # A 'clip' is a substring of a source-language or target-language
 # lexical form, extracted according to an attribute:
-# 
+#
 # * 'pos' is an index (1, 2, 3...) used to select a lexical form
 #    inside the rule;
-# 
+#
 # * the value of 'part' is the name of an attribute defined in
 #   def-attrs, but may take also the values 'lem' (referring to
 #   the lemma of the lexical form), 'lemh' (lemma head), 'lemq'
@@ -305,7 +305,7 @@ attlist.var &= attribute n { xsd:IDREF }
 # of the variable. When it is in an 'out', a 'test', or the right
 # part of a 'let', it represents the value of the variable; when in
 # the left part of a 'let' it represents the reference of the
-# variable. 
+# variable.
 get-case-from =
   element get-case-from { attlist.get-case-from, (clip | lit | var) }
 attlist.get-case-from &= attribute pos { text }
@@ -315,13 +315,13 @@ case-of = element case-of { attlist.case-of, empty }
 attlist.case-of &=
   attribute pos { text },
   attribute part { text }
-# A 'case-of' is a value representing the case of a "clip".  This value 
+# A 'case-of' is a value representing the case of a "clip".  This value
 # will be "aa" (all lowercase), "Aa" (first uppercase) and "AA",
 # (all uppercase).
-# 
+#
 # * 'pos' is an index (1, 2, 3...) used to select a lexical form
 #    inside the rule;
-# 
+#
 # * the value of 'part' is the name of an attribute defined in
 #   def-attrs, but may take also the values 'lem' (referring to
 #   the lemma of the lexical form), 'lemh' (lemma head), 'lemq'

@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Copyright (C) 2005 Universitat d'Alacant / Universidad de Alicante
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License as
   published by the Free Software Foundation; either version 2 of the
   License, or (at your option) any later version.
-  
+
   This program is distributed in the hope that it will be useful, but
   WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
   General Public License for more details.
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, see <http://www.gnu.org/licenses/>.
-  
+
      DTD for the format specification files
      Sergio Ortiz  2005.05.13
 -->
@@ -102,7 +102,7 @@
     <attribute name="regexp"/>
   </define>
   <!--
-    The attribute regexp defines (whith a _flex_ regular expression) how 
+    The attribute regexp defines (whith a _flex_ regular expression) how
     take a tag name from a whole tag. '\'
   -->
   <define name="escape-chars">
@@ -128,7 +128,7 @@
     <attribute name="regexp"/>
   </define>
   <!--
-    Define the space characters (in regexp) with a _flex_ regular 
+    Define the space characters (in regexp) with a _flex_ regular
     expression
   -->
   <define name="case-sensitive">
@@ -146,7 +146,7 @@
     </attribute>
   </define>
   <!--
-    The attribute 'value' is set to 'yes' if the case is relevant in the 
+    The attribute 'value' is set to 'yes' if the case is relevant in the
     specification of the format.  Otherwise is set to 'no'
   -->
   <define name="rules">
@@ -164,7 +164,7 @@
     <empty/>
   </define>
   <!--
-    Group the rules of processing format and the rules of substitute 
+    Group the rules of processing format and the rules of substitute
     expressions by characters that are part of the text
   -->
   <define name="format-rule">
@@ -206,11 +206,11 @@
   </define>
   <!--
     Format rule parent element.  It may include a 'tag' element or
-    a couple of elements 'begin', 'end'.  In the first case, this element is 
-    considered to be part of the format.  In the second case, the begin and 
+    a couple of elements 'begin', 'end'.  In the first case, this element is
+    considered to be part of the format.  In the second case, the begin and
     the end element are considered to enclosing format.  The attribute
     'eos' (end of sentence) is set to 'yes' if that rule defines a dot in
-    the text being processed (is no by default).  The attribute 'priority' 
+    the text being processed (is no by default).  The attribute 'priority'
     marks the order of precedence of the rule
   -->
   <define name="tag">
@@ -297,7 +297,7 @@
 </grammar>
 <!--
   Replacement rule.  The 'source' is a string of one or more characters.
-  The 'target' MUST be a single character.  The 'prefer' attribute, when 
-  set to 'yes' defines the preferred reverse translation of the 
+  The 'target' MUST be a single character.  The 'prefer' attribute, when
+  set to 'yes' defines the preferred reverse translation of the
   replacement.
 -->

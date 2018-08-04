@@ -515,8 +515,8 @@ case "$FORMAT" in
     translate_line
     exit 0
     ;;
-  
-  
+
+
   docx)
     if [ "$UWORDS" = "no" ]; then OPTION="-n";
     else OPTION="-g";
@@ -545,14 +545,14 @@ case "$FORMAT" in
     translate_htmlnoent
     exit 0
     ;;
-  
+
   wxml)
     if [ "$UWORDS" = "no" ]; then OPTION="-n";
     else OPTION="-g";
     fi;
     locale_utf8
     ;;
-  
+
   txtu)
     FORMAT="txt";
     OPTION="-n"

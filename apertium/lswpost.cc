@@ -86,7 +86,7 @@ LSWPoST::LSWPoST() {}
 
 LSWPoST::LSWPoST(TaggerDataLSW t) {
   tdlsw = t;
-  eos = (tdlsw.getTagIndex())[L"TAG_SENT"];  
+  eos = (tdlsw.getTagIndex())[L"TAG_SENT"];
 }
 
 LSWPoST::~LSWPoST() {}
@@ -94,9 +94,9 @@ LSWPoST::~LSWPoST() {}
 LSWPoST::LSWPoST(TaggerDataLSW *tdlsw) : tdlsw(*tdlsw) {}
 
 void
-LSWPoST::set_eos(TTag t) { 
-  eos = t; 
-} 
+LSWPoST::set_eos(TTag t) {
+  eos = t;
+}
 
 void
 LSWPoST::init_probabilities(MorphoStream &morpho_stream) {
@@ -108,7 +108,7 @@ LSWPoST::init_probabilities(MorphoStream &morpho_stream) {
   set<TTag>::iterator iter_left, iter_mid, iter_right;
   vector<vector<vector<double> > > para_matrix(N, vector<vector<double> >(N, vector<double>(N, 0)));
   int num_valid_seq = 0;
-  
+
   word = new TaggerWord();          // word for tags left
   word->add_tag(eos, L"sent", tdlsw.getPreferRules());
   tags_left = word->get_tags();     // tags left
@@ -329,13 +329,13 @@ LSWPoST::print_para_matrix() {
   }
 }
 
-void 
+void
 LSWPoST::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First) {
   TaggerWord *word_left = NULL, *word_mid = NULL, *word_right = NULL;
   set<TTag> tags_left, tags_mid, tags_right;
   set<TTag>::iterator iter_left, iter_mid, iter_right;
-  morpho_stream.setNullFlush(null_flush);                      
- 
+  morpho_stream.setNullFlush(null_flush);
+
   word_left = new TaggerWord();          // word left
   word_left->add_tag(eos, L"sent", tdlsw.getPreferRules());
   word_left->set_show_sf(show_sf);
@@ -387,7 +387,7 @@ LSWPoST::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First) {
       fflush(Output);
       morpho_stream.setEndOfFile(false);
     }
-  
+
     delete word_left;
     word_left = word_mid;
     tags_left = tags_mid;

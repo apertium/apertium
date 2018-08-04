@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2006 Universitat d'Alacant / Universidad de Alicante
- * 
+ *
  * author: Felipe Sánchez-Martínez
  *
  * This program is free software; you can redistribute it and/or
@@ -107,7 +107,7 @@ int main(int argc, char* argv[]) {
     c=getopt_long(argc, argv, "r:p:w:a:e:dhv",long_options, &option_index);
     if (c==-1)
       break;
-      
+
     switch (c) {
       //case 'i':
       //in_file=optarg;
@@ -141,7 +141,7 @@ int main(int argc, char* argv[]) {
     case 'd':
       LexTor::debug=true;
       break;
-    case 'h': 
+    case 'h':
       help(argv[0]);
       exit(EXIT_SUCCESS);
       break;
@@ -161,7 +161,7 @@ int main(int argc, char* argv[]) {
 	  <<"   You should have received a copy of the GNU General Public License\n"
 	  <<"   along with this program; if not, see <http://www.gnu.org/licenses/>.\n";
       exit(EXIT_SUCCESS);
-      break;    
+      break;
     default:
       help(argv[0]);
       exit(EXIT_FAILURE);
@@ -200,7 +200,7 @@ int main(int argc, char* argv[]) {
     //  help(argv[0]);
     //  exit(EXIT_FAILURE);
     //}
- 
+
     if (model_file=="") {
       wcerr<<"Error: No model file was given\n";
       help(argv[0]);
@@ -375,5 +375,5 @@ int main(int argc, char* argv[]) {
     lteval.print_evaluation();
 
     fref.close();
-  } 
+  }
 }

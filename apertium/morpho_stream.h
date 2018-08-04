@@ -14,10 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-/** 
+/**
  *  Word class and MorphoStream class definitions
  *
- *  @author	Felipe Sánchez-Martínez 
+ *  @author	Felipe Sánchez-Martínez
  */
 
 #ifndef __MORPHOSTREAM_H
@@ -39,31 +39,31 @@
 
 using namespace std;
 
-/** Class MorphoStream.  
- *  This class processes the output of class  yyFlexLexer (lex.yy.cc), and 
- *  builds the TaggerWord objects managed by the tagger 
+/** Class MorphoStream.
+ *  This class processes the output of class  yyFlexLexer (lex.yy.cc), and
+ *  builds the TaggerWord objects managed by the tagger
  */
 class MorphoStream {
 public:
    virtual ~MorphoStream();
    /** Get next word in the input stream
-    *  @return  A pointer to the next word in the input stream 
+    *  @return  A pointer to the next word in the input stream
     */
    virtual TaggerWord* get_next_word() = 0;
-   
-   /** 
+
+   /**
     * Set up the flag to detect '\0' characters
     * @param nf the null_flush value
     */
    virtual void setNullFlush(bool nf) = 0;
-   
+
    /**
-    * Return true if the last reading is end of file of '\0' when null_flush 
+    * Return true if the last reading is end of file of '\0' when null_flush
     * is true
     * @returns the value of end_of_file
     */
    virtual bool getEndOfFile(void) = 0;
-   
+
    /**
     * Sets a new value for the end_of_file_flag
     * @param eof the new value for end_of_file

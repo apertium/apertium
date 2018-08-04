@@ -21,7 +21,7 @@ namespace TMXAligner
 {
 
 // A simple tree class.
-// 
+//
 template <class Atom, class Identifier>
 class DicTree
 {
@@ -53,11 +53,11 @@ const bool DicTree<Atom,Identifier>::WarnOnConflict = false;
 
 // This structure stores a very sparse set-system of words.
 // (A dictionary of complex expressions.)
-// 
+//
 // It supports the following query:
-// It receives a set of words S. It gives back the sets 
+// It receives a set of words S. It gives back the sets
 // of the set system that are contained in this set S.
-// 
+//
 // For it to be effective, we must be careful during the building phase:
 // words in vector 'words' must be ordered by INCREASING frequency. Rare words first.
 
@@ -185,7 +185,7 @@ void SubsetLookup<Atom, Identifier>::lookup( const Atoms& words, std::set<Identi
     for ( typename Pebbles::const_iterator jt=pebbles.begin(); jt!=pebbles.end(); ++jt )
     {
       const DicTree<Atom, Identifier>* subTree = (*jt)->lookup(word) ;
-      
+
       if (!subTree)
         continue;
 

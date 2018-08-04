@@ -303,7 +303,7 @@ StreamedType Stream::get() {
           continue;
         case L'/':
         case L'#':
-          //std::wcerr << L"[306] Character: " << Character_ << L"||| Lemma: " << Lemma << std::endl ; 
+          //std::wcerr << L"[306] Character: " << Character_ << L"||| Lemma: " << Lemma << std::endl ;
         case L'+':
           if (ThePreviousCase->isPreviousCharacter) {
             std::wstringstream Message;
@@ -388,7 +388,7 @@ StreamedType Stream::get() {
 
         std::abort();
       case L'#':
-        //std::wcerr << L"[391] Character: " << Character_ << L"||| Lemma: " << Lemma << std::endl ; 
+        //std::wcerr << L"[391] Character: " << Character_ << L"||| Lemma: " << Lemma << std::endl ;
         if (ThePreviousCase) {
           switch (ThePreviousCase->ThePreviousCase) {
           case L'[':
@@ -437,7 +437,7 @@ StreamedType Stream::get() {
 
           ThePreviousCase = PreviousCaseType(Character_);
           push_back_Character(TheStreamedType, Lemma, Character_);
-          //std::wcerr << L"[440] Character: " << Character_ << L"||| Lemma: " << Lemma << std::endl ; 
+          //std::wcerr << L"[440] Character: " << Character_ << L"||| Lemma: " << Lemma << std::endl ;
           continue;
         }
 

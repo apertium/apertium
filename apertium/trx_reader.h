@@ -42,7 +42,7 @@ private:
 
   void destroy();
   void clearTagIndex();
-  
+
   void procTransfer();
   void procDefCats();
   void procDefAttrs();
@@ -51,7 +51,7 @@ private:
   void procDefMacros();
   void procRules();
 
-  void insertCatItem(wstring const &name, wstring const &lemma, 
+  void insertCatItem(wstring const &name, wstring const &lemma,
 		     wstring const &tags);
   void insertAttrItem(wstring const &name, wstring const &tags);
   void createVar(wstring const &name, wstring const &initial_value);

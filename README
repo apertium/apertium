@@ -7,7 +7,7 @@ Requirements
 * This package needs the package [lttoolbox-3.5][1] installed in the
 system, as well as `libxml` and `libpcre`.
 
-See http://www.apertium.org and http://wiki.apertium.org for more information 
+See http://www.apertium.org and http://wiki.apertium.org for more information
 on installing.
 
 Description

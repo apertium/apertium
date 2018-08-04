@@ -1,7 +1,7 @@
 
 if [ $# != 4 ]
 then echo "USAGE: $(basename $0) <dada_dir> <translation_dir> <input_file> <output_file>" 1>&2
-     echo "where <data_dir> is the path to the linguistic data to use" 1>&2 
+     echo "where <data_dir> is the path to the linguistic data to use" 1>&2
      echo "      <translation_dir> is the translation direction to use" 1>&2
      echo "      <input_file> contains a large corpus in raw format" 1>&2
      echo "      <output_file> is the file to which the preprocessed corpus is written" 1>&2
@@ -40,14 +40,14 @@ awk 'BEGIN{FS="\\$"} #Discards characters not belonging to apertium words
   for (j=1; j<=NF; j++) {
     w=$j;
     w=substr(w,index(w,"^"));
-            
-    if ((length(w)>0) && (index(w,"^")>0)) {                    
+
+    if ((length(w)>0) && (index(w,"^")>0)) {
       if (length(c)>0)
-        c = c " ";                                  
+        c = c " ";
       c = c w "$";
     }
   }
-  
+
   print c;
 }' >  $OUTFILE
 

@@ -1,7 +1,7 @@
 .TH apertium-destxt 1 2006-03-21 "" ""
 .SH NAME
 apertium-destxt \- This application is part of (
-.B apertium 
+.B apertium
 )
 .PP
 This tool is part of the apertium open-source machine translation toolbox: \fBhttp://www.apertium.org\fR.
@@ -11,8 +11,8 @@ This tool is part of the apertium open-source machine translation toolbox: \fBht
 [ <input file> [ <output file> ] ]
 .PP
 .SH DESCRIPTION
-.BR apertium-destxt 
-is an text format processor. Data should be passed through this 
+.BR apertium-destxt
+is an text format processor. Data should be passed through this
 processor before being piped to lt-proc. The program takes input
 in the form of a text file and produces output suitable for
 processing with lt-proc. Format information (newlines, tabs, etc.) is enclosed in brackets so that lt-proc treats it as whitespace between words.
@@ -28,7 +28,7 @@ Suppresses the addition of a trailing sentence terminator.
 .PP
 .SH EXAMPLE
 .TP
-You could write the following to show how the word "gener" is analysed: 
+You could write the following to show how the word "gener" is analysed:
 .TP
 echo "gener" | apertium-destxt | lt-proc ca-es.automorf.bin
 .PP

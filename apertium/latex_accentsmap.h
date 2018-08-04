@@ -47,7 +47,7 @@ class AccentsMap {
 		~AccentsMap();
 
 		// Optionally
-		void init_locale(); 
+		void init_locale();
 
 		// The getter for both directions depending on init.
 		wstring get(wstring input);

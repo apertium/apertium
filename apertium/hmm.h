@@ -53,16 +53,16 @@ class HMM : public Apertium::FILE_Tagger {
 private:
    TaggerDataHMM tdhmm;
    TTag eos; // end-of-sentence tag
-   
+
    /** It allocs memory for the transition (a) and the emission (b) matrices.
     *  Before calling this method the number of ambiguity classes must be known.
     *  This methos is called within read_ambiguity_classes and scan_for_ambiguity_classes.
     *  @see: read_ambiguity_classes, scan_for_ambiguity_classes
     */
-   void init(); 
+   void init();
 protected:
    void post_ambg_class_scan();
-public:  
+public:
    TaggerData& get_tagger_data();
    void deserialise(FILE *Serialised_FILE_Tagger);
    std::vector<std::wstring> &getArrayTags();
@@ -74,7 +74,7 @@ public:
    void train(MorphoStream &morpho_stream, unsigned long count);
    HMM();
    HMM(TaggerDataHMM *tdhmm);
- 
+
    /** Constructor
     */
    HMM(TaggerDataHMM tdhmm);
@@ -82,7 +82,7 @@ public:
    /** Destructor
     */
    ~HMM();
-  
+
    /** Used to set the end-of-sentence tag
     *  @param t the end-of-sentence tag
     */
@@ -91,39 +91,39 @@ public:
    /** It reads the ambiguity classes from the stream received as
     *  input
     *  @param is the input stream
-    */  
+    */
    void read_ambiguity_classes(FILE *in);
-  
+
    /** It writes the ambiguity classes to the stream received as
     *  a parameter
     *  @param iosthe output stream
     */
    void write_ambiguity_classes(FILE *out);
-  
-   /** It reads the probabilities (matrices a and b) from the stream 
+
+   /** It reads the probabilities (matrices a and b) from the stream
     *  received as a parameter
     *  @param is the input stream
     */
    void read_probabilities(FILE *in);
 
-   /** It writes the probabilities (matrices a and b) to the stream 
+   /** It writes the probabilities (matrices a and b) to the stream
     *  received as a parameter
     *  @param os the output stream
-    */ 
+    */
    void write_probabilities(FILE *out);
-           
+
    /** It initializes the transtion (a) and emission (b) probabilities
     *  from an untagged input text by means of Kupiec's method
     *  @param is the input stream with the untagged corpus to process
     */
    void init_probabilities_kupiec(MorphoStream &lexmorfo);
-  
+
    /** It initializes the transtion (a) and emission (b) probabilities
-    *  from a tagged input text by means of the expected-likelihood 
+    *  from a tagged input text by means of the expected-likelihood
     *  estimate (ELE) method
     *  @param ftagged the input stream with the tagged corpus to process
     *  @param funtagged the same corpus to process but untagged
-    */   
+    */
    void init_probabilities_from_tagged_text(MorphoStream &stream_tagged,
                                             MorphoStream &stream_untagged);
 
@@ -132,10 +132,10 @@ public:
     *  in the involved transitions.
     */
    void apply_rules();
-   
+
    /** Unsupervised training algorithm (Baum-Welch implementation).
     *  @param morpho_stream the input stream with the untagged corpus to process
-    */  
+    */
    void train(MorphoStream &morpho_stream);
 
    /** Tagging algorithm (Viterbi implementation).
@@ -150,7 +150,7 @@ public:
    void print_A();
 
    /** Prints the B matrix.
-    */ 
+    */
    void print_B();
 
    /** Prints the ambiguity classes.

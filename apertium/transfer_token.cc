@@ -70,19 +70,19 @@ TransferToken::getType()
   return type;
 }
 
-wstring & 
+wstring &
 TransferToken::getContent()
 {
   return content;
 }
 
-void 
+void
 TransferToken::setType(TransferTokenType type)
 {
   this->type = type;
 }
 
-void 
+void
 TransferToken::setContent(wstring const &content)
 {
   this->content = content;

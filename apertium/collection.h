@@ -26,17 +26,17 @@ using namespace std;
 
 /** Collection
  *  Is an indexed set.
- */ 
+ */
 class Collection {
   map <set<int>, int> index;
   vector <const set<int> *> element;
 public:
-  /** Returns the collection's size. 
+  /** Returns the collection's size.
    */
   int size (void);
 
   /** Checks whether or not the collection has the element received as
-   *  a parameter.  
+   *  a parameter.
    *  @param t element @return true if t is not in the
    *  collection
    */
@@ -48,7 +48,7 @@ public:
   const set<int>& operator[] (int n);
 
   /** If the element received as a parameter does not appear in the
-   *  collection, it is added at the end.  
+   *  collection, it is added at the end.
    *  @param t an element @return
    *  the position in which t appears in the collection.
    */
@@ -56,10 +56,10 @@ public:
 
   /** Adds an element to the collection
    *  @param t the element to be added
-   */  
+   */
   int& add(const set<int>& t);
 
-  /** 
+  /**
    *  Write the collection contents to an output stream
    *  @param output the output stream
    */

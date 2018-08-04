@@ -38,33 +38,33 @@ fstpbil(0)
   lextor_data=NULL;
   tlmodel=NULL;
 }
-  
+
 LexTor::LexTor(const LexTor& lt) :
 fstpbil(0)
 {
   lextor_data=lt.lextor_data;
   tlmodel=lt.tlmodel;
 }
-  
+
 LexTor::~LexTor() {
 }
 
-void 
+void
 LexTor::set_lextor_data(LexTorData* ltd) {
   lextor_data=ltd;
 }
 
-void 
+void
 LexTor::set_tlmodel(LexTorData* tlm) {
   tlmodel=tlm;
 }
 
-void 
+void
 LexTor::set_bildic(FSTProcessor *fstp) {
   fstpbil=fstp;
 }
 
-void 
+void
 LexTor::trainwrd(wistream& is, int left, int right, double weigth_exponent) {
   if (lextor_data==NULL) {
     wcerr<<L"Error in LexTor::trainwrd, you must call set_lextor_data before training\n";
@@ -97,13 +97,13 @@ LexTor::trainwrd(wistream& is, int left, int right, double weigth_exponent) {
   unsigned word_index=(unsigned)left;
 
   unsigned buffer_max_size=(unsigned)(left+1+right);
-  
+
   LexTorWord *ltword;
   ltword=LexTorWord::next_word(is);
   while(ltword!=NULL) {
     if ((++nw%250000)==0)
       wcerr<<nw<<L" words processed\n";
-      
+
     if(debug) {
       wcerr<<L"Word read from corpus: "<<ltword->get_word_string()
 	  <<L", reduced: "<<lextor_data->reduce(ltword->get_word_string())<<flush;
@@ -195,8 +195,8 @@ LexTor::trainwrd(wistream& is, int left, int right, double weigth_exponent) {
   }
 }
 
-void 
-LexTor::trainlch(wistream& is, int left, int right, LexTorData& tlwordmodel, 
+void
+LexTor::trainlch(wistream& is, int left, int right, LexTorData& tlwordmodel,
                  FSTProcessor& dic, FSTProcessor& bildic, double weigth_exponent) {
   if (lextor_data==NULL) {
     wcerr<<L"Error in LexTor::trainlch, you must call set_lextor_data before training\n";
@@ -260,7 +260,7 @@ LexTor::trainlch(wistream& is, int left, int right, LexTorData& tlwordmodel,
 
     wstring reduced_word=lextor_data->reduce(ltword->get_word_string());
 
-    if (!lextor_data->is_stopword(reduced_word)) {	
+    if (!lextor_data->is_stopword(reduced_word)) {
       if (buffer.size()>=buffer_max_size) {
 	buffer.pop_front();
       }
@@ -278,12 +278,12 @@ LexTor::trainlch(wistream& is, int left, int right, LexTorData& tlwordmodel,
 	    //We translate each word in the context
 	    //Note: Words in the context can also be ambiguous (with more than one lexical choice)
 	    //In that case the count will come from all the possible
-	    //translations 
+	    //translations
         vector <vector<wstring> > translation_buffer(buffer_max_size);
 		vector <wstring> reduced_buffer(buffer_max_size);
 
 	    for (int i=0; i<(int)buffer_max_size; i++) {
-	      reduced_buffer[i]=lextor_data->reduce(buffer[i].get_word_string());	      
+	      reduced_buffer[i]=lextor_data->reduce(buffer[i].get_word_string());
 	    }
 
 	    if(debug) {
@@ -372,7 +372,7 @@ LexTor::trainlch(wistream& is, int left, int right, LexTorData& tlwordmodel,
 		    }
 
 		    double aux_vote=0;
-		    //aux_vote=tlwordmodel.vote_from_word(lexchoice_translation[*itlch], 
+		    //aux_vote=tlwordmodel.vote_from_word(lexchoice_translation[*itlch],
 		    //				    translation_buffer[i][j])*translation_weighs[j];
 		    if (tlwordmodel.get_wordcount(lexchoice_translation[*itlch])>0) {
 		      aux_vote=(tlwordmodel.vote_from_word(lexchoice_translation[*itlch],translation_buffer[i][j])/
@@ -415,7 +415,7 @@ LexTor::trainlch(wistream& is, int left, int right, LexTorData& tlwordmodel,
 	    double local_lexsumsum=0.0;
 	    for(itlch=lexical_choices.begin(); itlch!=lexical_choices.end(); itlch++) {
 	      int distance=(-1)*left;
-	      for (int i=0; i<(int)buffer_max_size; i++) { 
+	      for (int i=0; i<(int)buffer_max_size; i++) {
 		if ((i!=word_index)&&(reduced_buffer[i]!=(*itword))) {
 		  if (local_context[*itlch][reduced_buffer[i]]>0) {
 		    double cc=local_context[*itlch][reduced_buffer[i]]/sumvotes_context[reduced_buffer[i]];
@@ -451,7 +451,7 @@ LexTor::trainlch(wistream& is, int left, int right, LexTorData& tlwordmodel,
 		wcerr<<L"lechsum["<<*itlch<<L"] = "<<lechsum[*itlch]<<L"\n";
 	      }
 	    }
-	    
+
 
 	    if(debug) {
 	      wcerr<<L"\n";
@@ -462,12 +462,12 @@ LexTor::trainlch(wistream& is, int left, int right, LexTorData& tlwordmodel,
 	  }
 	}
       }
-    } 
+    }
 
     delete ltword;
     ltword=LexTorWord::next_word(is,&dic);
   }
-  
+
   wcerr<<L"Corpus has "<<nw<<L" words\n";
 
   //Set the count of each word
@@ -495,7 +495,7 @@ LexTor::trainlch(wistream& is, int left, int right, LexTorData& tlwordmodel,
 	context_v.push_back(*itm);
 	context[*itlch].erase(itm);
       }
-    
+
       sort(context_v.begin(), context_v.end(), comparer);
       wstring lch=*itlch;
       lextor_data->set_cooccurrence_context(lch, context_v);
@@ -504,7 +504,7 @@ LexTor::trainlch(wistream& is, int left, int right, LexTorData& tlwordmodel,
       //wcerr<<L"lexchoice_sum("<<lch<<L") = lexchoice_sum_target("<<lexchoice_translation[lch]<<L") ="
       //    <<tlwordmodel.get_lexchoice_sum(lexchoice_translation[lch])<<L"\n";
     }
-  } 
+  }
 
   //Set the count of each lexical choice
   map<wstring, COUNT_DATA_TYPE>::iterator itlcs;
@@ -516,10 +516,10 @@ LexTor::trainlch(wistream& is, int left, int right, LexTorData& tlwordmodel,
   }
 
 
-  wcerr<<L"Training done\n"; 
+  wcerr<<L"Training done\n";
 }
 
-void 
+void
 LexTor::lexical_selector(wistream& is, FSTProcessor &fstp, int left, int right, double weigth_exponent, LexTorEval* lteval) {
   if (lextor_data==NULL) {
     wcerr<<L"Error in LexTor::lexical_selector, you must call set_lextor_data before\n";
@@ -544,10 +544,10 @@ LexTor::lexical_selector(wistream& is, FSTProcessor &fstp, int left, int right, 
     //<<L", reduced: "<<lextor_data->reduce(ltword->get_word_string())<<L" ";
     //wcerr<<L"# lexical choices: "<<ltword->n_lexical_choices()<<L"\n";
 
-    if (!lextor_data->is_stopword(lextor_data->reduce(ltword->get_word_string()))) { 
-      if (window.size()>=(unsigned)(left+1+right)) 
+    if (!lextor_data->is_stopword(lextor_data->reduce(ltword->get_word_string()))) {
+      if (window.size()>=(unsigned)(left+1+right))
 	window.pop_front();
-      
+
       window.push_back(*ltword);
 
       if (ltword->n_lexical_choices()>1) {
@@ -555,11 +555,11 @@ LexTor::lexical_selector(wistream& is, FSTProcessor &fstp, int left, int right, 
 	if (retain>1)
 	  buffer.push_back(*ltword);
       } else {
-	if (retain>0) 
+	if (retain>0)
 	  buffer.push_back(*ltword);
 	else {
 	  wcout<<ltword->get_lexical_choice(-1,true);
-	  if (lteval) 
+	  if (lteval)
 	    lteval->evalword(*ltword, -1, lextor_data);
 	}
       }
@@ -579,15 +579,15 @@ LexTor::lexical_selector(wistream& is, FSTProcessor &fstp, int left, int right, 
 	  for(int i=0; i<(int)buffer.size(); i++)
 	    wcerr<<L"["<<buffer[i].get_word_string()<<L"] ";
 	  wcerr<<L"\n\n";
-  
+
 	}
 
 	int winner=estimate_winner_lch(window, left, weigth_exponent);
 
 	wcout<<window[left].get_lexical_choice(winner,true);
-	if (lteval) 
+	if (lteval)
 	  lteval->evalword(window[left], winner, lextor_data);
-	
+
 	//For debug
 	/*
 	  cout<<L" | ";
@@ -603,22 +603,22 @@ LexTor::lexical_selector(wistream& is, FSTProcessor &fstp, int left, int right, 
 	if(retain>0) {
 	  while ((buffer.size()>0)&&(buffer[0].n_lexical_choices()==1)) {
 	    wcout<<buffer[0].get_lexical_choice(-1,true);
-	    if (lteval) 
+	    if (lteval)
 	      lteval->evalword(buffer[0], -1, lextor_data);
 	    buffer.pop_front();
 	  }
 	  if ((buffer.size()>0)&&(buffer[0].n_lexical_choices()>1))
-	    buffer.pop_front(); 
+	    buffer.pop_front();
 
 	  retain--;
 	}
-      } 
+      }
     } else { //It's a stopword
-      if (retain>0) 
+      if (retain>0)
 	buffer.push_back(*ltword);
       else {
 	wcout<<ltword->get_lexical_choice(-1,true);
-	if (lteval) 
+	if (lteval)
 	  lteval->evalword(*ltword, -1, lextor_data);
       }
     }
@@ -651,12 +651,12 @@ LexTor::lexical_selector(wistream& is, FSTProcessor &fstp, int left, int right, 
 	if(retain>0) {
 	  while ((buffer.size()>0)&&(buffer[0].n_lexical_choices()==1)) {
 	    wcout<<buffer[0].get_lexical_choice(-1,true);
-	    if (lteval) 
+	    if (lteval)
 	      lteval->evalword(buffer[0], -1, lextor_data);
 	    buffer.pop_front();
 	  }
 	  if ((buffer.size()>0)&&(buffer[0].n_lexical_choices()>1))
-	    buffer.pop_front(); 
+	    buffer.pop_front();
 
 	  retain--;
 	}
@@ -668,7 +668,7 @@ LexTor::lexical_selector(wistream& is, FSTProcessor &fstp, int left, int right, 
   //wcerr<<L"retain: "<<retain<<L"\n";
 }
 
-int 
+int
 LexTor::estimate_winner_lch(deque<LexTorWord>& window, int word_index, double weigth_exponent) {
   //return estimate_winner_lch_cosine(window, word_index, weigth_exponent);
   return estimate_winner_lch_voting(window, word_index, weigth_exponent);
@@ -677,7 +677,7 @@ LexTor::estimate_winner_lch(deque<LexTorWord>& window, int word_index, double we
   //return -1;
 }
 
-int 
+int
 LexTor::estimate_winner_lch_voting(deque<LexTorWord>& window, int word_index, double weigth_exponent) {
   vector <double> lexchoices_count(window[word_index].n_lexical_choices());
 
@@ -715,7 +715,7 @@ LexTor::estimate_winner_lch_voting(deque<LexTorWord>& window, int word_index, do
     }
 
     int distance=(-1)*(word_index);
-    for(int j=0; j<(int)window.size(); j++) { 
+    for(int j=0; j<(int)window.size(); j++) {
       //For all words in the context window
       if(j!=word_index) {
 	COUNT_DATA_TYPE vote=0;
@@ -748,7 +748,7 @@ LexTor::estimate_winner_lch_voting(deque<LexTorWord>& window, int word_index, do
     if ((lexchoices_count[i]>0) && (lexchoices_count[i]>winner_vote)) {
       winner_vote=lexchoices_count[i];
       winner=i;
-    } 
+    }
     /*
       else if ((lexchoices_count[i]>0) && (lexchoices_count[i]==winner_vote)) {
       //Take the most probable one, the one with the highest sum
@@ -759,14 +759,14 @@ LexTor::estimate_winner_lch_voting(deque<LexTorWord>& window, int word_index, do
       }
     */
   }
-  
+
   if (debug) {
     wcerr<<L"WINNER: "<<winner<<L" "<<window[word_index].get_lexical_choice(winner)<<L"\n";
   }
   return winner;
 }
 
-int 
+int
 LexTor::estimate_winner_lch_mostprob(deque<LexTorWord>& window, int word_index,  double weigth_exponent) {
   int winner=-1;
   double greatest_sum=-1;
@@ -788,13 +788,13 @@ LexTor::estimate_winner_lch_mostprob(deque<LexTorWord>& window, int word_index, 
   if (greatest_sum==0)
     winner=-1;
 
-  if (debug) 
+  if (debug)
     wcerr<<L"WINNER: "<<winner<<L" "<<window[word_index].get_lexical_choice(winner)<<L"\n";
 
   return winner;
 }
 
-int 
+int
 LexTor::estimate_winner_lch_cosine(deque<LexTorWord>& window, int word_index, double weigth_exponent) {
   map<wstring, double> vcontext;
 
@@ -855,26 +855,26 @@ LexTor::estimate_winner_lch_cosine(deque<LexTorWord>& window, int word_index, do
   if (diff_angle<=angleth)
     winner=-1;
 
-  if (debug) 
+  if (debug)
     wcerr<<L"WINNER: "<<winner<<L" "<<window[word_index].get_lexical_choice(winner)<<L"\n";
-  
+
   return winner;
 }
 
-int 
+int
 LexTor::estimate_winner_lch_votingtl(deque<LexTorWord>& window, int word_index, double weigth_exponent) {
   if (tlmodel==NULL) {
     wcerr<<L"Error in LexTor::estimate_winner_lch_votingtl: you must call LexTor::set_tlmodel first.\n";
     exit(EXIT_FAILURE);
-  }  
+  }
 
   vector <double> lexchoices_count(window[word_index].n_lexical_choices());
   vector <vector <wstring> > translation_window (window.size());
   vector <wstring> reduced_window(window.size());
 
-  for (unsigned i=0; i<window.size(); i++) 
-    reduced_window[i]=lextor_data->reduce(window[i].get_word_string());	      
-  
+  for (unsigned i=0; i<window.size(); i++)
+    reduced_window[i]=lextor_data->reduce(window[i].get_word_string());
+
   if(debug) {
     wcerr<<L"WINDOW: ";
     for (unsigned i=0; i<window.size(); i++) {
@@ -951,17 +951,17 @@ LexTor::estimate_winner_lch_votingtl(deque<LexTorWord>& window, int word_index, 
 
 	for(unsigned j=0; j<translation_window[k].size(); j++) {
 	  double aux_vote=0;
-	  //aux_vote=tlwordmodel.vote_from_word(lexchoice_translation[*itlch], 
+	  //aux_vote=tlwordmodel.vote_from_word(lexchoice_translation[*itlch],
 	  //				    translation_buffer[i][j])*translation_weighs[j];
-	  if(debug) 
+	  if(debug)
 	    wcerr<<translation_window[word_index][i]<<L" "<<translation_window[k][j]<<L" "
 		<<tlmodel->vote_from_word(translation_window[word_index][i],translation_window[k][j])<<L" "
 		<<tlmodel->get_wordcount(translation_window[k][j])<<L" "<<translation_weighs[j]<<L"\n";
-	
+
 	  if (tlmodel->get_wordcount(translation_window[k][j])>0) {
 	    aux_vote=(tlmodel->vote_from_word(translation_window[word_index][i],translation_window[k][j])/
 		      tlmodel->get_wordcount(translation_window[k][j]))*translation_weighs[j];
-	  } 
+	  }
 	  target_vote+=aux_vote;
 
 	  if(debug) {
@@ -977,7 +977,7 @@ LexTor::estimate_winner_lch_votingtl(deque<LexTorWord>& window, int word_index, 
 
 
   if(debug) {
-    for(int i=0; i<window[word_index].n_lexical_choices(); i++) 
+    for(int i=0; i<window[word_index].n_lexical_choices(); i++)
       wcerr<<L"lexchoicecount["<<i<<L"] = "<<lexchoices_count[i]<<L"\n";
     //getchar();
   }
@@ -989,16 +989,16 @@ LexTor::estimate_winner_lch_votingtl(deque<LexTorWord>& window, int word_index, 
     if ((lexchoices_count[i]>0) && (lexchoices_count[i]>winner_vote)) {
       winner_vote=lexchoices_count[i];
       winner=i;
-    } 
+    }
   }
 
-  if (debug) 
+  if (debug)
     wcerr<<L"WINNER: "<<winner<<L" "<<window[word_index].get_lexical_choice(winner)<<L"\n";
 
   return winner;
 }
 
-double 
+double
 LexTor::cosine(map<wstring, double>& vcontext, const wstring& reduced_lexchoice) {
   map<wstring, double>::iterator itc;
 
@@ -1018,7 +1018,7 @@ LexTor::cosine(map<wstring, double>& vcontext, const wstring& reduced_lexchoice)
   //We get the module of the lexchoice vector, ||lexchoice vector||
   double module_lexchoice_vector=lextor_data->get_module_lexchoice_vector(reduced_lexchoice);
 
-  if (module_vcontext==0) { 
+  if (module_vcontext==0) {
     wcerr<<L"Error in LexTor::vectors_cosine: module_vcontext is equal to zero.\n"
 	<<L"The cosine cannot be computed\n";
     if (debug) {

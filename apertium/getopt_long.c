@@ -1,5 +1,5 @@
 /*
- * THIS IS NOT A CLEAN COPY OF GETOPT.C AND GETOPT1.C 
+ * THIS IS NOT A CLEAN COPY OF GETOPT.C AND GETOPT1.C
  *
  * Implementation of getopt_long, cobbled together from getopt.c and
  * getopt1.c from the GNU binutils distribution.  This is more-or-less

@@ -48,7 +48,7 @@ ApertiumRE::read(FILE *input)
     wcerr << L"Error reading regexp" << endl;
     exit(EXIT_FAILURE);
   }
-  
+
   empty = false;
 }
 
@@ -65,11 +65,11 @@ ApertiumRE::compile(string const &str)
     wcerr << error << endl;
     exit(EXIT_FAILURE);
   }
-  
+
   empty = false;
 }
 
-void 
+void
 ApertiumRE::write(FILE *output) const
 {
   if(empty)
@@ -77,7 +77,7 @@ ApertiumRE::write(FILE *output) const
     wcerr << L"Error, cannot write empty regexp" << endl;
     exit(EXIT_FAILURE);
   }
-  
+
   size_t size;
   int rc = pcre_fullinfo(re, NULL, PCRE_INFO_SIZE, &size);
   if(rc < 0)
@@ -85,15 +85,15 @@ ApertiumRE::write(FILE *output) const
     wcerr << L"Error calling pcre_fullinfo()\n" << endl;
     exit(EXIT_FAILURE);
   }
-  
+
   Compression::multibyte_write(size, output);
-  
+
   size_t rc2 = fwrite(re, 1, size, output);
   if(rc2 != size)
   {
     wcerr << L"Error writing precompiled regex\n" << endl;
     exit(EXIT_FAILURE);
-  }                
+  }
 }
 
 string
@@ -103,7 +103,7 @@ ApertiumRE::match(string const &str) const
   {
     return "";
   }
-  
+
   int result[3];
   int workspace[4096];
 //  int rc = pcre_exec(re, NULL, str.c_str(), str.size(), 0, PCRE_NO_UTF8_CHECK, result, 3);
@@ -121,7 +121,7 @@ ApertiumRE::match(string const &str) const
 	exit(EXIT_FAILURE);
     }
   }
-  
+
   return str.substr(result[0], result[1]-result[0]);
 }
 
@@ -132,7 +132,7 @@ ApertiumRE::replace(string &str, string const &value) const
   {
     return;
   }
-  
+
   int result[3];
   int workspace[4096];
   // int rc = pcre_exec(re, NULL, str.c_str(), str.size(), 0, PCRE_NO_UTF8_CHECK, result, 3);
@@ -143,7 +143,7 @@ ApertiumRE::replace(string &str, string const &value) const
     {
       case PCRE_ERROR_NOMATCH:
 	return;
-      
+
       default:
 	wcerr << L"Error: Unknown error matching regexp (code " << rc << L")" << endl;
 	exit(EXIT_FAILURE);

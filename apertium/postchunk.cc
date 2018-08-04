@@ -43,7 +43,7 @@ Postchunk::destroy()
   {
     xmlFreeDoc(doc);
     doc = NULL;
-  }  
+  }
 }
 
 Postchunk::Postchunk() :
@@ -71,7 +71,7 @@ Postchunk::~Postchunk()
   destroy();
 }
 
-void 
+void
 Postchunk::readData(FILE *in)
 {
   alphabet.read(in);
@@ -80,18 +80,18 @@ Postchunk::readData(FILE *in)
 
   Transducer t;
   t.read(in, alphabet.size(), false);
-  
-  map<int, int> finals;  
-  
+
+  map<int, int> finals;
+
   // finals
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
   {
     int key = Compression::multibyte_read(in);
     finals[key] = Compression::multibyte_read(in);
-  }  
-  
+  }
+
   me = new MatchExe(t, finals);
- 
+
   // attr_items
   bool recompile_attrs = Compression::string_read(in) != string(pcre_version());
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
@@ -128,15 +128,15 @@ Postchunk::readData(FILE *in)
       wstring const cad_v = Compression::wstring_read(in);
       lists[cad_k].insert(UtfConverter::toUtf8(cad_v));
       listslow[cad_k].insert(UtfConverter::toUtf8(StringUtils::tolower(cad_v)));
-    }  
-  }  
+    }
+  }
 }
 
 void
 Postchunk::read(string const &transferfile, string const &datafile)
 {
   readPostchunk(transferfile);
-  
+
   // datafile
   FILE *in = fopen(datafile.c_str(), "rb");
   if(!in)
@@ -153,15 +153,15 @@ void
 Postchunk::readPostchunk(string const &in)
 {
   doc = xmlReadFile(in.c_str(), NULL, 0);
-  
+
   if(doc == NULL)
   {
     wcerr << "Error: Could not parse file '" << in << "'." << endl;
     exit(EXIT_FAILURE);
   }
-  
+
   root_element = xmlDocGetRootElement(doc);
-  
+
   // search for macros & rules
   for(xmlNode *i = root_element->children; i != NULL; i = i->next)
   {
@@ -175,7 +175,7 @@ Postchunk::readPostchunk(string const &in)
       {
         collectRules(i);
       }
-    } 
+    }
   }
 }
 
@@ -231,7 +231,7 @@ Postchunk::checkIndex(xmlNode *element, int index, int limit)
 }
 
 
-string 
+string
 Postchunk::evalString(xmlNode *element)
 {
   map<xmlNode *, TransferInstr>::iterator it;
@@ -247,17 +247,17 @@ Postchunk::evalString(xmlNode *element)
           return word[ti.getPos()]->chunkPart(attr_items[ti.getContent()]);
         }
         break;
-        
+
       case ti_lu_count:
         return StringUtils::itoa_string(tmpword.size());
 
       case ti_var:
         return variables[ti.getContent()];
-        
+
       case ti_lit_tag:
       case ti_lit:
         return ti.getContent();
-        
+
       case ti_b:
         if(ti.getPos() >= 0 && checkIndex(element, ti.getPos(), lblank))
         {
@@ -267,7 +267,7 @@ Postchunk::evalString(xmlNode *element)
           return " ";
         }
         break;
-        
+
       case ti_get_case_from:
         if(checkIndex(element, ti.getPos(), lword))
         {
@@ -275,14 +275,14 @@ Postchunk::evalString(xmlNode *element)
                           evalString((xmlNode *) ti.getPointer()));
         }
         break;
-        
+
       case ti_case_of_tl:
         if(checkIndex(element, ti.getPos(), lword))
         {
           return caseOf(word[ti.getPos()]->chunkPart(attr_items[ti.getContent()]));
         }
         break;
-        
+
       default:
         return "";
     }
@@ -310,8 +310,8 @@ Postchunk::evalString(xmlNode *element)
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "lit-tag"))
   {
-    evalStringCache[element] = TransferInstr(ti_lit_tag, 
-                                             tags((const char *) element->properties->children->content), 0);                                            
+    evalStringCache[element] = TransferInstr(ti_lit_tag,
+                                             tags((const char *) element->properties->children->content), 0);
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "lit"))
   {
@@ -368,11 +368,11 @@ Postchunk::evalString(xmlNode *element)
 	pos = atoi((const char *) i->children->content);
       }
     }
-      
+
     evalStringCache[element] = TransferInstr(ti_case_of_tl, (const char *) part, pos);
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "concat"))
-  { 
+  {
     string value;
     for(xmlNode *i = element->children; i != NULL; i = i->next)
     {
@@ -393,7 +393,7 @@ Postchunk::evalString(xmlNode *element)
          myword.append(evalString(i));
        }
     }
-    
+
     if(myword != "")
     {
       return "^"+myword+"$";
@@ -406,15 +406,15 @@ Postchunk::evalString(xmlNode *element)
   else if(!xmlStrcmp(element->name, (const xmlChar *) "mlu"))
   {
     string value;
-     	  
+
     bool first_time = true;
-    
+
     for(xmlNode *i = element->children; i != NULL; i = i->next)
     {
       if(i->type == XML_ELEMENT_NODE)
       {
         string myword;
-	 
+
         for(xmlNode *j = i->children; j != NULL; j = j->next)
         {
           if(j->type == XML_ELEMENT_NODE)
@@ -422,7 +422,7 @@ Postchunk::evalString(xmlNode *element)
             myword.append(evalString(j));
 	  }
         }
-	      
+
 	if(!first_time)
 	{
 	  if(myword != "" && myword[0] != '#')  //'+#' problem
@@ -437,7 +437,7 @@ Postchunk::evalString(xmlNode *element)
 	    first_time = false;
           }
 	}
-	 
+
 	value.append(myword);
       }
     }
@@ -451,7 +451,7 @@ Postchunk::evalString(xmlNode *element)
       return "";
     }
   }
-  
+
   else
   {
     wcerr << "Error: unexpected rvalue expression '" << element->name << "'" << endl;
@@ -501,7 +501,7 @@ Postchunk::processOut(xmlNode *localroot)
                 myword.append(evalString(k));
               }
             }
-	      
+
             if(!first_time)
             {
               if(myword != "")
@@ -516,7 +516,7 @@ Postchunk::processOut(xmlNode *localroot)
 	        first_time = false;
               }
 	    }
-	    fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);	      
+	    fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
 	  }
         }
         fputwc_unlocked(L'$', output);
@@ -609,11 +609,11 @@ Postchunk::processLet(xmlNode *localroot)
       case ti_var:
         variables[ti.getContent()] = evalString(rightSide);
         return;
-        
+
       case ti_clip_tl:
         word[ti.getPos()]->setChunkPart(attr_items[ti.getContent()], evalString(rightSide));
-        return;      
-        
+        return;
+
       default:
         return;
     }
@@ -640,11 +640,11 @@ Postchunk::processLet(xmlNode *localroot)
 	pos = atoi((const char *) i->children->content);
       }
     }
-    
 
-    word[pos]->setChunkPart(attr_items[(const char *) part], 
+
+    word[pos]->setChunkPart(attr_items[(const char *) part],
 			    evalString(rightSide));
-    evalStringCache[leftSide] = TransferInstr(ti_clip_tl, (const char *) part, 
+    evalStringCache[leftSide] = TransferInstr(ti_clip_tl, (const char *) part,
 					      pos, NULL);
   }
 }
@@ -657,7 +657,7 @@ Postchunk::processAppend(xmlNode *localroot)
   {
     if(!xmlStrcmp(i->name, (const xmlChar *) "n"))
     {
-      name = (char *) i->children->content; 
+      name = (char *) i->children->content;
       break;
     }
   }
@@ -709,7 +709,7 @@ Postchunk::processModifyCase(xmlNode *localroot)
       }
     }
 
-    string const result = copycase(evalString(rightSide), 
+    string const result = copycase(evalString(rightSide),
 				   word[pos]->chunkPart(attr_items[(const char *) part]));
     word[pos]->setChunkPart(attr_items[(const char *) part], result);
 
@@ -737,7 +737,7 @@ Postchunk::processCallMacro(xmlNode *localroot)
       break;
     }
   }
-  
+
   if (npar <= 0)
   {
     throw "Postchunk::processCallMacro() assumes npar > 0, but got npar <= 0";
@@ -746,7 +746,7 @@ Postchunk::processCallMacro(xmlNode *localroot)
   InterchunkWord **myword = NULL;
   if(npar > 0)
   {
-    myword = new InterchunkWord *[npar+1];  
+    myword = new InterchunkWord *[npar+1];
   }
   string **myblank = NULL;
   if(npar > 0)
@@ -755,7 +755,7 @@ Postchunk::processCallMacro(xmlNode *localroot)
   }
 
   myword[0] = word[0];
-  
+
   bool indexesOK = true;
   int idx = 1;
   int lastpos = 0;
@@ -773,7 +773,7 @@ Postchunk::processCallMacro(xmlNode *localroot)
       {
         myblank[idx-1] = blank[lastpos];
       }
-      
+
       idx++;
       lastpos = pos;
     }
@@ -782,7 +782,7 @@ Postchunk::processCallMacro(xmlNode *localroot)
   swap(myword, word);
   swap(myblank, blank);
   swap(npar, lword);
-  
+
   if(indexesOK) {
     for(xmlNode *i = macro->children; i != NULL; i = i->next)
     {
@@ -814,7 +814,7 @@ Postchunk::processChoose(xmlNode *localroot)
       if(!xmlStrcmp(i->name, (const xmlChar *) "when"))
       {
         bool picked_option = false;
-        
+
 	for(xmlNode *j = i->children; j != NULL; j = j->next)
 	{
 	  if(j->type == XML_ELEMENT_NODE)
@@ -839,7 +839,7 @@ Postchunk::processChoose(xmlNode *localroot)
         if(picked_option)
         {
           return;
-        }	
+        }
       }
       else if(!xmlStrcmp(i->name, (const xmlChar *) "otherwise"))
       {
@@ -867,7 +867,7 @@ Postchunk::processLogical(xmlNode *localroot)
     return processBeginsWith(localroot);
   }
   else if(!xmlStrcmp(localroot->name, (const xmlChar *) "begins-with-list"))
-  { 
+  {
     return processBeginsWithList(localroot);
   }
   else if(!xmlStrcmp(localroot->name, (const xmlChar *) "ends-with"))
@@ -893,7 +893,7 @@ Postchunk::processLogical(xmlNode *localroot)
   else if(!xmlStrcmp(localroot->name, (const xmlChar *) "not"))
   {
     return processNot(localroot);
-  } 
+  }
   else if(!xmlStrcmp(localroot->name, (const xmlChar *) "in"))
   {
     return processIn(localroot);
@@ -911,7 +911,7 @@ Postchunk::processIn(xmlNode *localroot)
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE)
-    { 
+    {
       if(value == NULL)
       {
 	value = i;
@@ -928,7 +928,7 @@ Postchunk::processIn(xmlNode *localroot)
 
   if(localroot->properties != NULL)
   {
-    if(!xmlStrcmp(localroot->properties->children->content, 
+    if(!xmlStrcmp(localroot->properties->children->content,
 		  (const xmlChar *) "yes"))
     {
       set<string, Ltstr> &myset = listslow[(const char *) idlist];
@@ -963,7 +963,7 @@ Postchunk::processTest(xmlNode *localroot)
     {
       return processLogical(i);
     }
-  }  
+  }
   return false;
 }
 
@@ -1053,7 +1053,7 @@ bool
 Postchunk::beginsWith(string const &s1, string const &s2) const
 {
   int const limit = s2.size(), constraint = s1.size();
-  
+
   if(constraint < limit)
   {
     return false;
@@ -1073,7 +1073,7 @@ bool
 Postchunk::endsWith(string const &s1, string const &s2) const
 {
   int const limit = s2.size(), constraint = s1.size();
-  
+
   if(constraint < limit)
   {
     return false;
@@ -1193,7 +1193,7 @@ Postchunk::processBeginsWithList(xmlNode *localroot)
   string needle = evalString(first);
   set<string, Ltstr>::iterator it, limit;
 
-  if(localroot->properties == NULL || 
+  if(localroot->properties == NULL ||
      xmlStrcmp(localroot->properties->children->content, (const xmlChar *) "yes"))
   {
     it = lists[(const char *) idlist].begin();
@@ -1205,7 +1205,7 @@ Postchunk::processBeginsWithList(xmlNode *localroot)
     it = listslow[(const char *) idlist].begin();
     limit = listslow[(const char *) idlist].end();
   }
-  
+
   for(; it != limit; it++)
   {
     if(beginsWith(needle, *it))
@@ -1241,7 +1241,7 @@ Postchunk::processEndsWithList(xmlNode *localroot)
   string needle = evalString(first);
   set<string, Ltstr>::iterator it, limit;
 
-  if(localroot->properties == NULL || 
+  if(localroot->properties == NULL ||
      xmlStrcmp(localroot->properties->children->content, (const xmlChar *) "yes"))
   {
     it = lists[(const char *) idlist].begin();
@@ -1253,7 +1253,7 @@ Postchunk::processEndsWithList(xmlNode *localroot)
     it = listslow[(const char *) idlist].begin();
     limit = listslow[(const char *) idlist].end();
   }
-  
+
   for(; it != limit; it++)
   {
     if(endsWith(needle, *it))
@@ -1323,16 +1323,16 @@ Postchunk::copycase(string const &source_word, string const &target_word)
   {
     result = StringUtils::toupper(t_word);
   }
-  
+
   if(firstupper)
   {
     result[0] = towupper(result[0]);
   }
-   
+
   return UtfConverter::toUtf8(result);
 }
 
-string 
+string
 Postchunk::caseOf(string const &str)
 {
   wstring const s = UtfConverter::fromUtf8(str);
@@ -1369,7 +1369,7 @@ Postchunk::caseOf(string const &str)
   }
 }
 
-wstring 
+wstring
 Postchunk::caseOf(wstring const &str)
 {
   if(str.size() > 1)
@@ -1426,7 +1426,7 @@ Postchunk::tags(string const &str) const
       result += str[i];
     }
   }
-  
+
   result += '>';
 
   return result;
@@ -1462,7 +1462,7 @@ Postchunk::readToken(FILE *in)
       return input_buffer.add(TransferToken(content, tt_eof));
     }
     if(val == L'\\')
-    {  
+    {
       content += L'\\';
       content += wchar_t(fgetwc_unlocked(in));
     }
@@ -1503,11 +1503,11 @@ Postchunk::readToken(FILE *in)
 	{
 	  int val3 = wchar_t(fgetwc_unlocked(in));
 	  ungetwc(val3, in);
-	  
+
 	  content += L'}';
 	  if(val3 == L'$')
 	  {
-	    break;  
+	    break;
 	  }
 	}
 	else
@@ -1556,7 +1556,7 @@ Postchunk::postchunk_wrapper_null_flush(FILE *in, FILE *out)
 {
   null_flush = false;
   internal_null_flush = true;
-  
+
   while(!feof(in))
   {
     postchunk(in, out);
@@ -1567,10 +1567,10 @@ Postchunk::postchunk_wrapper_null_flush(FILE *in, FILE *out)
       wcerr << L"Could not flush output " << errno << endl;
     }
   }
-  
+
   internal_null_flush = false;
   null_flush = true;
-}    
+}
 
 void
 Postchunk::postchunk(FILE *in, FILE *out)
@@ -1579,12 +1579,12 @@ Postchunk::postchunk(FILE *in, FILE *out)
   {
     postchunk_wrapper_null_flush(in, out);
   }
-  
+
   int last = 0;
 
   output = out;
   ms.init(me->getInitial());
-  
+
   while(true)
   {
     if(ms.size() == 0)
@@ -1601,7 +1601,7 @@ Postchunk::postchunk(FILE *in, FILE *out)
 	  unchunk(*tmpword[0], output);
 	  tmpword.clear();
 	  input_buffer.setPos(last);
-	  input_buffer.next();       
+	  input_buffer.next();
 	  last = input_buffer.getPos();
 	  ms.init(me->getInitial());
 	}
@@ -1617,7 +1617,7 @@ Postchunk::postchunk(FILE *in, FILE *out)
     int val = ms.classifyFinals(me->getFinals());
     if(val != -1)
     {
-      lastrule = rule_map[val-1];      
+      lastrule = rule_map[val-1];
       last = input_buffer.getPos();
 
       if(trace)
@@ -1636,7 +1636,7 @@ Postchunk::postchunk(FILE *in, FILE *out)
     }
 
     TransferToken &current = readToken(in);
-   
+
     switch(current.getType())
     {
       case tt_word:
@@ -1699,7 +1699,7 @@ Postchunk::applyRule()
     {
       blank[i-2] = new string(UtfConverter::toUtf8(*tmpblank[i-1]));
     }
-    
+
     word[i] = new InterchunkWord(UtfConverter::toUtf8(*tmpword[i-1]));
   }
 
@@ -1770,11 +1770,11 @@ Postchunk::applyWord(wstring const &word_str)
 	  }
 	}
 	break;*/
-	
+
       case L'{':  // ignore the unmodifiable part of the chunk
         ms.step(L'$');
         return;
-	
+
       default:
 	ms.step(towlower(word_str[i]), any_char);
 	break;
@@ -1878,11 +1878,11 @@ Postchunk::unchunk(wstring const &chunk, FILE *output)
   wstring case_info = caseOf(pseudolemma(chunk));
   bool uppercase_all = false;
   bool uppercase_first = false;
- 
+
   if(case_info == L"AA")
   {
     uppercase_all = true;
-  }  
+  }
   else if(case_info == L"Aa")
   {
     uppercase_first = true;
@@ -1910,7 +1910,7 @@ Postchunk::unchunk(wstring const &chunk, FILE *output)
           if(iswdigit(chunk[i+1]))
           {
             // replace tag
-            unsigned long value = wcstoul(chunk.c_str()+i+1, 
+            unsigned long value = wcstoul(chunk.c_str()+i+1,
 					  NULL, 0) - 1;
             //atoi(chunk.c_str()+i+1)-1;
             if(vectags.size() > value)
@@ -1986,16 +1986,16 @@ Postchunk::splitWordsAndBlanks(wstring const &chunk, vector<wstring *> &words,
   bool uppercase_all = false;
   bool uppercase_first = false;
   bool lastblank = true;
- 
+
   if(case_info == L"AA")
   {
     uppercase_all = true;
-  }  
+  }
   else if(case_info == L"Aa")
   {
     uppercase_first = true;
   }
-  
+
   for(int i = beginChunk(chunk), limit = endChunk(chunk); i < limit; i++)
   {
     if(chunk[i] == L'^')
@@ -2007,7 +2007,7 @@ Postchunk::splitWordsAndBlanks(wstring const &chunk, vector<wstring *> &words,
       lastblank = false;
       wstring *myword = new wstring();
       wstring &ref = *myword;
-    
+
       while(chunk[++i] != L'$')
       {
         if(chunk[i] == L'\\')
@@ -2020,7 +2020,7 @@ Postchunk::splitWordsAndBlanks(wstring const &chunk, vector<wstring *> &words,
           if(iswdigit(chunk[i+1]))
           {
             // replace tag
-            unsigned long value = wcstoul(chunk.c_str()+i+1, 
+            unsigned long value = wcstoul(chunk.c_str()+i+1,
                                           NULL, 0) - 1;
             if(vectags.size() > value)
             {
@@ -2064,7 +2064,7 @@ Postchunk::splitWordsAndBlanks(wstring const &chunk, vector<wstring *> &words,
     }
     else if(chunk[i] == L'[')
     {
-      if (!(lastblank && blanks.back())) 
+      if (!(lastblank && blanks.back()))
       {
         blanks.push_back(new wstring());
       }

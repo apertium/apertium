@@ -18,7 +18,7 @@
     <format-rule type="empty" eos="no" priority="2">
       <tag regexp="&quot;&lt;&quot;[^&gt;]+&quot;&gt;&quot;"/>
     </format-rule>
-    
+
     <format-rule type="empty" eos="yes" priority="3">
       <tag regexp="&quot;@&quot;[^&lt;:]+&quot;:&quot;"/>
     </format-rule>

@@ -40,15 +40,15 @@ FILE * open_file(char const *filename, char const *mode)
 {
   FILE *retval;
 
-  struct stat var;  
+  struct stat var;
   if(stat(filename, &var))
   {
     wcerr << "Can't stat '" << filename << "'" << endl;
     exit(EXIT_FAILURE);
   }
- 
+
   retval = fopen(filename, mode);
-  
+
   if(!retval)
   {
     wcerr << "Can't open '" << filename << "'" << endl;
@@ -56,7 +56,7 @@ FILE * open_file(char const *filename, char const *mode)
   }
 #ifdef _MSC_VER
   _setmode(_fileno(retval), _O_U8TEXT);
-#endif   
+#endif
 
   return retval;
 }
@@ -64,35 +64,35 @@ FILE * open_file(char const *filename, char const *mode)
 int main(int argc, char *argv[])
 {
   LtLocale::tryToSetLocale();
-  
+
   if(argc < 2 || argc > 4)
   {
-    wcerr << "USAGE: " << basename(argv[0]) << " tsx_file [input [output]" << endl; 
+    wcerr << "USAGE: " << basename(argv[0]) << " tsx_file [input [output]" << endl;
     exit(EXIT_FAILURE);
   }
 
-  FILE *input = stdin, *output = stdout;  
+  FILE *input = stdin, *output = stdout;
   switch(argc)
   {
     case 4:
       output = open_file(argv[3], "w");
       // no break
-    case 3:      
+    case 3:
       input = open_file(argv[2], "r");
       // no break
     case 2:
     default:
       break;
-  }   
-  
+  }
+
   TSXReader reader;
   reader.read(argv[1]);
 
   TaggerWord::setArrayTags(reader.getTaggerData().getArrayTags());
 
-  TaggerDataHMM tdhmm(reader.getTaggerData());  
+  TaggerDataHMM tdhmm(reader.getTaggerData());
   HMM hmm(&tdhmm);
   hmm.filter_ambiguity_classes(input, output);
-  
-  return EXIT_SUCCESS;  
+
+  return EXIT_SUCCESS;
 }

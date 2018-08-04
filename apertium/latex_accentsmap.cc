@@ -32,8 +32,8 @@ AccentsMap::~AccentsMap(){
 
 void AccentsMap::init_acmap() {
 	init_camap();
-	for (acmap::iterator i = map.begin(); 
-		i != map.end(); 
+	for (acmap::iterator i = map.begin();
+		i != map.end();
 		++i)
 	{
 		map[i->second] = i->first;
@@ -93,7 +93,7 @@ void AccentsMap::init_camap() {
 
 	map[L"ñ"] = L"~n";
 	map[L"Ñ"] = L"~N";
-  
+
 	map[L"ç"] = L"cc";   // Cedilla
 	map[L"Ç"] = L"cC";
 
@@ -109,7 +109,7 @@ wstring AccentsMap::get(wstring input){
 }
 
 //Optionally:
-void AccentsMap::init_locale(){ 
+void AccentsMap::init_locale(){
 	char *locale = setlocale(LC_ALL, "");
 	std::locale lollocale(locale);
 	wcout.imbue(lollocale);

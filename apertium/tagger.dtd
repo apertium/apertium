@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<!-- 
+<!--
    Copyright (C) 2005 Universitat d'Alacant / Universidad de Alicante
-  
+
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License as
    published by the Free Software Foundation; either version 2 of the
    License, or (at your option) any later version.
-  
+
    This program is distributed in the hope that it will be useful, but
    WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    General Public License for more details.
-  
+
    You should have received a copy of the GNU General Public License
    along with this program; if not, see <http://www.gnu.org/licenses/>.
 
      DTD for the tagset and the rules to enforce the state to state
-     transition probabilities used by the part-of-speech tagger. 
+     transition probabilities used by the part-of-speech tagger.
      2005.07.29.
 -->
 
@@ -30,9 +30,9 @@
 
 <!ELEMENT tagset (def-label+,def-mult*)>
 
-<!-- 
-	The 'tagset' section defines the correspondance between simple 
-    or multiple morphological categories defining a lexical form and the coarser 
+<!--
+	The 'tagset' section defines the correspondance between simple
+    or multiple morphological categories defining a lexical form and the coarser
     ones with which the part-of-speech tagger works
 -->
 
@@ -41,8 +41,8 @@
                     c CDATA #IMPLIED
                     closed CDATA #IMPLIED>
 
-<!-- 
-	Each 'def-label' defines one coarse tag in terms of a list of fine tags 
+<!--
+	Each 'def-label' defines one coarse tag in terms of a list of fine tags
     and has a mandatory unique name. The optional attribute 'closed="true"' may be used
     to specify if the defined fine tags belong to a closed list.
     c is for comments and is ignored
@@ -54,7 +54,7 @@
 
 <!--
 	Each 'tags-item' may be a dot-separated subsequence of the morphological tags
-    corresponding to a coarse tag optionally in association with a given lemma 
+    corresponding to a coarse tag optionally in association with a given lemma
 -->
 <!ELEMENT def-mult (sequence+)>
 <!ATTLIST def-mult name CDATA #REQUIRED
@@ -63,8 +63,8 @@
 
 <!--
 	Each 'def-mult' defines one coarse tag in terms of a sequence of coarse
-    tags previously defined as 'def-labels' or a sequence of fine tags. A mandatory 
-    name is required for each 'def-mult' which may also has an optional attribute 
+    tags previously defined as 'def-labels' or a sequence of fine tags. A mandatory
+    name is required for each 'def-mult' which may also has an optional attribute
     'closed="true"' if it belongs to a closed list
     c is for comments and is ignored
 -->
@@ -72,7 +72,7 @@
 <!ELEMENT sequence ((tags-item|label-item)+)>
 
 <!--
-	Element 'sequence' encloses a set of tags or labels which defines 
+	Element 'sequence' encloses a set of tags or labels which defines
     a unit with more than one label
 -->
 
@@ -81,23 +81,23 @@
                     c CDATA #IMPLIED>
 
 <!--
-	Each 'label' of the 'label-item' correspond to a coarse tag previously 
+	Each 'label' of the 'label-item' correspond to a coarse tag previously
     defined as a 'def-label' by a name.
     c is for comments and is ignored
 -->
 
 <!ELEMENT forbid (label-sequence+)>
 
-<!--   
-	Element 'forbid' contains sequences of morphological categories that are not 
+<!--
+	Element 'forbid' contains sequences of morphological categories that are not
     allowed in a given language
 -->
 
 <!ELEMENT label-sequence (label-item+)>
 <!ATTLIST label-sequence c CDATA #IMPLIED>
 
-<!--	
-	Each 'label-sequence' is restricted to two 'label-items' 
+<!--
+	Each 'label-sequence' is restricted to two 'label-items'
     c is for comments and is ignored
 -->
 
@@ -111,8 +111,8 @@
 <!ATTLIST enforce-after label CDATA #REQUIRED
                         c CDATA #IMPLIED>
 
-<!-- 
-	Each 'enforce-after' encloses the set of coarse tags ('label-set') that must follow 
+<!--
+	Each 'enforce-after' encloses the set of coarse tags ('label-set') that must follow
     the one defined in 'label', as a mandatory attribute
     c is for comments and is ignored
 -->
@@ -120,23 +120,23 @@
 <!ELEMENT label-set (label-item+)>
 <!ATTLIST label-set c CDATA #IMPLIED>
 <!--
-	The set of 'label-items' enforced after a 'label' are enclosed inside element 'label-set'  
+	The set of 'label-items' enforced after a 'label' are enclosed inside element 'label-set'
     c is for comments and is ignored
 -->
 
 <!ELEMENT preferences (prefer+)>
 
-<!-- 	
-	Element 'preferences' allows to decide amongst two or more fine tag sequences 
-    which are grouped in the same coarse tag. 
+<!--
+	Element 'preferences' allows to decide amongst two or more fine tag sequences
+    which are grouped in the same coarse tag.
 -->
 
 <!ELEMENT prefer EMPTY>
 <!ATTLIST prefer tags CDATA #REQUIRED
                  c CDATA #IMPLIED>
 
-<!-- 
-	Each 'prefer' element has a mandatory attribute 'tags' made of a sequence of fine tags 
+<!--
+	Each 'prefer' element has a mandatory attribute 'tags' made of a sequence of fine tags
     c is for comments and is ignored
 -->
 
@@ -151,7 +151,7 @@
 <!ATTLIST discard tags CDATA #REQUIRED
                   c CDATA #IMPLIED>
 
-<!-- 
-	Each 'discard' element has a mandatory attribute 'tags' made of a sequence of fine tags 
+<!--
+	Each 'discard' element has a mandatory attribute 'tags' made of a sequence of fine tags
     c is for comments and is ignored
 -->

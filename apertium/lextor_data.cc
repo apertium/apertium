@@ -36,7 +36,7 @@ LexTorData::LexTorData() {
   word2index[NULLWORD]=0;
   n_words++;
 }
-  
+
 LexTorData::LexTorData(const LexTorData& ltd) {
   n_stopwords=ltd.n_stopwords;
   n_words=ltd.n_words;
@@ -55,7 +55,7 @@ LexTorData::LexTorData(const LexTorData& ltd) {
   lexical_choices=ltd.lexical_choices;
   reduced_lexical_choices=ltd.reduced_lexical_choices;
 }
-  
+
 LexTorData::~LexTorData() {
 }
 
@@ -71,19 +71,19 @@ LexTorData::vote_from_word(const wstring& lexical_choice, const wstring& word) {
     return lexchoice_set[ind_lexchoice][ind_word];
 }
 
-//double 
+//double
 //LexTorData::get_lexchoice_prob(const string& lexical_choice) {
 //  return lexchoice_prob[word2index[lexical_choice]];
 //}
 
 
-void 
+void
 LexTorData::set_wordcount(const wstring& word, COUNT_DATA_TYPE c) {
   WORD_DATA_TYPE ind_word=word2index[StringUtils::tolower(word)];
   wordcount[ind_word]=c;
 }
 
-COUNT_DATA_TYPE 
+COUNT_DATA_TYPE
 LexTorData::get_wordcount(const wstring& word) {
   WORD_DATA_TYPE ind_word=word2index[StringUtils::tolower(word)];
 
@@ -98,7 +98,7 @@ LexTorData::get_lexchoice_sum(const wstring& lexical_choice) {
   return lexchoice_sum[word2index[StringUtils::tolower(lexical_choice)]];
 }
 
-void 
+void
 LexTorData::set_lexchoice_sum(const wstring& lexical_choice, COUNT_DATA_TYPE sum) {
   lexchoice_sum[word2index[StringUtils::tolower(lexical_choice)]]=sum;
 }
@@ -108,7 +108,7 @@ LexTorData::is_stopword(const wstring& word) {
   return (stopwords.find(StringUtils::tolower(word))!=stopwords.end());
 }
 
-void 
+void
 LexTorData::read(FILE *is) {
   //wcerr<<"LexTorData::read------------------------------------\n";
   n_stopwords=(WORD_DATA_TYPE)Compression::multibyte_read(is);
@@ -181,7 +181,7 @@ LexTorData::read(FILE *is) {
   }
 }
 
-void 
+void
 LexTorData::write(FILE *os) {
   //wcerr<<"LexTorData::write------------------------------------\n";
   //wcerr<<n_stopwords<<"\n";
@@ -218,13 +218,13 @@ LexTorData::write(FILE *os) {
     //double prob=lexchoice_prob[lexchoice];
 
     //wcerr<<"lexchoice: "<<lexchoice<<" sum: "<<sum<<" "<<index2word[lexchoice]<<"\n";
-    Compression::multibyte_write(lexchoice, os);    
+    Compression::multibyte_write(lexchoice, os);
     //os.write(reinterpret_cast<char * const> (&prob), sizeof(double));
     EndianDoubleUtil::write(os, sum);
 
     int nwritten_words=0;
-    for(it_w_lch_set=it_lch_set->second.begin(); 
-        it_w_lch_set!=it_lch_set->second.end(); 
+    for(it_w_lch_set=it_lch_set->second.begin();
+        it_w_lch_set!=it_lch_set->second.end();
         it_w_lch_set++) {
       WORD_DATA_TYPE word=it_w_lch_set->first;
       COUNT_DATA_TYPE count=it_w_lch_set->second;
@@ -257,7 +257,7 @@ LexTorData::write(FILE *os) {
   }
 }
 
-void 
+void
 LexTorData::read_stopwords(wistream& is) {
   while (!is.eof()) {
     wstring w;
@@ -270,9 +270,9 @@ LexTorData::read_stopwords(wistream& is) {
   }
   n_stopwords=stopwords.size();
   wcerr<<L"# stopwords read from file: "<<n_stopwords<<L"\n";
-}  
+}
 
-void 
+void
 LexTorData::read_words(wistream& is) {
   while(!is.eof()) {
     wstring w;
@@ -287,7 +287,7 @@ LexTorData::read_words(wistream& is) {
   wcerr<<L"# words: "<<n_set<<L"\n";
 }
 
-void 
+void
 LexTorData::read_lexical_choices(FSTProcessor& fstp) {
   set<wstring>::iterator it;
   int nlexchoices=0;
@@ -312,19 +312,19 @@ LexTorData::get_words() {
   return words;
 }
 
-set<wstring> 
+set<wstring>
 LexTorData::get_lexical_choices(const wstring& word) {
   return lexical_choices[StringUtils::tolower(word)];
 }
 
-void 
+void
 LexTorData::set_nwords_per_set(int i){
   n_words_per_set=i;
   wcerr<<L"# words per co-ocurrence model: "<<n_words_per_set<<L"\n";
 }
 
-void 
-LexTorData::set_cooccurrence_context(const wstring& lexical_choice, 
+void
+LexTorData::set_cooccurrence_context(const wstring& lexical_choice,
                                      const vector<pair<wstring, COUNT_DATA_TYPE> >& context) {
   wcerr<<L"Co-occurrence model for lexical_choice/word: "<<lexical_choice<<L"\n";
 
@@ -380,7 +380,7 @@ LexTorData::ensure_stopwords_ok() {
   wcerr<<L"# stopwords finally taken into account: "<<n_stopwords<<L"\n";
 }
 
-wstring 
+wstring
 LexTorData::reduce(const wstring& s) {
   wstring str;
 
@@ -405,7 +405,7 @@ LexTorData::reduce(const wstring& s) {
   }
   else
     p++;
-  
+
   if (i>=p) {
     wcerr<<L"Warning in LexTorData::reduce: input string: '"<<s<<L"', string after operation: '"<<str<<L"'\n";
     wcerr<<L"begin index: "<<i<<", end index: "<<p<<L"\n";
@@ -415,7 +415,7 @@ LexTorData::reduce(const wstring& s) {
   return str.substr(i,p);
 }
 
-wstring 
+wstring
 LexTorData::reduce_lexical_choice(const wstring& s) {
   wstring str;
 
@@ -436,7 +436,7 @@ LexTorData::reduce_lexical_choice(const wstring& s) {
   return str;
 }
 
-void 
+void
 LexTorData::new_word_register(const wstring& word) {
   wstring w=StringUtils::tolower(word);
 
@@ -456,28 +456,28 @@ LexTorData::new_word_register(const wstring& word) {
 }
 
 /*
-vector<pair<WORD_DATA_TYPE, double> > 
+vector<pair<WORD_DATA_TYPE, double> >
 LexTorData::get_cooccurrence_vector(const string& lexical_choice) {
   vector<pair<WORD_DATA_TYPE, double> > v;
   WORD_DATA_TYPE ind_lexchoice=word2index[StringUtils::tolower(lexical_choice)];
   map<WORD_DATA_TYPE, COUNT_DATA_TYPE>::iterator it;
 
-  for(it=lexchoice_set[ind_lexchoice].begin(); it!= lexchoice_set[ind_lexchoice].end(); it++) 
+  for(it=lexchoice_set[ind_lexchoice].begin(); it!= lexchoice_set[ind_lexchoice].end(); it++)
     v.push_back(*it);
-  
+
   return v;
 }
 */
 
 
-double 
+double
 LexTorData::get_module_lexchoice_vector(const wstring& lexical_choice) {
   WORD_DATA_TYPE ind_lexchoice=word2index[StringUtils::tolower(lexical_choice)];
   map<WORD_DATA_TYPE, COUNT_DATA_TYPE>::iterator it;
 
   double module=0;
 
-  for(it=lexchoice_set[ind_lexchoice].begin(); it!= lexchoice_set[ind_lexchoice].end(); it++) 
+  for(it=lexchoice_set[ind_lexchoice].begin(); it!= lexchoice_set[ind_lexchoice].end(); it++)
     module+=(it->second)*(it->second);
 
   module=sqrt(module);
@@ -485,7 +485,7 @@ LexTorData::get_module_lexchoice_vector(const wstring& lexical_choice) {
   return module;
 }
 
-double 
+double
 LexTorData::cosine(const wstring& reduced_lexch1, const wstring& reduced_lexch2) {
   WORD_DATA_TYPE ind_lexchoice1=word2index[StringUtils::tolower(reduced_lexch1)];
   WORD_DATA_TYPE ind_lexchoice2=word2index[StringUtils::tolower(reduced_lexch2)];

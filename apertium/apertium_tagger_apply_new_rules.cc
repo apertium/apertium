@@ -81,15 +81,15 @@ int main(int argc, char* argv[]) {
     c=getopt_long(argc, argv, "i:o:x:hv",long_options, &option_index);
     if (c==-1)
       break;
-      
+
     switch (c) {
     case 'i':
-      filein=optarg; 
+      filein=optarg;
       break;
     case 'o':
-      fileout=optarg; 
+      fileout=optarg;
       break;
-    case 'h': 
+    case 'h':
       help(argv[0]);
       exit(EXIT_SUCCESS);
     case 'x':
@@ -110,7 +110,7 @@ int main(int argc, char* argv[]) {
 	  <<"   You should have received a copy of the GNU General Public License\n"
 	  <<"   along with this program; if not, see <http://www.gnu.org/licenses/>.\n";
       exit(EXIT_SUCCESS);
-      break;    
+      break;
     default:
       help(argv[0]);
       exit(EXIT_FAILURE);
@@ -151,7 +151,7 @@ int main(int argc, char* argv[]) {
   TSXReader treader;
   treader.read(filetsx);
   wcerr<<"done.\n";
-  
+
   tagger_data_hmm.setForbidRules(treader.getTaggerData().getForbidRules());
   tagger_data_hmm.setEnforceRules(treader.getTaggerData().getEnforceRules());
   tagger_data_hmm.setPreferRules(treader.getTaggerData().getPreferRules());

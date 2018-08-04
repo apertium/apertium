@@ -1,7 +1,7 @@
 .TH apertium-pretransfer 1 2006-03-21 "" ""
 .SH NAME
 apertium-pretransfer \- This application is part of (
-.B apertium 
+.B apertium
 )
 .PP
 This tool is part of the apertium open-source machine translation
@@ -11,9 +11,9 @@ toolbox: \fBhttp://www.apertium.org\fR.
 [ <input file> [ <output file> ] ]
 .PP
 .SH DESCRIPTION
-.BR apertium-pretransfer 
-module applies some changes to multiwords (such as moving the lemma queue of 
-a multiword with inner inflection just after the lemma head). If 
+.BR apertium-pretransfer
+module applies some changes to multiwords (such as moving the lemma queue of
+a multiword with inner inflection just after the lemma head). If
 the input is not a multiword, it does not affect the output.
 .SH OPTIONS
 .TP
@@ -28,7 +28,7 @@ Display this help.
 .PP
 .SH EXAMPLE
 .TP
-You could write the following to show how the expression "trobant-lo a faltar" is analysed: 
+You could write the following to show how the expression "trobant-lo a faltar" is analysed:
 .TP
 echo "trobant-lo a faltar" | apertium-destxt | lt-proc ca-es.automorf.bin |./ca-es.tagger \-\-tagger ca-es | apertium-pretransfer
 .PP

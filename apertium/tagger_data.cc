@@ -31,7 +31,7 @@ TaggerData::copy(TaggerData const &o)
   enforce_rules = o.enforce_rules;
   prefer_rules = o.prefer_rules;
   constants = o.constants;
-  output = o.output;  
+  output = o.output;
   plist = o.plist;
 }
 
@@ -92,7 +92,7 @@ void
 TaggerData::setForbidRules(vector<TForbidRule> &fr)
 {
   forbid_rules = fr;
-}  
+}
 
 map<wstring, TTag, Ltstr> &
 TaggerData::getTagIndex()
@@ -111,7 +111,7 @@ TaggerData::setTagIndex(map<wstring, TTag, Ltstr> const &ti)
 {
   tag_index = ti;
 }
-  
+
 vector<wstring> &
 TaggerData::getArrayTags()
 {
@@ -192,7 +192,7 @@ TaggerData::getConstants()
 
 void
 TaggerData::setConstants(ConstantManager const &c)
-{  
+{
   constants = c;
 }
 

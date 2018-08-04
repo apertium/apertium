@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2006 Universitat d'Alacant / Universidad de Alicante
- * 
+ *
  * author: Felipe Sánchez-Martínez
  *
  * This program is free software; you can redistribute it and/or
@@ -46,7 +46,7 @@ void help(char *name) {
 
 int main(int argc, char* argv[]) {
   int c;
-  
+
   int option_index=0;
   string monodic_file="";
   string bildic_file="";
@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
     c=getopt_long(argc, argv, "m:b:w:hv",long_options, &option_index);
     if (c==-1)
       break;
-      
+
     switch (c) {
     case 'm':
       monodic_file=optarg;
@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
     case 'w':
       wlist_file=optarg;
       break;
-    case 'h': 
+    case 'h':
       help(argv[0]);
       exit(EXIT_SUCCESS);
       break;
@@ -97,7 +97,7 @@ int main(int argc, char* argv[]) {
 	  <<L"   You should have received a copy of the GNU General Public License\n"
 	  <<L"   along with this program; if not, see <http://www.gnu.org/licenses/>.\n";
       exit(EXIT_SUCCESS);
-      break;    
+      break;
     default:
       help(argv[0]);
       exit(EXIT_FAILURE);

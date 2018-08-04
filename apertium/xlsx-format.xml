@@ -19,7 +19,7 @@
     <format-rule type="comment" eos="yes" priority="2">
       <begin regexp='"&lt;f"(" "[^&gt;]*)?"&gt;"'/>
       <end regexp='"&lt;/f"(" "[^&gt;]*)?"&gt;"'/>
-    </format-rule> 
+    </format-rule>
 
 
     <format-rule type="open" eos="yes" priority="3">
@@ -44,7 +44,7 @@
     <format-rule type="open" eos="no" priority="4">
       <tag regexp='"&lt;"[a-zA-Z][^&gt;]*"&gt;"'/>
     </format-rule>
-    
+
     <format-rule type="close" eos="no" priority="4">
       <tag regexp='"&lt;/"[a-zA-Z][^&gt;]*"&gt;"'/>
     </format-rule>

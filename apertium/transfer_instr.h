@@ -45,7 +45,7 @@ private:
   int pos;
   void *pointer;
   bool condition;
-  
+
   void copy(TransferInstr const &o);
   void destroy();
 public:
@@ -55,13 +55,13 @@ public:
   pointer(0),
   condition(false)
   {}
-  TransferInstr(TransferInstrType t, string const &c, int const p, 
+  TransferInstr(TransferInstrType t, string const &c, int const p,
                 void *ptr=NULL, bool cond = true);
   ~TransferInstr();
   TransferInstr(TransferInstr const &o);
   TransferInstr & operator =(TransferInstr const &o);
-  
-  
+
+
   TransferInstrType getType();
   string const & getContent();
   int getPos();

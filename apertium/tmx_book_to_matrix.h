@@ -36,7 +36,7 @@ double scoreByIdentity( const Phrase& hu, const Phrase& en );
 double scoreByTranslation( const Phrase& hu, const Phrase& en, const TransLex& transLex );
 
 // This is much-much slower, but instead of identity, uses a many-to-many dictionary.
-// For performance reasons, by convention does not calculate the similarity if the 
+// For performance reasons, by convention does not calculate the similarity if the
 // alignMatrix element contains outsideOfRadiusValue, a big negative number.
 void sentenceListsToAlignMatrixTranslation(
                                            const SentenceList& huSentenceListPretty, const SentenceList& enSentenceList,

@@ -23,7 +23,7 @@
 
 using namespace std;
 
-double 
+double
 EndianDoubleUtil::read(FILE *input)
 {
   double retval;
@@ -38,7 +38,7 @@ EndianDoubleUtil::read(FILE *input)
     {
       return 0;
     }
-  } 
+  }
 #endif
   return retval;
 }
@@ -55,12 +55,12 @@ EndianDoubleUtil::read(istream &is)
   for(int i = sizeof(double)-1; i != -1; i--)
   {
     is.read(&(s[i]), sizeof(char));
-  } 
+  }
 #endif
-  return retval;    
+  return retval;
 }
-  
-void 
+
+void
 EndianDoubleUtil::write(FILE *output, double const &val)
 {
   double val2 = val;
@@ -68,7 +68,7 @@ EndianDoubleUtil::write(FILE *output, double const &val)
   fwrite(&val2, sizeof(double), 1, output);
 #else
   char *s = reinterpret_cast<char *>(&val2);
-    
+
   for(int i = sizeof(double)-1; i != -1; i--)
   {
     fwrite(&(s[i]), 1, 1, output);
@@ -76,7 +76,7 @@ EndianDoubleUtil::write(FILE *output, double const &val)
 #endif
 }
 
-void 
+void
 EndianDoubleUtil::write(ostream &os, double const &val)
 {
   double val2 = val;
@@ -84,7 +84,7 @@ EndianDoubleUtil::write(ostream &os, double const &val)
   os.write(reinterpret_cast<char *>(&val2), sizeof(double));
 #else
   char *s = reinterpret_cast<char *>(&val2);
-    
+
   for(int i = sizeof(double)-1; i != -1; i--)
   {
     os.write(&(s[i]), sizeof(char));

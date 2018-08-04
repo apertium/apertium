@@ -83,7 +83,7 @@
 	TODO: So far cant' think of a way to express this constraint, since in
 	addition to a reference to an section-def-attrs/def-attr/@n the attribute can also be
 	"lemma","lemh","lemq","whole".
-    -->   
+    -->
     <!--xs:keyref name="attribute_name_reference" refer="attribute_name">
       <xs:selector xpath=".//clip" />
       <xs:field xpath="@part" />
@@ -100,7 +100,7 @@
       unmatched words have to be written as lexical units ("lu", this is
       the default value) or as chunks ("chunk").
     </xs:documentation>
-  </xs:annotation>    
+  </xs:annotation>
   <xs:complexType name="transfer_t">
     <xs:sequence>
       <xs:element ref="section-def-cats"/>
@@ -119,7 +119,7 @@
       </xs:simpleType>
     </xs:attribute>
   </xs:complexType>
-  
+
 
   <xs:element name="section-def-cats">
     <xs:annotation>
@@ -164,10 +164,10 @@
 	tag sequence defining each possible lexical form. For example,
 	tags="n.f" would match all lexical forms containing this tag
 	sequence, such as "^casa&lt;n&gt;&lt;f&gt;&lt;pl&gt;$".
-	
+
 	In addition, an optional attribute, "lemma", may be used to
-	define lexical forms having a particular substring in their lemma	
-      </xs:documentation>      
+	define lexical forms having a particular substring in their lemma
+      </xs:documentation>
     </xs:annotation>
     <xs:complexType>
       <xs:attribute name="lemma" type="xs:string" use="optional"/>
@@ -180,7 +180,7 @@
     <xs:annotation>
       <xs:documentation>
 	The 'def-attrs' section defines the attributes that will be
-	identified in matched lexical forms 
+	identified in matched lexical forms
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
@@ -193,12 +193,12 @@
       <xs:field xpath="@n" />
     </xs:unique>
   </xs:element>
-  
+
   <xs:element name="def-attr">
     <xs:annotation>
       <xs:documentation>
 	Each def-attr defines one attribute in terms of a list of
-	attribute items and has a mandatory unique name n 
+	attribute items and has a mandatory unique name n
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
@@ -222,7 +222,7 @@
       <xs:attribute name="c" type="xs:string" use="optional"/>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="section-def-vars">
     <xs:annotation>
       <xs:documentation>
@@ -237,7 +237,7 @@
     </xs:complexType>
     <xs:unique name="variable_name">
       <xs:selector xpath="def-var" />
-      <xs:field xpath="@n" />    
+      <xs:field xpath="@n" />
     </xs:unique>
   </xs:element>
 
@@ -270,14 +270,14 @@
     </xs:complexType>
     <xs:unique name="list_name">
       <xs:selector xpath="def-list" />
-      <xs:field xpath="@n" />    
+      <xs:field xpath="@n" />
     </xs:unique>
   </xs:element>
 
   <xs:element name="def-list">
     <xs:annotation>
       <xs:documentation>
-	The 'def-list' element defines a named list to search with the 'in' 
+	The 'def-list' element defines a named list to search with the 'in'
 	element.  Attribute 'n' sets the name of the list
       </xs:documentation>
     </xs:annotation>
@@ -293,8 +293,8 @@
   <xs:element name="list-item">
     <xs:annotation>
       <xs:documentation>
-	Attribute 'v' of 'list-item' element contains the value to be added to 
-	the list being defined     
+	Attribute 'v' of 'list-item' element contains the value to be added to
+	the list being defined
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
@@ -317,7 +317,7 @@
     </xs:complexType>
     <xs:unique name="macro_name">
       <xs:selector xpath="def-macro" />
-      <xs:field xpath="@n" />    
+      <xs:field xpath="@n" />
     </xs:unique>
   </xs:element>
 
@@ -325,9 +325,9 @@
     <xs:annotation>
       <xs:documentation>
 	Macro definition:
-	
+
 	A macro has a mandatory name (the value of 'n'), a number of parameters
-	(the value of 'npar') and a body containing arguments and statements.  
+	(the value of 'npar') and a body containing arguments and statements.
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
@@ -339,7 +339,7 @@
       <xs:attribute name="c" type="xs:string" use="optional"/>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="section-rules">
     <xs:annotation>
       <xs:documentation>
@@ -356,7 +356,7 @@
   <xs:element name="rule">
     <xs:annotation>
       <xs:documentation>
-	Each rule has a pattern and an action 
+	Each rule has a pattern and an action
 	* attribute 'comment' allows to put in comments about the purpose of
         the rule being defined
       </xs:documentation>
@@ -374,7 +374,7 @@
     <xs:annotation>
       <xs:documentation>
 	The pattern is specified in terms of pattern items, each one
-	representing a lexical form in the matched pattern 
+	representing a lexical form in the matched pattern
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
@@ -387,7 +387,7 @@
   <xs:element name="pattern-item">
     <xs:annotation>
       <xs:documentation>
-	Each attribute to be activated is referred to by its name in the def-cats section 
+	Each attribute to be activated is referred to by its name in the def-cats section
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
@@ -414,7 +414,7 @@
       <xs:documentation>
 	The choose statement is a selection statement (similar to a case
 	statement) composed of one or more tested cases and an optional
-	otherwise 
+	otherwise
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
@@ -429,7 +429,7 @@
   <xs:element name="when">
     <xs:annotation>
       <xs:documentation>
-	Each tested case is a block of zero or more statements 
+	Each tested case is a block of zero or more statements
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
@@ -446,12 +446,12 @@
   <xs:element name="otherwise">
     <xs:annotation>
       <xs:documentation>
-	The otherwise case is also a block of one or more statements 
+	The otherwise case is also a block of one or more statements
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
       <xs:sequence minOccurs="1" maxOccurs="unbounded">
-        <xs:group ref="sentence"/>        
+        <xs:group ref="sentence"/>
       </xs:sequence>
       <xs:attribute name="c" type="xs:string" use="optional"/>
     </xs:complexType>
@@ -473,7 +473,7 @@
   <xs:element name="and">
     <xs:annotation>
       <xs:documentation>
-	Each conjuntion test contains two or more simpler tests 
+	Each conjuntion test contains two or more simpler tests
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
@@ -487,7 +487,7 @@
   <xs:element name="or">
     <xs:annotation>
       <xs:documentation>
-	Each disjunction test contains two or more simpler tests 
+	Each disjunction test contains two or more simpler tests
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
@@ -501,7 +501,7 @@
   <xs:element name="not">
     <xs:annotation>
       <xs:documentation>
-	The negation of a simpler test is a test itself 
+	The negation of a simpler test is a test itself
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
@@ -514,7 +514,7 @@
       <xs:documentation>
 	The simplest test is an equality test. The right part and the
 	left part of the equality may both be a clip (see below), a
-	literal string ('lit'), a literal tag ('lit-tag') or the value of 
+	literal string ('lit'), a literal tag ('lit-tag') or the value of
 	a variable ('var') defined in the def-vars section.  When the attribute
 	'caseless' is set to 'yes', the comparison is made without attending
 	to the case.
@@ -541,7 +541,7 @@
       <xs:documentation>
 	Tests if the left part contains the right part at the beginning.
 	Both parts of the test may both be a clip (see below), a
-	literal string ('lit'), a literal tag ('lit-tag') or the value of 
+	literal string ('lit'), a literal tag ('lit-tag') or the value of
 	a variable ('var') defined in the def-vars section.  When the attribute
 	'caseless' is set to 'yes', the comparison is made without attending
 	to the case.
@@ -568,7 +568,7 @@
       <xs:documentation>
 	Tests if the left part contains the right part at the end.
 	Both parts of the test may both be a clip (see below), a
-	literal string ('lit'), a literal tag ('lit-tag') or the value of 
+	literal string ('lit'), a literal tag ('lit-tag') or the value of
 	a variable ('var') defined in the def-vars section.  When the attribute
 	'caseless' is set to 'yes', the comparison is made without attending
 	to the case.
@@ -595,7 +595,7 @@
       <xs:documentation>
 	Tests if the left part contains the right part at the beginning.
 	First parts of the test may be a clip (see below), a
-	literal string ('lit'), a literal tag ('lit-tag') or the value of 
+	literal string ('lit'), a literal tag ('lit-tag') or the value of
 	a variable ('var') defined in the def-vars section. The second part
 	must be always a list.  When the attribute
 	'caseless' is set to 'yes', the comparison is made without attending
@@ -623,7 +623,7 @@
       <xs:documentation>
 	Tests if the left part contains the right part at the end.
 	First parts of the test may be a clip (see below), a
-	literal string ('lit'), a literal tag ('lit-tag') or the value of 
+	literal string ('lit'), a literal tag ('lit-tag') or the value of
 	a variable ('var') defined in the def-vars section. The second part
 	must be always a list.  When the attribute
 	'caseless' is set to 'yes', the comparison is made without attending
@@ -634,7 +634,7 @@
       <xs:sequence>
         <xs:group ref="value"/>
         <xs:element ref="list"/>
-      </xs:sequence>      
+      </xs:sequence>
       <xs:attribute name="caseless" use="optional">
         <xs:simpleType>
           <xs:restriction base="xs:string">
@@ -651,7 +651,7 @@
       <xs:documentation>
 	Tests if the left part contains the right part.
 	Both parts of the test may both be a clip (see below), a
-	literal string ('lit'), a literal tag ('lit-tag') or the value of 
+	literal string ('lit'), a literal tag ('lit-tag') or the value of
 	a variable ('var') defined in the def-vars section.  When the attribute
 	'caseless' is set to 'yes', the comparison is made without attending
 	to the case.
@@ -661,7 +661,7 @@
       <xs:sequence>
         <xs:group ref="value"/>
         <xs:group ref="value"/>
-      </xs:sequence>        
+      </xs:sequence>
       <xs:attribute name="caseless" use="optional">
         <xs:simpleType>
           <xs:restriction base="xs:string">
@@ -680,10 +680,10 @@
 	this search is performed without attending to the case
       </xs:documentation>
     </xs:annotation>
-    <xs:complexType>    
+    <xs:complexType>
       <xs:sequence>
         <xs:group ref="value"/>
-        <xs:element ref="list"/>      
+        <xs:element ref="list"/>
       </xs:sequence>
       <xs:attribute name="caseless" use="optional">
         <xs:simpleType>
@@ -707,13 +707,13 @@
       <xs:attribute name="n" type="xs:string" use="required"/>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="let">
     <xs:annotation>
       <xs:documentation>
 	An assignment statement ('let') assigns the value of a clip (see
-	below), a literal string ('lit'), a literal tag('lit-tag') or the 
-	value of a global variable ('var') to either a global variable ('var') 
+	below), a literal string ('lit'), a literal tag('lit-tag') or the
+	value of a global variable ('var') to either a global variable ('var')
 	or a clip
       </xs:documentation>
     </xs:annotation>
@@ -724,13 +724,13 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="append">
     <xs:annotation>
       <xs:documentation>
 	This instruction appends the value of a clip (see
-	below), a literal string ('lit'), a literal tag('lit-tag') or the 
-	value of a global variable ('var') to either a global variable ('var') 
+	below), a literal string ('lit'), a literal tag('lit-tag') or the
+	value of a global variable ('var') to either a global variable ('var')
 	or a clip, identified by the "n" attribute
       </xs:documentation>
     </xs:annotation>
@@ -741,27 +741,27 @@
       <xs:attribute name="n" type="xs:string" use="required"/>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="out">
     <xs:annotation>
       <xs:documentation>
 	'out' is an output statement; it may output any sequence of
-	clips, literal strings, literal tags, variables, and whitespace items 
-	(see below) 
+	clips, literal strings, literal tags, variables, and whitespace items
+	(see below)
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
       <xs:sequence minOccurs="1" maxOccurs="unbounded">
 	<xs:group ref="outputable"/>
       </xs:sequence>
-      <xs:attribute name="c" type="xs:string" use="optional"/>      
+      <xs:attribute name="c" type="xs:string" use="optional"/>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="modify-case">
     <xs:annotation>
       <xs:documentation>
-	The first argument of 'modify-case' copy the case of the second 
+	The first argument of 'modify-case' copy the case of the second
 	argument.
       </xs:documentation>
     </xs:annotation>
@@ -772,7 +772,7 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="call-macro">
     <xs:annotation>
       <xs:documentation>
@@ -787,7 +787,7 @@
       <xs:attribute name="n" type="xs:string" use="required"/>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="with-param">
     <xs:annotation>
       <xs:documentation>
@@ -797,37 +797,37 @@
 	it may be used with arguments 1 and 2 in a noun-adjective rule,
 	with arguments 2, 3 and 1 in a determiner-noun-adjective rule, with
 	arguments 1 and 3 in a noun-adverb-adjective rule, and with
-	arguments 2 and 1 in an adjective-noun rule 
+	arguments 2 and 1 in an adjective-noun rule
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
       <xs:attribute name="pos" type="xs:string" use="required"/>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="clip">
     <xs:annotation>
       <xs:documentation>
 	A 'clip' is a substring of a source-language or target-language
 	lexical form, extracted according to an attribute:
-	
+
 	* 'pos' is an index (1, 2, 3...) used to select a lexical form
         inside the rule;
-	
+
 	* 'side' is used to select a source-language ('sl') or a
         target-language ('tl') clip
-	
+
 	* the value of 'part' is the name of an attribute defined in
         def-attrs, but may take also the values 'lem' (referring to
         the lemma of the lexical form), 'lemh' (lemma head), 'lemq'
         (lemma queue) and 'whole' (referring to the whole lexical form).
-	
-	* the value of 'queue' may be 'no' or 'yes'.  'yes' is assumed  by 
+
+	* the value of 'queue' may be 'no' or 'yes'.  'yes' is assumed  by
         default.
-	
+
 	* 'link-to' causes the other attributes to be ignored in clip evaluation
-        when using 'clip' as a right hand side element (as value), and 
-        returns its value.  When using as a left hand side (as reference), 
+        when using 'clip' as a right hand side element (as value), and
+        returns its value.  When using as a left hand side (as reference),
         the value of the 'as' attribute is ignored.
       </xs:documentation>
     </xs:annotation>
@@ -847,7 +847,7 @@
       <xs:attribute name="c" type="xs:string" use="optional"/>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="lit">
     <xs:annotation>
       <xs:documentation>
@@ -859,7 +859,7 @@
       <xs:attribute name="v" type="xs:string" use="required"/>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="lit-tag">
     <xs:annotation>
       <xs:documentation>
@@ -871,7 +871,7 @@
       <xs:attribute name="v" type="xs:string" use="required"/>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="var">
     <xs:annotation>
       <xs:documentation>
@@ -879,14 +879,14 @@
 	of the variable. When it is in an 'out', a 'test', or the right
 	part of a 'let', it represents the value of the variable; when in
 	the left part of a 'let' it represents the reference of the
-	variable. 
+	variable.
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
       <xs:attribute name="n" type="xs:string" use="required"/>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="get-case-from">
     <xs:annotation>
       <xs:documentation>
@@ -902,20 +902,20 @@
       <xs:attribute name="pos" type="xs:string" use="required"/>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="case-of">
     <xs:annotation>
       <xs:documentation>
-	A 'case-of' is a value representing the case of a "clip".  This value 
+	A 'case-of' is a value representing the case of a "clip".  This value
 	will be "aa" (all lowercase), "Aa" (first uppercase) and "AA",
 	(all uppercase).
 
 	* 'pos' is an index (1, 2, 3...) used to select a lexical form
         inside the rule;
-	
+
 	* 'side' is used to select a source-language ('sl') or a
         target-language ('tl') clip
-	
+
 	* the value of 'part' is the name of an attribute defined in
         def-attrs, but may take also the values 'lem' (referring to
         the lemma of the lexical form), 'lemh' (lemma head), 'lemq'
@@ -935,7 +935,7 @@
       <xs:attribute name="part" type="xs:string" use="required"/>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="concat">
     <xs:annotation>
       <xs:documentation>
@@ -948,7 +948,7 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="mlu">
     <xs:annotation>
       <xs:documentation>
@@ -961,7 +961,7 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="lu">
     <xs:annotation>
       <xs:documentation>
@@ -974,11 +974,11 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="chunk">
     <xs:annotation>
       <xs:documentation>
-	Encloses a chunk inside an 'out' element.      
+	Encloses a chunk inside an 'out' element.
 	* 'name' the pseudolemma of the chunk.
 	* 'namefrom' get the name from a variable.
 	* 'case' the variable to get the uppercase/lowercase policy
@@ -1001,7 +1001,7 @@
       <xs:attribute name="c" type="xs:string" use="optional"/>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="tags">
     <xs:annotation>
       <xs:documentation>
@@ -1014,7 +1014,7 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="tag">
     <xs:annotation>
       <xs:documentation>
@@ -1027,7 +1027,7 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="b">
     <xs:annotation>
       <xs:documentation>
@@ -1045,5 +1045,5 @@
       <xs:attribute name="pos" type="xs:string" use="optional"/>
     </xs:complexType>
   </xs:element>
-  
+
 </xs:schema>

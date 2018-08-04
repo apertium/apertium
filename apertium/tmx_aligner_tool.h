@@ -33,7 +33,7 @@
 namespace TMXAligner{
 
 void alignerToolWithFilenames(const DictionaryItems& dictionary,
-			      const std::string& huFilename, 
+			      const std::string& huFilename,
 			      const std::string& enFilename,
 			      const AlignParameters& alignParameters,
 			      const std::string& outputFilename = "" );

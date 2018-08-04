@@ -1,7 +1,7 @@
 .TH apertium-desrtf 1 2006-03-21 "" ""
 .SH NAME
 apertium-desrtf \- This application is part of (
-.B apertium 
+.B apertium
 )
 .PP
 This tool is part of the apertium open-source machine translation
@@ -12,10 +12,10 @@ toolbox: \fBhttp://apertium.org\fR.
 [ <input file> [ <output file> ] ]
 .PP
 .SH DESCRIPTION
-.BR apertium-desrtf 
-is an RTF format processor. Data should be passed through this 
+.BR apertium-desrtf
+is an RTF format processor. Data should be passed through this
 processor before being piped to lt-proc. The program takes input
-in the form of an RTF document and produces output suitable for 
+in the form of an RTF document and produces output suitable for
 processing with lt-proc. RTF commands  and other format information are  enclosed in brackets so that lt-proc treats them as whitespace between words.
 .SH OPTIONS
 .TP
@@ -29,7 +29,7 @@ Suppresses the addition of a trailing sentence terminator.
 .PP
 .SH EXAMPLE
 .TP
-You could write the following to show how the input document  is analysed: 
+You could write the following to show how the input document  is analysed:
 .TP
 cat <input.rtf> | apertium-desrtf | lt-proc ca-es.automorf.bin
 .PP

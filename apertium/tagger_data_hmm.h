@@ -34,15 +34,15 @@ public:
   TaggerDataHMM(TaggerDataHMM const &o);
   TaggerDataHMM(TaggerData const &o);
   TaggerDataHMM & operator =(TaggerDataHMM const &o);
- 
-  virtual void setProbabilities(int const myN, int const myM, 
+
+  virtual void setProbabilities(int const myN, int const myM,
                         double **myA = NULL, double **myB = NULL);
 
   virtual double ** getA();
   virtual double ** getB();
   virtual int getN();
   virtual int getM();
-  
+
   virtual void read(FILE *in);
   virtual void write(FILE *out);
 };

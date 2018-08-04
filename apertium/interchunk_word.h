@@ -34,23 +34,23 @@ private:
    * Target language chunk name and tags
    */
   string chunk;
-  
+
   /**
    * Target language chunk content
    */
-  string queue;   
-     
+  string queue;
+
   /**
    * Copy method
    * @param o the object to be copied
    */
   void copy(InterchunkWord const &o);
-  
+
   /**
    * Destroy method
    */
   void destroy();
-  
+
 public:
   /**
    * Non-parametric constructor
@@ -60,19 +60,19 @@ public:
    * Destructor
    */
   ~InterchunkWord();
-  
+
   /**
    * Copy constructor
    * @param o the object to be copied
    */
   InterchunkWord(InterchunkWord const &o);
-  
+
   /**
    * Parametric constructor calling init()
    * @param chunk the chunk
    */
   InterchunkWord(string const &chunk);
-  
+
   /**
    * Assignment operator
    * @param o the object to be assigned
@@ -85,12 +85,12 @@ public:
    * @param chunk the chunk
    */
   void init(string const &chunk);
-  
+
   /**
    * Reference a chunk part
    * @param part regular expression to match
    * @returns reference to the part of string matched
-   */ 
+   */
   string chunkPart(ApertiumRE const &part);
 
   /**

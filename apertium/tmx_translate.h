@@ -25,9 +25,9 @@ typedef std::map< std::string, Phrase > DumbDictionary;
 
 void buildDumbDictionary( const DictionaryItems& dictionary, DumbDictionary& dumbDictionary );
 
-void buildDumbDictionaryUsingFrequencies( 
-       const DictionaryItems& dictionary, 
-       FrequencyMap& enFreq, 
+void buildDumbDictionaryUsingFrequencies(
+       const DictionaryItems& dictionary,
+       FrequencyMap& enFreq,
        DumbDictionary& dumbDictionary );
 
 void buildDumbDictionary( TMXAligner::DumbDictionary& dumbDictionary,

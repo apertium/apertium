@@ -449,7 +449,7 @@ void alignerToolWithFilenames( const DictionaryItems& dictionary,
      ( dictionary, huSentenceListPretty, enSentenceList, alignParameters, std::cout );
 
 //    std::wcerr << "Quality " << globalQuality << std::endl ;
-      
+
   }
   else
   {
@@ -556,7 +556,7 @@ int main_alignerTool(int argC, char* argV[])
     args.read( argC, argV, remains );
 
     AlignParameters alignParameters;
-    
+
     if (args.getSwitchCompact("text"))
     {
       alignParameters.justSentenceIds = false;
@@ -666,7 +666,7 @@ int main_alignerTool(int argC, char* argV[])
     {
       const char* batchFilename = remains[1] ;
       std::ifstream bis(batchFilename);
-      
+
       while (bis.good()&&!bis.eof())
       {
         std::string line;

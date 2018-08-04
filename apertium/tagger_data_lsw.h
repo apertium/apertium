@@ -24,7 +24,7 @@ class TaggerDataLSW : public TaggerData
 private:
   int N;
   double ***d;
-  
+
   void destroy();
 
 public:
@@ -33,12 +33,12 @@ public:
   TaggerDataLSW(TaggerDataLSW const &o);
   TaggerDataLSW(TaggerData const &o);
   TaggerDataLSW & operator =(TaggerDataLSW const &o);
-  
+
   void setProbabilities(int const myN, double ***myD = NULL);
 
   virtual double *** getD();
   virtual int getN();
-  
+
   void read(FILE *in);
   void write(FILE *out);
 };

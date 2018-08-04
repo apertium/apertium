@@ -39,9 +39,9 @@ void buildDumbDictionary( const DictionaryItems& dictionary, DumbDictionary& dum
   }
 }
 
-void buildDumbDictionaryUsingFrequencies( 
-       const DictionaryItems& dictionary, 
-       FrequencyMap& enFreq, 
+void buildDumbDictionaryUsingFrequencies(
+       const DictionaryItems& dictionary,
+       FrequencyMap& enFreq,
        DumbDictionary& dumbDictionary )
 {
   dumbDictionary.clear();
@@ -197,7 +197,7 @@ void trivialTranslate(
 
     Phrase phrase;
     trivialTranslateWord( dumbDictionary, originalWord, phrase );
-    
+
     for (size_t k=0; k<phrase.size(); ++k )
     {
       words.push_back(phrase[k]);
@@ -236,14 +236,14 @@ void trivialTranslateSentenceList(
   {
     std::ofstream translateLogs( "/dev/null" );
   }
-  
+
   translatedSentenceList.clear();
 
   for ( size_t i=0; i<sentenceList.size(); ++i )
   {
     Sentence translatedSentence;
 
-    trivialTranslate( dumbDictionary, 
+    trivialTranslate( dumbDictionary,
                       sentenceList[i],
                       translatedSentence
                      );

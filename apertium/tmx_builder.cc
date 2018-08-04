@@ -48,14 +48,14 @@ low_limit(0)
   lang2 = l2;
 
   // default values of the parameters
-    
+
   max_edit = 50;
   diagonal_width = 10;
   window_size = 100;
   step = 75;
   percent=0.85;
   edit_distance_percent=0.30;
- 
+
   freference = NULL;
 }
 
@@ -63,11 +63,11 @@ TMXBuilder::~TMXBuilder()
 {
 }
 
-wstring 
+wstring
 TMXBuilder::restOfBlank(FILE *input)
 {
   wstring result = L"[";
-  
+
   while(true)
   {
     wint_t val = fgetwc(input);
@@ -86,25 +86,25 @@ TMXBuilder::restOfBlank(FILE *input)
         }
         result += static_cast<wchar_t>(val);
         break;
-      
+
       case L']':
         result += L']';
         return result;
-        
+
       default:
         result += static_cast<wchar_t>(val);
         break;
     }
   }
-  
+
   return L"";
 }
 
-wstring 
+wstring
 TMXBuilder::nextBlank(FILE *input)
 {
   wstring result = L"";
-  
+
   while(true)
   {
     wint_t val = fgetwc(input);
@@ -118,11 +118,11 @@ TMXBuilder::nextBlank(FILE *input)
         fgetwc(input);
         break;
       case L'[':
-        
+
         result = restOfBlank(input);
         return result;
     }
-  }  
+  }
 }
 
 bool
@@ -130,7 +130,7 @@ TMXBuilder::compatible(FILE *f1, FILE *f2, bool lazy)
 {
   wstring s1 = nextBlank(f1), s2 = nextBlank(f2);
   if(!lazy)
-  {  
+  {
     while(!feof(f1) && !feof(f2))
     {
       if(s1 != s2)
@@ -140,7 +140,7 @@ TMXBuilder::compatible(FILE *f1, FILE *f2, bool lazy)
       s1 = nextBlank(f1);
       s2 = nextBlank(f2);
     }
-  }    
+  }
   else
   {
     while(!feof(f1) && !feof(f2))
@@ -151,7 +151,7 @@ TMXBuilder::compatible(FILE *f1, FILE *f2, bool lazy)
       }
       s1 = nextBlank(f1);
       s2 = nextBlank(f2);
-    }    
+    }
   }
   return true;
 }
@@ -183,7 +183,7 @@ TMXBuilder::check(string const &file1, string const &file2, bool lazy)
     fclose(f1);
     return false;
   }
-     
+
   bool retval = compatible(f1, f2, lazy);
 
   fclose(f1);
@@ -196,7 +196,7 @@ TMXBuilder::nextTU(FILE *input)
 {
   wstring current_tu = L"";
   wstring tmp;
-  
+
   while(true)
   {
     wint_t symbol = fgetwc_unlocked(input);
@@ -230,27 +230,27 @@ TMXBuilder::nextTU(FILE *input)
       default:
         current_tu += static_cast<wchar_t>(symbol);
         break;
-      
+
       case L'[':
         tmp = restOfBlank(input);
         if(tmp.substr(0,2) == L"[ ")
         {
           current_tu.append(L" ");
-        }  
+        }
         current_tu.append(L"<ph/>");
         if(tmp.substr(tmp.size()-2, 2) == L" ]")
         {
           current_tu.append(L" ");
-        }   
+        }
         break;
-      
+
       case L'.':
         current_tu += L'.';
         symbol = fgetwc_unlocked(input);
 
         if(symbol != L'[' && !iswspace(symbol))
         {
-          if(!feof(input))          
+          if(!feof(input))
           {
             ungetwc(symbol, input);
           }
@@ -271,14 +271,14 @@ TMXBuilder::nextTU(FILE *input)
           return current_tu.substr(0, idx+1);*/
         }
         break;
-      
+
       case L'?':
       case L'!':
         current_tu += static_cast<wchar_t>(symbol);
         return current_tu;
     }
   }
-  
+
   return current_tu;
 }
 
@@ -286,7 +286,7 @@ wstring
 TMXBuilder::xmlize(wstring const &str)
 {
   wstring result = L"";
-  
+
   for(size_t i = 0, limit = str.size(); i < limit; i++)
   {
     switch(str[i])
@@ -303,23 +303,23 @@ TMXBuilder::xmlize(wstring const &str)
           result.append(L"&lt;");
         }
         break;
-        
+
       case L'>':
         result.append(L"&gt;");
         break;
-        
+
       case L'&':
         result.append(L"&amp;");
         break;
-      
+
       default:
         result += str[i];
         break;
     }
   }
-  
+
   // remove leading <ph/>'s
-  
+
   bool cambio = true;
   while(cambio == true)
   {
@@ -336,7 +336,7 @@ TMXBuilder::xmlize(wstring const &str)
     }
   }
   // remove trailing <ph/>'s
-  
+
   cambio = true;
   while(cambio == true)
   {
@@ -352,10 +352,10 @@ TMXBuilder::xmlize(wstring const &str)
       cambio = true;
     }
   }
-  
+
   // remove trailing punctuation
 
-  
+
   for(unsigned int i = result.size()-1; result.size() > 0 && i > 0; i--)
   {
     if(!isRemovablePunct(result[i]))
@@ -371,10 +371,10 @@ TMXBuilder::xmlize(wstring const &str)
   }
 
   return result;
-} 
+}
 
-void 
-TMXBuilder::generate(string const &file1, string const &file2, 
+void
+TMXBuilder::generate(string const &file1, string const &file2,
                      string const &outfile)
 {
   FILE *output = stdout;
@@ -412,8 +412,8 @@ TMXBuilder::generate(string const &file1, string const &file2,
 #ifdef _MSC_VER
   _setmode(_fileno(f1), _O_U8TEXT);
   _setmode(_fileno(f2), _O_U8TEXT);
-#endif   
- 
+#endif
+
   generateTMX(f1, f2, output);
 }
 
@@ -421,12 +421,12 @@ vector<wstring>
 TMXBuilder::reverseList(vector<wstring> const &v)
 {
   vector<wstring> retval(v.size());
- 
+
   for(int j = v.size() - 1, i = 0; j >=0; j--, i++)
   {
     retval[i] = v[j];
   }
-  
+
   return retval;
 }
 
@@ -434,30 +434,30 @@ vector<wstring>
 TMXBuilder::sentenceList(FILE *file)
 {
   vector<wstring> retval;
-  
+
   while(true)
   {
     wstring f = nextTU(file);
     if(feof(file))
     {
       break;
-    }   
+    }
     retval.push_back(f);
   }
-  
+
   return retval;
-}  
+}
 
 vector<wstring>
 TMXBuilder::extractFragment(vector<wstring> const &text, unsigned int base, unsigned int width)
 {
   vector<wstring> result;
-  
+
   for(unsigned int i = base; i < (base + width) && i < text.size(); i++)
   {
     result.push_back(text[i]);
   }
-  
+
   return result;
 }
 
@@ -483,7 +483,7 @@ TMXBuilder::argmin(int nw, int n, int w)
   {
     return 3;
   }
-}  
+}
 
 void
 TMXBuilder::generateTMX(FILE *f1, FILE *f2, FILE *output)
@@ -528,7 +528,7 @@ TMXBuilder::printTUCond(FILE *output, wstring const &tu1, wstring const &tu2, bo
   if(secure_zone && similar(tu1, tu2))
   {
     printTU(output, tu1, tu2);
-  }  
+  }
 }
 
 void
@@ -559,7 +559,7 @@ TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
 
   TMXAligner::DictionaryItems dict;
   AlignParameters ap;
-  
+
   ap.justSentenceIds = false;
   ap.utfCharCountingMode = false;
   ap.realignType=AlignParameters::NoRealign;
@@ -576,7 +576,7 @@ TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
     {
       break;
     }
-  
+
     if(val == L'\t')
     {
       conta++;
@@ -596,7 +596,7 @@ TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
       partes[conta] += val;
     }
   }
-  
+
   unlink(left.c_str());
   unlink(right.c_str());
   unlink(out.c_str());
@@ -612,10 +612,10 @@ TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
   if(freference != NULL)
   {
     lista3 = reverseList(sentenceList(freference));
-  } 
+  }
 
   while(true)
-  { 
+  {
     vector<wstring> l1 = extractFragment(lista1, base_i, window_size);
     vector<wstring> l2 = extractFragment(lista2, base_j, window_size) , l3;
 
@@ -638,12 +638,12 @@ TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
     unsigned int const ncols = l2.size() + 1;
     unsigned int i = nrows - 1;
     unsigned int j = ncols - 1;
-  
-  
+
+
     //    printTable(table, nrows, ncols);
-  
+
     bool newBase = false;
-  
+
 
     while(true)
     {
@@ -655,7 +655,7 @@ TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
         case 1:
           i--;
           j--;
-	  
+
           if(l3.size() == 0)
 	  {
             if((newBase || l1.size() < step) && similar(l1[i], l2[j]))
@@ -669,16 +669,16 @@ TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
   	    {
   	      printTU(output, l1[i], l2[j]);
 	    }
-	  }	    
+	  }
           break;
-      
-        case 2: 
+
+        case 2:
           i--;
           if(i > 2 && argmin(table[(i-1)*ncols + j-1],
-			     table[(i-1)*ncols + j],  
-			     table[i*ncols + j-1]) == 3 && 
+			     table[(i-1)*ncols + j],
+			     table[i*ncols + j-1]) == 3 &&
 	              argmin(table[(i-1)*ncols + j-2],
-			     table[(i-1)*ncols + j-1],  
+			     table[(i-1)*ncols + j-1],
 			     table[i*ncols + j-2]) != 1)
 	    {
 	      if(l3.size() == 0)
@@ -694,19 +694,19 @@ TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
 		    {
 		      printTU(output, l1[i], l2[j]);
 		    }
-		}	    
-	    } 
+		}
+	    }
 
 	  //          wcerr << L"[" << i << L" " << j << L"]" << endl;
          break;
-    
+
         case 3:
           j--;
           if(j > 2 && argmin(table[(i-1)*ncols + j-1],
-			     table[(i-1)*ncols + j],  
-			     table[i*ncols + j-1]) == 1 && 
+			     table[(i-1)*ncols + j],
+			     table[i*ncols + j-1]) == 1 &&
 	              argmin(table[(i-1)*ncols + j-2],
-			     table[(i-1)*ncols + j-1],  
+			     table[(i-1)*ncols + j-1],
 			     table[i*ncols + j-2]) != 3)
 	    {
 	      if(l3.size() == 0)
@@ -722,32 +722,32 @@ TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
 		    {
 		      printTU(output, l1[i], l2[j]);
 		    }
-		}	    
-	    } 
+		}
+	    }
 
 
           break;
-    
+
         default:
           // error
           break;
       }
-  
+
       if(i == step  && !newBase)
       {
          base_i += i;
          base_j += j;
          newBase = true;
       }
-      
+
       if(i == 0 || j == 0)
       {
         break;
       }
     }
-  
-    delete[] table;  
-    
+
+    delete[] table;
+
     if(l1.size() < window_size)
     {
       break;
@@ -755,39 +755,39 @@ TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
     }*/
 }
 
-int 
+int
 TMXBuilder::weight(wstring const &s)
 {
   return s.size()*2;  // just the size of the string
 }
 
-int * 
-TMXBuilder::levenshteinTable(vector<wstring> &l1, vector<wstring> &l2, 
+int *
+TMXBuilder::levenshteinTable(vector<wstring> &l1, vector<wstring> &l2,
 			     unsigned int diagonal_width, unsigned int max_edit)
-{  
+{
   unsigned int const nrows = l1.size() + 1;
   unsigned int const ncols = l2.size() + 1;
-  
+
   int *table = new int[nrows * ncols];
-  
+
   table[0] = 0;
-  
+
   for(unsigned int i = 1; i < nrows; i++)
   {
     table[i*ncols] = table[(i-1)*ncols] + weight(l1[i-1]);
   }
-  
+
   for(unsigned int j = 1; j < ncols; j++)
   {
     table[j] = table[j-1] + weight(l2[j-1]);
   }
-  
+
   for(unsigned int i = 1; i < nrows; i++)
   {
     for(unsigned int j = 1; j < ncols; j++)
     {
       int ed = 0;
-      
+
       if(i > (j + diagonal_width))
       {
         ed = table[i*ncols]+table[j];
@@ -800,20 +800,20 @@ TMXBuilder::levenshteinTable(vector<wstring> &l1, vector<wstring> &l2,
       {
         ed = editDistance(l1[i-1], l2[j-1], max_edit);
       }
-      
+
       table[i*ncols+j] = min3(table[(i-1)*ncols + j-1] + ed,
                               table[(i-1)*ncols + j] + weight(l2[j-1]),
                               table[i*ncols + j-1] + weight(l1[i-1]));
     }
   }
-  
+
   return table;
 }
 
 wstring
 TMXBuilder::filter(wstring const &tu)
 {
-  bool has_text = false;  
+  bool has_text = false;
   unsigned int count_blank = 0;
 
   for(unsigned int i = 0, limit = tu.size(); i != limit; i++)
@@ -821,19 +821,19 @@ TMXBuilder::filter(wstring const &tu)
     if(iswalpha(tu[i]))
     {
       has_text = true;
-    }      
+    }
     else if(has_text && iswspace(tu[i]))
     {
       count_blank++;
     }
-  }  
+  }
 
   if(!has_text || count_blank <= 2 || tu.size() == 0)
   {
     return L"";
   }
 
-  return xmlize(tu);  
+  return xmlize(tu);
 }
 
 void
@@ -845,15 +845,15 @@ TMXBuilder::printTU(FILE *output, wstring const &tu1, wstring const &tu2) const
   if(tu1_filtered != L"" && tu2_filtered != L"")
   {
 
-    fprintf(output, "<tu>\n  <tuv xml:lang=\"%s\"><seg>%s</seg></tuv>\n", 
-                    UtfConverter::toUtf8(lang1).c_str(), 
+    fprintf(output, "<tu>\n  <tuv xml:lang=\"%s\"><seg>%s</seg></tuv>\n",
+                    UtfConverter::toUtf8(lang1).c_str(),
                     UtfConverter::toUtf8(tu1_filtered).c_str());
-                  
+
     fprintf(output, "  <tuv xml:lang=\"%s\"><seg>%s</seg></tuv>\n</tu>\n",
-                    UtfConverter::toUtf8(lang2).c_str(), 
-                    UtfConverter::toUtf8(tu2_filtered).c_str());  
+                    UtfConverter::toUtf8(lang2).c_str(),
+                    UtfConverter::toUtf8(tu2_filtered).c_str());
   }
-} 
+}
 
 int
 TMXBuilder::min3(int i1, int i2, int i3)
@@ -897,11 +897,11 @@ TMXBuilder::editDistance(wstring const &s1, wstring const &s2, unsigned int max_
 {
   int const nrows = min2(s1.size() + 1, max_edit);
   int const ncols = min2(s2.size() + 1, max_edit);
-  
+
   int *table = new int[nrows*ncols];
- 
+
   table[0] = 0;
-  
+
   for(int i = 1; i < nrows; i++)
   {
     table[i*ncols] = i;
@@ -911,7 +911,7 @@ TMXBuilder::editDistance(wstring const &s1, wstring const &s2, unsigned int max_
   {
     table[j] = j;
   }
-    
+
   for(int i = 1; i < nrows; i++)
   {
     for(int j = 1; j < ncols; j++)
@@ -921,7 +921,7 @@ TMXBuilder::editDistance(wstring const &s1, wstring const &s2, unsigned int max_
       {
         coste = 1;
       }
-      
+
       table[i*ncols+j] = min3(table[(i-1)*ncols+(j-1)]+coste,
                               table[(i-1)*ncols+j] + 2,
                               table[i*ncols+(j-1)] + 2);
@@ -984,7 +984,7 @@ bool
 TMXBuilder::similar(wstring const &s1, wstring const &s2)
 {
   unsigned int l1 = s1.size();
-  unsigned int l2 = s2.size(); 
+  unsigned int l2 = s2.size();
 
   if((l1 <= low_limit) && (l2 <= low_limit))
   {
@@ -997,7 +997,7 @@ TMXBuilder::similar(wstring const &s1, wstring const &s2)
     int ed = editDistance(s1, s2, maxlength);
 
     if(double(ed) < edit_distance_percent*double(maxlength))
-    { 
+    {
       return double(minlength)/double(maxlength) > percent;
     }
     else
@@ -1023,5 +1023,5 @@ TMXBuilder::setTranslation(string const &filename)
   {
     _setmode(_fileno(freference), _O_U8TEXT);
   }
-#endif     
+#endif
 }

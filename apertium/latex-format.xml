@@ -15,7 +15,7 @@
       <begin regexp='"&lt;!--"'/>
       <end regexp='"--&gt;"'/>
     </format-rule>
-    
+
     <format-rule type="comment" eos="no" priority="1">
       <begin regexp='"&lt;COMMENT&gt;"'/>
       <end regexp='"&lt;/COMMENT&gt;"'/>
@@ -28,125 +28,125 @@
 
 
     <format-rule type="comment" eos="no" priority="2">
-      <begin regexp='"&lt;cite"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>      
+      <begin regexp='"&lt;cite"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
       <end regexp='"&lt;/CONTENTS&gt;"'/>
     </format-rule>
 
     <format-rule type="comment" eos="no" priority="2">
-      <begin regexp='"&lt;ref"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>      
+      <begin regexp='"&lt;ref"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
       <end regexp='"&lt;/CONTENTS&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;part"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>  
-    </format-rule>
-    
-    <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;part"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;PARAM&gt;"'/>  
+      <tag regexp='"&lt;part"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;chapter"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>  
+      <tag regexp='"&lt;part"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;PARAM&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;chapter"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;PARAM&gt;"'/>  
+      <tag regexp='"&lt;chapter"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;section"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>  
+      <tag regexp='"&lt;chapter"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;PARAM&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;section"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;PARAM&gt;"'/>  
+      <tag regexp='"&lt;section"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;title"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>  
+      <tag regexp='"&lt;section"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;PARAM&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;title"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;PARAM&gt;"'/>  
-    </format-rule>
-    
-    <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;mline"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>  
+      <tag regexp='"&lt;title"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;thanks"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>  
+      <tag regexp='"&lt;title"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;PARAM&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;subsection"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>  
+      <tag regexp='"&lt;mline"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;paragraph"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>  
-    </format-rule>   
-
-    <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;subsection"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;PARAM&gt;"'/>  
+      <tag regexp='"&lt;thanks"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;subsubsection"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>  
+      <tag regexp='"&lt;subsection"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;subsubsection"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;PARAM&gt;"'/>  
+      <tag regexp='"&lt;paragraph"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;subsubsubsection"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>  
+      <tag regexp='"&lt;subsection"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;PARAM&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;subsubsubsection"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;PARAM&gt;"'/>  
+      <tag regexp='"&lt;subsubsection"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;subsubsubsubsection"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>  
-    </format-rule>
-    
-    <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;subsubsubsubsection"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;PARAM&gt;"'/>  
-    </format-rule>
-    
-    <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;subsubsubsubsubsection"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>  
+      <tag regexp='"&lt;subsubsection"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;PARAM&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;subsubsubsubsubsection"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;PARAM&gt;"'/>  
+      <tag regexp='"&lt;subsubsubsection"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;frametitle"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>  
-    </format-rule>
-    
-    <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;frametitle"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;PARAM&gt;"'/>  
-    </format-rule>
-    
-    <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;block&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>  
+      <tag regexp='"&lt;subsubsubsection"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;PARAM&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;caption"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>  
+      <tag regexp='"&lt;subsubsubsubsection"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
     </format-rule>
-    
+
     <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;footnote"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>  
+      <tag regexp='"&lt;subsubsubsubsection"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;PARAM&gt;"'/>
     </format-rule>
-    
+
     <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;framebox"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>  
+      <tag regexp='"&lt;subsubsubsubsubsection"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
     </format-rule>
-     
+
     <format-rule type="open" eos="yes" priority="2">
-      <tag regexp='"&lt;parbox"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"[^\&lt;]+"&lt;/CONTENTS&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>  
+      <tag regexp='"&lt;subsubsubsubsubsection"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;PARAM&gt;"'/>
+    </format-rule>
+
+    <format-rule type="open" eos="yes" priority="2">
+      <tag regexp='"&lt;frametitle"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
+    </format-rule>
+
+    <format-rule type="open" eos="yes" priority="2">
+      <tag regexp='"&lt;frametitle"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;PARAM&gt;"'/>
+    </format-rule>
+
+    <format-rule type="open" eos="yes" priority="2">
+      <tag regexp='"&lt;block&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
+    </format-rule>
+
+    <format-rule type="open" eos="yes" priority="2">
+      <tag regexp='"&lt;caption"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
+    </format-rule>
+
+    <format-rule type="open" eos="yes" priority="2">
+      <tag regexp='"&lt;footnote"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
+    </format-rule>
+
+    <format-rule type="open" eos="yes" priority="2">
+      <tag regexp='"&lt;framebox"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
+    </format-rule>
+
+    <format-rule type="open" eos="yes" priority="2">
+      <tag regexp='"&lt;parbox"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"[^\&lt;]+"&lt;/CONTENTS&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="yes" priority="2">
@@ -154,46 +154,46 @@
     </format-rule>
 
     <format-rule type="open" eos="no" priority="2">
-      <tag regexp='"&lt;textit"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>  
+      <tag regexp='"&lt;textit"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
     </format-rule>
 
     <format-rule type="close" eos="no" priority="2">
-      <tag regexp='"&lt;/CONTENTS-noeos&gt;"'/>  
-    </format-rule>
-    
-    <format-rule type="open" eos="no" priority="2">
-      <tag regexp='"&lt;emph"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>  
+      <tag regexp='"&lt;/CONTENTS-noeos&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="no" priority="2">
-      <tag regexp='"&lt;textbf"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>  
+      <tag regexp='"&lt;emph"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
+    </format-rule>
+
+    <format-rule type="open" eos="no" priority="2">
+      <tag regexp='"&lt;textbf"(_STAR)?"/&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="yes" priority="4">
-      <tag regexp='"&lt;CONTENTS&gt;"[ \t\n\r]*"&lt;sf/&gt;"'/>      
+      <tag regexp='"&lt;CONTENTS&gt;"[ \t\n\r]*"&lt;sf/&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="yes" priority="4">
-      <tag regexp='"&lt;CONTENTS&gt;"[ \t\n\r]*"&lt;bf/&gt;"'/>      
+      <tag regexp='"&lt;CONTENTS&gt;"[ \t\n\r]*"&lt;bf/&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="yes" priority="4">
-      <tag regexp='"&lt;CONTENTS&gt;"[ \t\n\r]*"&lt;em/&gt;"'/>      
+      <tag regexp='"&lt;CONTENTS&gt;"[ \t\n\r]*"&lt;em/&gt;"'/>
     </format-rule>
 
     <format-rule type="open" eos="yes" priority="4">
-      <tag regexp='"&lt;CONTENTS&gt;"[ \t\n\r]*"&lt;sc/&gt;"'/>      
+      <tag regexp='"&lt;CONTENTS&gt;"[ \t\n\r]*"&lt;sc/&gt;"'/>
     </format-rule>
 
     <format-rule type="comment" eos="yes" priority="4">
-      <begin regexp='"&lt;CONTENTS&gt;"'/>      
+      <begin regexp='"&lt;CONTENTS&gt;"'/>
       <end regexp='"&lt;/CONTENTS&gt;"'/>
     </format-rule>
 
     <format-rule type="close" eos="yes" priority="4">
       <tag regexp='"&lt;/CONTENTS&gt;"'/>
     </format-rule>
-        
+
     <format-rule type="comment" eos="yes" priority="4">
       <begin regexp='"&lt;PARAM&gt;"'/>
       <end regexp='"&lt;/PARAM&gt;"'/>
@@ -240,23 +240,23 @@
     <format-rule type="empty" eos="yes" priority="4">
       <tag regexp='"&lt;item/&gt;"'/>
     </format-rule>
-    
-    
+
+
 
     <format-rule type="open" eos="no" priority="5">
       <tag regexp='"&lt;"[a-zA-Z][^&gt;]*"&gt;"'/>
     </format-rule>
-    
+
     <format-rule type="close" eos="no" priority="5">
       <tag regexp='"&lt;/"[a-zA-Z][^&gt;]*"&gt;"'/>
     </format-rule>
-    
+
 <!--    <format-rule type="empty" eos="no" priority="5">
       <tag regexp='"&amp;"([a-zA-Z]+|"#x"[0-9a-fA-F]{1,4}|"#"[0-9]{1,8})";"'/>
     </format-rule> -->
 
     <format-rule type="empty" eos="yes" priority="6">
-      <tag regexp='"&lt;/PARAM&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>  
+      <tag regexp='"&lt;/PARAM&gt;"[ \t\n\r]*"&lt;CONTENTS&gt;"'/>
     </format-rule>
 
 

@@ -37,7 +37,7 @@ awk 'BEGIN{FS=" "}
   for(i=2; i<=NF; i++) {
     if (length(c)>0)
       c= c " "
-    c = c $i  
+    c = c $i
   }
   print c;
 }' > $OUTFILE

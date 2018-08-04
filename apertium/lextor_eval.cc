@@ -57,7 +57,7 @@ LexTorEval::LexTorEval(wistream* iref) {
 LexTorEval::~LexTorEval() {
 }
 
-void 
+void
 LexTorEval::print_evaluation() {
   wcerr<<L"# of words.......................................... "<<nwords<<L"\n"
       <<L"# of ignored words.................................. "<<nignored<<L"\n"
@@ -84,7 +84,7 @@ LexTorEval::print_evaluation() {
   }
 }
 
-void 
+void
 LexTorEval::evalword(LexTorWord& ltword, int winner, LexTorData* lextor_data) {
   wstring reduced_w=lextor_data->reduce(ltword.get_lexical_choice(winner,false));
   wstring word=lextor_data->reduce(ltword.get_word_string());
@@ -98,9 +98,9 @@ LexTorEval::evalword(LexTorWord& ltword, int winner, LexTorData* lextor_data) {
   //  return;
   //}
 
-  if (wref.find(L">__IGNORE") != wstring::npos) 
+  if (wref.find(L">__IGNORE") != wstring::npos)
     ignore=true;
-  
+
   if (!ignore) {
     nwords+=1.0;
     reduced_wref=lextor_data->reduce(wref);

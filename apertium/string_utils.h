@@ -36,7 +36,7 @@ namespace Apertium
 
 class StringUtils {
   public:
-  
+
   static wstring trim(wstring const &str);
 
   static vector<wstring> split_wstring(wstring const &input, wstring const &delimiter);
@@ -47,9 +47,9 @@ class StringUtils {
   static wstring substitute(const wstring &source, const wstring &olds, const wstring &news);
 
   static wstring itoa(int n);
-  
+
   static string itoa_string(int n);
-  
+
   static wstring ftoa(double f);
 
   static wstring tolower(wstring const &s);

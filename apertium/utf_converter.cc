@@ -59,7 +59,7 @@ namespace UtfConverter
   static const UTF32 halfBase = 0x0010000UL;
   static const UTF32 halfMask = 0x3FFUL;
 
-  
+
   void conversionError()
   {
     wcerr << L"Error: conversion error" << endl;
@@ -69,7 +69,7 @@ namespace UtfConverter
   /* --------------------------------------------------------------------- */
 
   ConversionResult ConvertUTF32toUTF16 (
-					const UTF32** sourceStart, const UTF32* sourceEnd, 
+					const UTF32** sourceStart, const UTF32* sourceEnd,
 					UTF16** targetStart, UTF16* targetEnd, ConversionFlags flags) {
     ConversionResult result = conversionOK;
     const UTF32* source = *sourceStart;
@@ -118,7 +118,7 @@ namespace UtfConverter
   /* --------------------------------------------------------------------- */
 
   ConversionResult ConvertUTF16toUTF32 (
-					const UTF16** sourceStart, const UTF16* sourceEnd, 
+					const UTF16** sourceStart, const UTF16* sourceEnd,
 					UTF32** targetStart, UTF32* targetEnd, ConversionFlags flags) {
     ConversionResult result = conversionOK;
     const UTF16* source = *sourceStart;
@@ -192,7 +192,7 @@ namespace UtfConverter
    * This table contains as many values as there might be trailing bytes
    * in a UTF-8 sequence.
    */
-  static const UTF32 offsetsFromUTF8[6] = { 0x00000000UL, 0x00003080UL, 0x000E2080UL, 
+  static const UTF32 offsetsFromUTF8[6] = { 0x00000000UL, 0x00003080UL, 0x000E2080UL,
 					    0x03C82080UL, 0xFA082080UL, 0x82082080UL };
 
   /*
@@ -217,7 +217,7 @@ namespace UtfConverter
   /* --------------------------------------------------------------------- */
 
   ConversionResult ConvertUTF16toUTF8 (
-				       const UTF16** sourceStart, const UTF16* sourceEnd, 
+				       const UTF16** sourceStart, const UTF16* sourceEnd,
 				       UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags) {
     ConversionResult result = conversionOK;
     const UTF16* source = *sourceStart;
@@ -226,7 +226,7 @@ namespace UtfConverter
       UTF32 ch;
       unsigned short bytesToWrite = 0;
       const UTF32 byteMask = 0xBF;
-      const UTF32 byteMark = 0x80; 
+      const UTF32 byteMark = 0x80;
       const UTF16* oldSource = source; /* In case we have to back up because of target overflow. */
       ch = *source++;
       /* If we have a surrogate pair, convert to UTF32 first. */
@@ -339,7 +339,7 @@ namespace UtfConverter
   /* --------------------------------------------------------------------- */
 
   ConversionResult ConvertUTF8toUTF16 (
-				       const UTF8** sourceStart, const UTF8* sourceEnd, 
+				       const UTF8** sourceStart, const UTF8* sourceEnd,
 				       UTF16** targetStart, UTF16* targetEnd, ConversionFlags flags) {
     ConversionResult result = conversionOK;
     const UTF8* source = *sourceStart;
@@ -412,7 +412,7 @@ namespace UtfConverter
   /* --------------------------------------------------------------------- */
 
   ConversionResult ConvertUTF32toUTF8 (
-				       const UTF32** sourceStart, const UTF32* sourceEnd, 
+				       const UTF32** sourceStart, const UTF32* sourceEnd,
 				       UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags) {
     ConversionResult result = conversionOK;
     const UTF32* source = *sourceStart;
@@ -421,7 +421,7 @@ namespace UtfConverter
       UTF32 ch;
       unsigned short bytesToWrite = 0;
       const UTF32 byteMask = 0xBF;
-      const UTF32 byteMark = 0x80; 
+      const UTF32 byteMark = 0x80;
       ch = *source++;
       if (flags == strictConversion ) {
 	/* UTF-16 surrogate values are illegal in UTF-32 */
@@ -443,7 +443,7 @@ namespace UtfConverter
       ch = UNI_REPLACEMENT_CHAR;
       result = sourceIllegal;
       }
-	
+
       target += bytesToWrite;
       if (target > targetEnd) {
 	--source; /* Back up source pointer! */
@@ -465,7 +465,7 @@ namespace UtfConverter
   /* --------------------------------------------------------------------- */
 
   ConversionResult ConvertUTF8toUTF32 (
-				       const UTF8** sourceStart, const UTF8* sourceEnd, 
+				       const UTF8** sourceStart, const UTF8* sourceEnd,
 				       UTF32** targetStart, UTF32* targetEnd, ConversionFlags flags) {
     ConversionResult result = conversionOK;
     const UTF8* source = *sourceStart;

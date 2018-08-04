@@ -259,7 +259,7 @@ TSXReader::procDefMult()
       // do nothing
     }
     else if(name == L"def-mult")
-    { 
+    {
       // do nothing
     }
     else
@@ -271,7 +271,7 @@ TSXReader::procDefMult()
 
 void
 TSXReader::procTagset()
-{ 
+{
   while(type == XML_READER_TYPE_END_ELEMENT || name != L"tagset")
   {
     step();
@@ -280,7 +280,7 @@ TSXReader::procTagset()
       unexpectedTag();
     }
   }
-  
+
   while(type != XML_READER_TYPE_END_ELEMENT || name != L"tagset")
   {
     step();
@@ -332,7 +332,7 @@ TSXReader::procLabelSequence()
   {
     parseError(L"<label-item> tag expected");
   }
-  
+
   forbid_rule.tagi = (*tag_index)[L"TAG_" + attrib(L"label")];
 
   step();
@@ -345,7 +345,7 @@ TSXReader::procLabelSequence()
     parseError(L"<label-item> tag expected");
   }
   forbid_rule.tagj = (*tag_index)[L"TAG_" + attrib(L"label")];
-  
+
   forbid_rules->push_back(forbid_rule);
 }
 
@@ -385,7 +385,7 @@ TSXReader::procForbid()
     {
       parseError(L"Unexpected '" + name + L"' tag");
     }
-  }  
+  }
 }
 
 void
@@ -541,7 +541,7 @@ TSXReader::parse()
   newConstant(L"kIGNORAR");
   newConstant(L"kBEGIN");
   newConstant(L"kUNKNOWN");
-  
+
   plist->insert((*tag_index)[L"TAG_LPAR"], L"", L"lpar");
   plist->insert((*tag_index)[L"TAG_RPAR"], L"", L"rpar");
   plist->insert((*tag_index)[L"TAG_LQUEST"], L"", L"lquest");

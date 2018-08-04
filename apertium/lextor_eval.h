@@ -49,8 +49,8 @@ private:
   wistream* refer;
 
   set<wstring> words2ignore;
-public:  
- 
+public:
+
   LexTorEval(wistream *iref);
 
   ~LexTorEval();
