@@ -29,8 +29,7 @@ TRXReader::ANY_TAG = L"<ANY_TAG>";
 wstring const
 TRXReader::ANY_CHAR = L"<ANY_CHAR>";
 
-TRXReader::TRXReader():
-default_weight(0.0000)
+TRXReader::TRXReader()
 {
   td.getAlphabet().includeSymbol(ANY_TAG);
   td.getAlphabet().includeSymbol(ANY_CHAR);
@@ -43,10 +42,10 @@ TRXReader::insertLemma(int const base, wstring const &lemma)
   static int const any_char = td.getAlphabet()(ANY_CHAR);
   if(lemma == L"")
   {
-    retval = td.getTransducer().insertSingleTransduction(any_char, retval, default_weight);
-    td.getTransducer().linkStates(retval, retval, any_char, default_weight);
-    int another = td.getTransducer().insertSingleTransduction(L'\\', retval, default_weight);
-    td.getTransducer().linkStates(another, retval, any_char, default_weight);
+    retval = td.getTransducer().insertSingleTransduction(any_char, retval);
+    td.getTransducer().linkStates(retval, retval, any_char);
+    int another = td.getTransducer().insertSingleTransduction(L'\\', retval);
+    td.getTransducer().linkStates(another, retval, any_char);
   }
   else
   {
@@ -54,22 +53,20 @@ TRXReader::insertLemma(int const base, wstring const &lemma)
     {
       if(lemma[i] == L'\\')
       {
-        retval = td.getTransducer().insertSingleTransduction(L'\\', retval, default_weight);
+        retval = td.getTransducer().insertSingleTransduction(L'\\', retval);
         i++;
         retval = td.getTransducer().insertSingleTransduction(int(lemma[i]),
-                                                             retval,
-                                                             default_weight);
+                                                             retval);
       }
       else if(lemma[i] == L'*')
       {
-        retval = td.getTransducer().insertSingleTransduction(any_char, retval, default_weight);
-        td.getTransducer().linkStates(retval, retval, any_char, default_weight);
+        retval = td.getTransducer().insertSingleTransduction(any_char, retval);
+        td.getTransducer().linkStates(retval, retval, any_char);
       }
       else
       {
         retval = td.getTransducer().insertSingleTransduction(int(lemma[i]),
-                                                             retval,
-                                                             default_weight);
+                                                             retval);
       }
     }
   }
@@ -88,8 +85,8 @@ TRXReader::insertTags(int const base, wstring const &tags)
     {
       if(tags[i] == L'*')
       {
-        retval = td.getTransducer().insertSingleTransduction(any_tag, retval, default_weight);
-        td.getTransducer().linkStates(retval, retval, any_tag, default_weight);
+        retval = td.getTransducer().insertSingleTransduction(any_tag, retval);
+        td.getTransducer().linkStates(retval, retval, any_tag);
         i++;
       }
       else
@@ -112,7 +109,7 @@ TRXReader::insertTags(int const base, wstring const &tags)
         }
         symbol += L'>';
         td.getAlphabet().includeSymbol(symbol);
-        retval = td.getTransducer().insertSingleTransduction(td.getAlphabet()(symbol), retval, default_weight);
+        retval = td.getTransducer().insertSingleTransduction(td.getAlphabet()(symbol), retval);
       }
     }
   }
@@ -217,8 +214,8 @@ TRXReader::procRules()
           if(td.seen_rules.find(*it) == td.seen_rules.end())
           {
             const int symbol = td.countToFinalSymbol(count);
-            const int fin = td.getTransducer().insertSingleTransduction(symbol, *it, default_weight);
-            td.getTransducer().setFinal(fin, default_weight);
+            const int fin = td.getTransducer().insertSingleTransduction(symbol, *it);
+            td.getTransducer().setFinal(fin);
             td.seen_rules[*it] = count;
           }
           else
@@ -256,12 +253,12 @@ TRXReader::procRules()
               it != limit; it++)
           {
             // mark of begin of word
-            int tmp = td.getTransducer().insertSingleTransduction(L'^', *it, default_weight);
+            int tmp = td.getTransducer().insertSingleTransduction(L'^', *it);
             if(*it != td.getTransducer().getInitial())
             {
               // insert optional blank between two words
-              int alt = td.getTransducer().insertSingleTransduction(L' ', *it, default_weight);
-              td.getTransducer().linkStates(alt, tmp, L'^', default_weight);
+              int alt = td.getTransducer().insertSingleTransduction(L' ', *it);
+              td.getTransducer().linkStates(alt, tmp, L'^');
             }
 
             // insert word
@@ -269,7 +266,7 @@ TRXReader::procRules()
             tmp = insertTags(tmp, range.first->second.tags);
 
             // insert mark of end of word
-            tmp = td.getTransducer().insertSingleTransduction(L'$', tmp, default_weight);
+            tmp = td.getTransducer().insertSingleTransduction(L'$', tmp);
 
             // set as alive_state
             alive_states_new.insert(tmp);
