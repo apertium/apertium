@@ -169,7 +169,7 @@ TransferData::write(FILE *output)
     transducer.setFinal(it->first, it->second, false);
   }
 
-  transducer.write(output, alphabet.size(), false);
+  transducer.write(output, alphabet.size());
 
   // finals_rules
 
