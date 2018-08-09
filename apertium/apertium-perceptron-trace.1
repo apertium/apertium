@@ -1,0 +1,32 @@
+.TH apertium-perceptron-trace 1 2018-08-09 "" ""
+.SH NAME
+apertium-perceptron-trace \- This application is part of (
+.B apertium 
+)
+.PP
+This tool is part of the apertium open-source machine translation toolbox: \fBhttp://www.apertium.org\fR.
+.SH SYNOPSIS
+.B apertium-perceptron-trace
+model <binary model file> Output features and weights from a model file.
+.PP
+.B apertium-perceptron-trace
+mtx <mtx file> Output macros and features from an mtx file.
+.PP
+.B  apertium-perceptron-trace
+path <mtx file> <untagged> <tagged> Trace a particular path through giving
+which features fire and the resulting score. Useful for interactively designing
+feature sets.
+.PP
+.SH OPTIONS
+.TP
+.B \-h, \-\-help
+Display this help.
+.PP
+.SH SEE ALSO
+.I apertium\fR(1).
+.PP
+.SH AUTHOR
+Copyright (c) 2018 Universitat d'Alacant / Universidad de Alicante.
+This is free software. You may redistribute copies of it under the terms
+of the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.
+
