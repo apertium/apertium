@@ -200,8 +200,8 @@ TaggerWord::get_lexical_form(TTag &t, int const TAG_kEOF) {
 
   //if ((superficial_form.length()>0)&&(superficial_form[superficial_form.length()-1]=='\''))
   //   //Si la forma superficial termina en apostrofo metemos un espacio en blanco tras la cadena '/$'
-  //   //o '/'. De no hacerlo en la traducción aparecerán dos palabras sin blanco alguno.
-  //   ret+=" "; //Quizá este no sea el sitio apropiado para hacer esto, lo suyo sería un módulo
+  //   //o '/'. De no hacerlo en la traducciï¿½n aparecerï¿½n dos palabras sin blanco alguno.
+  //   ret+=" "; //Quizï¿½ este no sea el sitio apropiado para hacer esto, lo suyo serï¿½a un mï¿½dulo
   //             //antes del tagger o del anmor.
 
   return ret;
@@ -243,6 +243,7 @@ TaggerWord::get_all_chosen_tag_first(TTag &t, int const TAG_kEOF) {
 	if (*it != t) {
 	  ret+=L"/";
           ret.append(lexical_forms[*it]);
+          wcerr << "TAG: " << *it << " MEANING " << lexical_forms[*it] << endl;
 	}
       }
     }

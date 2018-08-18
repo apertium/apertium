@@ -721,6 +721,7 @@ HMM::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First) {
       for (jtag=pretags.begin(); jtag!=pretags.end(); jtag++) {	//For all tags from the previous word
 	j=*jtag;
 	x = alpha[1-nwpend%2][j]*(tdhmm.getA())[j][i]*(tdhmm.getB())[i][k];
+  wcerr << "WORD = (" << *word << ") TAGSET: " << i << "," << j << " - Prob: " << x << endl;
 	if (alpha[nwpend%2][i]<=x) {
 	  if (nwpend>1)
 	    best[nwpend%2][i] = best[1-nwpend%2][j];
@@ -750,6 +751,7 @@ HMM::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First) {
 	  wpend[t].set_show_sf(show_sf);
 	  wstring const &micad = wpend[t].get_lexical_form(best[nwpend%2][tag][t], (tdhmm.getTagIndex())[L"TAG_kEOF"]);
 	  fputws_unlocked(micad.c_str(), Output);
+    wcerr << "DISAMB:" << micad << std::endl;
 	}
       }
 
@@ -757,7 +759,7 @@ HMM::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First) {
       wpend.clear();
       alpha[0][tag] = 1;
     }
-
+    wcerr << "END: Word: " << *word << "\n";
     delete word;
 
     if(morpho_stream.getEndOfFile())
