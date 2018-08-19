@@ -272,6 +272,13 @@ TaggerDataHMM::read(FILE *in)
   // read discards on ambiguity
   discard.clear();
 
+  for (int i = 0; i < N; i++) {
+    for (int j=0; j < N; j++) {
+      wcerr << a[i][j] << "\t";
+    }
+    wcerr << endl;
+  }
+
   unsigned int limit = Compression::multibyte_read(in);
   if(feof(in))
   {
