@@ -82,9 +82,12 @@ Collection::read(FILE *input)
   {
     set<int> myset;
     int set_size = Compression::multibyte_read(input);
+    wcerr << "print size: " << set_size << endl;
     for(; set_size != 0; set_size--)
     {
-      myset.insert(Compression::multibyte_read(input));
+      int value = Compression::multibyte_read(input);
+      wcerr << "\t" << set_size << ": " << value << endl;
+      myset.insert(value);
     }
     add(myset);
   }
