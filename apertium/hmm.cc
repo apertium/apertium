@@ -721,7 +721,7 @@ HMM::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First) {
       for (jtag=pretags.begin(); jtag!=pretags.end(); jtag++) {	//For all tags from the previous word
 	j=*jtag;
 	x = alpha[1-nwpend%2][j]*(tdhmm.getA())[j][i]*(tdhmm.getB())[i][k];
-  wcerr << "WORD = (" << *word << ") TAGSET: " << i << "," << j << " - Prob: " << x;
+  wcerr << "WORD = (" << *word << ") TAGSET: " << i << "," << j << " - Prob: " << x << "k (" << k << ") ";
   wcerr << "[" << alpha[1-nwpend%2][j] << "," << (tdhmm.getA())[j][i] << "," << (tdhmm.getB())[i][k] << "]" << endl;
 	if (alpha[nwpend%2][i]<=x) {
 	  if (nwpend>1)
