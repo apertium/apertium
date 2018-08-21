@@ -711,7 +711,7 @@ HMM::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First) {
     ambg_class_tags = require_similar_ambiguity_class(tdhmm, tags, *word, debug);
 
     k = output[ambg_class_tags];  //Ambiguity class the word belongs to
-
+    wcerr << "WORD = (" << *word << ") " << " Ambiguity class: " << ambg_class_tags << endl;
     clear_array_double(&alpha[nwpend%2][0], N);
     clear_array_vector(&best[nwpend%2][0], N);
 
