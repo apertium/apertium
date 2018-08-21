@@ -58,9 +58,10 @@ Collection::operator[](const set<int> &t)
 {
   if(has_not(t))
   {
+    wcerr << "before" << index.size();
     index[t] = index.size()-1;
     element.push_back(&(index.find(t)->first));
-    wcerr << "t was not here. ";
+    wcerr << " t was not here. ";
   }
   wcerr << index[t] << endl;
 
