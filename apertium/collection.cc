@@ -22,6 +22,10 @@
 
 using namespace Apertium;
 
+Collection::Collection() {
+  wcerr << "Initializing collection. Size: " << index.size() << endl;
+}
+
 int
 Collection::size()
 {

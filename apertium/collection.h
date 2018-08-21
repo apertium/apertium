@@ -31,6 +31,7 @@ class Collection {
   map <set<int>, int> index;
   vector <const set<int> *> element;
 public:
+  Collection();
   /** Returns the collection's size.
    */
   int size (void);
