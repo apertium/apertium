@@ -47,7 +47,10 @@ Collection::operator[](const set<int> &t)
   {
     index[t] = index.size()-1;
     element.push_back(&(index.find(t)->first));
+    wcerr << "t was not here. ";
   }
+  wcerr << index[t] << endl;
+
   return index[t];
 }
 
@@ -82,12 +85,9 @@ Collection::read(FILE *input)
   {
     set<int> myset;
     int set_size = Compression::multibyte_read(input);
-    wcerr << "print size: " << set_size << endl;
     for(; set_size != 0; set_size--)
     {
-      int value = Compression::multibyte_read(input);
-      wcerr << "\t" << set_size << ": " << value << endl;
-      myset.insert(value);
+      myset.insert(Compression::multibyte_read(input));
     }
     add(myset);
   }
