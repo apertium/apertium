@@ -273,8 +273,8 @@ TaggerDataHMM::read(FILE *in)
   discard.clear();
 
   for (int i = 0; i < N; i++) {
-    for (int j=0; j < N; j++) {
-      wcerr << a[i][j] << "\t";
+    for (int j=0; j < M; j++) {
+      wcerr << b[i][j] << "\t";
     }
     wcerr << endl;
   }
