@@ -45,7 +45,9 @@ Collection::operator[](const set<int> &t)
 {
   if(has_not(t))
   {
-    index[t] = index.size()-1;
+    int position = index.size();
+    index[t] = position;
+
     element.push_back(&(index.find(t)->first));
   }
   return index[t];
