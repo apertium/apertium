@@ -1,50 +1,60 @@
-.TH apertium-deslatex 1 2012-02-29 "" ""
-.SH NAME
-apertium-deslatex \- This application is part of (
-.B apertium
-)
-.PP
-This tool is part of the apertium open-source machine translation toolbox: \fBhttp://www.apertium.org\fR.
-.SH SYNOPSIS
-.B apertium-deslatex
-[ \-h ] [ \-i ] [ \-n ]
-[ <input file> [ <output file> ] ]
-.PP
-.SH DESCRIPTION
-.BR apertium-deslatex
-This filter preprocess apertium-prelatex output to a deformatted 'XMLish'
-LaTeX custom format. The output suitable for
-processing with lt-proc. Format information (newlines, tabs, etc.) is enclosed in brackets so that lt-proc treats it as whitespace between words.
-.SH OPTIONS
-.TP
-.B \-h, \-\-help
+.Dd February 29, 2012
+.Dt APERTIUM-DESLATEX 1
+.Os Apertium
+.Sh NAME
+.Nm apertium-deslatex
+.Nd LaTeX format processor for Apertium
+.Sh SYNOPSIS
+.Nm apertium-deslatex
+.Op Fl hin
+.Op Ar input_file Op Ar output_file
+.Sh DESCRIPTION
+This tool is part of
+.Lk https://www.apertium.com/ the Apertium open-source machine translation \
+toolbox .
+.Pp
+The
+.Nm apertium-deslatex
+filter preprocesses
+.Xr apertium-prelatex 1
+output to a deformatted
+.Dq XMLish
+LaTeX custom format.
+The output is suitable for processing with
+.Xr lt-proc 1 .
+Format information (newlines, tabs, etc.) is enclosed in brackets so that
+.Xr lt-proc 1
+treats it as whitespace between words.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl h , Fl Fl help
 Display this help.
-.B \-i
-Makes the addition of trailing sentence terminator (".") unconditional, often
-leading to duplicates.
-.B \-n
+.It Fl i
+Makes the addition of trailing sentence terminator
+.Pq Ql \&.
+unconditional, often leading to duplicates.
+.It Fl n
 Suppresses the addition of a trailing sentence terminator.
-.PP
-.SH EXAMPLE
-.TP
-You could write the following to show how the word "gener" is analysed:
-.TP
-echo "<textit/><CONTENTS>gener</CONTENTS>" | apertium-deslatex | lt-proc ca-es.automorf.bin
-.PP
-.SH SEE ALSO
-.I apertium-destxt\fR(1),
-.I apertium-prelatex\fR(1),
-.I apertium-postlatex\fR(1),
-.I apertium-relatex\fR(1),
-.I apertium-postlatex-raw\fR(1),
-.I lt-proc\fR(1),
-.I apertium\fR(1).
-.SH BUGS
-Complicated constructions in LaTeX (i.e. custom defined tags) are not (yet)
+.El
+.Sh EXAMPLES
+You could write the following to show how the word
+.Dq gener
+is analysed:
+.Dl echo Qo <textit/><CONTENTS>gener</CONTENTS> Qc | apertium-deslatex | \
+lt-proc ca-es.automorf.bin
+.Sh SEE ALSO
+.Xr apertium 1 ,
+.Xr apertium-destxt 1 ,
+.Xr apertium-postlatex 1 ,
+.Xr apertium-postlatex-raw 1 ,
+.Xr apertium-prelatex 1 ,
+.Xr apertium-relatex 1 ,
+.Xr lt-proc 1
+.Sh COPYRIGHT
+Copyright \(co 2005, 2006 Universitat d'Alacant / Universidad de Alicante.
+This is free software.
+You may redistribute copies of it under the terms of
+.Lk https://www.gnu.org/licenses/gpl.html the GNU General Public License .
+.Sh BUGS
+Complicated constructions in LaTeX (e.g., custom defined tags) are not (yet)
 supported.
-.PP
-.SH AUTHOR
-Copyright (c) 2005, 2006 Universitat d'Alacant / Universidad de Alicante.
-This is free software.  You may redistribute copies of it under the terms
-of the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.
-

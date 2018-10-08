@@ -1,34 +1,33 @@
-.TH apertium-rehtml 1 2006-03-21 "" ""
-.SH NAME
-apertium-rehtml \- This application is part of (
-.B apertium
-)
-.PP
-This tool is part of the apertium open-source machine translation
-toolbox: \fBhttp://www.apertium.org\fR.
-.SH SYNOPSIS
-.B apertium-rehtml
-[ <input file> [ <output file> ] ]
-.PP
-.SH DESCRIPTION
-.BR apertium-rehtml
-is an HTML format processor. It restores the original  HTML formatting
-the text had before being passed through the apertium-deshtml deformatter.
-
-.SH OPTIONS
-.TP
-.B \-h, \-\-help
+.Dd March 21, 2006
+.Dt APERTIUM-REHTML 1
+.Os Apertium
+.Sh NAME
+.Nm apertium-rehtml
+.Nd HTML format processor for Apertium
+.Sh SYNOPSIS
+.Nm apertium-rehtml
+.Op Ar input_file Op Ar output_file
+.Sh DESCRIPTION
+.Nm apertium-rehtml
+is an HTML format processor.
+It restores the original HTML formatting
+the text had before being passed through the
+.Xr apertium-deshtml 1
+deformatter.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl h , Fl Fl help
 Display this help.
-.PP
-.SH SEE ALSO
-.I apertium-retxt\fR(1),
-.I apertium-rertf\fR(1),
-.I lt-proc\fR(1),
-.I apertium\fR(1).
-.SH BUGS
-Lots of...lurking in the dark and waiting for you!
-.SH AUTHOR
-Copyright (c) 2005, 2006 Universitat d'Alacant / Universidad de Alicante.
-This is free software.  You may redistribute copies of it under the terms
-of the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.
-
+.El
+.Sh SEE ALSO
+.Xr apertium 1 ,
+.Xr apertium-rertf 1 ,
+.Xr apertium-retxt 1 ,
+.Xr lt-proc 1
+.Sh COPYRIGHT
+Copyright \(co 2005, 2006 Universitat d'Alacant / Universidad de Alicante.
+This is free software.
+You may redistribute copies of it under the terms of
+.Lk https://www.gnu.org/licenses/gpl.html the GNU General Public License .
+.Sh BUGS
+Many... lurking in the dark and waiting for you!

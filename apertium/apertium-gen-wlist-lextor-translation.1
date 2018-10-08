@@ -1,56 +1,48 @@
-.TH apertium-gen-wlist-lextor-translation 1 2006-12-12 "" ""
-.SH NAME
-apertium-gen-wlist-lextor-translation \- This application is part of
-(
-.B apertium
-)
-.PP
-This tool is part of the apertium machine translation
-architecture: \fBhttp://apertium.org\fR.
-.SH SYNOPSIS
-.B apertium\-gen\-wlist\-lextor\-translation
-.B \-\-mono|\-m\fR dic.bin
-.B \-\-bil|\-b\fR bildic.bin
-.B \-\-wlist|\-w\fR wlistfile
-.PP
-.SH DESCRIPTION
-.BR apertium\-gen\-wlist\-lextor\-translation
+.Dd December 12, 2006
+.Dt APERTIUM-GEN-WLIST-LEXTOR-TRANSLATION 1
+.Os Apertium
+.Sh NAME
+.Nm apertium-gen-wlist-lextor-translation
+.Nd polysemous word translation generator for Apertium
+.Sh SYNOPSIS
+.Nm apertium-gen-wlist-lextor-translation
+.Op Fl b Ar bi_dictionary |
+.Op Fl m Ar mono_dictionary |
+.Op Fl w Ar wordlist_file
+.Sh DESCRIPTION
+.Nm apertium-gen-wlist-lextor-translation
 is the application responsible for generating all the possible
 translations of polysemous words.
-.SH OPTIONS
-.TP
-.B \-\-mono|\-m\fR dic.bin
-.TP
- Specifies the monolingual lexical selection dictionary to use (see apertium\-gen\-lextormono).
-.TP
-.B \-\-bil|\-b\fR bildic.bin
-.TP
-Specifies the bilingual lexical selection ditionary to use (see apertium\-gen\-lextorbil).
-.TP
-.B \-\-wlist|-w\fR wlistfile
-.TP
-Specifies the list of words to translate (see apertium\-gen\-wlist\-lextor).
-.TP
-.B \-\-help|\-h\fR
-.TP
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl m Ar dic.bin , Fl Fl mono Ar dic.bin
+Specifies the monolingual lexical selection dictionary to use (see
+.Xr apertium-gen-lextormono 1 ) .
+.It Fl b Ar bildic.bin , Fl Fl bil Ar bildic.bin
+Specifies the bilingual lexical selection ditionary to use (see
+.Xr apertium-gen-lextorbil 1 ) .
+.It Fl w Ar wlistfile , Fl Fl wlist Ar wlistfile
+Specifies the list of words to translate (see
+.Xr apertium-gen-wlist-lextor 1 ) .
+.It Fl h , Fl Fl help
 Shows a brief usage help.
-.TP
-.B \-\-version|\-v\fR
-.TP
-Shows the version string of this tool and it's license.
-.SH FILES
-This tool uses no files apart from the ones associated to each option.
-.PP
-.SH SEE ALSO
-.I apertium\-gen\-lextorbil\fR(1),
-.I apertium\-preprocess\-corpus\-lextor\fR(1),
-.I apertium\-gen\-stopwords\-lextor\fR(1),
-.I apertium\-gen\-wlist\-lextor\fR(1),
-.I apertium\-gen\-lextormono\fR(1),
-.I apertium\-lextor\-eval\fR(1),
-.I apertium\-lextor\fR(1).
-.SH BUGS
-Lots of...lurking in the dark and waiting for you!
-.SH AUTHOR
-(c) 2005,2006 Universitat d'Alacant / Universidad de Alicante. All rights
-reserved.
+.It Fl v , Fl Fl version
+Shows the version string of this tool and its license.
+.El
+.Sh FILES
+This tool uses no files apart from the ones associated with each option.
+.Sh SEE ALSO
+.Xr apertium-gen-lextorbil 1 ,
+.Xr apertium-gen-lextormono 1 ,
+.Xr apertium-gen-stopwords-lextor 1 ,
+.Xr apertium-gen-wlist-lextor 1 ,
+.Xr apertium-lextor 1 ,
+.Xr apertium-lextor-eval 1 ,
+.Xr apertium-preprocess-corpus-lextor 1
+.Sh COPYRIGHT
+Copyright \(co 2005, 2006 Universitat d'Alacant / Universidad de Alicante.
+This is free software.
+You may redistribute copies of it under the terms of
+.Lk https://www.gnu.org/licenses/gpl.html the GNU General Public License .
+.Sh BUGS
+Many... lurking in the dark and waiting for you!

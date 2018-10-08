@@ -1,104 +1,108 @@
-.TH apertium-tagger 1 2006-08-30 "" ""
-.SH NAME
-apertium-tagger \- This application is part of  (
-.B apertium
-)
-.PP
-This tool is part of the apertium open-source machine translation
-architecture: \fBhttp://www.apertium.org\fR.
-.SH SYNOPSIS
-.B apertium-tagger \-\-train|\-t
-{n} DIC CRP TSX PROB [\-\-debug|\-d]\fR
-.PP
-.B apertium-tagger \-\-supervised|\-s
-{n} DIC [CRP] TSX PROB HTAG UNTAG [\-\-debug|\-d]\fR
-.PP
-.B apertium-tagger \-\-retrain|\-r
-{n} CRP PROB [\-\-debug|\-d] \fR
-.PP
-.B apertium-tagger \-\-tagger|\-g
-[\-\-first|\-f] PROB [\-\-debug|\-d] [INPUT [OUTPUT]] \fR
-.PP
-.SH DESCRIPTION
-.BR apertium-tagger
+.Dd August 30, 2006
+.Dt APERTIUM-TAGGER 1
+.Os Apertium
+.Sh NAME
+.Nm apertium-tagger
+.Nd part-of-speech tagger and trainer for Apertium
+.Sh SYNOPSIS
+.Nm apertium-tagger
+.Op Ar options
+.Fl g Ar serialized_tagger Op Ar input Op Ar output
+.Nm apertium-tagger
+.Op Ar options
+.Fl r Ar iterations corpus serialized_tagger
+.Nm apertium-tagger
+.Op Ar options
+.Fl s Ar iterations dictionary corpus tagger_spec serialized_tagger
+.Ar tagged_corpus untagged_corpus
+.Nm apertium-tagger
+.Op Ar options
+.Fl s Cm 0
+.Ar dictionary tagger_spec serialized_tagger tagged_corpus untagged_corpus
+.Nm apertium-tagger
+.Op Ar options
+.Fl s Cm 0 Fl u Ar model serialized_tagger tagged_corpus
+.Nm apertium-tagger
+.Op Ar options
+.Fl t Ar iterations dictionary corpus tagger_spec serialized_tagger
+.Sh DESCRIPTION
+.Nm apertium-tagger
 is the application responsible for the apertium part-of-speech tagger
-training or tagging, depending on the calling options.  This command
-only reads from the standard input if the option \fB\-\-tagger\fR or
-\fB\-g\fR is used.
-.SH OPTIONS
-.TP
-.B \-t {n}, \-\-train {n}
+training or tagging, depending on the calling options.
+This command only reads from the standard input if the option
+.Fl Fl tagger
+or
+.Fl g
+is used.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl t Ar n , Fl Fl train Ar n
 Initializes parameters through Kupiec's method (unsupervised),
-then performs \fBn\fR iterations of the Baum-Welch training algorithm
-(unsupervised).
-.TP
-.B \-s {n}, \-\-supervised {n}
+then performs
+.Ar n
+iterations of the Baum-Welch training algorithm (unsupervised).
+.It Fl s Ar n , Fl Fl supervised Ar n
 Initializes parameters against a hand-tagged text (supervised) through
-the maximum likelihood estimate method, then performs \fBn\fR
-iterations of the Baum-Welch training algorithm (unsupervised)
-The CRP argument can be ommitted only when n=0.
-.TP
-.B \-r {n}, \-\-retrain {n}
-Retrains the model with \fBn\fR additional Baum-Welch iterations
-(unsupervised).
-.TP
-.B \-g, \-\-tagger
+the maximum likelihood estimate method, then performs
+.Ar n
+iterations of the Baum-Welch training algorithm (unsupervised).
+The CRP argument can be ommitted only when
+.Ar n
+= 0.
+.It Fl r Ar n , Fl Fl retrain n
+Retrains the model with
+.Ar n
+additional Baum-Welch iterations (unsupervised).
+.It Fl g , Fl Fl tagger
 Tags input text by means of Viterbi algorithm.
-.TP
-.B \-p, \-\-show\-superficial
+.It Fl p , Fl Fl show-superficial
 Prints the superficial form of the word along side the lexical form
 in the output stream.
-.TP
-.B \-f, \-\-first
-Used in conjuntion with \-g (\-\-tagger) makes the tagger
-give all lexical forms of each word, with the chosen
-one in the first place (after the lemma)
-.TP
-.B \-d, \-\-debug
+.It Fl f , Fl Fl first
+Used in conjunction with
+.Fl g
+.Pq Fl Fl tagger
+makes the tagger give all lexical forms of each word,
+with the chosen one in the first place (after the lemma)
+.It Fl d , Fl Fl debug
 Print error (if any) or debug messages while operating.
-.TP
-.B \-m, \-\-mark
+.It Fl m , Fl Fl mark
 Mark disambiguated words.
-.TP
-.B \-h, \-\-help
+.It Fl h , Fl Fl help
 Display a help message.
-.SH FILES
+.El
+.Sh FILES
 These are the kinds of files used with each option:
-.PP
-.B DIC
+.Bl -tag -width Ds
+.It Ar dictionary
 Full expanded dictionary file
-.PP
-.B CRP
+.It Ar corpus
 Training text corpus file
-.PP
-.B TSX
+.It Ar tagger_spec
 Tagger specification file, in XML format
-.PP
-.B PROB
+.It Ar serialized_tagger
 Tagger data file, built in the training and used while tagging
-.PP
-.B  HTAG
+.It Ar tagged_corpus
 Hand-tagged text corpus
-.PP
-.B UNTAG
-Untagged text corpus, morphological analysis of HTAG corpus to use
-both jointly with \-s option
-.PP
-.B INPUT
+.It Ar untagged_corpus
+Untagged text corpus, morphological analysis of hand-tagged corpus to use
+both jointly with
+.Fl s
+option
+.It Ar input
 Input file, stdin by default
-.PP
-.B OUTPUT
+.It Ar output
 Output file, stdout by default
-.PP
-.SH SEE ALSO
-.I lt-proc\fR(1),
-.I lt-comp\fR(1),
-.I lt-expand\fR(1),
-.I apertium\fR(1).
-.SH BUGS
-Lots of...lurking in the dark and waiting for you!
-.SH AUTHOR
-Copyright (c) 2005, 2006 Universitat d'Alacant / Universidad de Alicante.
-This is free software.  You may redistribute copies of it under the terms
-of the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.
-
+.El
+.Sh SEE ALSO
+.Xr apertium 1 ,
+.Xr lt-comp 1 ,
+.Xr lt-expand 1 ,
+.Xr lt-proc 1
+.Sh COPYRIGHT
+Copyright \(co 2005, 2006 Universitat d'Alacant / Universidad de Alicante.
+This is free software.
+You may redistribute copies of it under the terms of
+.Lk https://www.gnu.org/licenses/gpl.html the GNU General Public License .
+.Sh BUGS
+Many... lurking in the dark and waiting for you!

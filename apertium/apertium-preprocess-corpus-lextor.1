@@ -1,48 +1,44 @@
-.TH apertium-preprocess-corpus-lextor 1 2006-12-12 "" ""
-.SH NAME
-apertium-preprocess-corpus-lextor \- This application is part of
-(
-.B apertium
-)
-.PP
-This tool is part of the apertium machine translation
-architecture: \fBhttp://apertium.org\fR.
-.SH SYNOPSIS
-.B apertium\-preprocess\-corpus\-lextor
-data_dir translation_dir input_file output_file
-.PP
-.SH DESCRIPTION
-.BR apertium\-preprocess\-corpus\-lextor
+.Dd December 12, 2006
+.Dt APERTIUM-PREPROCESS-CORPUS-LEXTOR 1
+.Os Apertium
+.Sh NAME
+.Nm apertium-preprocess-corpus-lextor
+.Nd training corpus preprocessor for apertium-lextor
+.Sh SYNOPSIS
+.Nm apertium-preprocess-corpus-lextor
+.Ar data_dir translation_dir input_file output_file
+.Sh DESCRIPTION
+.Nm apertium-preprocess-corpus-lextor
 is the application responsible for preprocessing the training corpus
 for the lexical selector training.
-.SH OPTIONS
+.Sh OPTIONS
 This tool currently has no options.
-.SH FILES
+.Sh FILES
 These are the kinds of files and directories used with this tool:
-.PP
-.B data_dir
+.Bl -tag -width Ds
+.It Ar data_dir
 the path to the linguistic data to use.
-.PP
-.B translation_dir
+.It Ar translation_dir
 the translation direction to use.
-.PP
-.B input_file
+.It Ar input_file
 contains a large corpus in
-.I raw\fR format.
-.PP
-.B output_file
+.Pa raw
+format.
+.It Ar output_file
 The file which gets the preprocessed corpus.
-.PP
-.SH SEE ALSO
-.I apertium\-gen\-lextorbil\fR(1),
-.I apertium\-gen\-lextormono\fR(1),
-.I apertium\-gen\-lextor\-eval\fR(1),
-.I apertium\-gen\-stopwords\-lextor\fR(1),
-.I apertium\-gen\-wlist\-lextor\fR(1),
-.I apertium\-gen\-wlist\-lextor\-translation\fR(1),
-.I apertium\-lextor\fR(1).
-.SH BUGS
-Lots of...lurking in the dark and waiting for you!
-.SH AUTHOR
-(c) 2005,2006 Universitat d'Alacant / Universidad de Alicante. All rights
-reserved.
+.El
+.Sh SEE ALSO
+.Xr apertium-gen-lextor-eval 1 ,
+.Xr apertium-gen-lextorbil 1 ,
+.Xr apertium-gen-lextormono 1 ,
+.Xr apertium-gen-stopwords-lextor 1 ,
+.Xr apertium-gen-wlist-lextor 1 ,
+.Xr apertium-gen-wlist-lextor-translation 1 ,
+.Xr apertium-lextor 1
+.Sh COPYRIGHT
+Copyright \(co 2005, 2006 Universitat d'Alacant / Universidad de Alicante.
+This is free software.
+You may redistribute copies of it under the terms of
+.Lk https://www.gnu.org/licenses/gpl.html the GNU General Public License .
+.Sh BUGS
+Many... lurking in the dark and waiting for you!

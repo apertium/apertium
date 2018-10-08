@@ -1,37 +1,35 @@
-.TH apertium-postlatex 1 2012-02-29 "" ""
-.SH NAME
-apertium-postlatex \- This application is part of (
-.B apertium
-)
-.PP
-This tool is part of the apertium open-source machine translation toolbox: \fBhttp://www.apertium.org\fR.
-.SH SYNOPSIS
-.B apertium-postlatex
-[ <input file> [ <output file> ] ]
-.PP
-.SH DESCRIPTION
-.BR apertium-postlatex
-This filter generates LaTeX code from the output of apertium-relatex
-command. Non-ASCII characters are transformed to ASCII-compatible LaTeX construction
+.Dd February 29, 2012
+.Dt APERTIUM-POSTLATEX 1
+.Os Apertium
+.Sh NAME
+.Nm apertium-postlatex
+.Nd ASCII LaTeX code generator for Apertium
+.Sh SYNOPSIS
+.Nm apertium-postlatex
+.Op Ar input_file Op Ar output_file
+.Sh DESCRIPTION
+.Nm apertium-postlatex
+This filter generates LaTeX code from the output of
+.Xr apertium-relatex 1
+command.
+Non-ASCII characters are transformed to ASCII-compatible LaTeX construction
 rather than natively-encoded characters.
-.SH OPTIONS
-.TP
-.B \-h, \-\-help
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl h , Fl Fl help
 Display this help.
-.PP
-.SH SEE ALSO
-.I apertium-deslatex\fR(1),
-.I apertium-prelatex\fR(1),
-.I apertium-relatex\fR(1),
-.I apertium-postlatex\fR(1),
-.I lt-proc\fR(1),
-.I apertium\fR(1).
-.SH BUGS
-Complicated constructions in LaTeX (i.e. custom defined tags) are not (yet)
+.El
+.Sh SEE ALSO
+.Xr apertium 1 ,
+.Xr apertium-deslatex 1 ,
+.Xr apertium-prelatex 1 ,
+.Xr apertium-relatex 1 ,
+.Xr lt-proc 1
+.Sh COPYRIGHT
+Copyright \(co 2005, 2006 Universitat d'Alacant / Universidad de Alicante.
+This is free software.
+You may redistribute copies of it under the terms of
+.Lk https://www.gnu.org/licenses/gpl.html the GNU General Public License .
+.Sh BUGS
+Complicated constructions in LaTeX (e.g., custom defined tags) are not (yet)
 supported.
-.PP
-.SH AUTHOR
-Copyright (c) 2005, 2006 Universitat d'Alacant / Universidad de Alicante.
-This is free software.  You may redistribute copies of it under the terms
-of the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.
-
