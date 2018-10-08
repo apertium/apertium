@@ -1,49 +1,41 @@
-.TH apertium-gen-deformat 1 2006-03-21 "" ""
-.SH NAME
-apertium-gen-deformat \- This application is part of (
-.B apertium
-)
-.PP
-This tool is part of the apertium open-source machine translation
-toolbox: \fBhttp://www.apertium.org\fR.
-.SH SYNOPSIS
-.B apertium-gen-deformat
-[
-.B \-a \fR|
-.B \-A \fR|
-.B \-m \fR|
-.B \-M \fR
-] <input file> <output file>
-.PP
-.SH DESCRIPTION
-.BR apertium-gen-deformat
-is a script which generates a C++ deformatter for a particular format. The
-deformatter reads in a format specification file in XML and outputs a C++ deformatter
-using flex.
-.SH OPTIONS
-.TP
-.B \-a
+.Dd March 21, 2006
+.Dt APERTIUM-GEN-DEFORMAT 1
+.Os Apertium
+.Sh NAME
+.Nm apertium-gen-deformat
+.Nd C++ deformatter generator for Apertium
+.Sh SYNOPSIS
+.Nm apertium-gen-deformat
+.Op Fl a | Fl A | Fl m | Fl M
+.Ar input_file output_file
+.Sh DESCRIPTION
+.Nm apertium-gen-deformat
+is a script which generates a C++ deformatter for a particular format.
+The deformatter reads in a format specification file in XML
+and outputs a C++ deformatter using
+.Xr flex 1 .
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl a
 Runs in apertium standard mode.
-.TP
-.B \-A,
+.It Fl A
 Runs in apertium optimised mode (default)
-.TP
-.B \-m
-Runs in matxin standard mode  (matxin is another open-source machine translation system: \fBhttp://www.sourceforge.org/matxin\fR)
-.TP
-.B \-M
+.It Fl m
+Runs in matxin standard mode.
+matxin is another open-source machine translation system:
+.Lk https://www.sourceforge.net/projects/matxin
+.It Fl M
 Runs in matxin optimised mode
-.TP
-.B \-h, \-\-help
+.It Fl h , Fl Fl help
 Display this help.
-.PP
-.SH SEE ALSO
-.I apertium-gen-reformat\fR(1),
-.I apertium\fR(1).
-.SH BUGS
-Lots of...lurking in the dark and waiting for you!
-.SH AUTHOR
-Copyright (c) 2005, 2006 Universitat d'Alacant / Universidad de Alicante.
-This is free software.  You may redistribute copies of it under the terms
-of the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.
-
+.El
+.Sh SEE ALSO
+.Xr apertium 1 ,
+.Xr apertium-gen-reformat 1
+.Sh COPYRIGHT
+Copyright \(co 2005, 2006 Universitat d'Alacant / Universidad de Alicante.
+This is free software.
+You may redistribute copies of it under the terms of
+.Lk https://www.gnu.org/licenses/gpl.html the GNU General Public License .
+.Sh BUGS
+Many... lurking in the dark and waiting for you!

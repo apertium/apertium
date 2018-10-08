@@ -1,32 +1,37 @@
-.TH apertium-perceptron-trace 1 2018-08-09 "" ""
-.SH NAME
-apertium-perceptron-trace \- This application is part of (
-.B apertium 
-)
-.PP
-This tool is part of the apertium open-source machine translation toolbox: \fBhttp://www.apertium.org\fR.
-.SH SYNOPSIS
-.B apertium-perceptron-trace
-model <binary model file> Output features and weights from a model file.
-.PP
-.B apertium-perceptron-trace
-mtx <mtx file> Output macros and features from an mtx file.
-.PP
-.B  apertium-perceptron-trace
-path <mtx file> <untagged> <tagged> Trace a particular path through giving
-which features fire and the resulting score. Useful for interactively designing
-feature sets.
-.PP
-.SH OPTIONS
-.TP
-.B \-h, \-\-help
+.Dd August 9, 2018
+.Dt APERTIUM-PERCEPTRON-TRACE 1
+.Os Apertium
+.Sh NAME
+.Nm apertium-perceptron-trace
+.Nd output features, weights, or macros from model or mtx files for Apertium
+.Sh SYNOPSIS
+.Nm apertium-perceptron-trace
+.Cm model Ar binary_model_file |
+.Cm mtx Ar mtx_file |
+.Cm path Ar mtx_file untagged tagged
+.Sh DESCRIPTION
+.Nm apertium-perceptron-trace
+outputs features, weights, or macros from model or mtx files.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Cm model Ar binary_model_file
+Output features and weights from a model file.
+.It Cm mtx Ar mtx_file
+Output macros and features from an mtx file.
+.It Cm path Ar mtx_file untagged tagged
+Trace a particular path through giving which features fire
+and the resulting score.
+Useful for interactively designing feature sets.
+.El
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl h , Fl Fl help
 Display this help.
-.PP
-.SH SEE ALSO
-.I apertium\fR(1).
-.PP
-.SH AUTHOR
-Copyright (c) 2018 Universitat d'Alacant / Universidad de Alicante.
-This is free software. You may redistribute copies of it under the terms
-of the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.
-
+.El
+.Sh SEE ALSO
+.Xr apertium 1
+.Sh COPYRIGHT
+Copyright \(co 2018 Universitat d'Alacant / Universidad de Alicante.
+This is free software.
+You may redistribute copies of it under the terms of
+.Lk https://www.gnu.org/licenses/gpl.html the GNU General Public License .

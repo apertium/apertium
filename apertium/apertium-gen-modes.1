@@ -1,43 +1,50 @@
-.TH apertium\-gen\-modes 1 2007-03-11 "" ""
-.SH NAME
-apertium\-gen\-modes \- This application is part of
-(
-.B apertium
-)
-.PP
-This tool is part of the apertium machine translation
-architecture: \fBhttp://apertium.org\fR.
-.SH SYNOPSIS
-.B apertium\-gen\-modes
-modes-file [package name]
-.SH DESCRIPTION
-This is an intermediate tool from Apertium level 2 engine. You should
-never have to use it independently.
-.PP
-It creates a series of \fI.mode\fR files from a \fImodes-file\fR
+.Dd March 11, 2007
+.Dt APERTIUM-GEN-MODES 1
+.Os Apertium
+.Sh NAME
+.Nm apertium-gen-modes
+.Nd intermediate mode file generator for Apertium
+.Sh SYNOPSIS
+.Nm apertium-gen-modes
+.Ar modes_file Op Ar package_name
+.Sh DESCRIPTION
+This is an intermediate tool from Apertium level 2 engine.
+You should never have to use it independently.
+.Pp
+It creates a series of
+.Pa .mode
+files from a
+.Ar modes_file ;
 these files are then put into the current directory if they are marked
-as \fIinstall\fR, and for modes that are not to be installed, for
-example debugging modes, these are put into a \fImodes\fR directory
-inside the linguistic data.
-.SH OPTIONS
-If a package name is specified, it creates the modes with the apertium
-install prefix plus the package name. If you wish to install the modes,
-you should specify the package name. If you don't want to install the modes,
-leave it off.
-.SH FILES
-.B modes-file
-A XML file that tells \fBapertium\-gen\-modes\fR which scripts must
-be created in the directory \fImodes\fR.
-.SH SEE ALSO
-.I apertium\-interchunk\fR(1),
-.I apertium\-postchunk\fR(1),
-.I apertium\-validate\-interchunk\fR(1),
-.I apertium\-validate\-modes\fR(1),
-.I apertium\-validate\-postchunk\fR(1).
-.SH BUGS
-Lots of them...lurking in the dark and waiting for you!
-.SH AUTHOR
-(c) 2005-2007 Universitat d'Alacant / Universidad de
-Alicante. This is free software.  You may
-redistribute copies of it under the terms of the GNU General Public
-License <http://www.gnu.org/licenses/gpl.html>.
+as
+.Em install ,
+and for modes that are not to be installed, for example debugging modes,
+these are put into a
+.Em modes
+directory inside the linguistic data.
+.Sh OPTIONS
+If a package name is specified,
+it creates the modes with the apertium install prefix plus the package name.
+If you wish to install the modes, you should specify the package name.
+If you don't want to install the modes, leave it off.
+.Sh FILES
+.Bl -tag -width Ds
+.It Ar modes_file
+A XML file that tells
+.Nm
+which scripts must be created in the directory
+.Em modes .
+.El
+.Sh SEE ALSO
+.Xr apertium-interchunk 1 ,
+.Xr apertium-postchunk 1 ,
+.Xr apertium-validate-interchunk 1 ,
+.Xr apertium-validate-modes 1 ,
+.Xr apertium-validate-postchunk 1
+.Sh COPYRIGHT
+Copyright \(co 2005, 2006 Universitat d'Alacant / Universidad de Alicante.
+This is free software.
+You may redistribute copies of it under the terms of
+.Lk https://www.gnu.org/licenses/gpl.html the GNU General Public License .
+.Sh BUGS
+Many... lurking in the dark and waiting for you!

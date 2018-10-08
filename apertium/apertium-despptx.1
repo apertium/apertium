@@ -1,48 +1,49 @@
-.TH apertium-despptx 1 2006-03-21 "" ""
-.SH NAME
-apertium-despptx \- This application is part of (
-.B apertium
-)
-.PP
-This tool is part of the apertium open-source machine translation
-toolbox: \fBhttp://www.apertium.org\fR.
-.SH SYNOPSIS
-.B apertium-despptx
-[ \-h ] [ \-i ] [ \-n ]
-[ <input file> [ <output file> ] ]
-.PP
-.SH DESCRIPTION
-.BR apertium-despptx
-is an PPTX format processor. Data should be passed through this
-processor before being piped to lt-proc. The program takes input
-in the form of an PPTX document and produces output suitable for
-processing with lt-proc. PPTX tags and other format information are  enclosed in brackets so that lt-proc treats them as whitespace between words.
-
-.SH OPTIONS
-.TP
-.B \-h, \-\-help
+.Dd March 21, 2006
+.Dt APERTIUM-DESPPTX 1
+.Os Apertium
+.Sh NAME
+.Nm apertium-despptx
+.Nd Office Open XML Presentation format processor for Apertium
+.Sh SYNOPSIS
+.Nm apertium-despptx
+.Op Fl hin
+.Op Ar input_file Op Ar output_file
+.Sh DESCRIPTION
+.Nm apertium-despptx
+is an PPTX format processor.
+Data should be passed through this processor before being piped to
+.Xr lt-proc 1 .
+The program takes input in the form of an PPTX document
+and produces output suitable for processing with
+.Xr lt-proc 1 .
+PPTX tags and other format information are enclosed in brackets so that
+.Xr lt-proc 1
+treats them as whitespace between words.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl h , Fl Fl help
 Display this help.
-.B \-i
-Makes the addition of trailing sentence terminator (".") unconditional, often
-leading to duplicates.
-.B \-n
+.It Fl i
+Makes the addition of trailing sentence terminator
+.Pq Ql \&.
+unconditional, often leading to duplicates.
+.It Fl n
 Suppresses the addition of a trailing sentence terminator.
-.PP
-.SH EXAMPLE
-.TP
-You could write the following to show how the word "gener" is analysed:
-.TP
-echo "<b>gener</b>" | apertium-despptx | lt-proc ca-es.automorf.bin
-.PP
-.SH SEE ALSO
-.I apertium-destxt\fR(1),
-.I apertium-desrtf\fR(1),
-.I lt-proc\fR(1),
-.I apertium\fR(1).
-.SH BUGS
-Lots of...lurking in the dark and waiting for you!
-.SH AUTHOR
-Copyright (c) 2005, 2006 Universitat d'Alacant / Universidad de Alicante.
-This is free software.  You may redistribute copies of it under the terms
-of the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.
-
+.El
+.Sh EXAMPLES
+You could write the following to show how the word
+.Dq gener
+is analysed:
+.Dl echo Qo <b>gener</b> Qc | apertium-despptx | lt-proc ca-es.automorf.bin
+.Sh SEE ALSO
+.Xr apertium 1 ,
+.Xr apertium-desrtf 1 ,
+.Xr apertium-destxt 1 ,
+.Xr lt-proc 1
+.Sh COPYRIGHT
+Copyright \(co 2005, 2006 Universitat d'Alacant / Universidad de Alicante.
+This is free software.
+You may redistribute copies of it under the terms of
+.Lk https://www.gnu.org/licenses/gpl.html the GNU General Public License .
+.Sh BUGS
+Many... lurking in the dark and waiting for you!
