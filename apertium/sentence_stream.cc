@@ -46,17 +46,18 @@ void SentenceTagger::tag(Stream &in, std::wostream &out, bool sent_seg) const {
     full_sent.push_back(token);
     flushes.push_back(in.flush_());
 
-    if (!token.TheLexicalUnit) {
-      if (!in.flush_()) {
+    if (token.TheLexicalUnit) {
+      lexical_sent.push_back(token);
+      if (isSentenceEnd(token, in, sent_seg)) {
         tagAndPutSentence(out);
+      }
+    } else {
+      tagAndPutSentence(out);
+      if (in.flush_()) {
+        clearBuffers();
+      } else {
         break;
       }
-      continue;
-    }
-
-    lexical_sent.push_back(token);
-    if (isSentenceEnd(token, in, sent_seg)) {
-      tagAndPutSentence(out);
     }
   }
 }
