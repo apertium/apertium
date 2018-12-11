@@ -21,7 +21,9 @@ def rel(fn):
     return abspath(pjoin(dirname(abspath(__file__)), fn))
 
 
+DEBUG = False
 APERTIUM_TAGGER = rel("../../apertium/apertium-tagger")
+
 
 def check_output(*popenargs, **kwargs):
     # Essentially a copypasted version of check_output with input backported
@@ -80,7 +82,7 @@ def check_stderr(*popenargs, **kwargs):
 def trace_dec(f):
     @functools.wraps(f)
     def inner(*args, **kwargs):
-        if len(args) > 0:
+        if len(args) > 0 and DEBUG:
             print("run " + " ".join(args[0]))
         return f(*args, **kwargs)
     return inner
@@ -88,6 +90,7 @@ def trace_dec(f):
 
 def trace_plus_unicode(f):
     return functools.partial(trace_dec(f), universal_newlines=True)
+
 
 check_call = trace_plus_unicode(check_call)
 check_output = trace_plus_unicode(check_output)
@@ -287,7 +290,8 @@ class AmbiguityClassTest(unittest.TestCase):
         tagged = tmp(TRAIN_NO_PROBLEM_TAGGED)
         check_call(
             [APERTIUM_TAGGER, '-s', '0', self.dic_fn, untagged, self.tsx_fn,
-             model_fn, tagged, untagged])
+             model_fn, tagged, untagged],
+            stderr=self.devnull)
         self.changing_class_impl([], model_fn)
 
     def test_changing_class_hmm_unsup(self):
@@ -295,7 +299,8 @@ class AmbiguityClassTest(unittest.TestCase):
         untagged = tmp(TRAIN_NO_PROBLEM_UNTAGGED)
         check_call(
             [APERTIUM_TAGGER, '-t', '1', self.dic_fn, untagged, self.tsx_fn,
-             model_fn])
+             model_fn],
+            stderr=self.devnull)
         self.changing_class_impl([], model_fn)
 
     def test_changing_class_sliding_window(self):
@@ -303,7 +308,8 @@ class AmbiguityClassTest(unittest.TestCase):
         untagged = tmp(TRAIN_NO_PROBLEM_UNTAGGED)
         check_call(
             [APERTIUM_TAGGER, '--sliding-window', '-t', '1', self.dic_fn,
-             untagged, self.tsx_fn, model_fn])
+             untagged, self.tsx_fn, model_fn],
+            stderr=self.devnull)
         self.changing_class_impl(['--sliding-window'], model_fn)
 
     def test_cat_is_a_verb(self):
@@ -313,7 +319,8 @@ class AmbiguityClassTest(unittest.TestCase):
         new_ambg_class = tmp(TEST_NEW_AMBG_CLASS)
         check_call(
             [APERTIUM_TAGGER, '-s', '0', self.dic_fn, untagged, self.tsx_fn,
-             model_fn, tagged, untagged])
+             model_fn, tagged, untagged],
+            stderr=self.devnull)
         subst_stdout = check_output(
             [APERTIUM_TAGGER, '-d', '-g', model_fn, new_ambg_class],
             stderr=self.devnull)
