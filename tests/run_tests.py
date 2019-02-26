@@ -7,6 +7,7 @@ sys.path.append(os.path.realpath("."))
 import unittest
 import tagger
 import pretransfer
+import transfer
 import postchunk
 
 if __name__ == "__main__":
@@ -14,6 +15,7 @@ if __name__ == "__main__":
     failures = 0
     for module in [tagger,
                    pretransfer,
+                   transfer,
                    postchunk]:
         suite = unittest.TestLoader().loadTestsFromModule(module)
         res = unittest.TextTestRunner(verbosity = 2).run(suite)
