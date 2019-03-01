@@ -39,3 +39,7 @@ The goal of tihs document is two-fold:
 @table-of-contents[]
 
 @include-section["introduction.scrbl"]
+
+@include-section["../../apertium-lex-tools/docs/index.scrbl"]
+
+@include-section["../../apertium-separable/docs/index.scrbl"]
