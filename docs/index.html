@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"/><meta name="viewport" content="width=device-width, initial-scale=0.8"/><title>Documentation of the Open-Source Shallow-Transfer
+Machine-Translation Platform Apertium</title><link rel="stylesheet" type="text/css" href="scribble.css" title="default"/><link rel="stylesheet" type="text/css" href="manual-style.css" title="default"/><link rel="stylesheet" type="text/css" href="manual-racket.css" title="default"/><script type="text/javascript" src="scribble-common.js"></script><script type="text/javascript" src="manual-racket.js"></script><!--[if IE 6]><style type="text/css">.SIEHidden { overflow: hidden; }</style><![endif]--></head><body id="scribble-racket-lang-org"><div class="tocset"><div class="tocview"><div class="tocviewlist tocviewlisttopspace"><div class="tocviewtitle"><table cellspacing="0" cellpadding="0"><tr><td style="width: 1em;"><a href="javascript:void(0);" title="Expand/Collapse" class="tocviewtoggle" onclick="TocviewToggle(this,&quot;tocview_0&quot;);">&#9658;</a></td><td></td><td><a href="" class="tocviewselflink" data-pltdoc="x">Documentation of the Open-<wbr></wbr>Source Shallow-<wbr></wbr>Transfer
+Machine-<wbr></wbr>Translation Platform <span style="font-style: italic">Apertium</span></a></td></tr></table></div><div class="tocviewsublistonly" style="display: none;" id="tocview_0"><table cellspacing="0" cellpadding="0"><tr><td align="right">1&nbsp;</td><td><a href="#%28part._.Introduction%29" class="tocviewlink" data-pltdoc="x">Introduction</a></td></tr></table></div></div></div><div class="tocsub"><table class="tocsublist" cellspacing="0"><tr><td><span class="tocsublinknumber"></span><a href="#%28part._.Documentation_of_the_.Open-.Source_.Shallow-.Transfer_.Machine-.Translation_.Platform_.Apertium%29" class="tocsubseclink" data-pltdoc="x">Documentation of the Open-<wbr></wbr>Source Shallow-<wbr></wbr>Transfer
+Machine-<wbr></wbr>Translation Platform <span style="font-style: italic">Apertium</span></a></td></tr><tr><td><span class="tocsublinknumber">1<tt>&nbsp;</tt></span><a href="#%28part._.Introduction%29" class="tocsubseclink" data-pltdoc="x">Introduction</a></td></tr></table></div></div><div class="maincolumn"><div class="main"><div class="versionbox"><span class="versionNoNav">3.0</span></div><h2><a name="(part._.Documentation_of_the_.Open-.Source_.Shallow-.Transfer_.Machine-.Translation_.Platform_.Apertium)"></a>Documentation of the Open-Source Shallow-Transfer
+Machine-Translation Platform <span style="font-style: italic">Apertium</span></h2><div class="SAuthorListBox"><span class="SAuthorList"><p class="author">Mikel L. Forcada,<br/>Boyan Ivanov Bonev,<br/>Sergio Ortiz Rojas,<br/>Juan Antonio P&#233;rez Ortiz,<br/>Gema Ram&#237;rez S&#225;nchez,<br/>Felipe S&#225;nchez Mart&#237;nez,<br/>Carme Armentano-Oller,<br/>Marco A. Montava,<br/>Francis M. Tyers,<br/>Mireia Ginest&#237; Rosell (editor),<br/>(version 2.0),<br/>and Ilnar Salimzianov (this document)</p></span></div><p>Version 2.0 of the official Apertium documentation can be
+found
+<a href="http://xixona.dlsi.ua.es/~fran/apertium2-documentation.pdf">here</a>.</p><p>In addition, there is a lot of information on the
+<a href="http://wiki.apertium.org">wiki</a> of the project.</p><p>The goal of tihs document is two-fold:</p><ul><li><p>describe what has changed in Apertium since the above
+mentioned documentation has been published (especially as a
+result of contributions made by the Google Summer of
+Code students), and</p></li><li><p>consolidate the most important information spread
+across many different wiki pages into a single document
+(with pointers to more information on the wiki and
+elsewhere).</p></li></ul><table cellspacing="0" cellpadding="0"><tr><td><p><span class="hspace">&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#%28part._.Introduction%29" class="toptoclink" data-pltdoc="x">1<span class="hspace">&nbsp;</span>Introduction</a></p></td></tr></table><h3>1<tt>&nbsp;</tt><a name="(part._.Introduction)"></a>Introduction</h3><p>This documentation describes the Apertium platform, one of
+the open-source machine translation systems which originated
+within the project &ldquo;Open-Source Machine Translation for the
+Languages of Spain&rdquo; (&ldquo;Traducci&#243;n autom&#225;tica de c&#243;digo
+abierto para las lenguas del estado espa&#241;ol&rdquo;). It is a
+shallow-transfer machine translation system, initially
+designed for the translation between related language pairs,
+although some of its components have been also used in the
+deep-transfer architecture
+(<a href="https://github.com/matxin">Matxin</a>) that has
+been developed in the same project for the pair
+Spanish-Basque.</p><p>Existing machine translation systems available at present
+for the pairs <span class="stt">es</span>&ndash;<span class="stt">ca</span> and <span class="stt">es</span>&ndash;<span class="stt">gl</span> are
+mostly commercial or use proprietary technologies, which
+makes them very hard to adapt to new usages; furthermore,
+they use different technologies across language pairs, which
+makes it very difficult to integrate them in a single
+multilingual content management system.</p><p>One of the main novelties of the architecture described here
+is that it has been released under open-source licenses (in
+most cases, GNU GPL; some data still have a Creative Commons
+license) and is distributed free of charge. This means that
+anyone having the necessary computational and linguistic
+skills will be able to adapt or enhance the platform or the
+language-pair data to create a new machine translation
+system, even for other pairs of related languages. The
+licenses chosen make these improvements immediately
+available to everyone. We therefore expect that the
+introduction of this of open-source machine translation
+architecture will solve some of the mentioned problems
+(having different technologies for different pairs,
+closed-source architectures being hard to adapt to new uses,
+etc.) and promote the exchange of existing linguistic data
+through the use of the XML-based formats defined in this
+documentation. On the other hand, we think that it will help
+shift the current business model from a license-centered one
+to a services-centered one.</p><p>It is worth mentioning that &ldquo;Open-Source Machine Translation
+for the Languages of Spain&rdquo; was the first large open-source
+machine translation project funded by the central Spanish
+Government, although the adoption of open-source software by
+the Spanish governments is not new.</p></div></div><div id="contextindicator">&nbsp;</div></body></html>

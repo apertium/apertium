@@ -106,3 +106,4 @@ test-driver
 /tests/data/nno-nob.t1x.bin
 /tests/test-suite.log
 /compile_commands.json
+/docs/compiled/
