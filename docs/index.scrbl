@@ -18,7 +18,7 @@
  Documentation License, Version 1.2 or any later version
  published by the Free Software Foundation; with no Invariant
  Sections, no Front-Cover Texts, and no Back-Cover Texts. A
- copy of the license can be found in \url{
+ copy of the license can be found in @url{
   http://www.gnu.org/copyleft/fdl.html}.}
 
 Version 2.0 of the official Apertium documentation can be
