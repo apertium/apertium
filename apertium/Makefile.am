@@ -92,7 +92,9 @@ h_sources = a.h \
 	    utils.h \
 	    wchar_t_exception.h \
 	    wchar_t_exception_type.h\
-	    xml_reader.h
+	    xml_reader.h \
+	    pugixml.hpp \
+	    pugiconfig.hpp
 
 #DEPR.:
 #	    lextor_data.h
@@ -171,7 +173,12 @@ cc_sources = a.cc \
 	     tsx_reader.cc \
 	     utf_converter.cc \
 	     wchar_t_exception_type.cc\
-	     xml_reader.cc
+	     xml_reader.cc \
+	     BeamSearch.cpp \
+	     CLExec.cpp \
+	     RuleParser.cpp \
+	     RuleExecution.cpp \
+	     pugixml.cpp
 #DEPR.:
 #	     lextor.cc
 #	     lextor_data.cc
@@ -306,8 +313,8 @@ apertium_filter_ambiguity_SOURCES = apertium_filter_ambiguity.cc
 apertium_filter_ambiguity_LDADD = $(APERTIUM_LIBS) \
                                   -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 
-apertium_transfer_SOURCES = apertium_transfer.cc
-apertium_transfer_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
+apertium_transfer_SOURCES = apertium_transfer.cc 
+apertium_transfer_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES) -licuuc -licuio
 
 apertium_interchunk_SOURCES = apertium_interchunk.cc
 apertium_interchunk_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
