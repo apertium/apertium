@@ -26,8 +26,8 @@ using namespace std;
 using namespace pugi;
 using namespace elem;
 
-void BeamSearch::transfer(string transferFilePath, string localeId,
-		string modelsDest, string k, FILE* lextorFileFile, FILE* outFile) {
+void BeamSearch::transfer(string transferFilePath, string modelsFileDest,
+		string k, FILE* lextorFileFile, FILE* outFile) {
 
 	// load transfer file in an xml document object
 	xml_document transferDoc;
@@ -45,8 +45,9 @@ void BeamSearch::transfer(string transferFilePath, string localeId,
 	map<string, string> vars = RuleParser::getVars(transfer);
 	map<string, vector<string> > lists = RuleParser::getLists(transfer);
 
+	string localeId;
 	map<string, map<string, vector<float> > > classesWeights =
-			CLExec::loadYasmetModels(modelsDest);
+			CLExec::loadYasmetModels(modelsFileDest, &localeId);
 
 	int beam;
 	stringstream buffer(k);
@@ -127,26 +128,26 @@ void BeamSearch::transfer(string transferFilePath, string localeId,
 
 }
 
-//FILE * open_input(string const &filename) {
-//	FILE *input = fopen(filename.c_str(), "r");
-//	if (!input) {
-//		wcerr << "Error: can't open input file '";
-//		wcerr << filename.c_str() << "'." << endl;
-//		exit(EXIT_FAILURE);
-//	}
-//
-//	return input;
-//}
-//
-//FILE * open_output(string const &filename) {
-//	FILE *output = fopen(filename.c_str(), "w");
-//	if (!output) {
-//		wcerr << "Error: can't open output file '";
-//		wcerr << filename.c_str() << "'." << endl;
-//		exit(EXIT_FAILURE);
-//	}
-//	return output;
-//}
+FILE * open_input(string const &filename) {
+	FILE *input = fopen(filename.c_str(), "r");
+	if (!input) {
+		wcerr << "Error: can't open input file '";
+		wcerr << filename.c_str() << "'." << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	return input;
+}
+
+FILE * open_output(string const &filename) {
+	FILE *output = fopen(filename.c_str(), "w");
+	if (!output) {
+		wcerr << "Error: can't open output file '";
+		wcerr << filename.c_str() << "'." << endl;
+		exit(EXIT_FAILURE);
+	}
+	return output;
+}
 
 //int main(int argc, char **argv) {
 //	string sentenceFilePath, lextorFilePath, interInFilePath, localeId,
@@ -331,31 +332,59 @@ void BeamSearch::transfer(string transferFilePath, string localeId,
 //	return 0;
 //}
 
-/*int main(int argc, char *argv[]) {
+//int main(int argc, char *argv[]) {
+//
+//	string transferFilePath, localeId, modelsDest, k;
+//	FILE *input = stdin, *output = stdout;
+//
+//	if (argc == 7) {
+//		output = open_output(argv[argc - 1]);
+//		input = open_input(argv[argc - 2]);
+//		k = argv[argc - 3];
+//		modelsDest = argv[argc - 4];
+//		localeId = argv[argc - 5];
+//		transferFilePath = argv[argc - 6];
+//	} else if (argc == 6) {
+//		input = open_input(argv[argc - 1]);
+//		k = argv[argc - 2];
+//		modelsDest = argv[argc - 3];
+//		localeId = argv[argc - 4];
+//		transferFilePath = argv[argc - 5];
+//	} else if (argc == 5) {
+//		k = argv[argc - 1];
+//		modelsDest = argv[argc - 2];
+//		localeId = argv[argc - 3];
+//		transferFilePath = argv[argc - 4];
+//	}
+//
+//	BeamSearch::transfer(transferFilePath, localeId, modelsDest, k, input,
+//			output);
+//}
 
-	string transferFilePath, localeId, modelsDest, k;
-	FILE *input = stdin, *output = stdout;
+/*int main() {
+	string localeid;
+	map<string, map<string, vector<float> > > models = CLExec::loadYasmetModels(
+			"/home/aboelhamd/Downloads/newmodel2.model", &localeid);
+	cout << localeid << endl;
+//	cout << models["34+36_32+.model"][""];
 
-	if (argc == 7) {
-		output = open_output(argv[argc - 1]);
-		input = open_input(argv[argc - 2]);
-		k = argv[argc - 3];
-		modelsDest = argv[argc - 4];
-		localeId = argv[argc - 5];
-		transferFilePath = argv[argc - 6];
-	} else if (argc == 6) {
-		input = open_input(argv[argc - 1]);
-		k = argv[argc - 2];
-		modelsDest = argv[argc - 3];
-		localeId = argv[argc - 4];
-		transferFilePath = argv[argc - 5];
-	} else if (argc == 5) {
-		k = argv[argc - 1];
-		modelsDest = argv[argc - 2];
-		localeId = argv[argc - 3];
-		transferFilePath = argv[argc - 4];
+//	vector<float> weights =
+//			models["33_68+33_67+33_95+33_113+115_71+115_66+.model"]["muy_0"];
+//	for (unsigned i = 0; i < weights.size(); i++) {
+//		cout << weights[i] << endl;
+//	}
+//	cout << endl;
+	for (map<string, map<string, vector<float> > >::iterator it =
+			models.begin(); it != models.end(); it++) {
+		cout << "model=" << it->first << endl;
+		for (map<string, vector<float> >::iterator it2 = it->second.begin();
+				it2 != it->second.end(); it2++) {
+			cout << "word= " << it2->first << endl;
+			vector<float> weights = it2->second;
+			for (unsigned i = 0; i < weights.size(); i++) {
+				cout << weights[i] << endl;
+			}
+			cout << endl;
+		}
 	}
-
-	BeamSearch::transfer(transferFilePath, localeId, modelsDest, k, input,
-			output);
 }*/
