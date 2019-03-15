@@ -49,12 +49,11 @@ void message(char *progname) {
 	wcerr << "       " << basename(progname)
 			<< " -t trules preproc biltrans [input [output]]" << endl;
 	wcerr << "       " << basename(progname)
-			<< " -a trules localeid models k [input [output]]" << endl;
+			<< " -a trules models k [input [output]]" << endl;
 	wcerr << "  trules     transfer rules file" << endl;
 	wcerr << "  preproc    result of preprocess trules file" << endl;
 	wcerr << "  biltrans   bilingual letter transducer file" << endl;
-	wcerr << "  localeid   ICU locale ID for the source language" << endl;
-	wcerr << "  models     yasmet trained models destination" << endl;
+	wcerr << "  models     yasmet trained models file destination" << endl;
 	wcerr << "  k     	   beam size for beam search algorithm" << endl;
 	wcerr << "  input      input file, standard input by default" << endl;
 	wcerr << "  output     output file, standard output by default" << endl;
@@ -174,19 +173,14 @@ int main(int argc, char *argv[]) {
 
 	switch (argc - optind + 1) {
 
-	case 7:
-		output = open_output(argv[argc - 1]);
-		input = open_input(argv[argc - 2]);
-		testfile(argv[argc - 6]);
-		BeamSearch::transfer(argv[argc - 6], argv[argc - 5], argv[argc - 4],
-				argv[argc - 3], input, output);
-		break;
 	case 6:
 		if (isAmbig) {
-			input = open_input(argv[argc - 1]);
+			output = open_output(argv[argc - 1]);
+			input = open_input(argv[argc - 2]);
+			testfile(argv[argc - 4]);
 			testfile(argv[argc - 5]);
 			BeamSearch::transfer(argv[argc - 5], argv[argc - 4], argv[argc - 3],
-					argv[argc - 2], input, output);
+					 input, output);
 		} else {
 			output = open_output(argv[argc - 1]);
 			input = open_input(argv[argc - 2]);
@@ -205,9 +199,11 @@ int main(int argc, char *argv[]) {
 			testfile(argv[argc - 4]);
 			t.read(argv[argc - 4], argv[argc - 3]);
 		} else if (isAmbig) {
+			input = open_input(argv[argc - 1]);
+			testfile(argv[argc - 3]);
 			testfile(argv[argc - 4]);
 			BeamSearch::transfer(argv[argc - 4], argv[argc - 3], argv[argc - 2],
-					argv[argc - 1], input, output);
+					 input, output);
 		} else {
 			input = open_input(argv[argc - 1]);
 			testfile(argv[argc - 2]);
@@ -223,6 +219,11 @@ int main(int argc, char *argv[]) {
 			testfile(argv[argc - 2]);
 			testfile(argv[argc - 3]);
 			t.read(argv[argc - 3], argv[argc - 2]);
+		} else if (isAmbig) {
+			testfile(argv[argc - 2]);
+			testfile(argv[argc - 3]);
+			BeamSearch::transfer(argv[argc - 3], argv[argc - 2], argv[argc - 1],
+					 input, output);
 		} else {
 			testfile(argv[argc - 1]);
 			testfile(argv[argc - 2]);
