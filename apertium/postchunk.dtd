@@ -357,8 +357,9 @@ representing a lexical form in the matched pattern
 
       * the value of 'part' is the name of an attribute defined in
         def-attrs, but may take also the values 'lem' (referring to
-        the lemma of the lexical form), 'lemh' (lemma head), 'lemq'
-        (lemma queue) and 'whole' (referring to the whole lexical form).
+        the lemma of the lexical unit), 'lemh' (lemma head), 'lemq'
+        (lemma queue), 'whole' (referring to the whole lexical unit)
+	and 'tags' (referring to the whole lexical unit without the lemma).
 
 -->
 
