@@ -70,6 +70,21 @@ Print error (if any) or debug messages while operating.
 Mark disambiguated words.
 .It Fl h , Fl Fl help
 Display a help message.
+.It Fl z , Fl Fl null-flush        
+Used in conjuction with
+ .Fl g 
+to flush the output after getting each null character.
+.It Fl u , Fl Fl unigram=MODEL  
+use unigram algorithm MODEL from <http://coltekin.net/cagri/papers/trmorph-tools.pdf>
+.It Fl w , Fl Fl sliding-window 
+use the Light Sliding Window algorithm  
+.It Fl x , Fl Fl perceptron      
+use the averaged perceptron algorithm
+.It Fl e, Fl Fl skip-on-error  
+Used with 
+Fl xs 
+to ignore certain types of errors with the training corpus
+
 .El
 .Sh FILES
 These are the kinds of files used with each option:
