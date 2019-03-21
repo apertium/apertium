@@ -1915,8 +1915,8 @@ Transfer::transfer(FILE *in, FILE *out)
     transfer_wrapper_null_flush(in, out);
   }
 
-  unsigned int last = 0;
-  unsigned int prev_last = 0;
+  unsigned int last = input_buffer.getPos();
+  unsigned int prev_last = last;
   int lastrule_id = -1;
   set<int> banned_rules;
 

@@ -1417,7 +1417,7 @@ Interchunk::interchunk(FILE *in, FILE *out)
     interchunk_wrapper_null_flush(in, out);
   }
 
-  int last = 0;
+  unsigned int last = input_buffer.getPos();
 
   output = out;
   ms.init(me->getInitial());
