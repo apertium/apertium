@@ -47,7 +47,7 @@ void message(char *progname)
   wcerr << "  preproc    result of preprocess trules file" << endl;
   wcerr << "  biltrans   bilingual letter transducer file" << endl;
   wcerr << "  models     yasmet trained models file destination" << endl;
-  wcerr << "  k     	   beam size for beam search algorithm" << endl;
+  wcerr << "  k          beam size for beam search algorithm" << endl;
   wcerr << "  input      input file, standard input by default" << endl;
   wcerr << "  output     output file, standard output by default" << endl;
   wcerr << "  -b         input from lexical transfer" << endl;
@@ -177,11 +177,11 @@ int main(int argc, char *argv[])
   {
     case 6:
       if (isAmbig) {
-		output = open_output(argv[argc - 1]);
-		input = open_input(argv[argc - 2]);
-		testfile(argv[argc - 4]);
-		testfile(argv[argc - 5]);
-		AmbiguousTransfer::transfer(argv[argc - 5], argv[argc - 4], argv[argc - 3],
+        output = open_output(argv[argc - 1]);
+        input = open_input(argv[argc - 2]);
+        testfile(argv[argc - 4]);
+        testfile(argv[argc - 5]);
+        AmbiguousTransfer::transfer(argv[argc - 5], argv[argc - 4], argv[argc - 3],
 					 input, output);
       }
       else {
@@ -196,10 +196,10 @@ int main(int argc, char *argv[])
 
     case 5:
       if (isAmbig) {
-		input = open_input(argv[argc - 1]);
-		testfile(argv[argc - 3]);
-		testfile(argv[argc - 4]);
-		AmbiguousTransfer::transfer(argv[argc - 4], argv[argc - 3], argv[argc - 2],
+        input = open_input(argv[argc - 1]);
+        testfile(argv[argc - 3]);
+        testfile(argv[argc - 4]);
+        AmbiguousTransfer::transfer(argv[argc - 4], argv[argc - 3], argv[argc - 2],
 					 input, output);
       }
       else if(t.getUseBilingual() == false || t.getPreBilingual() == true)
@@ -222,9 +222,9 @@ int main(int argc, char *argv[])
 
     case 4:
       if (isAmbig) {
-		testfile(argv[argc - 2]);
-		testfile(argv[argc - 3]);
-		AmbiguousTransfer::transfer(argv[argc - 3], argv[argc - 2], argv[argc - 1],
+        testfile(argv[argc - 2]);
+        testfile(argv[argc - 3]);
+        AmbiguousTransfer::transfer(argv[argc - 3], argv[argc - 2], argv[argc - 1],
 					 input, output);
       }
       else if(t.getUseBilingual() == false || t.getPreBilingual() == true)
