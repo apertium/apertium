@@ -5,8 +5,8 @@
  *      Author: aboelhamd
  */
 
-#ifndef SRC_TRANELEMLITERALS_H_
-#define SRC_TRANELEMLITERALS_H_
+#ifndef SRC_TRANSFER_LITERALS_H_
+#define SRC_TRANSFER_LITERALS_H_
 
 namespace elem
 {
@@ -71,6 +71,7 @@ namespace elem
   const static char* TL = "tl";
   const static char* WHOLE = "whole";
   const static char* ATTR = "attr";
+  const static char* LEMMA = "lemma";
   const static char* LEM = "lem";
   const static char* LEMH = "lemh";
   const static char* LEMQ = "lemq";
@@ -84,4 +85,4 @@ namespace elem
   const static char* MODELS = "models";
 }
 
-#endif /* SRC_TRANELEMLITERALS_H_ */
+#endif /* SRC_TRANSFER_LITERALS_H_ */

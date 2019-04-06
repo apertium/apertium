@@ -25,8 +25,7 @@
 #include <unistd.h>
 #include <apertium/string_utils.h>
 #include "getopt_long.h"
-#include "BeamSearch.h"
-
+#include "ambiguous_transfer.h"
 #ifdef _MSC_VER
 #include <io.h>
 #include <fcntl.h>
@@ -35,222 +34,237 @@
 using namespace Apertium;
 using namespace std;
 
-void message(char *progname) {
-	wcerr << "USAGE: " << basename(progname)
-			<< " trules preproc biltrans [input [output]]" << endl;
-	wcerr << "       " << basename(progname)
-			<< " -b trules preproc [input [output]]" << endl;
-	wcerr << "       " << basename(progname)
-			<< " -n trules preproc [input [output]]" << endl;
-	wcerr << "       " << basename(progname)
-			<< " -x extended trules preproc biltrans [input [output]]" << endl;
-	wcerr << "       " << basename(progname)
-			<< " -c trules preproc biltrans [input [output]]" << endl;
-	wcerr << "       " << basename(progname)
-			<< " -t trules preproc biltrans [input [output]]" << endl;
-	wcerr << "       " << basename(progname)
-			<< " -a trules models k [input [output]]" << endl;
-	wcerr << "  trules     transfer rules file" << endl;
-	wcerr << "  preproc    result of preprocess trules file" << endl;
-	wcerr << "  biltrans   bilingual letter transducer file" << endl;
-	wcerr << "  models     yasmet trained models file destination" << endl;
-	wcerr << "  k     	   beam size for beam search algorithm" << endl;
-	wcerr << "  input      input file, standard input by default" << endl;
-	wcerr << "  output     output file, standard output by default" << endl;
-	wcerr << "  -b         input from lexical transfer" << endl;
-	wcerr << "  -n         don't use bilingual dictionary" << endl;
-	wcerr << "  -x bindix  extended mode with user dictionary" << endl;
-	wcerr
-			<< "  -c         case-sensitiveness while accessing bilingual dictionary"
-			<< endl;
-	wcerr << "  -t         trace (show rule numbers and patterns matched)"
-			<< endl;
-	wcerr << "  -T         trace, for apertium-transfer-tools (also sets -t)"
-			<< endl;
-	wcerr << "  -z         null-flushing output on '\0'" << endl;
-	wcerr
-			<< "  -a         ambiguous rules are applied, expected input from lexical transfer"
-			<< endl;
-	wcerr << "  -h         shows this message" << endl;
+void message(char *progname)
+{
+  wcerr << "USAGE: " << basename(progname) << " trules preproc biltrans [input [output]]" << endl;
+  wcerr << "       " << basename(progname) << " -b trules preproc [input [output]]" << endl;
+  wcerr << "       " << basename(progname) << " -n trules preproc [input [output]]" << endl;
+  wcerr << "       " << basename(progname) << " -x extended trules preproc biltrans [input [output]]" << endl;
+  wcerr << "       " << basename(progname) << " -c trules preproc biltrans [input [output]]" << endl;
+  wcerr << "       " << basename(progname) << " -t trules preproc biltrans [input [output]]" << endl;
+  wcerr << "       " << basename(progname) << " -a trules models k [input [output]]" << endl;
+  wcerr << "  trules     transfer rules file" << endl;
+  wcerr << "  preproc    result of preprocess trules file" << endl;
+  wcerr << "  biltrans   bilingual letter transducer file" << endl;
+  wcerr << "  models     yasmet trained models file destination" << endl;
+  wcerr << "  k     	   beam size for beam search algorithm" << endl;
+  wcerr << "  input      input file, standard input by default" << endl;
+  wcerr << "  output     output file, standard output by default" << endl;
+  wcerr << "  -b         input from lexical transfer" << endl;
+  wcerr << "  -n         don't use bilingual dictionary" << endl;
+  wcerr << "  -x bindix  extended mode with user dictionary" << endl;
+  wcerr << "  -c         case-sensitiveness while accessing bilingual dictionary" << endl;
+  wcerr << "  -t         trace (show rule numbers and patterns matched)" << endl;
+  wcerr << "  -T         trace, for apertium-transfer-tools (also sets -t)" << endl;
+  wcerr << "  -z         null-flushing output on '\0'" << endl;
+  wcerr	<< "  -a         ambiguous rules are applied, expected input from lexical transfer"	<< endl;
+  wcerr << "  -h         shows this message" << endl;
 
-	exit (EXIT_FAILURE);
+
+  exit(EXIT_FAILURE);
 }
 
-void testfile(string const &filename) {
-	struct stat mybuf;
-	if (stat(filename.c_str(), &mybuf) == -1) {
-		wcerr << "Error: can't stat file '";
-		wcerr << filename << "'." << endl;
-		exit (EXIT_FAILURE);
-	}
+void testfile(string const &filename)
+{
+  struct stat mybuf;
+  if(stat(filename.c_str(), &mybuf) == -1)
+  {
+    wcerr << "Error: can't stat file '";
+    wcerr << filename << "'." << endl;
+    exit(EXIT_FAILURE);
+  }
 }
 
-FILE * open_input(string const &filename) {
-	FILE *input = fopen(filename.c_str(), "r");
-	if (!input) {
-		wcerr << "Error: can't open input file '";
-		wcerr << filename.c_str() << "'." << endl;
-		exit (EXIT_FAILURE);
-	}
+FILE * open_input(string const &filename)
+{
+  FILE *input = fopen(filename.c_str(), "r");
+  if(!input)
+  {
+    wcerr << "Error: can't open input file '";
+    wcerr << filename.c_str() << "'." << endl;
+    exit(EXIT_FAILURE);
+  }
 
-	return input;
+  return input;
 }
 
-FILE * open_output(string const &filename) {
-	FILE *output = fopen(filename.c_str(), "w");
-	if (!output) {
-		wcerr << "Error: can't open output file '";
-		wcerr << filename.c_str() << "'." << endl;
-		exit (EXIT_FAILURE);
-	}
-	return output;
+FILE * open_output(string const &filename)
+{
+  FILE *output = fopen(filename.c_str(), "w");
+  if(!output)
+  {
+    wcerr << "Error: can't open output file '";
+    wcerr << filename.c_str() << "'." << endl;
+    exit(EXIT_FAILURE);
+  }
+  return output;
 }
 
-int main(int argc, char *argv[]) {
-	LtLocale::tryToSetLocale();
+int main(int argc, char *argv[])
+{
+  LtLocale::tryToSetLocale();
 
-	Transfer t;
+  Transfer t;
 
-	int option_index = 0;
+  int option_index=0;
 
-	bool isAmbig;
-	while (true) {
-		static struct option long_options[] = { { "from-bilingual", no_argument,
-				0, 'b' }, { "no-bilingual", no_argument, 0, 'n' }, { "extended",
-				required_argument, 0, 'x' }, { "case-sensitive", no_argument, 0,
-				'c' }, { "null-flush", no_argument, 0, 'z' }, { "trace",
-				no_argument, 0, 't' }, { "trace_att", no_argument, 0, 'T' }, {
-				"ambiguous", no_argument, 0, 'a' }, { "help", no_argument, 0,
-				'h' }, { 0, 0, 0, 0 } };
+  bool isAmbig;
+  while (true) {
+    static struct option long_options[] =
+    {
+      {"from-bilingual",      no_argument, 0, 'b'},
+      {"no-bilingual",      no_argument, 0, 'n'},
+      {"extended",      required_argument, 0, 'x'},
+      {"case-sensitive", no_argument, 0, 'c'},
+      {"null-flush", no_argument, 0, 'z'},
+      {"trace", no_argument, 0, 't'},
+      {"trace_att", no_argument, 0, 'T'},
+      {"ambiguous", no_argument, 0, 'a' },
+      {"help", no_argument, 0, 'h'},
+      {0, 0, 0, 0}
+    };
 
-		int c = getopt_long(argc, argv, "nbx:cztTah", long_options,
-				&option_index);
-		if (c == -1)
-			break;
-		switch (c) {
-		case 'b':
-			t.setPreBilingual(true);
-			t.setUseBilingual(false);
-			break;
+    int c=getopt_long(argc, argv, "nbx:cztTah", long_options, &option_index);
+    if (c==-1)
+      break;
 
-		case 'n':
-			t.setUseBilingual(false);
-			break;
+    switch (c)
+    {
+      case 'b':
+        t.setPreBilingual(true);
+        t.setUseBilingual(false);
+        break;
 
-		case 'x':
-			t.setExtendedDictionary(optarg);
-			break;
+      case 'n':
+        t.setUseBilingual(false);
+        break;
 
-		case 'c':
-			t.setCaseSensitiveness(true);
-			break;
+      case 'x':
+        t.setExtendedDictionary(optarg);
+        break;
 
-		case 't':
-			t.setTrace(true);
-			break;
+      case 'c':
+        t.setCaseSensitiveness(true);
+        break;
 
-		case 'T':
-			t.setTrace(true);
-			t.setTraceATT(true);
-			break;
+      case 't':
+        t.setTrace(true);
+        break;
 
-		case 'z':
-			t.setNullFlush(true);
-			break;
+      case 'T':
+        t.setTrace(true);
+        t.setTraceATT(true);
+        break;
 
-		case 'a':
-			isAmbig = true;
-			break;
+      case 'z':
+        t.setNullFlush(true);
+        break;
 
-		case 'h':
-		default:
-			message(argv[0]);
-			break;
-		}
-	}
+      case 'a':
+        isAmbig = true;
+        break;
 
-	FILE *input = stdin, *output = stdout;
+      case 'h':
+      default:
+        message(argv[0]);
+        break;
+    }
+  }
 
-	switch (argc - optind + 1) {
+  FILE *input = stdin, *output = stdout;
 
-	case 6:
-		if (isAmbig) {
-			output = open_output(argv[argc - 1]);
-			input = open_input(argv[argc - 2]);
-			testfile(argv[argc - 4]);
-			testfile(argv[argc - 5]);
-			BeamSearch::transfer(argv[argc - 5], argv[argc - 4], argv[argc - 3],
+  switch(argc - optind + 1)
+  {
+    case 6:
+      if (isAmbig) {
+		output = open_output(argv[argc - 1]);
+		input = open_input(argv[argc - 2]);
+		testfile(argv[argc - 4]);
+		testfile(argv[argc - 5]);
+		AmbiguousTransfer::transfer(argv[argc - 5], argv[argc - 4], argv[argc - 3],
 					 input, output);
-		} else {
-			output = open_output(argv[argc - 1]);
-			input = open_input(argv[argc - 2]);
-			testfile(argv[argc - 3]);
-			testfile(argv[argc - 4]);
-			testfile(argv[argc - 5]);
-			t.read(argv[argc - 5], argv[argc - 4], argv[argc - 3]);
-		}
-		break;
+      }
+      else {
+        output = open_output(argv[argc-1]);
+        input = open_input(argv[argc-2]);
+        testfile(argv[argc-3]);
+        testfile(argv[argc-4]);
+        testfile(argv[argc-5]);
+        t.read(argv[argc-5], argv[argc-4], argv[argc-3]);
+      }
+    break;
 
-	case 5:
-		if (t.getUseBilingual() == false || t.getPreBilingual() == true) {
-			output = open_output(argv[argc - 1]);
-			input = open_input(argv[argc - 2]);
-			testfile(argv[argc - 3]);
-			testfile(argv[argc - 4]);
-			t.read(argv[argc - 4], argv[argc - 3]);
-		} else if (isAmbig) {
-			input = open_input(argv[argc - 1]);
-			testfile(argv[argc - 3]);
-			testfile(argv[argc - 4]);
-			BeamSearch::transfer(argv[argc - 4], argv[argc - 3], argv[argc - 2],
+    case 5:
+      if (isAmbig) {
+		input = open_input(argv[argc - 1]);
+		testfile(argv[argc - 3]);
+		testfile(argv[argc - 4]);
+		AmbiguousTransfer::transfer(argv[argc - 4], argv[argc - 3], argv[argc - 2],
 					 input, output);
-		} else {
-			input = open_input(argv[argc - 1]);
-			testfile(argv[argc - 2]);
-			testfile(argv[argc - 3]);
-			testfile(argv[argc - 4]);
-			t.read(argv[argc - 4], argv[argc - 3], argv[argc - 2]);
-		}
-		break;
+      }
+      else if(t.getUseBilingual() == false || t.getPreBilingual() == true)
+      {
+        output = open_output(argv[argc-1]);
+        input = open_input(argv[argc-2]);
+        testfile(argv[argc-3]);
+        testfile(argv[argc-4]);
+        t.read(argv[argc-4], argv[argc-3]);
+      }
+      else
+      {
+        input = open_input(argv[argc-1]);
+        testfile(argv[argc-2]);
+        testfile(argv[argc-3]);
+        testfile(argv[argc-4]);
+        t.read(argv[argc-4], argv[argc-3], argv[argc-2]);
+      }
+      break;
 
-	case 4:
-		if (t.getUseBilingual() == false || t.getPreBilingual() == true) {
-			input = open_input(argv[argc - 1]);
-			testfile(argv[argc - 2]);
-			testfile(argv[argc - 3]);
-			t.read(argv[argc - 3], argv[argc - 2]);
-		} else if (isAmbig) {
-			testfile(argv[argc - 2]);
-			testfile(argv[argc - 3]);
-			BeamSearch::transfer(argv[argc - 3], argv[argc - 2], argv[argc - 1],
+    case 4:
+      if (isAmbig) {
+		testfile(argv[argc - 2]);
+		testfile(argv[argc - 3]);
+		AmbiguousTransfer::transfer(argv[argc - 3], argv[argc - 2], argv[argc - 1],
 					 input, output);
-		} else {
-			testfile(argv[argc - 1]);
-			testfile(argv[argc - 2]);
-			testfile(argv[argc - 3]);
-			t.read(argv[argc - 3], argv[argc - 2], argv[argc - 1]);
-		}
-		break;
-	case 3:
-		if (t.getUseBilingual() == false || t.getPreBilingual() == true) {
-			testfile(argv[argc - 1]);
-			testfile(argv[argc - 2]);
-			t.read(argv[argc - 2], argv[argc - 1]);
-		} else {
-			message(argv[0]);
-		}
-		break;
+      }
+      else if(t.getUseBilingual() == false || t.getPreBilingual() == true)
+      {
+        input = open_input(argv[argc-1]);
+        testfile(argv[argc-2]);
+        testfile(argv[argc-3]);
+        t.read(argv[argc-3], argv[argc-2]);
+      }
+      else
+      {
+        testfile(argv[argc-1]);
+        testfile(argv[argc-2]);
+        testfile(argv[argc-3]);
+        t.read(argv[argc-3], argv[argc-2], argv[argc-1]);
+      }
+      break;
+    case 3:
+      if(t.getUseBilingual() == false || t.getPreBilingual() == true)
+      {
+        testfile(argv[argc-1]);
+        testfile(argv[argc-2]);
+        t.read(argv[argc-2], argv[argc-1]);
+      }
+      else
+      {
+        message(argv[0]);
+      }
+      break;
 
-	default:
-		message(argv[0]);
-		break;
-	}
+    default:
+      message(argv[0]);
+      break;
+  }
 
 #ifdef _MSC_VER
-	_setmode(_fileno(input), _O_U8TEXT);
-	_setmode(_fileno(output), _O_U8TEXT);
+  _setmode(_fileno(input), _O_U8TEXT);
+  _setmode(_fileno(output), _O_U8TEXT);
 #endif
-	if (!isAmbig)
-		t.transfer(input, output);
-	return EXIT_SUCCESS;
+  if (!isAmbig)
+    t.transfer(input, output);
+  return EXIT_SUCCESS;
 }
