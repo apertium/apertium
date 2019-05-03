@@ -237,7 +237,7 @@ bin_PROGRAMS = apertium-deshtml \
 	       apertium-tmxbuild \
 	       apertium-transfer
 
-bin_SCRIPTS =  $(GENERATEDSCRIPTS) apertium-get/apertium-get
+bin_SCRIPTS =  $(GENERATEDSCRIPTS) apertium-get/apertium-get docx-word-borders.py
 
 # Workaround for git-svn clone not getting externals; should do
 # nothing in normal SVN checkouts
@@ -567,6 +567,7 @@ apertium: Makefile.am apertium-header.sh
 	@echo "#!$(BASH)" > $@
 	@echo "APERTIUM_PATH=\"$(prefix)/bin\"" >>$@
 	@echo "DEFAULT_DIRECTORY=\"$(prefix)/share/apertium\"" >>$@
+	@echo "PYTHON=\"$(PYTHON)\"" >>$@
 	@cat apertium-header.sh >>$@
 	@chmod a+x $@
 

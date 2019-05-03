@@ -191,4 +191,10 @@ AX_CHECK_COMPILE_FLAG([-std=c++20], [CXXFLAGS="$CXXFLAGS -std=c++20"], [
  ])
 ])
 
+# Checks for Python3
+AM_PATH_PYTHON("3.5")
+AX_PYTHON_MODULE(lxml, [])
+AS_IF([test "x${HAVE_PYMOD_LXML}" = "xno"],
+      [AC_MSG_ERROR([Requires lxml for Python])])
+
 AC_OUTPUT([Makefile apertium.pc apertium/Makefile tests/Makefile tests/tagger/Makefile])
