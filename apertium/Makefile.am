@@ -235,7 +235,8 @@ bin_PROGRAMS = apertium-deshtml \
 	       apertium-tagger-readwords \
 	       apertium-perceptron-trace \
 	       apertium-tmxbuild \
-	       apertium-transfer
+	       apertium-transfer \
+	       adapt-docx
 
 bin_SCRIPTS =  $(GENERATEDSCRIPTS) apertium-get/apertium-get
 
@@ -335,6 +336,9 @@ apertium_tagger_readwords_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VER
 
 ###apertium_gen_wlist_lextor_translation_SOURCES = apertium_gen_wlist_lextor_translation.cc
 ###apertium_gen_wlist_lextor_translation_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
+
+adapt_docx_SOURCES = adapt_docx.cc
+adapt_docx_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 
 
 if WINDOWS

@@ -87,6 +87,8 @@ test-driver
 
 /apertium/stamp-*
 
+/apertium/adapt-docx
+
 # Tests
 /tests/**/Makefile.in
 /tests/**/Makefile
