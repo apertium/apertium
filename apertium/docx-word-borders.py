@@ -57,10 +57,10 @@ class docx():
 class paragraf():
     def __init__(self, element):
         self.element = element
-        self.rr = [r for r in docx.iter(element, "w:r")]
-        self.tt = [t for r in self.rr for t in docx.iter(r, "w:t")]
+        self.rt = [(r, [t for t in docx.iter(r, "w:t")]) for r in docx.iter(element, "w:r")]
+        self.rt = [(r, tt[0]) for (r, tt) in self.rt if len(tt) == 1]
         texts = []
-        for t in self.tt:
+        for t in [t for (r, t) in self.rt]:
             if self.get_atrib(t, "xml:space") == "preserve":
                 texts.append(t.text)
             else:
@@ -152,8 +152,7 @@ class paragraf():
         if not canvis:
             return
         novesMides = []
-        nousRR = []
-        nousTT = []
+        nousRT = []
         inici = 0
         for i in range(len(self.mides)):
             mida = self.mides[i]
@@ -161,18 +160,16 @@ class paragraf():
                 novesMides.append(mida)
                 nouText = self.txt[inici:inici+mida]
                 inici += mida
-                self.tt[i].text = nouText
+                self.rt[i][1].text = nouText
                 if nouText == nouText.strip():
-                    self.del_atrib(self.tt[i], "xml:space")
+                    self.del_atrib(self.rt[i][1], "xml:space")
                 else:
-                    self.set_atrib(self.tt[i], "xml:space", "preserve")
-                nousRR.append(self.rr[i])
-                nousTT.append(self.tt[i])
+                    self.set_atrib(self.rt[i][1], "xml:space", "preserve")
+                nousRT.append(self.rt[i])
             else:
-                self.element.remove(self.rr[i])
+                self.element.remove(self.rt[i][0])
         self.mides = novesMides
-        self.rr = nousRR
-        self.tt = nousTT
+        self.rt = nousRT
 
     def tostring(self, llegible):
         f = io.BytesIO(b"")
