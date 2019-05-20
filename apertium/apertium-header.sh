@@ -426,18 +426,10 @@ case "$#" in
     REDIR=">"
     INFILE=$2
     PAIR=$1
-    if [[ ! -e "$INFILE" ]]; then
-      echo "Error: file '$INFILE' not found." >&2
-      message >&2
-    fi
     ;;
   2)
     INFILE=$2
     PAIR=$1
-    if [[ ! -e "$INFILE" ]]; then
-      echo "Error: file '$INFILE' not found." >&2
-      message >&2
-    fi
     ;;
   1)
     PAIR=$1
@@ -447,6 +439,13 @@ case "$#" in
     ;;
 esac
 
+if [[ ! -e "$INFILE" ]]; then
+  echo "Error: file '$INFILE' not found." >&2
+  message >&2
+elif [[ ! -r "$INFILE" ]]; then
+  echo "Error: file '$INFILE' is not readable by you." >&2
+  message >&2
+fi
 
 if [[ -n $TRANSLATION_MEMORY_FILE ]]; then
   if ! "$APERTIUM_PATH/lt-tmxcomp" "$TRANSLATION_MEMORY_DIRECTION" "$TRANSLATION_MEMORY_FILE" "$TMCOMPFILE" >/dev/null; then

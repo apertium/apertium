@@ -978,7 +978,7 @@ Transfer::processLet(xmlNode *localroot)
       }
       else if(!xmlStrcmp(i->name, (const xmlChar *) "link-to"))
       {
-        as = i->children->content;
+        as = i->children->content; // TODO: set but never read
       }
     }
 
@@ -1915,8 +1915,8 @@ Transfer::transfer(FILE *in, FILE *out)
     transfer_wrapper_null_flush(in, out);
   }
 
-  int last = 0;
-  int prev_last = 0;
+  unsigned int last = input_buffer.getPos();
+  unsigned int prev_last = last;
   int lastrule_id = -1;
   set<int> banned_rules;
 
@@ -2216,10 +2216,12 @@ Transfer::applyRule()
     if(useBilingual && preBilingual == false)
     {
       tr = fstp.biltransWithQueue(*tmpword[i], false);
+      word[i] = new TransferWord(UtfConverter::toUtf8(*tmpword[i]),
+                                 UtfConverter::toUtf8(tr.first),
+                                 tr.second);
     }
     else if(preBilingual)
     {
-      //wcerr << "applyRule: " << *tmpword[i] << endl;
       wstring sl;
       wstring tl;
       int seenSlash = 0;
@@ -2260,16 +2262,18 @@ Transfer::applyRule()
           break;
         }
       }
-      //tmpword[i]->assign(sl);
       tr = pair<wstring, int>(tl, false);
+      word[i] = new TransferWord(UtfConverter::toUtf8(sl),
+                                 UtfConverter::toUtf8(tr.first),
+                                 tr.second);
     }
-    else
+    else // neither useBilingual nor preBilingual (sl==tl)
     {
       tr = pair<wstring, int>(*tmpword[i], false);
+      word[i] = new TransferWord(UtfConverter::toUtf8(*tmpword[i]),
+                                 UtfConverter::toUtf8(tr.first),
+                                 tr.second);
     }
-
-    word[i] = new TransferWord(UtfConverter::toUtf8(*tmpword[i]),
-			       UtfConverter::toUtf8(tr.first), tr.second);
   }
 
   words_to_consume = processRule(lastrule);

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<transfer default="chunk">
+  <section-def-cats>
+    <def-cat n="vblexpassfv">
+      <cat-item tags="vblex.pres.pasv"/>
+      <cat-item tags="vblex.pret.pasv"/>
+      <cat-item tags="vblex.pstv.pres"/>
+    </def-cat>
+    <def-cat n="prn">
+      <cat-item tags="prn.*"/>
+    </def-cat>
+  </section-def-cats>
+  <section-def-attrs>
+    <def-attr n="a_nom">
+      <attr-item tags="n"/>
+      <attr-item tags="np"/>
+    </def-attr>
+  </section-def-attrs>
+
+  <section-def-vars>
+    <def-var n="caseFirstWord"/>
+    <def-var n="tmp"/>
+  </section-def-vars>
+
+  <section-def-lists>
+    <def-list n="foo">
+      <list-item v="foo"/>
+    </def-list>
+  </section-def-lists>
+
+  <section-def-macros>
+    <def-macro n="set_caseFirstWord" npar="1"
+               c="Downcases the argument, unless np">
+      <!-- TODO: Put a marker for acronyms where we don't want to copy case from them; then drop the tag -->
+      <choose><when>
+        <test><not><equal><clip pos="1" side="tl" part="a_nom"/><lit-tag v="np"/></equal></not></test>
+        <modify-case><clip pos="1" side="tl" part="lemh"/><lit v="aa"/></modify-case>
+      </when></choose>
+      <choose>
+        <when c="Proper noun, not first word in sentence: let first word have lowercase">
+          <test><and>
+            <not><equal><var n="caseFirstWord"/><lit v=""/></equal></not>
+            <begins-with><clip pos="1" side="tl" part="a_nom"/><lit-tag v="np"/></begins-with>
+          </and></test>
+          <let><var n="caseFirstWord"/><lit v="aa"/></let>
+        </when>
+        <otherwise>
+          <let><var n="caseFirstWord"/><get-case-from pos="1"><lit v="aa"/></get-case-from></let>
+        </otherwise>
+      </choose>
+
+    </def-macro>
+  </section-def-macros>
+
+  <section-rules>
+    <rule>
+      <pattern>
+        <pattern-item n="vblexpassfv"/>
+      </pattern>
+      <action>
+        <let>
+          <var n="tmp"/>
+          <concat>
+            <lit v="sl-lemq:'"/><clip pos="1" side="sl" part="lemq"/>
+            <lit v="' tl-lemq:'"/><clip pos="1" side="tl" part="lemq"/>
+            <lit v="'"/>
+          </concat>
+        </let>
+        <out><var n="tmp"/></out>
+      </action>
+    </rule>
+
+    <rule comment="PRN">
+      <pattern>
+        <pattern-item n="prn"/>
+      </pattern>
+      <action>
+        <call-macro n="set_caseFirstWord"><with-param pos="1"/></call-macro>
+        <out>
+          <chunk name="prn" case="caseFirstWord">
+            <tags><tag><clip pos="1" side="tl" part="tags"/></tag></tags>
+            <lu><clip pos="1" side="tl" part="whole"/></lu>
+          </chunk>
+        </out>
+      </action>
+    </rule>
+  </section-rules>
+</transfer>
