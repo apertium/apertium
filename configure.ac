@@ -168,6 +168,9 @@ AC_TYPE_SIZE_T
 # Checks for library functions.
 AC_FUNC_ERROR_AT_LINE
 
+# Checks for ICU
+AC_CHECK_ICU
+
 AC_CHECK_DECLS([fread_unlocked, fwrite_unlocked, fgetc_unlocked, fputc_unlocked, fputs_unlocked, getopt, getopt_long, fgetwc_unlocked, fputwc_unlocked, fgetws_unlocked, fputws_unlocked])
 AC_CHECK_FUNCS([setlocale strdup getopt snprintf mbtowc])
 AC_REPLACE_FUNCS(getopt_long)
