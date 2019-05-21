@@ -1,3 +1,5 @@
+#!/bin/bash
+
 INPUT_FILE="/dev/stdin"
 OUTPUT_FILE="/dev/stdout"
 
@@ -117,8 +119,7 @@ unformat_pptx ()
      rm "$LOCALTEMP"
   done;
 
-  find "$INPUT_TMPDIR" | grep "xml$" |\
-  grep "slides\/slide" |\
+  find . -path '**/slides/slide*.xml' |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
   "$APERTIUM_PATH/apertium-despptx" >"$SALIDA"
   rm -Rf "$INPUT_TMPDIR"
@@ -183,7 +184,7 @@ SALIDA=$OUTPUT_FILE;
 
 case "$FORMATADOR" in
         rtf)
-		MILOCALE=$(locale -a|grep -i -v "utf\|^C$\|^POSIX$"|head -1);
+                MILOCALE=$(locale -a | grep -E -i -v -m1 'utf|^C|^POSIX$')
 		if [ "$MILOCALE" = "" ]
 		then echo "Error: Install a ISO-8859-1 compatible locale in your system";
 	             exit 1;
