@@ -25,26 +25,24 @@ locale_utf8 ()
 
 test_zip ()
 {
- if [ "$(which zip)" = "" ]
-  then echo "Error: Install 'zip' command in your system";
-       exit 1;
+  if ! command -v zip &>/dev/null; then
+    echo "Error: Install 'zip' command in your system";
+    exit 1;
   fi
 
-  if [ "$(which unzip)" = "" ]
-  then echo "Error: Install 'unzip' command in your system";
-       exit 1;
+  if ! command -v unzip &>/dev/null; then
+    echo "Error: Install 'unzip' command in your system";
+    exit 1;
   fi
 }
 
 test_gawk ()
 {
-  GAWK=$(which gawk)
-  if [ "$GAWK" = "" ]
-  then echo "Error: Install 'gawk' in your system"
-       exit 1
+  if ! command -v gawk &>/dev/null; then
+    echo "Error: Install 'gawk' in your system"
+    exit 1
   fi
 }
-
 
 unformat_latex()
 {
