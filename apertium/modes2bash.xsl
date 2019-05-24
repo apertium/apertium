@@ -29,33 +29,44 @@
 
 <!-- Print filenames first, then the contents of each file. This gets
      parsed by apertium-createmodes.awk which splits it into the
-     specific files. -->
+     specific files.
+
+     If installdir = devdir, then we just want local modes (such files
+     end up in ./modes), otherwise we want to install modes files
+     (such files end up in . and are installed by Makefile.am)
+-->
 <xsl:template match="mode">
   <xsl:choose>
-    <xsl:when test="@install = 'yes'">
-      <xsl:text>
+    <xsl:when test="$installdir != $devdir">
+      <xsl:choose>
+        <xsl:when test="@install = 'yes'">
+          <xsl:text>
 # </xsl:text>
+          <xsl:value-of select="./@name"/>
+          <xsl:text>.mode
+          </xsl:text>
+          <xsl:apply-templates>
+            <xsl:with-param name="dir"><xsl:value-of select="$installdir"/></xsl:with-param>
+          </xsl:apply-templates>
+        </xsl:when>
+      </xsl:choose>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:variable name="dir">
+        <xsl:text>'</xsl:text>
+        <xsl:value-of select="$devdir"/>
+        <xsl:text>'</xsl:text>
+      </xsl:variable>
+      <xsl:text>
+# modes/</xsl:text>
       <xsl:value-of select="./@name"/>
       <xsl:text>.mode
       </xsl:text>
       <xsl:apply-templates>
-        <xsl:with-param name="dir"><xsl:value-of select="$installdir"/></xsl:with-param>
+        <xsl:with-param name="dir"><xsl:value-of select="$devdir"/></xsl:with-param>
       </xsl:apply-templates>
-    </xsl:when>
+    </xsl:otherwise>
   </xsl:choose>
-  <xsl:variable name="dir">
-    <xsl:text>'</xsl:text>
-    <xsl:value-of select="$devdir"/>
-    <xsl:text>'</xsl:text>
-  </xsl:variable>
-  <xsl:text>
-# modes/</xsl:text>
-  <xsl:value-of select="./@name"/>
-  <xsl:text>.mode
-  </xsl:text>
-  <xsl:apply-templates>
-    <xsl:with-param name="dir"><xsl:value-of select="$devdir"/></xsl:with-param>
-  </xsl:apply-templates>
 </xsl:template>
 
 

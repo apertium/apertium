@@ -7,9 +7,9 @@ USAGE: $(basename "$0") modes.xml
        $(basename "$0") modes.xml BASENAME
        $(basename "$0") -f modes.xml INSTALLDIR
 
-Creates all modes under the 'modes/' subdirectory of the directory of
-modes.xml, and further creates copies of installable modes in the same
-directory as modes.xml.
+The first form creates all modes under the 'modes/' subdirectory of
+the directory of modes.xml. The second and third creates only the
+installable modes, in the same directory as modes.xml.
 
 If only modes.xml is given, all files refer only to datafiles under
 the same directory as modes.xml.
@@ -21,7 +21,7 @@ If -f is given, the second non-option argument INSTALLDIR is the full
 path to where installed data files for installable modes are.
 
 
-If a mode has attribute gendebug="yes", the script will also
+If a mode has attribute gendebug="yes", the first form will also
 auto-generate debug modes (e.g. -morph, -tagger, -chunker).
 
 Use option -v to show the actual commands this script runs.
@@ -68,6 +68,10 @@ case $# in
            installdir="$2"
        else
            installdir="${APERTIUMDIR}/$2"
+       fi
+       if [[ "${installdir}" = "${xmldir}" ]]; then
+           echo "$0 ERROR: Installation prefix is the same directory modes.xml; give a different INSTALLDIR." >&2
+           exit 1
        fi
        ;;
     *) show_help >&2

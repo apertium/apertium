@@ -107,15 +107,10 @@ AC_DEFUN([AP_MKINCLUDE],
 modes/%.mode: modes.xml
 	apertium-validate-modes modes.xml
 	apertium-gen-modes modes.xml
-	modes=\`xmllint --xpath '//mode@<:@@install="yes"@:>@/@name' modes.xml | sed 's/ *name="\(@<:@^"@:>@*\)"/\1.mode /g'\`; \\
-		if test -n "\$\$modes"; then mv \$\$modes modes/; fi
 
 apertium_modesdir=\$(prefix)/share/apertium/modes/
 install-modes:
-	mv modes modes.bak
 	apertium-gen-modes -f modes.xml \$(prefix)/share/apertium/\$(BASENAME)
-	rm -rf modes
-	mv modes.bak modes
 	\$(MKDIR_P) \$(DESTDIR)\$(apertium_modesdir)
 	modes=\`xmllint --xpath '//mode@<:@@install="yes"@:>@/@name' modes.xml | sed 's/ *name="\(@<:@^"@:>@*\)"/\1.mode /g'\`; \\
 		if test -n "\$\$modes"; then \\
