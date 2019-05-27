@@ -9,6 +9,7 @@ import tagger
 import pretransfer
 import transfer
 import postchunk
+import adaptdocx
 
 if __name__ == "__main__":
     os.chdir(os.path.dirname(__file__))
@@ -16,7 +17,8 @@ if __name__ == "__main__":
     for module in [tagger,
                    pretransfer,
                    transfer,
-                   postchunk]:
+                   postchunk,
+                   adaptdocx]:
         suite = unittest.TestLoader().loadTestsFromModule(module)
         res = unittest.TextTestRunner(verbosity = 2).run(suite)
         failures += len(res.failures)

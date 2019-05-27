@@ -479,6 +479,7 @@ int main(int argc, char *argv[])
 			process(name, outputsName, pretty);
 		}
 	}
+	cout << '\0' << flush;
 }
 
 /* vim: set noet ts=4 sw=4: */
