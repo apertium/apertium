@@ -291,7 +291,7 @@ apertium_postlatex_raw_SOURCES = apertium_postlatex_raw.cc
 apertium_postlatex_raw_LDADD= $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 
 apertium_tagger_SOURCES = apertium_tagger.cc
-APERTIUM_tagger_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
+apertium_tagger_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 
 apertium_perceptron_trace_SOURCES = apertium_perceptron_trace.cc
 apertium_perceptron_trace_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
