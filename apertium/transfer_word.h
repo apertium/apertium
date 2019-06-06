@@ -42,6 +42,11 @@ private:
   string t_str;
 
   /**
+   * Reference word
+   */
+  string r_str;
+
+  /**
    * Queue length
    */
   int queue_length;
@@ -58,17 +63,17 @@ private:
   void destroy();
 
   /**
-   * Accesses the source/target side of a word using the specified part
-   * @param str tipically s_str or t_str
+   * Accesses the source/target/reference side of a word using the specified part
+   * @param str typically s_str or t_str or r_str
    * @param part regular expression to match/access
    * @return reference to matched/accessed string
    */
   string access(string const &str, ApertiumRE const &part);
 
   /**
-   * Assings a value to the source/target side of a word using the
+   * Assings a value to the source/target/reference side of a word using the
    * specified part
-   * @param str tipically s_str or t_str
+   * @param str typically s_str or t_str or r_str
    * @param part regular expression to match/access
    * @param value the string to be assigned
    */
@@ -94,9 +99,10 @@ public:
    * Parametric constructor calling init()
    * @param src source word
    * @param tgt target word
+   * @param ref reference word
    * @param queue queue lenght
    */
-  TransferWord(string const &src, string const &tgt, int queue = 0);
+  TransferWord(string const &src, string const &tgt, string const &ref, int queue = 0);
 
   /**
    * Assignment operator
@@ -106,12 +112,13 @@ public:
   TransferWord & operator =(TransferWord const &o);
 
   /**
-   * Sets a bi-word (a source language word and its counterpart in target
-   * language
+   * Sets a tri-word (a source language word, its counterpart in target
+   * language, and a reference if one exists
    * @param src source word
    * @param tgt target word
+   * @param ref reference word
    */
-  void init(string const &src, string const &tgt);
+  void init(string const &src, string const &tgt, string const &ref);
 
   /**
    * Reference a source language word part
@@ -130,6 +137,14 @@ public:
   string target(ApertiumRE const &part, bool with_queue = true);
 
   /**
+   * Reference the reference word part
+   * @param part regular expression to match
+   * @param with_queue access taking into account the queue
+   * @returns reference to the part of string matched
+   */
+  string reference(ApertiumRE const &part, bool with_queue = true);
+
+  /**
    * Sets a value for a source language word part
    * @param part regular expression to match
    * @param value the new value for the given part
@@ -146,6 +161,15 @@ public:
    */
   void setTarget(ApertiumRE const &part, string const &value,
 		 bool with_queue = true);
+
+  /**
+   * Sets a value for a reference word part
+   * @param part regular expression to match
+   * @param value the new value for the given part
+   * @param with_queue access taking or not into account the queue
+   */
+  void setReference(ApertiumRE const &part, string const &value,
+     bool with_queue = true);
 };
 
 #endif
