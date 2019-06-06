@@ -25,6 +25,7 @@ TransferWord::copy(TransferWord const &o)
 {
   s_str = o.s_str;
   t_str = o.t_str;
+  r_str = o.r_str;
   queue_length = o.queue_length;
 }
 
@@ -38,9 +39,9 @@ queue_length(0)
 {
 }
 
-TransferWord::TransferWord(string const &src, string const &tgt, int queue)
+TransferWord::TransferWord(string const &src, string const &tgt, string const &ref, int queue)
 {
-  init(src, tgt);
+  init(src, tgt, ref);
   queue_length = queue;
 }
 
@@ -66,10 +67,11 @@ TransferWord::operator =(TransferWord const &o)
 }
 
 void
-TransferWord::init(string const &src, string const &tgt)
+TransferWord::init(string const &src, string const &tgt, string const &ref)
 {
   s_str = src;
   t_str = tgt;
+  r_str = ref;
 }
 
 string
@@ -95,6 +97,19 @@ TransferWord::target(ApertiumRE const &part, bool with_queue)
   else
   {
     return part.match(t_str.substr(0, t_str.size() - queue_length));
+  }
+}
+
+string
+TransferWord::reference(ApertiumRE const &part, bool with_queue)
+{
+  if(with_queue)
+  {
+    return part.match(r_str);
+  }
+  else
+  {
+    return part.match(r_str.substr(0, r_str.size() - queue_length));
   }
 }
 
@@ -127,5 +142,21 @@ TransferWord::setTarget(ApertiumRE const &part, string const &value,
     string mystring = t_str.substr(0, t_str.size() - queue_length);
     part.replace(mystring, value);
     t_str = mystring + t_str.substr(t_str.size() - queue_length);
+  }
+}
+
+void
+TransferWord::setReference(ApertiumRE const &part, string const &value,
+      bool with_queue)
+{
+  if(with_queue)
+  {
+    part.replace(r_str, value);
+  }
+  else
+  {
+    string mystring = r_str.substr(0, r_str.size() - queue_length);
+    part.replace(mystring, value);
+    r_str = mystring + r_str.substr(r_str.size() - queue_length);
   }
 }
