@@ -313,6 +313,8 @@ Transfer::evalString(xmlNode *element)
         }
         break;
 
+      //case ti_clip_cr [[anaphora]]
+
       case ti_linkto_sl:
         if(checkIndex(element, ti.getPos(), lword))
         {
@@ -340,6 +342,8 @@ Transfer::evalString(xmlNode *element)
           }
         }
         break;
+
+      //case ti_linkto_cr [[anaphora]]
 
       case ti_var:
         return variables[ti.getContent()];
@@ -379,6 +383,8 @@ Transfer::evalString(xmlNode *element)
           return caseOf(word[ti.getPos()]->target(attr_items[ti.getContent()]));
         }
         break;
+
+      //case ti_case_of_cr [[anaphora]]
 
       default:
         return "";
@@ -425,16 +431,17 @@ Transfer::evalString(xmlNode *element)
       {
         evalStringCache[element] = TransferInstr(ti_linkto_sl, (const char *) part, pos, (void *) as, queue);
       }
-      else
+      else //else if(!xmlStrcmp(side, (const xmlChar *) "tl")) [[anaphora]]
       {
         evalStringCache[element] = TransferInstr(ti_linkto_tl, (const char *) part, pos, (void *) as, queue);
       }
+      //else for cr [[anaphora]]
     }
     else if(!xmlStrcmp(side, (const xmlChar *) "sl"))
     {
       evalStringCache[element] = TransferInstr(ti_clip_sl, (const char *) part, pos, NULL, queue);
     }
-    else
+    else //if and else for cr [[anaphora]]
     {
       evalStringCache[element] = TransferInstr(ti_clip_tl, (const char *) part, pos, NULL, queue);
     }
@@ -504,7 +511,7 @@ Transfer::evalString(xmlNode *element)
     {
       evalStringCache[element] = TransferInstr(ti_case_of_sl, (const char *) part, pos);
     }
-    else
+    else //if [[anaphora]]
     {
       evalStringCache[element] = TransferInstr(ti_case_of_tl, (const char *) part, pos);
     }
@@ -939,6 +946,8 @@ Transfer::processLet(xmlNode *localroot)
         }
         return;
 
+      //case ti_clip_cr [[anaphora]]
+
       default:
         return;
     }
@@ -996,7 +1005,7 @@ Transfer::processLet(xmlNode *localroot)
       word[pos]->setTarget(attr_items[(const char *) part], evalString(rightSide), queue);
       evalStringCache[leftSide] = TransferInstr(ti_clip_tl, (const char *) part, pos, NULL, queue);
     }
-    else
+    else //if and add for cr [[anaphora]]
     {
       word[pos]->setSource(attr_items[(const char *) part], evalString(rightSide), queue);
       evalStringCache[leftSide] = TransferInstr(ti_clip_sl, (const char *) part, pos, NULL, queue);
@@ -1086,7 +1095,7 @@ Transfer::processModifyCase(xmlNode *localroot)
 				      word[pos]->source(attr_items[(const char *) part], queue));
       word[pos]->setSource(attr_items[(const char *) part], result);
     }
-    else
+    else //if and add for cr [[anaphora]]
     {
       string const result = copycase(evalString(rightSide),
 				     word[pos]->target(attr_items[(const char *) part], queue));
@@ -2032,7 +2041,7 @@ Transfer::transfer(FILE *in, FILE *out)
 	      tr = fstp.biltransWithQueue(*tmpword[0], false);
             }
           }
-          else if(preBilingual)
+          else if(preBilingual) //add for cr? [[anaphora]]
           {
             wstring sl;
             wstring tl;
@@ -2220,7 +2229,7 @@ Transfer::applyRule()
                                  UtfConverter::toUtf8(tr.first),
                                  tr.second);
     }
-    else if(preBilingual)
+    else if(preBilingual) //add for cr? [[anaphora]]
     {
       wstring sl;
       wstring tl;
