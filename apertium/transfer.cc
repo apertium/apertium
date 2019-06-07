@@ -2093,6 +2093,8 @@ Transfer::transfer(FILE *in, FILE *out)
           {
             wstring sl;
             wstring tl;
+            wstring ref; //[[anaphora]]
+
             int seenSlash = 0;
             for(wstring::const_iterator it = tmpword[0]->begin(); it != tmpword[0]->end(); it++)
             {
@@ -2104,11 +2106,17 @@ Transfer::transfer(FILE *in, FILE *out)
                   it++;
                   sl.push_back(*it);
                 }
-                else
+                else if(seenSlash == 1)
                 {
                   tl.push_back(*it);
                   it++;
                   tl.push_back(*it);
+                }
+                else //[[anaphora]]
+                {
+                  ref.push_back(*it);
+                  it++;
+                  ref.push_back(*it);
                 }
                 continue;
               }
@@ -2125,13 +2133,17 @@ Transfer::transfer(FILE *in, FILE *out)
               {
                 tl.push_back(*it);
               }
-              else if(seenSlash > 1)
+              else if(seenSlash == 2) //[[anaphora]]
+              {
+                ref.push_back(*it);
+              }
+              else if(seenSlash > 2)
               {
                 break;
               }
             }
             //tmpword[0]->assign(sl);
-            tr = pair<wstring, int>(tl, false);
+            tr = pair<wstring, int>(tl, false); // [[anaphora]] what is tr?
             //wcerr << L"pb: " << *tmpword[0] << L" :: " << sl << L" >> " << tl << endl ;
           }
           else
@@ -2281,6 +2293,8 @@ Transfer::applyRule()
     {
       wstring sl;
       wstring tl;
+      wstring ref; //[[anaphora]]
+
       int seenSlash = 0;
       for(wstring::const_iterator it = tmpword[i]->begin(); it != tmpword[i]->end(); it++)
       {
@@ -2292,11 +2306,17 @@ Transfer::applyRule()
             it++;
             sl.push_back(*it);
           }
-          else
+          else if(seenSlash == 1)
           {
             tl.push_back(*it);
             it++;
             tl.push_back(*it);
+          }
+          else
+          {
+            ref.push_back(*it);
+            it++;
+            ref.push_back(*it);
           }
           continue;
         }
@@ -2314,7 +2334,11 @@ Transfer::applyRule()
         {
           tl.push_back(*it);
         }
-        else if(seenSlash > 1)
+        else if(seenSlash == 2) //[[anaphora]]
+        {
+          ref.push_back(*it);
+        }
+        else if(seenSlash > 2)
         {
           break;
         }
@@ -2324,7 +2348,7 @@ Transfer::applyRule()
                                  UtfConverter::toUtf8(tr.first),
                                  tr.second);
     }
-    else // neither useBilingual nor preBilingual (sl==tl)
+    else // neither useBilingual nor preBilingual (sl==tl) [[anaphora]] add for ref?
     {
       tr = pair<wstring, int>(*tmpword[i], false);
       word[i] = new TransferWord(UtfConverter::toUtf8(*tmpword[i]),
