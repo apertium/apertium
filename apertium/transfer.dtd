@@ -364,7 +364,7 @@ representing a lexical form in the matched pattern
 
 <!ELEMENT clip EMPTY>
 <!ATTLIST clip pos CDATA #REQUIRED
-               side (sl|tl) #REQUIRED
+               side (sl|tl|ref) #REQUIRED
                part CDATA #REQUIRED
                queue CDATA #IMPLIED
                link-to CDATA #IMPLIED
@@ -377,7 +377,7 @@ representing a lexical form in the matched pattern
          inside the rule;
 
       * 'side' is used to select a source-language ('sl') or a
-        target-language ('tl') clip
+        target-language ('tl') or the reference ('ref') clip
 
       * the value of 'part' is the name of an attribute defined in
         def-attrs, but may take also the values 'lem' (referring to
