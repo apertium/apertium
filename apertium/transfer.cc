@@ -2285,8 +2285,10 @@ Transfer::applyRule()
     if(useBilingual && preBilingual == false)
     {
       tr = fstp.biltransWithQueue(*tmpword[i], false);
+      wstring refx;
       word[i] = new TransferWord(UtfConverter::toUtf8(*tmpword[i]),
                                  UtfConverter::toUtf8(tr.first),
+                                 UtfConverter::toUtf8(refx), //[[anaphora]]
                                  tr.second);
     }
     else if(preBilingual) //add for cr? [[anaphora]]
@@ -2346,13 +2348,16 @@ Transfer::applyRule()
       tr = pair<wstring, int>(tl, false);
       word[i] = new TransferWord(UtfConverter::toUtf8(sl),
                                  UtfConverter::toUtf8(tr.first),
+                                 UtfConverter::toUtf8(ref), //[[anaphora]]
                                  tr.second);
     }
     else // neither useBilingual nor preBilingual (sl==tl) [[anaphora]] add for ref?
     {
       tr = pair<wstring, int>(*tmpword[i], false);
+      wstring refx;
       word[i] = new TransferWord(UtfConverter::toUtf8(*tmpword[i]),
                                  UtfConverter::toUtf8(tr.first),
+                                 UtfConverter::toUtf8(refx), //[[anaphoral]]
                                  tr.second);
     }
   }
