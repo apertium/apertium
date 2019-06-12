@@ -543,7 +543,11 @@ Transfer::evalString(xmlNode *element)
     {
       evalStringCache[element] = TransferInstr(ti_case_of_sl, (const char *) part, pos);
     }
-    else //if [[anaphora]]
+    else if(!xmlStrcmp(side, (const xmlChar *) "ref")) //[[anaphora]]
+    {
+      evalStringCache[element] = TransferInstr(ti_case_of_ref, (const char *) part, pos);
+    }
+    else
     {
       evalStringCache[element] = TransferInstr(ti_case_of_tl, (const char *) part, pos);
     }
