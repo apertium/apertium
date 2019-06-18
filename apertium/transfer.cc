@@ -1745,7 +1745,7 @@ Transfer::processContainsSubstring(xmlNode *localroot)
 }
 
 string
-Transfer::copycase(string const &source_word, string const &target_word) //[[anaphora]] NOT SURE ?
+Transfer::copycase(string const &source_word, string const &target_word)
 {
   wstring result;
   wstring const s_word = UtfConverter::fromUtf8(source_word);
@@ -2093,7 +2093,7 @@ Transfer::transfer(FILE *in, FILE *out)
 	      tr = fstp.biltransWithQueue(*tmpword[0], false);
             }
           }
-          else if(preBilingual) //add for cr? seems to be for seenSlash ==2 [[anaphora]]
+          else if(preBilingual) // [[anaphora]]
           {
             wstring sl;
             wstring tl;
@@ -2127,6 +2127,8 @@ Transfer::transfer(FILE *in, FILE *out)
               else if(*it == L'/')
               {
                 seenSlash++;
+
+                ref.clear(); //[[anaphora]] //the word after the last slash is the ref
                 continue;
               }
               if(seenSlash == 0)
@@ -2137,13 +2139,9 @@ Transfer::transfer(FILE *in, FILE *out)
               {
                 tl.push_back(*it);
               }
-              else if(seenSlash == 2) //[[anaphora]]
+              else //[[anaphora]]
               {
                 ref.push_back(*it);
-              }
-              else if(seenSlash > 2)
-              {
-                break;
               }
             }
             //tmpword[0]->assign(sl);
@@ -2295,7 +2293,7 @@ Transfer::applyRule()
                                  UtfConverter::toUtf8(refx), //[[anaphora]]
                                  tr.second);
     }
-    else if(preBilingual) //add for cr? [[anaphora]]
+    else if(preBilingual)[[anaphora]]
     {
       wstring sl;
       wstring tl;
@@ -2330,6 +2328,8 @@ Transfer::applyRule()
         if(*it == L'/')
         {
           seenSlash++;
+
+          ref.clear(); //[[anaphora]] word after last slash is ref
           continue;
         }
         if(seenSlash == 0)
@@ -2340,13 +2340,9 @@ Transfer::applyRule()
         {
           tl.push_back(*it);
         }
-        else if(seenSlash == 2) //[[anaphora]]
+        else //[[anaphora]]
         {
           ref.push_back(*it);
-        }
-        else if(seenSlash > 2)
-        {
-          break;
         }
       }
       tr = pair<wstring, int>(tl, false);
