@@ -1,0 +1,61 @@
+.Dd June 25, 2019
+.Dt APERTIUM-DESHTML-ALT 1
+.Os Apertium
+.Sh NAME
+.Nm apertium-deshtml-alt
+.Nd HTML format processor for Apertium with alt-translation
+.Sh SYNOPSIS
+.Nm apertium-deshtml-alt
+.Op Fl hino
+.Op Ar input_file Op Ar output_file
+.Sh DESCRIPTION
+This tool is part of
+.Lk https://www.apertium.org/ the Apertium open-source machine translation \
+toolbox .
+.Pp
+.Nm apertium-deshtml-alt
+is an HTML format processor.
+Data should be passed through this processor before being piped to
+.Xr lt-proc 1 .
+The program takes input in the form of an HTML document
+and produces output suitable for processing with
+.Xr lt-proc 1 .
+HTML tags and other format information are enclosed in brackets so that
+.Xr lt-proc 1
+treats them as whitespace between words.
+Unlike
+.Xr apertium-deshtml 1
+it unwraps the alt-attribute of images, letting the alt-text be translated.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl h , Fl Fl help
+Display this help.
+.It Fl i
+Makes the addition of trailing sentence terminator
+.Pq Ql \&.
+unconditional, often leading to duplicates.
+.It Fl n
+Suppresses the addition of a trailing sentence terminator.
+.It Fl o
+Inserts a "❡" (U+2761 CURVED STEM PARAGRAPH SIGN ORNAMENT) at the end of
+<h[1\(en6]> and <title> tags.
+.El
+.Sh EXAMPLES
+You could write the following to show how the word
+.Dq gener
+is analysed:
+.Dl echo Qo <b>gener</b><img alt="gener"/> Qc | apertium-deshtml-alt | lt-proc ca-es.automorf.bin
+.Sh SEE ALSO
+.Xr apertium 1 ,
+.Xr apertium-desrtf 1 ,
+.Xr apertium-destxt 1 ,
+.Xr apertium-rehtml 1 ,
+.Xr apertium-rehtml-noent 1 ,
+.Xr lt-proc 1
+.Sh COPYRIGHT
+Copyright \(co 2005-2019 Universitat d'Alacant / Universidad de Alicante.
+This is free software.
+You may redistribute copies of it under the terms of
+.Lk https://www.gnu.org/licenses/gpl.html the GNU General Public License .
+.Sh BUGS
+Many... lurking in the dark and waiting for you!

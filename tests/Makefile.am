@@ -1,6 +1,10 @@
 SUBDIRS = tagger
 
-TESTS = ./run_tests.py deslatex/run sh/run
+TESTS =             \
+    ./run_tests.py  \
+    deshtml-alt/run \
+    deslatex/run    \
+    sh/run
 
 # just a synonym:
 test: check

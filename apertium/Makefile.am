@@ -200,6 +200,7 @@ libapertium3_la_SOURCES = $(h_sources) $(cc_sources)
 libapertium3_la_LDFLAGS = -version-info $(GENERIC_LIBRARY_VERSION) -release $(GENERIC_RELEASE)
 
 bin_PROGRAMS = apertium-deshtml \
+	       apertium-deshtml-alt \
 	       apertium-deslatex \
 	       apertium-desmediawiki \
 	       apertium-desodt \
@@ -264,6 +265,7 @@ apertium_multiple_translations_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJO
 apertium_destxt_SOURCES = apertium_destxt.cc
 apertium_retxt_SOURCES = apertium_retxt.cc
 apertium_deshtml_SOURCES = apertium_deshtml.cc
+apertium_deshtml_alt_SOURCES = apertium_deshtml_alt.cc
 apertium_rehtml_SOURCES = apertium_rehtml.cc
 apertium_rehtml_noent_SOURCES = apertium_rehtml_noent.cc
 apertium_desxpresstag_SOURCES = apertium_desxpresstag.cc
@@ -345,6 +347,7 @@ endif
 CLEANFILES = *~ apertium_destxt.cc apertium_retxt.cc apertium_deshtml.cc \
              apertium_rehtml.cc apertium_desrtf.cc apertium_rertf.cc \
              apertium_rehtml_noent.cc \
+             apertium_deshtml_alt.cc \
              apertium_deswxml.cc apertium_rewxml.cc \
              apertium_deslatex.cc apertium_relatex.cc \
              apertium_desxlsx.cc apertium_rexlsx.cc \
@@ -377,6 +380,11 @@ apertium_retxt.cc: txt-format.xml Makefile.am reformat.xsl
 
 apertium_deshtml.cc: html-format.xml Makefile.am deformat.xsl
 	$(XSLTPROC) deformat.xsl html-format.xml >$@tmp
+	$(FLEX) -Cfer -o$@ $@tmp
+	rm $@tmp
+
+apertium_deshtml_alt.cc: html-alt-format.xml Makefile.am deformat.xsl
+	$(XSLTPROC) deformat.xsl $< >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
@@ -640,6 +648,7 @@ apertium-gen-stopwords-lextor: Makefile.am gen-stopwords-lextor.sh
 	@chmod a+x $@
 
 man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
+         apertium-deshtml-alt.1 \
          apertium-desodt.1 apertium-reodt.1 \
          apertium-deswxml.1 apertium-rewxml.1 \
          apertium-deslatex.1 apertium-relatex.1 \

@@ -1,0 +1,34 @@
+#!/bin/bash
+
+set -e -u
+
+cd "$(dirname "$0")"
+
+input='a "Hello, World" app
+<code>update"</code>
+<img src="hi"/>NULL>
+<script>a=">";</script>
+<img other="1" alt="ONE">
+<img other="1">
+<img alt="TWO" other="x"/>
+<a href="hi">EINS<br/>ZWEI
+<img/>DREI
+<img alt="THREE">FIER
+<img alt="FOUR"/>'
+
+expected='a "Hello, World" app[
+<code>]update"[<\/code>
+<img src="hi"\/>]NULL[>
+<script>a=">";<\/script>
+<img other="1" alt="]ONE[">
+<img other="1">
+<img alt="]TWO[" other="x"\/>
+<a href="hi">]EINS[<br\/>]ZWEI[
+<img\/>]DREI[
+<img alt="]THREE[">]FIER[
+<img alt="]FOUR.[]["\/>
+]'
+
+result=$(../../apertium/apertium-deshtml-alt <<< "${input}")
+
+diff <(echo "$expected") <(echo "$result")

@@ -22,7 +22,7 @@ message ()
   echo "USAGE: $(basename "$0") [-d datadir] [-f format] [-u] <direction> [in [out]]"
   echo " -d datadir       directory of linguistic data"
   echo " -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx, pptx,"
-  echo "                  xpresstag, html-noent, latex, latex-raw, line"
+  echo "                  xpresstag, html-noent, html-alt, latex, latex-raw, line"
   echo " -a               display ambiguity"
   echo " -u               don't display marks '*' for unknown words"
   echo " -n               don't insert period before possible sentence-ends"
@@ -339,6 +339,22 @@ translate_htmlnoent ()
   fi
 }
 
+translate_htmlalt ()
+{
+  "$APERTIUM_PATH/apertium-deshtml-alt" "${FORMAT_OPTIONS[@]}" "$INFILE" | \
+      if [ "$TRANSLATION_MEMORY_FILE" = "" ]; then
+          cat
+      else "$APERTIUM_PATH/lt-tmxproc" "$TMCOMPFILE";
+      fi | if [ ! -x "$DATADIR/modes/$PAIR.mode" ]; then
+      sh "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
+  else "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
+  fi | if [ "$FORMAT" = "none" ]; then
+      if [ "$REDIR" == "" ]; then cat; else cat > "$SALIDA"; fi
+  else
+    if [ "$REDIR" == "" ]; then "$APERTIUM_PATH/apertium-rehtml-noent"; else "$APERTIUM_PATH/apertium-rehtml-noent" > "$SALIDA"; fi
+  fi
+}
+
 translate_line ()
 {
   # TODO: lt-proc inserts spaces before parts of mwe's that cross
@@ -539,6 +555,13 @@ case "$FORMAT" in
     else OPTION="-g";
     fi;
     translate_htmlnoent
+    exit 0
+    ;;
+  html-alt)
+    if [ "$UWORDS" = "no" ]; then OPTION="-n";
+    else OPTION="-g";
+    fi;
+    translate_htmlalt
     exit 0
     ;;
 
