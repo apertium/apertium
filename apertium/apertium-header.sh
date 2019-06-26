@@ -627,6 +627,7 @@ case "$FORMAT" in
 
 
   *) # Por defecto asumimos txt
+    echo "$0 WARNING: Unknown format ${FORMAT}, treating as 'txt'" >&2
     FORMAT="txt"
     OPTION="-g"
     ;;
