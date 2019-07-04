@@ -19,11 +19,11 @@ class CustomBuild(build):
 
 def get_sources():
     sources = ['apertium_core.i']
-    cc_sources = ['postchunk.cc',
-                'interchunk.cc', 'interchunk_word.cc',
-                'apertium_re.cc', 'string_utils.cc', 'trx_reader.cc', 'utf_converter.cc',
-                'transfer.cc', 'transfer_mult.cc', 'transfer_word.cc', 'transfer_data.cc',
-                'transfer_word_list.cc', 'transfer_instr.cc', 'transfer_token.cc', 'xml_reader.cc']
+    cc_sources = ['apertium_re.cc', 'interchunk.cc', 'interchunk_word.cc', 'postchunk.cc',
+                  'pretransfer.cc', 'string_utils.cc', 'transfer.cc', 'transfer_data.cc',
+                  'transfer_instr.cc', 'transfer_mult.cc', 'transfer_token.cc',
+                  'transfer_word.cc', 'transfer_word_list.cc', 'trx_reader.cc',
+                  'utf_converter.cc', 'xml_reader.cc']
     rel_path = '@top_srcdir@/apertium'
     sources.extend(path.join(rel_path, f) for f in cc_sources)
     return sources
