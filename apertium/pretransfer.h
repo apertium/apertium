@@ -1,5 +1,5 @@
-#ifndef _PRETRANSFER_
-#define _PRETRANSFER_
+#ifndef PRETRANSFER_H
+#define PRETRANSFER_H
 
 #include <iostream>
 #include <string>
