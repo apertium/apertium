@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+
+'''
+Setup for SWIG Python bindings for apertium
+'''
+from os import path
+from distutils.core import Extension, setup
+from distutils.command.build import build
+
+
+class CustomBuild(build):
+    sub_commands = [
+        ('build_ext', build.has_ext_modules),
+        ('build_py', build.has_pure_modules),
+        ('build_clib', build.has_c_libraries),
+        ('build_scripts', build.has_scripts),
+    ]
+
+
+def get_sources():
+    sources = ['apertium_core.i']
+    cc_sources = ['postchunk.cc',
+                'interchunk.cc', 'interchunk_word.cc',
+                'apertium_re.cc', 'string_utils.cc', 'trx_reader.cc', 'utf_converter.cc',
+                'transfer.cc', 'transfer_mult.cc', 'transfer_word.cc', 'transfer_data.cc',
+                'transfer_word_list.cc', 'transfer_instr.cc', 'transfer_token.cc', 'xml_reader.cc']
+    rel_path = '@top_srcdir@/apertium'
+    sources.extend(path.join(rel_path, f) for f in cc_sources)
+    return sources
+
+def get_include_dirs():
+    # Remove '-I' from Flags, as python add '-I' on its own
+    dirs = '@APERTIUM_CFLAGS@'.replace('-I', '').split()
+    return dirs + ['..']
+
+
+apertium_core_module = Extension(
+    name='_apertium_core',
+    sources=get_sources(),
+    swig_opts=['-c++', '-I..', '-I@top_srcdir@/apertium', '-Wall']+'@APERTIUM_CFLAGS@'.split(),
+    include_dirs=get_include_dirs(),
+    library_dirs=['/usr/include/libxml2', '/usr/local/lib'],
+    extra_compile_args='@CPPFLAGS@'.split(),
+    extra_link_args='@LIBS@'.split(),
+)
+
+setup(
+    name='@PACKAGE@',
+    version='@PACKAGE_VERSION@',
+    description='SWIG interface to @PACKAGE_NAME@',
+    long_description='SWIG interface to @PACKAGE_NAME@ for use in apertium-python',
+    # TODO: author, maintainer, url
+    author_email='@PACKAGE_BUGREPORT@',
+    license='GPL-3.0+',
+    maintainer_email='@PACKAGE_BUGREPORT@',
+    cmdclass={'build': CustomBuild},
+    ext_modules=[apertium_core_module],
+    py_modules=['apertium_core'],
+)

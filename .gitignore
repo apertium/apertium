@@ -109,3 +109,12 @@ test-driver
 /tests/data/nno-nob.t1x.bin
 /tests/test-suite.log
 /compile_commands.json
+
+/python/Makefile.in
+/python/Makefile
+/python/apertium_core.py
+/python/apertium_core_wrap.cpp
+/python/setup.py
+/python/build*
+*.egg-info/
+*.egg

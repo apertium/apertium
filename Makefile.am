@@ -11,6 +11,10 @@ pkgconfig_DATA = apertium.pc
 aclocaldir = $(datadir)/aclocal
 aclocal_DATA = apertium.m4
 
+if HAVE_PYTHON_BINDINGS
+SUBDIRS += python
+endif
+
 EXTRA_DIST=autogen.sh README-MODES apertium.m4 utf8 tests
 
 install-data-local:
