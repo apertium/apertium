@@ -40,6 +40,7 @@ h_sources = a.h \
 	    optional.h \
 	    perceptron_spec.h \
 	    perceptron_tagger.h \
+		pretransfer.h \
 	    postchunk.h \
 	    sentence_stream.h \
 	    serialiser.h \
@@ -131,6 +132,7 @@ cc_sources = a.cc \
 	     file_morpho_stream.cc \
 	     perceptron_spec.cc \
 	     perceptron_tagger.cc \
+		 pretransfer.cc \
 	     postchunk.cc \
 	     sentence_stream.cc \
 	     stream.cc \
@@ -260,6 +262,7 @@ apertium_DATA = deformat.xsl reformat.xsl new2old.xsl lexchoice.xsl \
                 apertium-createmodes.awk
 
 apertium_pretransfer_SOURCES = apertium_pretransfer.cc
+apertium_pretransfer_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 apertium_multiple_translations_SOURCES = apertium-multiple-translations.cc
 apertium_multiple_translations_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 apertium_destxt_SOURCES = apertium_destxt.cc
