@@ -40,7 +40,7 @@ apertium_core_module = Extension(
     swig_opts=['-c++', '-I..', '-I@top_srcdir@/apertium', '-Wall']+'@APERTIUM_CFLAGS@'.split(),
     include_dirs=get_include_dirs(),
     library_dirs=['/usr/include/libxml2', '/usr/local/lib'],
-    extra_compile_args='@CPPFLAGS@'.split() + '@CXXFLAGS@'.split(),
+    extra_compile_args='@CPPFLAGS@'.split()+'@CXXFLAGS@'.split(),
     extra_link_args='@LIBS@'.split(),
 )
 

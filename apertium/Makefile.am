@@ -40,7 +40,7 @@ h_sources = a.h \
 	    optional.h \
 	    perceptron_spec.h \
 	    perceptron_tagger.h \
-		pretransfer.h \
+	    pretransfer.h \
 	    postchunk.h \
 	    sentence_stream.h \
 	    serialiser.h \
@@ -132,7 +132,7 @@ cc_sources = a.cc \
 	     file_morpho_stream.cc \
 	     perceptron_spec.cc \
 	     perceptron_tagger.cc \
-		 pretransfer.cc \
+	     pretransfer.cc \
 	     postchunk.cc \
 	     sentence_stream.cc \
 	     stream.cc \
