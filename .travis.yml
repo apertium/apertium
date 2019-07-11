@@ -6,6 +6,8 @@ os:
 compiler:
   - clang
   - gcc
+before_install:
+  - if [ $TRAVIS_OS_NAME = linux ]; then sudo apt-get install -y libxml2-utils xsltproc; else brew install libxml2; fi
 script:
   - ./autogen.sh
   - ./configure
