@@ -20,14 +20,14 @@ public:
   void transfer_text(char arg, char *transferfile, char *datafile, char *input_path, char *output_path);
 };
 
-class tag: public Apertium::apertium_tagger
+class tagger: public Apertium::apertium_tagger
 {
 public:
   /**
    * Imitates functionality of apertium-tagger
    * tag::tag() passes int and char** to apertium_tagger::apertium_tagger() int&, char**& respectively
    */
-  tag(int argc, char **argv): apertium_tagger(argc, argv){}
+  tagger(int argc, char **argv): apertium_tagger(argc, argv){}
 };
 
 void
@@ -132,12 +132,12 @@ public:
   void transfer_text(char arg, char *transferfile, char *datafile, char *input_path, char *output_path);
 };
 
-class tag: public Apertium::apertium_tagger
+class tagger: public Apertium::apertium_tagger
 {
 public:
   /**
    * Imitates functionality of apertium-tagger
    * tag::tag() passes int and char** to apertium_tagger::apertium_tagger() int&, char**& respectively
    */
-  tag(int argc, char **argv): apertium_tagger(argc, argv);
+  tagger(int argc, char **argv): apertium_tagger(argc, argv);
 };
