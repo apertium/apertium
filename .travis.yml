@@ -1,13 +1,11 @@
 dist: xenial
 language: cpp
-os:
-  - linux
-  - osx
 compiler:
   - clang
   - gcc
 before_install:
-  - if [ $TRAVIS_OS_NAME = linux ]; then sudo apt-get install -y libxml2-utils xsltproc; else brew install libxml2; fi
+  - wget https://apertium.projectjj.com/apt/install-nightly.sh -O - | sudo bash
+  - sudo apt-get install -y lttoolbox libxml2-utils xsltproc
 script:
   - ./autogen.sh
   - ./configure
