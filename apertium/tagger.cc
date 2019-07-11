@@ -1,5 +1,43 @@
 #include<apertium/tagger.h>
 
+#include "apertium_config.h"
+
+#include "align.h"
+#include "basic_exception_type.h"
+#include "basic_stream_tagger.h"
+#include "basic_stream_tagger_trainer.h"
+#include "basic_tagger.h"
+#include "err_exception.h"
+#include "exception.h"
+#include "file_tagger.h"
+#include "linebreak.h"
+#include "stream_5_3_1_tagger.h"
+#include "stream_5_3_1_tagger_trainer.h"
+#include "stream_5_3_2_tagger.h"
+#include "stream_5_3_2_tagger_trainer.h"
+#include "stream_5_3_3_tagger.h"
+#include "stream_5_3_3_tagger_trainer.h"
+#include <apertium/perceptron_tagger.h>
+#include <apertium/hmm.h>
+#include <apertium/lswpost.h>
+#include <apertium/tagger_word.h>
+#include <apertium/shell_utils.h>
+
+#include <lttoolbox/lt_locale.h>
+
+#include "getopt_long.h"
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <fstream>
+#include <iomanip>
+#include <ios>
+#include <iostream>
+#include <locale>
+#include <sstream>
+#include <string>
+#include <unistd.h>
 
 namespace Apertium {
 using namespace ShellUtils;
