@@ -20,14 +20,14 @@ public:
   void transfer_text(char arg, char *transferfile, char *datafile, char *input_path, char *output_path);
 };
 
-class apertium_tag: public Apertium::apertium_tagger
+class tag: public Apertium::apertium_tagger
 {
 public:
   /**
    * Imitates functionality of apertium-tagger
-   * Pass int to int&, char** to char**&
+   * tag::tag() passes int and char** to apertium_tagger::apertium_tagger() int&, char**& respectively
    */
-  apertium_tag(int argc, char **argv): apertium_tagger(argc, argv) {;}
+  tag(int argc, char **argv): apertium_tagger(argc, argv){}
 };
 
 void
@@ -99,19 +99,19 @@ apertium::postchunk_text(char arg, char *transferfile, char *datafile, char *inp
     int i = 0;
     $1 = (char **) malloc((size+1)*sizeof(char *));
     for (i = 0; i < size; i++) {
-      PyObject *py_obj = PyList_GetItem($input,i);
-      if (PyUnicode_Check(py_obj)){
+      PyObject *py_obj = PyList_GetItem($input, i);
+      if (PyUnicode_Check(py_obj)) {
         $1[i] = strdup(PyUnicode_AsUTF8(py_obj));
       }
       else {
-        PyErr_SetString(PyExc_TypeError,"list must contain strings");
+        PyErr_SetString(PyExc_TypeError, "list must contain strings");
         free($1);
         return NULL;
       }
     }
     $1[i] = 0;
   } else {
-    PyErr_SetString(PyExc_TypeError,"not a list");
+    PyErr_SetString(PyExc_TypeError, "not a list");
     return NULL;
   }
 }
@@ -132,12 +132,12 @@ public:
   void transfer_text(char arg, char *transferfile, char *datafile, char *input_path, char *output_path);
 };
 
-class apertium_tag: public Apertium::apertium_tagger
+class tag: public Apertium::apertium_tagger
 {
 public:
   /**
    * Imitates functionality of apertium-tagger
-   * Pass int to int&, char** to char**&
+   * tag::tag() passes int and char** to apertium_tagger::apertium_tagger() int&, char**& respectively
    */
-  apertium_tag(int argc, char **argv);
+  tag(int argc, char **argv): apertium_tagger(argc, argv);
 };
