@@ -16,6 +16,8 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
       TheFunctionTypeType(), TheUnigramType(), TheFunctionType(),
       TheFunctionTypeOptionArgument(0), TheFlags() {
   try {
+    /*Set optind so that multiple instances can be created */
+    optind = 1;
     while (true) {
       The_val = getopt_long(argc, argv, "bdfegmpr:s:t:u:wxz", longopts, &The_indexptr);
 
