@@ -25,7 +25,7 @@ class tagger: public Apertium::apertium_tagger
 public:
   /**
    * Imitates functionality of apertium-tagger
-   * tag::tag() passes int and char** to apertium_tagger::apertium_tagger() int&, char**& respectively
+   * tagger::tagger() passes int and char** to apertium_tagger::apertium_tagger() int&, char**& respectively
    */
   tagger(int argc, char **argv): apertium_tagger(argc, argv){}
 };
@@ -123,9 +123,6 @@ apertium::postchunk_text(char arg, char *transferfile, char *datafile, char *inp
 class apertium: public Transfer, public Interchunk, public Postchunk
 {
 public:
-  /**
-   * Imitates functionality of apertium-core binaries using file path
-   */
   void interchunk_text(char arg, char *transferfile, char *datafile, char *input_path, char *output_path);
   void pretransfer(char arg, char *input_path, char *output_path);
   void postchunk_text(char arg, char *transferfile, char *datafile, char *input_path, char *output_path);
@@ -135,9 +132,5 @@ public:
 class tagger: public Apertium::apertium_tagger
 {
 public:
-  /**
-   * Imitates functionality of apertium-tagger
-   * tag::tag() passes int and char** to apertium_tagger::apertium_tagger() int&, char**& respectively
-   */
   tagger(int argc, char **argv): apertium_tagger(argc, argv);
 };
