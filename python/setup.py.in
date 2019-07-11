@@ -19,11 +19,19 @@ class CustomBuild(build):
 
 def get_sources():
     sources = ['apertium_core.i']
-    cc_sources = ['apertium_re.cc', 'interchunk.cc', 'interchunk_word.cc', 'postchunk.cc',
-                  'pretransfer.cc', 'string_utils.cc', 'transfer.cc', 'transfer_data.cc',
-                  'transfer_instr.cc', 'transfer_mult.cc', 'transfer_token.cc',
-                  'transfer_word.cc', 'transfer_word_list.cc', 'trx_reader.cc',
-                  'utf_converter.cc', 'xml_reader.cc']
+    cc_sources = ['a.cc', 'align.cc', 'analysis.cc', 'apertium_re.cc', 'basic_5_3_1_tagger.cc', 'basic_5_3_2_tagger.cc',
+                  'basic_exception_type.cc', 'basic_stream_tagger.cc', 'basic_stream_tagger_trainer.cc', 'basic_tagger.cc',
+                  'collection.cc', 'constant_manager.cc', 'endian_double_util.cc', 'exception_type.cc', 'feature_vec.cc',
+                  'feature_vec_averager.cc', 'file_morpho_stream.cc', 'file_tagger.cc', 'hmm.cc', 'i.cc', 'interchunk.cc',
+                  'interchunk_word.cc', 'lemma.cc', 'linebreak.cc', 'lswpost.cc', 'morpheme.cc', 'morpho_stream.cc',
+                  'mtx_reader.cc', 'perceptron_spec.cc', 'perceptron_tagger.cc', 'postchunk.cc', 'pretransfer.cc',
+                  'sentence_stream.cc', 'shell_utils.cc', 'stream.cc', 'stream_5_3_1_tagger.cc',
+                  'stream_5_3_1_tagger_trainer.cc', 'stream_5_3_2_tagger.cc', 'stream_5_3_2_tagger_trainer.cc',
+                  'stream_5_3_3_tagger.cc', 'stream_5_3_3_tagger_trainer.cc', 'stream_tagger.cc', 'stream_tagger_trainer.cc',
+                  'string_utils.cc', 'tag.cc', 'tagger.cc', 'tagger_data.cc', 'tagger_data_hmm.cc', 'tagger_data_lsw.cc',
+                  'tagger_data_percep_coarse_tags.cc', 'tagger_utils.cc', 'tagger_word.cc', 'transfer.cc', 'transfer_data.cc',
+                  'transfer_instr.cc', 'transfer_mult.cc', 'transfer_token.cc', 'transfer_word.cc', 'transfer_word_list.cc',
+                  'trx_reader.cc', 'tsx_reader.cc', 'utf_converter.cc', 'wchar_t_exception_type.cc', 'xml_reader.cc']
     rel_path = '@top_srcdir@/apertium'
     sources.extend(path.join(rel_path, f) for f in cc_sources)
     return sources
