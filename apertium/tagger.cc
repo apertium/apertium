@@ -424,7 +424,7 @@ void apertium_tagger::set_indexptr() {
 }
 
 void apertium_tagger::flagOptionCase(
-    bool (basic_Tagger::Flags::*GetFlag)() const,
+    bool (basic_Tagger::Flags::*GetFlag)(),
     void (basic_Tagger::Flags::*SetFlag)(const bool &)) {
   if ((TheFlags.*GetFlag)()) {
     std::stringstream what_;

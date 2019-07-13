@@ -34,7 +34,7 @@ namespace Apertium {
 class Stream_5_3_1_Tagger : private basic_5_3_1_Tagger,
                             public basic_StreamTagger {
 public:
-  Stream_5_3_1_Tagger(const Flags &Flags_);
+  Stream_5_3_1_Tagger(Flags &Flags_);
   void deserialise(std::istream &Serialised_basic_Tagger);
 
 private:

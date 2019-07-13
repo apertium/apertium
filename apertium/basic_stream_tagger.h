@@ -37,7 +37,7 @@ class basic_StreamTagger : public StreamTagger {
 public:
   virtual ~basic_StreamTagger();
   virtual void deserialise(std::istream &Serialised_basic_Tagger) = 0;
-  virtual void tag(Stream &Input, std::wostream &Output) const;
+  virtual void tag(Stream &Input, std::wostream &Output);
 protected:
   virtual long double score(const Analysis &Analysis_) const = 0;
 
@@ -48,7 +48,7 @@ protected:
 #endif // ENABLE_DEBUG
 
 private:
-  void tag(const LexicalUnit &LexicalUnit_, std::wostream &Output) const;
+  void tag(const LexicalUnit &LexicalUnit_, std::wostream &Output);
 };
 }
 

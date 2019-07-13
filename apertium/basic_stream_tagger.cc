@@ -35,7 +35,7 @@
 namespace Apertium {
 basic_StreamTagger::~basic_StreamTagger() {}
 
-void basic_StreamTagger::tag(Stream &Input, std::wostream &Output) const {
+void basic_StreamTagger::tag(Stream &Input, std::wostream &Output) {
   while (true) {
     StreamedType StreamedType_ = Input.get();
     Output << StreamedType_.TheString;
@@ -62,7 +62,7 @@ void basic_StreamTagger::tag(Stream &Input, std::wostream &Output) const {
 }
 
 void basic_StreamTagger::tag(const LexicalUnit &LexicalUnit_,
-                             std::wostream &Output) const {
+                             std::wostream &Output) {
 #if ENABLE_DEBUG
 
   for (std::vector<Analysis>::const_iterator Analysis_ =

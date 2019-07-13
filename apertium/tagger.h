@@ -46,7 +46,7 @@ private:
   static std::string option_string(const struct option &option_);
   static void locale_global_();
   void set_indexptr();
-  void flagOptionCase(bool (basic_Tagger::Flags::*GetFlag)() const,
+  void flagOptionCase(bool (basic_Tagger::Flags::*GetFlag)(),
                       void (basic_Tagger::Flags::*SetFlag)(const bool &));
   std::string option_string();
   void functionTypeTypeOptionCase(const FunctionTypeType &FunctionTypeType_);

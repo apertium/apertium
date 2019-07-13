@@ -26,7 +26,7 @@
 #include <vector>
 
 namespace Apertium {
-Stream_5_3_3_TaggerTrainer::Stream_5_3_3_TaggerTrainer(const Flags &Flags_)
+Stream_5_3_3_TaggerTrainer::Stream_5_3_3_TaggerTrainer(Flags &Flags_)
     : basic_Tagger(Flags_) {}
 
 void Stream_5_3_3_TaggerTrainer::serialise(

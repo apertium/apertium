@@ -28,12 +28,12 @@
 namespace Apertium {
 class Stream {
 public:
-  Stream(const basic_Tagger::Flags &Flags_);
-  Stream(const basic_Tagger::Flags &Flags_, std::wifstream &CharacterStream_,
+  Stream(basic_Tagger::Flags &Flags_);
+  Stream(basic_Tagger::Flags &Flags_, std::wifstream &CharacterStream_,
          const char *const Filename_);
-  Stream(const basic_Tagger::Flags &Flags_, std::wifstream &CharacterStream_,
+  Stream(basic_Tagger::Flags &Flags_, std::wifstream &CharacterStream_,
          const std::string &Filename_);
-  Stream(const basic_Tagger::Flags &Flags_, std::wifstream &CharacterStream_,
+  Stream(basic_Tagger::Flags &Flags_, std::wifstream &CharacterStream_,
          const std::stringstream &Filename_);
   StreamedType get();
   StreamedType peek();
@@ -42,7 +42,7 @@ public:
 
   static void outputLexicalUnit(
     const LexicalUnit &lexical_unit, const Optional<Analysis> analysis,
-    std::wostream &output, const basic_Tagger::Flags &flags);
+    std::wostream &output, basic_Tagger::Flags &flags);
 
   std::size_t TheLineNumber;
 private:
@@ -66,7 +66,7 @@ private:
   std::wistream &TheCharacterStream;
   Optional<std::string> TheFilename;
   std::wstring TheLine;
-  const basic_Tagger::Flags &TheFlags;
+  basic_Tagger::Flags &TheFlags;
   bool private_flush_ : 1;
   Optional<PreviousCaseType> ThePreviousCase;
 };

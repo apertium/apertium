@@ -11,10 +11,10 @@ class StreamTagger : protected virtual basic_Tagger {
 public:
   virtual ~StreamTagger();
   virtual void deserialise(std::istream &Serialised_basic_Tagger) = 0;
-  virtual void tag(Stream &Input, std::wostream &Output) const = 0;
+  virtual void tag(Stream &Input, std::wostream &Output) = 0;
   void outputLexicalUnit(
     const LexicalUnit &lexical_unit, const Optional<Analysis> analysis,
-    std::wostream &output) const;
+    std::wostream &output);
 };
 }
 
