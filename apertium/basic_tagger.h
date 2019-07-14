@@ -22,19 +22,19 @@ public:
   class Flags {
   public:
     Flags();
-    bool getDebug() const;
+    bool getDebug();
     void setDebug(const bool &Debug_);
-    bool getSentSeg() const;
-    void setSentSeg(const bool &SentSeg);
-    bool getSkipErrors() const;
+    bool getSentSeg();
+    void setSentSeg(const bool &SentSeg_);
+    bool getSkipErrors();
     void setSkipErrors(const bool &SkipErrors_);
-    bool getFirst() const;
+    bool getFirst();
     void setFirst(const bool &First_);
-    bool getMark() const;
+    bool getMark();
     void setMark(const bool &Mark_);
-    bool getShowSuperficial() const;
+    bool getShowSuperficial();
     void setShowSuperficial(const bool &ShowSuperficial_);
-    bool getNullFlush() const;
+    bool getNullFlush();
     void setNullFlush(const bool &NullFlush_);
     static bool (Flags::*GetDebug)() const;
     static void (Flags::*SetDebug)(const bool &);
@@ -59,7 +59,7 @@ public:
 
 protected:
   basic_Tagger();
-  basic_Tagger(const Flags &Flags_);
+  basic_Tagger(Flags &Flags_);
   Flags TheFlags;
 };
 }

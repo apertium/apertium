@@ -4,7 +4,6 @@ h_sources = a.h \
 	    align.h \
 	    analysis.h \
 	    apertium_re.h \
-	    apertium_tagger.h \
 	    basic_5_3_1_tagger.h \
 	    basic_5_3_2_tagger.h \
 	    basic_5_3_3_tagger.h \
@@ -58,6 +57,7 @@ h_sources = a.h \
 	    string_utils.h \
 	    shell_utils.h \
 	    tag.h \
+	    tagger.h \
 	    tagger_data.h \
 	    tagger_data_hmm.h \
 	    tagger_data_lsw.h \
@@ -147,6 +147,7 @@ cc_sources = a.cc \
 	     string_utils.cc \
 	     shell_utils.cc \
 	     tag.cc \
+	     tagger.cc \
 	     tagger_data.cc \
 	     tagger_data_hmm.cc \
 	     tagger_data_lsw.cc \
