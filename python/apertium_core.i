@@ -43,16 +43,48 @@
 #include <apertium/postchunk.h>
 #include <apertium/tagger.h>
 #include <apertium/transfer.h>
-class apertium: public Transfer, public Interchunk, public Postchunk
+
+/**
+ * Imitates functionality of apertium-core binaries using file path
+ */
+
+
+void pretransfer(char arg, char *input_path, char *output_path)
+{
+  bool useMaxEnt = false;
+  FILE *input = fopen(input_path, "r"), *output = fopen(output_path, "w");
+  processStream(input, output, false, false, false);
+  fclose(input);
+  fclose(output);
+}
+
+class transfer: public Transfer
 {
   public:
-  /**
-   * Imitates functionality of apertium-core binaries using file path
-   */
-  void interchunk_text(char arg, char *transferfile, char *datafile, char *input_path, char *output_path);
-  void pretransfer(char arg, char *input_path, char *output_path);
-  void postchunk_text(char arg, char *transferfile, char *datafile, char *input_path, char *output_path);
-  void transfer_text(char arg, char *transferfile, char *datafile, char *input_path, char *output_path);
+
+  transfer(char *transferfile, char *datafile)
+  {
+    read(transferfile, datafile);
+  }
+
+  void transfer_text(char arg, char *input_path, char *output_path)
+  {
+    FILE *input = fopen(input_path, "r"), *output = fopen(output_path, "w");
+    switch(arg)
+    {
+        case 'b':
+          setPreBilingual(true);
+          setUseBilingual(false);
+          break;
+
+        case 'n':
+          setUseBilingual(false);
+          break;
+    }
+    Transfer::transfer(input, output);
+    fclose(input);
+    fclose(output);
+  }
 };
 
 class tagger: public Apertium::apertium_tagger
@@ -65,56 +97,40 @@ class tagger: public Apertium::apertium_tagger
   tagger(int argc, char **argv): apertium_tagger(argc, argv){}
 };
 
-void
-apertium::transfer_text(char arg, char *transferfile, char *datafile, char *input_path, char *output_path)
+class interchunk: public Interchunk
 {
-  FILE *input = fopen(input_path, "r"), *output = fopen(output_path, "w");
+  public:
 
-  switch(arg)
+  interchunk(char *transferfile, char *datafile)
   {
-      case 'b':
-        setPreBilingual(true);
-        setUseBilingual(false);
-        break;
-
-      case 'n':
-        setUseBilingual(false);
-        break;
+    read(transferfile, datafile);
   }
-  Transfer::read(transferfile, datafile);
-  transfer(input, output);
-  fclose(input);
-  fclose(output);
-}
 
-void
-apertium::interchunk_text(char arg, char *transferfile, char *datafile, char *input_path, char *output_path)
-{
-  FILE *input = fopen(input_path, "r"), *output = fopen(output_path, "w");
-  Interchunk::read(transferfile, datafile);
-  interchunk(input, output);
-  fclose(input);
-  fclose(output);
-}
+  void interchunk_text(char arg, char *input_path, char *output_path)
+  {
+    FILE *input = fopen(input_path, "r"), *output = fopen(output_path, "w");
+    Interchunk::interchunk(input, output);
+    fclose(input);
+    fclose(output);
+  }
+};
 
-void
-apertium::pretransfer(char arg, char *input_path, char *output_path)
+class postchunk: public Postchunk
 {
-  bool useMaxEnt = false;
-  FILE *input = fopen(input_path, "r"), *output = fopen(output_path, "w");
-  processStream(input, output, false, false, false);
-  fclose(input);
-  fclose(output);
-}
+  public:
 
-void
-apertium::postchunk_text(char arg, char *transferfile, char *datafile, char *input_path, char *output_path)
-{
-  FILE *input = fopen(input_path, "r"), *output = fopen(output_path, "w");
-  Postchunk::read(transferfile, datafile);
-  postchunk(input, output);
-  fclose(input);
-  fclose(output);
-}
+  postchunk(char *transferfile, char *datafile)
+  {
+    read(transferfile, datafile);
+  }
+
+ void postchunk_text(char arg, char *input_path, char *output_path)
+  {
+    FILE *input = fopen(input_path, "r"), *output = fopen(output_path, "w");
+    Postchunk::postchunk(input, output);
+    fclose(input);
+    fclose(output);
+  }
+};
 
 %}
