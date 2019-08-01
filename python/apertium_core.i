@@ -58,11 +58,11 @@ void pretransfer(char arg, char *input_path, char *output_path)
   fclose(output);
 }
 
-class transfer: public Transfer
+class ApertiumTransfer: public Transfer
 {
   public:
 
-  transfer(char *transferfile, char *datafile)
+  ApertiumTransfer(char *transferfile, char *datafile)
   {
     read(transferfile, datafile);
   }
@@ -81,27 +81,27 @@ class transfer: public Transfer
           setUseBilingual(false);
           break;
     }
-    Transfer::transfer(input, output);
+    transfer(input, output);
     fclose(input);
     fclose(output);
   }
 };
 
-class tagger: public Apertium::apertium_tagger
+class ApertiumTagger: public Apertium::apertium_tagger
 {
   public:
   /**
    * Imitates functionality of apertium-tagger
    * tagger::tagger() passes int and char** to apertium_tagger::apertium_tagger() int&, char**& respectively
    */
-  tagger(int argc, char **argv): apertium_tagger(argc, argv){}
+  ApertiumTagger(int argc, char **argv): apertium_tagger(argc, argv){}
 };
 
-class interchunk: public Interchunk
+class ApertiumInterchunk: public Interchunk
 {
   public:
 
-  interchunk(char *transferfile, char *datafile)
+  ApertiumInterchunk(char *transferfile, char *datafile)
   {
     read(transferfile, datafile);
   }
@@ -109,17 +109,17 @@ class interchunk: public Interchunk
   void interchunk_text(char arg, char *input_path, char *output_path)
   {
     FILE *input = fopen(input_path, "r"), *output = fopen(output_path, "w");
-    Interchunk::interchunk(input, output);
+    interchunk(input, output);
     fclose(input);
     fclose(output);
   }
 };
 
-class postchunk: public Postchunk
+class ApertiumPostchunk: public Postchunk
 {
   public:
 
-  postchunk(char *transferfile, char *datafile)
+  ApertiumPostchunk(char *transferfile, char *datafile)
   {
     read(transferfile, datafile);
   }
@@ -127,7 +127,7 @@ class postchunk: public Postchunk
  void postchunk_text(char arg, char *input_path, char *output_path)
   {
     FILE *input = fopen(input_path, "r"), *output = fopen(output_path, "w");
-    Postchunk::postchunk(input, output);
+    postchunk(input, output);
     fclose(input);
     fclose(output);
   }
