@@ -313,6 +313,13 @@ Transfer::evalString(xmlNode *element)
         }
         break;
 
+      case ti_clip_ref:
+        if(checkIndex(element, ti.getPos(), lword))
+        {
+          return word[ti.getPos()]->reference(attr_items[ti.getContent()], ti.getCondition());
+        }
+        break;
+
       case ti_linkto_sl:
         if(checkIndex(element, ti.getPos(), lword))
         {
@@ -331,6 +338,20 @@ Transfer::evalString(xmlNode *element)
         if(checkIndex(element, ti.getPos(), lword))
         {
           if(word[ti.getPos()]->target(attr_items[ti.getContent()], ti.getCondition()) != "")
+          {
+            return "<" + string((char *) ti.getPointer()) + ">";
+          }
+          else
+          {
+            return "";
+          }
+        }
+        break;
+
+      case ti_linkto_ref:
+        if(checkIndex(element, ti.getPos(), lword))
+        {
+          if(word[ti.getPos()]->reference(attr_items[ti.getContent()], ti.getCondition()) != "")
           {
             return "<" + string((char *) ti.getPointer()) + ">";
           }
@@ -380,6 +401,13 @@ Transfer::evalString(xmlNode *element)
         }
         break;
 
+      case ti_case_of_ref:
+        if(checkIndex(element, ti.getPos(), lword))
+        {
+          return caseOf(word[ti.getPos()]->reference(attr_items[ti.getContent()]));
+        }
+        break;
+
       default:
         return "";
     }
@@ -425,6 +453,10 @@ Transfer::evalString(xmlNode *element)
       {
         evalStringCache[element] = TransferInstr(ti_linkto_sl, (const char *) part, pos, (void *) as, queue);
       }
+      else if(!xmlStrcmp(side, (const xmlChar *) "ref"))
+      {
+        evalStringCache[element] = TransferInstr(ti_linkto_ref, (const char *) part, pos, (void *) as, queue);
+      }
       else
       {
         evalStringCache[element] = TransferInstr(ti_linkto_tl, (const char *) part, pos, (void *) as, queue);
@@ -433,6 +465,10 @@ Transfer::evalString(xmlNode *element)
     else if(!xmlStrcmp(side, (const xmlChar *) "sl"))
     {
       evalStringCache[element] = TransferInstr(ti_clip_sl, (const char *) part, pos, NULL, queue);
+    }
+    else if(!xmlStrcmp(side, (const xmlChar *) "ref"))
+    {
+      evalStringCache[element] = TransferInstr(ti_clip_ref, (const char *) part, pos, NULL, queue);
     }
     else
     {
@@ -503,6 +539,10 @@ Transfer::evalString(xmlNode *element)
     if(!xmlStrcmp(side, (const xmlChar *) "sl"))
     {
       evalStringCache[element] = TransferInstr(ti_case_of_sl, (const char *) part, pos);
+    }
+    else if(!xmlStrcmp(side, (const xmlChar *) "ref"))
+    {
+      evalStringCache[element] = TransferInstr(ti_case_of_ref, (const char *) part, pos);
     }
     else
     {
@@ -939,6 +979,12 @@ Transfer::processLet(xmlNode *localroot)
         }
         return;
 
+      case ti_clip_ref:
+        if (checkIndex(leftSide, ti.getPos(), lword)) {
+          word[ti.getPos()]->setReference(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
+        }
+        return;
+
       default:
         return;
     }
@@ -995,6 +1041,11 @@ Transfer::processLet(xmlNode *localroot)
     {
       word[pos]->setTarget(attr_items[(const char *) part], evalString(rightSide), queue);
       evalStringCache[leftSide] = TransferInstr(ti_clip_tl, (const char *) part, pos, NULL, queue);
+    }
+    else if(!xmlStrcmp(side, (const xmlChar *) "ref"))
+    {
+      word[pos]->setReference(attr_items[(const char *) part], evalString(rightSide), queue);
+      evalStringCache[leftSide] = TransferInstr(ti_clip_ref, (const char *) part, pos, NULL, queue);
     }
     else
     {
@@ -1085,6 +1136,12 @@ Transfer::processModifyCase(xmlNode *localroot)
       string const result = copycase(evalString(rightSide),
 				      word[pos]->source(attr_items[(const char *) part], queue));
       word[pos]->setSource(attr_items[(const char *) part], result);
+    }
+    else if(!xmlStrcmp(side, (const xmlChar *) "ref"))
+    {
+      string const result = copycase(evalString(rightSide),
+              word[pos]->reference(attr_items[(const char *) part], queue));
+      word[pos]->setReference(attr_items[(const char *) part], result);
     }
     else
     {
@@ -2036,6 +2093,8 @@ Transfer::transfer(FILE *in, FILE *out)
           {
             wstring sl;
             wstring tl;
+            wstring ref;
+
             int seenSlash = 0;
             for(wstring::const_iterator it = tmpword[0]->begin(); it != tmpword[0]->end(); it++)
             {
@@ -2047,17 +2106,25 @@ Transfer::transfer(FILE *in, FILE *out)
                   it++;
                   sl.push_back(*it);
                 }
-                else
+                else if(seenSlash == 1)
                 {
                   tl.push_back(*it);
                   it++;
                   tl.push_back(*it);
+                }
+                else
+                {
+                  ref.push_back(*it);
+                  it++;
+                  ref.push_back(*it);
                 }
                 continue;
               }
               else if(*it == L'/')
               {
                 seenSlash++;
+
+                ref.clear(); //the word after the last slash is the ref
                 continue;
               }
               if(seenSlash == 0)
@@ -2068,9 +2135,9 @@ Transfer::transfer(FILE *in, FILE *out)
               {
                 tl.push_back(*it);
               }
-              else if(seenSlash > 1)
+              else
               {
-                break;
+                ref.push_back(*it);
               }
             }
             //tmpword[0]->assign(sl);
@@ -2216,14 +2283,18 @@ Transfer::applyRule()
     if(useBilingual && preBilingual == false)
     {
       tr = fstp.biltransWithQueue(*tmpword[i], false);
+      wstring refx;
       word[i] = new TransferWord(UtfConverter::toUtf8(*tmpword[i]),
                                  UtfConverter::toUtf8(tr.first),
+                                 UtfConverter::toUtf8(refx),
                                  tr.second);
     }
     else if(preBilingual)
     {
       wstring sl;
       wstring tl;
+      wstring ref;
+
       int seenSlash = 0;
       for(wstring::const_iterator it = tmpword[i]->begin(); it != tmpword[i]->end(); it++)
       {
@@ -2235,11 +2306,17 @@ Transfer::applyRule()
             it++;
             sl.push_back(*it);
           }
-          else
+          else if(seenSlash == 1)
           {
             tl.push_back(*it);
             it++;
             tl.push_back(*it);
+          }
+          else
+          {
+            ref.push_back(*it);
+            it++;
+            ref.push_back(*it);
           }
           continue;
         }
@@ -2247,6 +2324,8 @@ Transfer::applyRule()
         if(*it == L'/')
         {
           seenSlash++;
+
+          ref.clear(); //word after last slash is ref
           continue;
         }
         if(seenSlash == 0)
@@ -2257,21 +2336,24 @@ Transfer::applyRule()
         {
           tl.push_back(*it);
         }
-        else if(seenSlash > 1)
+        else
         {
-          break;
+          ref.push_back(*it);
         }
       }
       tr = pair<wstring, int>(tl, false);
       word[i] = new TransferWord(UtfConverter::toUtf8(sl),
                                  UtfConverter::toUtf8(tr.first),
+                                 UtfConverter::toUtf8(ref),
                                  tr.second);
     }
     else // neither useBilingual nor preBilingual (sl==tl)
     {
       tr = pair<wstring, int>(*tmpword[i], false);
+      wstring refx;
       word[i] = new TransferWord(UtfConverter::toUtf8(*tmpword[i]),
                                  UtfConverter::toUtf8(tr.first),
+                                 UtfConverter::toUtf8(refx), 
                                  tr.second);
     }
   }
