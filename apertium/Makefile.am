@@ -202,7 +202,8 @@ lib_LTLIBRARIES = libapertium3.la
 libapertium3_la_SOURCES = $(h_sources) $(cc_sources)
 libapertium3_la_LDFLAGS = -version-info $(GENERIC_LIBRARY_VERSION) -release $(GENERIC_RELEASE)
 
-bin_PROGRAMS = apertium-deshtml \
+bin_PROGRAMS = apertium-cleanstream \
+	       apertium-deshtml \
 	       apertium-deshtml-alt \
 	       apertium-deslatex \
 	       apertium-desmediawiki \
@@ -262,6 +263,7 @@ apertium_DATA = deformat.xsl reformat.xsl new2old.xsl lexchoice.xsl \
 				modes2bash.xsl modes2debugmodes.xsl \
                 apertium-createmodes.awk
 
+apertium_cleanstream_SOURCES = apertium_cleanstream.cc
 apertium_pretransfer_SOURCES = apertium_pretransfer.cc
 apertium_pretransfer_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 apertium_multiple_translations_SOURCES = apertium-multiple-translations.cc
