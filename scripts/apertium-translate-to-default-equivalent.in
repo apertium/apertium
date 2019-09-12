@@ -1,0 +1,12 @@
+#!/bin/bash
+case $# in
+  2)
+    INFILE=$1
+    OUTFILE=$2
+    ;;
+  *)
+    echo "USAGE: apertium-translate-to-default-equivalent INFILE OUTFILE";
+    exit 1;
+esac
+
+xsltproc @datarootdir@/apertium/translate-to-default-equivalent.xslt "$INFILE" > "$OUTFILE"

@@ -92,6 +92,7 @@ Makefile.in
 /scripts/apertium-filter-dix
 /scripts/apertium-filter-rules
 /scripts/apertium-metalrx-to-lrx
+/scripts/apertium-translate-to-default-equivalent
 
 # Tests
 /tests/tagger/test-find-similar-ambiguity-class
