@@ -23,8 +23,8 @@ test-driver
 
 /config.log
 /INSTALL
-/Makefile
-/Makefile.in
+Makefile
+Makefile.in
 
 /aclocal.m4
 /m4/libtool.m4
@@ -36,7 +36,7 @@ test-driver
 /*.pc
 
 # /apertium/wildcard
-/apertium/.libs
+.libs
 
 /apertium/apertium
 /apertium/apertium-*[!1]
@@ -88,11 +88,12 @@ test-driver
 
 /apertium/stamp-*
 
-# Tests
-/tests/**/Makefile.in
-/tests/**/Makefile
-/tests/**/.libs
+# Scripts
+/scripts/apertium-filter-dix
+/scripts/apertium-filter-rules
+/scripts/apertium-metalrx-to-lrx
 
+# Tests
 /tests/tagger/test-find-similar-ambiguity-class
 /tests/data/nno-nob.t3x.bin
 
@@ -110,8 +111,6 @@ test-driver
 /tests/test-suite.log
 /compile_commands.json
 
-/python/Makefile.in
-/python/Makefile
 /python/apertium_core.py
 /python/apertium_core_wrap.cpp
 /python/setup.py

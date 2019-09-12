@@ -7,7 +7,7 @@ m4_define([required_lttoolbox_version], [3.5.0])
 m4_define([required_libxml_version], [2.6.17])
 m4_define([required_libpcre_version], [6.4])
 
-AC_INIT([apertium], [3.5.2], [sortiz@users.sourceforge.net])
+AC_INIT([apertium], [3.6.0], [apertium-stuff@lists.sourceforge.net])
 AC_CONFIG_HEADER([apertium/apertium_config.h])
 
 AC_CANONICAL_SYSTEM
@@ -16,8 +16,8 @@ GENERIC_LIBRARY_NAME=apertium
 
 # Release versioning
 GENERIC_MAJOR_VERSION=3
-GENERIC_MINOR_VERSION=5
-GENERIC_MICRO_VERSION=2
+GENERIC_MINOR_VERSION=6
+GENERIC_MICRO_VERSION=0
 
 # API version (often = GENERIC_MAJOR_VERSION.GENERIC_MINOR_VERSION)
 GENERIC_API_VERSION=$GENERIC_MAJOR_VERSION.$GENERIC_MINOR_VERSION
@@ -205,4 +205,10 @@ AC_ARG_ENABLE([python-bindings],
               [enable_python_bindings=no])
 AM_CONDITIONAL([HAVE_PYTHON_BINDINGS], [test x$enable_python_bindings = xyes])
 
-AC_OUTPUT([Makefile apertium.pc apertium/Makefile tests/Makefile tests/tagger/Makefile python/Makefile])
+AC_OUTPUT([
+	Makefile apertium.pc
+	apertium/Makefile
+	scripts/Makefile
+	tests/Makefile tests/tagger/Makefile
+	python/Makefile
+	])
