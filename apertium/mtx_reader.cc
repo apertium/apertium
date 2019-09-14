@@ -892,7 +892,7 @@ MTXReader::printStackValueType(VM::StackValueType svt)
       std::wcerr << "WRDARR";
       break;
     default:
-      assert(false);
+      throw 1;
   }
 }
 
@@ -926,7 +926,7 @@ MTXReader::printTypeExpr(ExprType expr_type)
       std::wcerr << "ADDR";
       break;
     default:
-      assert(false);
+      throw 1;
   }
 }
 
@@ -959,7 +959,7 @@ MTXReader::procTypeExpr(ExprType expr_type)
       procAddrExpr();
       break;
     default:
-      assert(false);
+      throw 1;
   }
 }
 
@@ -1005,7 +1005,7 @@ MTXReader::procForEach(ExprType expr_type)
       procWordoidExpr();
       break;
     default:
-      assert(false);
+      throw 1;
       break;
   }
   assert(type == XML_READER_TYPE_END_ELEMENT);

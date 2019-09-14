@@ -397,7 +397,7 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
             loop_state.accumulator = StackValue(std::vector<std::string>());
             //std::wcerr << "String array size " << loop_state.iterable.size() << "\n";
           } else {
-            assert(false);
+            throw 1;
           }
         }
         if (stack.top().type == WRDVAL) {
@@ -406,7 +406,7 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
           //std::wcerr << "String array size " << loop_state.accumulator.size() << "\n";
           loop_state.accumulator.strArr().push_back(stack.top().str());
         } else {
-          assert(false);
+          throw 1;
         }
         stack.pop();
         loop_state.iteration++;
