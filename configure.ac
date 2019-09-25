@@ -26,17 +26,6 @@ AC_SUBST(GENERIC_MAJOR_VERSION)
 
 # Shared library versioning
 GENERIC_LIBRARY_VERSION=1:0:0
-#                       | | |
-#                +------+ | +---+
-#                |        |     |
-#             current:revision:age
-#                |        |     |
-#                |        |     +- increment if interfaces have been added
-#                |        |        set to zero if interfaces have been removed
-#                                  or changed
-#                |        +- increment if source code has changed
-#                |           set to zero if current is incremented
-#                +- increment if interfaces have been added, removed or changed
 
 AC_SUBST(GENERIC_LIBRARY_VERSION)
 PACKAGE=$GENERIC_LIBRARY_NAME
@@ -190,6 +179,16 @@ AX_CHECK_COMPILE_FLAG([-std=c++20], [CXXFLAGS="$CXXFLAGS -std=c++20"], [
   ])
  ])
 ])
+
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <cstddef>
+#include <cstdint>
+#include <type_traits>
+]],[[
+using namespace std;
+static_assert(!is_same<size_t,uint32_t>::value, "size_t == uint32_t");
+static_assert(!is_same<size_t,uint64_t>::value, "size_t == uint64_t");
+   ]])], [AC_DEFINE([SIZET_NOT_CSTDINT], [1], [size_t != (uint32_t, uint64_t)])])
 
 AC_CONFIG_FILES([python/setup.py])
 
