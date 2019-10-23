@@ -1,0 +1,12 @@
+#!/bin/bash
+
+
+#!/bin/sh
+
+set -e -u
+cd "$(dirname "$0")"
+
+../../apertium/apertium -f odt -d . sample in.odt out.odt
+
+zipcmp out.odt expected.odt
+
