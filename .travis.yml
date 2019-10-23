@@ -11,5 +11,3 @@ script:
   - ./configure --enable-python-bindings
   - make -j2
   - make test
-  - cat tests/test-suite.log
-  - zipcmp tests/odt/out.odt tests/odt/expected.odt
