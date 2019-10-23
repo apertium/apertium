@@ -8,3 +8,4 @@
 *.t[[:digit:]]x linguist-language=XML linguist-detectable=true
 *.xml linguist-language=XML linguist-detectable=true
 *.xsd linguist-language=XML linguist-detectable=true
+*.odt binary
