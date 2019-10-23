@@ -577,10 +577,10 @@ apertium-utils-fixlatex: Makefile.am utils-fixlatex-header.sh
 	@chmod a+x $@
 
 apertium: Makefile.am apertium-header.sh
-	@echo "Creating apertium script"
-	@echo "#!$(BASH)" > $@
-	@echo "APERTIUM_PATH=\"$(prefix)/bin\"" >>$@
-	@echo "DEFAULT_DIRECTORY=\"$(prefix)/share/apertium\"" >>$@
+	@echo 'Creating apertium script'
+	@echo '#!$(BASH)' > $@
+	@echo 'APERTIUM_PATH="$${APERTIUM_PATH:-$(prefix)/bin}"' >>$@
+	@echo 'DEFAULT_DIRECTORY="$(prefix)/share/apertium"' >>$@
 	@cat apertium-header.sh >>$@
 	@chmod a+x $@
 
