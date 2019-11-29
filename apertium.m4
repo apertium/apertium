@@ -58,7 +58,11 @@ AS_HELP_STRING([--with-lang][$1],dnl
       # TODO: PKG_CHECK_MODULES sets useless variables, while _EXISTS
       # doesn't error if not found, should make a PKG_CHECK macro that
       # errors but does not set _CFLAGS/_LIBS
-      PKG_CHECK_MODULES(m4_toupper(m4_bpatsubst($2, [-], [_])), [$2])
+      if test x"$3" = x; then
+          PKG_CHECK_MODULES(m4_toupper(m4_bpatsubst($2, [-], [_])), [$2])
+      else
+          PKG_CHECK_MODULES(m4_toupper(m4_bpatsubst($2, [-], [_])), [$2 >= $3])
+      fi
       AP_LIB$1=`pkg-config --variable=dir $2`
       AP_SRC$1=`pkg-config --variable=srcdir $2`
     ])
