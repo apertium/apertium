@@ -652,7 +652,13 @@ Interchunk::processCallMacro(xmlNode *localroot)
       myword[idx] = word[pos];
       if(idx-1 >= 0)
       {
-        myblank[idx-1] = blank[lastpos];
+        if(lastpos + 1 > lblank) { // if a 1-pattern rule calls macro with same
+          noblank = "";            // param twice the blank array will be empty
+          myblank[idx-1] = &noblank;
+        }
+        else {
+          myblank[idx-1] = blank[lastpos];
+        }
       }
       idx++;
       lastpos = pos;
