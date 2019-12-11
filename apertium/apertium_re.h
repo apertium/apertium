@@ -35,7 +35,7 @@ public:
   void read(FILE *);
   void write(FILE *) const;
   string match(string const &str) const;
-  void replace(string &str, string const &value) const;
+  bool replace(string &str, string const &value) const;
   void compile(string const &str);
 };
 

@@ -501,7 +501,13 @@ Interchunk::processLet(xmlNode *localroot)
         return;
 
       case ti_clip_tl:
-        word[ti.getPos()]->setChunkPart(attr_items[ti.getContent()], evalString(rightSide));
+      {
+        bool match = word[ti.getPos()]->setChunkPart(attr_items[ti.getContent()], evalString(rightSide));
+        if(!match && trace)
+        {
+          wcerr << "apertium-interchunk warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+        }
+      }
         return;
 
       default:
@@ -532,8 +538,12 @@ Interchunk::processLet(xmlNode *localroot)
     }
 
 
-    word[pos]->setChunkPart(attr_items[(const char *) part],
-			    evalString(rightSide));
+    bool match = word[pos]->setChunkPart(attr_items[(const char *) part],
+					 evalString(rightSide));
+    if(!match && trace)
+    {
+      wcerr << "apertium-interchunk warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+    }
     evalStringCache[leftSide] = TransferInstr(ti_clip_tl,
 					      (const char *) part,
 					      pos, NULL);
@@ -602,7 +612,11 @@ Interchunk::processModifyCase(xmlNode *localroot)
 
     string const result = copycase(evalString(rightSide),
 				   word[pos]->chunkPart(attr_items[(const char *) part]));
-    word[pos]->setChunkPart(attr_items[(const char *) part], result);
+    bool match = word[pos]->setChunkPart(attr_items[(const char *) part], result);
+    if(!match && trace)
+    {
+      wcerr << "apertium-interchunk warning: <modify-case> on line " << localroot->line << " sometimes discards its value." << endl;
+    }
   }
   else if(!xmlStrcmp(leftSide->name, (const xmlChar *) "var"))
   {

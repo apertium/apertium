@@ -149,8 +149,9 @@ public:
    * @param part regular expression to match
    * @param value the new value for the given part
    * @param with_queue access taking or not into account the queue
+   * @returns whether part matched
    */
-  void setSource(ApertiumRE const &part, string const &value,
+  bool setSource(ApertiumRE const &part, string const &value,
 		 bool with_queue = true);
 
   /**
@@ -158,8 +159,9 @@ public:
    * @param part regular expression to match
    * @param value the new value for the given part
    * @param with_queue access taking or not into account the queue
+   * @returns whether part matched
    */
-  void setTarget(ApertiumRE const &part, string const &value,
+  bool setTarget(ApertiumRE const &part, string const &value,
 		 bool with_queue = true);
 
   /**
@@ -167,8 +169,9 @@ public:
    * @param part regular expression to match
    * @param value the new value for the given part
    * @param with_queue access taking or not into account the queue
+   * @returns whether part matched
    */
-  void setReference(ApertiumRE const &part, string const &value,
+  bool setReference(ApertiumRE const &part, string const &value,
      bool with_queue = true);
 };
 

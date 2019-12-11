@@ -97,8 +97,9 @@ public:
    * Sets a value for a chunk part
    * @param part regular expression to match
    * @param value the new value for the given part
+   * @returns whether part matched
    */
-  void setChunkPart(ApertiumRE const &part, string const &value);
+  bool setChunkPart(ApertiumRE const &part, string const &value);
 
 };
 

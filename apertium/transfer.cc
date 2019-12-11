@@ -971,19 +971,31 @@ Transfer::processLet(xmlNode *localroot)
 
       case ti_clip_sl:
         if (checkIndex(leftSide, ti.getPos(), lword)) {
-          word[ti.getPos()]->setSource(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
+          bool match = word[ti.getPos()]->setSource(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
+          if (!match && trace)
+          {
+            wcerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+          }
         }
         return;
 
       case ti_clip_tl:
         if (checkIndex(leftSide, ti.getPos(), lword)) {
-          word[ti.getPos()]->setTarget(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
+          bool match = word[ti.getPos()]->setTarget(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
+          if (!match && trace)
+          {
+            wcerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+          }
         }
         return;
 
       case ti_clip_ref:
         if (checkIndex(leftSide, ti.getPos(), lword)) {
-          word[ti.getPos()]->setReference(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
+          bool match = word[ti.getPos()]->setReference(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
+          if (!match && trace)
+          {
+            wcerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+          }
         }
         return;
 
@@ -1041,17 +1053,29 @@ Transfer::processLet(xmlNode *localroot)
 
     if(!xmlStrcmp(side, (const xmlChar *) "tl"))
     {
-      word[pos]->setTarget(attr_items[(const char *) part], evalString(rightSide), queue);
+      bool match = word[pos]->setTarget(attr_items[(const char *) part], evalString(rightSide), queue);
+      if(!match && trace)
+      {
+        wcerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+      }
       evalStringCache[leftSide] = TransferInstr(ti_clip_tl, (const char *) part, pos, NULL, queue);
     }
     else if(!xmlStrcmp(side, (const xmlChar *) "ref"))
     {
-      word[pos]->setReference(attr_items[(const char *) part], evalString(rightSide), queue);
+      bool match = word[pos]->setReference(attr_items[(const char *) part], evalString(rightSide), queue);
+      if(!match && trace)
+      {
+        wcerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+      }
       evalStringCache[leftSide] = TransferInstr(ti_clip_ref, (const char *) part, pos, NULL, queue);
     }
     else
     {
-      word[pos]->setSource(attr_items[(const char *) part], evalString(rightSide), queue);
+      bool match = word[pos]->setSource(attr_items[(const char *) part], evalString(rightSide), queue);
+      if(!match && trace)
+      {
+        wcerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+      }
       evalStringCache[leftSide] = TransferInstr(ti_clip_sl, (const char *) part, pos, NULL, queue);
     }
   }
@@ -1137,19 +1161,31 @@ Transfer::processModifyCase(xmlNode *localroot)
     {
       string const result = copycase(evalString(rightSide),
 				      word[pos]->source(attr_items[(const char *) part], queue));
-      word[pos]->setSource(attr_items[(const char *) part], result);
+      bool match = word[pos]->setSource(attr_items[(const char *) part], result);
+      if(!match && trace)
+      {
+        wcerr << "apertium-transfer warning: <modify-case> on line " << localroot->line << " sometimes discards its value." << endl;
+      }
     }
     else if(!xmlStrcmp(side, (const xmlChar *) "ref"))
     {
       string const result = copycase(evalString(rightSide),
               word[pos]->reference(attr_items[(const char *) part], queue));
-      word[pos]->setReference(attr_items[(const char *) part], result);
+      bool match = word[pos]->setReference(attr_items[(const char *) part], result);
+      if(!match && trace)
+      {
+        wcerr << "apertium-transfer warning: <modify-case> on line " << localroot->line << " sometimes discards its value." << endl;
+      }
     }
     else
     {
       string const result = copycase(evalString(rightSide),
 				     word[pos]->target(attr_items[(const char *) part], queue));
-      word[pos]->setTarget(attr_items[(const char *) part], result);
+      bool match = word[pos]->setTarget(attr_items[(const char *) part], result);
+      if(!match && trace)
+      {
+        wcerr << "apertium-transfer warning: <modify-case> on line " << localroot->line << " sometimes discards its value." << endl;
+      }
     }
   }
   else if(!xmlStrcmp(leftSide->name, (const xmlChar *) "var"))

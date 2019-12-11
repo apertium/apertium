@@ -113,50 +113,53 @@ TransferWord::reference(ApertiumRE const &part, bool with_queue)
   }
 }
 
-void
+bool
 TransferWord::setSource(ApertiumRE const &part, string const &value,
 			bool with_queue)
 {
   if(with_queue)
   {
-    part.replace(s_str, value);
+    return part.replace(s_str, value);
   }
   else
   {
     string mystring = s_str.substr(0, s_str.size() - queue_length);
-    part.replace(mystring, value);
+    bool ret = part.replace(mystring, value);
     s_str = mystring + s_str.substr(s_str.size() - queue_length);
+    return ret;
   }
 }
 
-void
+bool
 TransferWord::setTarget(ApertiumRE const &part, string const &value,
 			bool with_queue)
 {
   if(with_queue)
   {
-    part.replace(t_str, value);
+    return part.replace(t_str, value);
   }
   else
   {
     string mystring = t_str.substr(0, t_str.size() - queue_length);
-    part.replace(mystring, value);
+    bool ret = part.replace(mystring, value);
     t_str = mystring + t_str.substr(t_str.size() - queue_length);
+    return ret;
   }
 }
 
-void
+bool
 TransferWord::setReference(ApertiumRE const &part, string const &value,
       bool with_queue)
 {
   if(with_queue)
   {
-    part.replace(r_str, value);
+    return part.replace(r_str, value);
   }
   else
   {
     string mystring = r_str.substr(0, r_str.size() - queue_length);
-    part.replace(mystring, value);
+    bool ret = part.replace(mystring, value);
     r_str = mystring + r_str.substr(r_str.size() - queue_length);
+    return ret;
   }
 }

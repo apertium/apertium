@@ -108,8 +108,8 @@ InterchunkWord::chunkPart(ApertiumRE const &part)
   }
 }
 
-void
+bool
 InterchunkWord::setChunkPart(ApertiumRE const &part, string const &value)
 {
-  part.replace(chunk, value);
+  return part.replace(chunk, value);
 }
