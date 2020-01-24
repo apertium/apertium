@@ -23,6 +23,10 @@
 #include <cstdio>
 #include <list>
 
+#ifdef __MINGW32__
+#include <windows.h>
+#endif
+
 using namespace std;
 
 #ifndef fputwc_unlocked
@@ -55,7 +59,7 @@ tryToSetLocale()
   setlocale(LC_ALL, "C.UTF-8");
 #endif
 #ifdef __MINGW32__
-  SetConsoleInputCP(65001);
+  //SetConsoleInputCP(65001);
   SetConsoleOutputCP(65001);
 #endif
 }
