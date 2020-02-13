@@ -125,12 +125,13 @@ ApertiumRE::match(string const &str) const
   return str.substr(result[0], result[1]-result[0]);
 }
 
-void
+// Return true if something was replaced and false otherwise
+bool
 ApertiumRE::replace(string &str, string const &value) const
 {
   if(empty)
   {
-    return;
+    return false;
   }
 
   int result[3];
@@ -142,7 +143,7 @@ ApertiumRE::replace(string &str, string const &value) const
     switch(rc)
     {
       case PCRE_ERROR_NOMATCH:
-	return;
+	return false;
 
       default:
 	wcerr << L"Error: Unknown error matching regexp (code " << rc << L")" << endl;
@@ -154,4 +155,5 @@ ApertiumRE::replace(string &str, string const &value) const
   res.append(value);
   res.append(str.substr(result[1]));
   str = res;
+  return true;
 }

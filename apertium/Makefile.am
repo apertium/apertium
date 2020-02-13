@@ -4,7 +4,6 @@ h_sources = a.h \
 	    align.h \
 	    analysis.h \
 	    apertium_re.h \
-	    apertium_tagger.h \
 	    basic_5_3_1_tagger.h \
 	    basic_5_3_2_tagger.h \
 	    basic_5_3_3_tagger.h \
@@ -40,6 +39,7 @@ h_sources = a.h \
 	    optional.h \
 	    perceptron_spec.h \
 	    perceptron_tagger.h \
+	    pretransfer.h \
 	    postchunk.h \
 	    sentence_stream.h \
 	    serialiser.h \
@@ -57,6 +57,7 @@ h_sources = a.h \
 	    string_utils.h \
 	    shell_utils.h \
 	    tag.h \
+	    tagger.h \
 	    tagger_data.h \
 	    tagger_data_hmm.h \
 	    tagger_data_lsw.h \
@@ -131,6 +132,7 @@ cc_sources = a.cc \
 	     file_morpho_stream.cc \
 	     perceptron_spec.cc \
 	     perceptron_tagger.cc \
+	     pretransfer.cc \
 	     postchunk.cc \
 	     sentence_stream.cc \
 	     stream.cc \
@@ -145,6 +147,7 @@ cc_sources = a.cc \
 	     string_utils.cc \
 	     shell_utils.cc \
 	     tag.cc \
+	     tagger.cc \
 	     tagger_data.cc \
 	     tagger_data_hmm.cc \
 	     tagger_data_lsw.cc \
@@ -199,7 +202,9 @@ lib_LTLIBRARIES = libapertium3.la
 libapertium3_la_SOURCES = $(h_sources) $(cc_sources)
 libapertium3_la_LDFLAGS = -version-info $(GENERIC_LIBRARY_VERSION) -release $(GENERIC_RELEASE)
 
-bin_PROGRAMS = apertium-deshtml \
+bin_PROGRAMS = apertium-cleanstream \
+	       apertium-deshtml \
+	       apertium-deshtml-alt \
 	       apertium-deslatex \
 	       apertium-desmediawiki \
 	       apertium-desodt \
@@ -259,12 +264,15 @@ apertium_DATA = deformat.xsl reformat.xsl new2old.xsl lexchoice.xsl \
 				modes2bash.xsl modes2debugmodes.xsl \
                 apertium-createmodes.awk
 
+apertium_cleanstream_SOURCES = apertium_cleanstream.cc
 apertium_pretransfer_SOURCES = apertium_pretransfer.cc
+apertium_pretransfer_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 apertium_multiple_translations_SOURCES = apertium-multiple-translations.cc
 apertium_multiple_translations_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 apertium_destxt_SOURCES = apertium_destxt.cc
 apertium_retxt_SOURCES = apertium_retxt.cc
 apertium_deshtml_SOURCES = apertium_deshtml.cc
+apertium_deshtml_alt_SOURCES = apertium_deshtml_alt.cc
 apertium_rehtml_SOURCES = apertium_rehtml.cc
 apertium_rehtml_noent_SOURCES = apertium_rehtml_noent.cc
 apertium_desxpresstag_SOURCES = apertium_desxpresstag.cc
@@ -349,6 +357,7 @@ endif
 CLEANFILES = *~ apertium_destxt.cc apertium_retxt.cc apertium_deshtml.cc \
              apertium_rehtml.cc apertium_desrtf.cc apertium_rertf.cc \
              apertium_rehtml_noent.cc \
+             apertium_deshtml_alt.cc \
              apertium_deswxml.cc apertium_rewxml.cc \
              apertium_deslatex.cc apertium_relatex.cc \
              apertium_desxlsx.cc apertium_rexlsx.cc \
@@ -381,6 +390,11 @@ apertium_retxt.cc: txt-format.xml Makefile.am reformat.xsl
 
 apertium_deshtml.cc: html-format.xml Makefile.am deformat.xsl
 	$(XSLTPROC) deformat.xsl html-format.xml >$@tmp
+	$(FLEX) -Cfer -o$@ $@tmp
+	rm $@tmp
+
+apertium_deshtml_alt.cc: html-alt-format.xml Makefile.am deformat.xsl
+	$(XSLTPROC) deformat.xsl $< >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
@@ -567,10 +581,10 @@ apertium-utils-fixlatex: Makefile.am utils-fixlatex-header.sh
 	@chmod a+x $@
 
 apertium: Makefile.am apertium-header.sh
-	@echo "Creating apertium script"
-	@echo "#!$(BASH)" > $@
-	@echo "APERTIUM_PATH=\"$(prefix)/bin\"" >>$@
-	@echo "DEFAULT_DIRECTORY=\"$(prefix)/share/apertium\"" >>$@
+	@echo 'Creating apertium script'
+	@echo '#!$(BASH)' > $@
+	@echo 'APERTIUM_PATH="$${APERTIUM_PATH:-$(prefix)/bin}"' >>$@
+	@echo 'DEFAULT_DIRECTORY="$(prefix)/share/apertium"' >>$@
 	@cat apertium-header.sh >>$@
 	@chmod a+x $@
 
@@ -644,6 +658,7 @@ apertium-gen-stopwords-lextor: Makefile.am gen-stopwords-lextor.sh
 	@chmod a+x $@
 
 man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
+         apertium-deshtml-alt.1 \
          apertium-desodt.1 apertium-reodt.1 \
          apertium-deswxml.1 apertium-rewxml.1 \
          apertium-deslatex.1 apertium-relatex.1 \

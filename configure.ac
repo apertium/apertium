@@ -7,7 +7,7 @@ m4_define([required_lttoolbox_version], [3.5.0])
 m4_define([required_libxml_version], [2.6.17])
 m4_define([required_libpcre_version], [6.4])
 
-AC_INIT([apertium], [3.5.2], [sortiz@users.sourceforge.net])
+AC_INIT([apertium], [3.6.1], [apertium-stuff@lists.sourceforge.net])
 AC_CONFIG_HEADER([apertium/apertium_config.h])
 
 AC_CANONICAL_SYSTEM
@@ -16,8 +16,8 @@ GENERIC_LIBRARY_NAME=apertium
 
 # Release versioning
 GENERIC_MAJOR_VERSION=3
-GENERIC_MINOR_VERSION=5
-GENERIC_MICRO_VERSION=2
+GENERIC_MINOR_VERSION=6
+GENERIC_MICRO_VERSION=1
 
 # API version (often = GENERIC_MAJOR_VERSION.GENERIC_MINOR_VERSION)
 GENERIC_API_VERSION=$GENERIC_MAJOR_VERSION.$GENERIC_MINOR_VERSION
@@ -26,17 +26,6 @@ AC_SUBST(GENERIC_MAJOR_VERSION)
 
 # Shared library versioning
 GENERIC_LIBRARY_VERSION=1:0:0
-#                       | | |
-#                +------+ | +---+
-#                |        |     |
-#             current:revision:age
-#                |        |     |
-#                |        |     +- increment if interfaces have been added
-#                |        |        set to zero if interfaces have been removed
-#                                  or changed
-#                |        +- increment if source code has changed
-#                |           set to zero if current is incremented
-#                +- increment if interfaces have been added, removed or changed
 
 AC_SUBST(GENERIC_LIBRARY_VERSION)
 PACKAGE=$GENERIC_LIBRARY_NAME
@@ -194,4 +183,40 @@ AX_CHECK_COMPILE_FLAG([-std=c++20], [CXXFLAGS="$CXXFLAGS -std=c++20"], [
  ])
 ])
 
-AC_OUTPUT([Makefile apertium.pc apertium/Makefile tests/Makefile tests/tagger/Makefile])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <cstddef>
+#include <cstdint>
+#include <type_traits>
+]],[[
+using namespace std;
+static_assert(!is_same<size_t,uint32_t>::value, "size_t == uint32_t");
+static_assert(!is_same<size_t,uint64_t>::value, "size_t == uint64_t");
+   ]])], [AC_DEFINE([SIZET_NOT_CSTDINT], [1], [size_t != (uint32_t, uint64_t)])])
+
+AC_CONFIG_FILES([python/setup.py])
+
+AC_SUBST(APERTIUM_CFLAGS)
+AC_SUBST(LIBS)
+
+AM_PATH_PYTHON([3.4], [], [AC_MSG_WARN([Can't generate SWIG wrapper or run tests without Python])])
+
+AC_ARG_ENABLE([python-bindings],
+              AS_HELP_STRING([--enable-python-bindings],
+                             [build python bindings (default=disabled)]),
+              [enable_python_bindings=$enableval],
+              [enable_python_bindings=no])
+AM_CONDITIONAL([HAVE_PYTHON_BINDINGS], [test x$enable_python_bindings = xyes])
+
+AC_ARG_VAR([PYTHON_INSTALL_PARAMS], [Parameters to pass to the Python 3 module install step])
+if test "x$PYTHON_INSTALL_PARAMS" = "x"
+then
+  PYTHON_INSTALL_PARAMS="--prefix=\$(prefix) --root=\$(DESTDIR)/"
+fi
+
+AC_OUTPUT([
+	Makefile apertium.pc
+	apertium/Makefile
+	scripts/Makefile
+	tests/Makefile tests/tagger/Makefile
+	python/Makefile
+	])

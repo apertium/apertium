@@ -36,7 +36,7 @@
 #endif // ENABLE_DEBUG
 
 namespace Apertium {
-Stream_5_3_1_Tagger::Stream_5_3_1_Tagger(const Flags &Flags_)
+Stream_5_3_1_Tagger::Stream_5_3_1_Tagger(Flags &Flags_)
     : basic_Tagger(Flags_), basic_5_3_1_Tagger() {}
 
 void Stream_5_3_1_Tagger::deserialise(std::istream &Serialised_basic_Tagger) {

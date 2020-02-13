@@ -1,0 +1,2 @@
+
+      sed -e 's/Estic provant què tal funciona la traducció amb LibreOffice./Estoy probando que tal funciona la traducción con LibreOffice./g' 

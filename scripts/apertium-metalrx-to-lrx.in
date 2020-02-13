@@ -1,0 +1,14 @@
+#!/bin/bash
+case $# in
+  2)
+    INFILE=$1
+    OUTFILE=$2
+    ;;
+  *)
+    echo "USAGE: apertium-metalrx-to-lrx INFILE OUTFILE";
+    exit 1;
+esac
+
+xsltproc @datarootdir@/apertium/metalrx-to-lrx.xslt "$INFILE" > "$OUTFILE.tmp"
+xmllint --format "$OUTFILE.tmp" > "$OUTFILE"
+rm -f "$OUTFILE.tmp"

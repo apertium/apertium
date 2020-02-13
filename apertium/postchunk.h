@@ -50,6 +50,7 @@ private:
   map<string, set<string, Ltstr>, Ltstr> listslow;
   vector<xmlNode *> macro_map;
   vector<xmlNode *> rule_map;
+  vector<size_t> rule_lines;
   xmlDoc *doc;
   xmlNode *root_element;
   InterchunkWord **word;

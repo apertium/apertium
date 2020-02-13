@@ -13,8 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#ifndef APERTIUM_TAGGER_H
-#define APERTIUM_TAGGER_H
+#ifndef TAGGER_H
+#define TAGGER_H
 
 #include "apertium_config.h"
 
@@ -22,8 +22,10 @@
 #include "basic_stream_tagger_trainer.h"
 #include "basic_tagger.h"
 #include "constructor_eq_delete.h"
+#include "err_exception.h"
 #include "file_tagger.h"
 #include "optional.h"
+#include <apertium/file_morpho_stream.h>
 
 #include "getopt_long.h"
 #include <string>
@@ -44,7 +46,7 @@ private:
   static std::string option_string(const struct option &option_);
   static void locale_global_();
   void set_indexptr();
-  void flagOptionCase(bool (basic_Tagger::Flags::*GetFlag)() const,
+  void flagOptionCase(bool (basic_Tagger::Flags::*GetFlag)(),
                       void (basic_Tagger::Flags::*SetFlag)(const bool &));
   std::string option_string();
   void functionTypeTypeOptionCase(const FunctionTypeType &FunctionTypeType_);
@@ -94,4 +96,4 @@ private:
 };
 }
 
-#endif // APERTIUM_TAGGER_H
+#endif // TAGGER_H

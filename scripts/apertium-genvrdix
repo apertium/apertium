@@ -1,0 +1,82 @@
+#!/usr/bin/env python3
+#
+# Copyright (C) 2018 Xavi Ivars <xavi.ivars@gmail.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
+#
+
+from xml.sax import handler, saxutils, make_parser
+import sys
+
+vr_other = "other"
+
+alternative = sys.argv[1]
+dixfile     = sys.argv[2]
+
+if alternative == "other":
+  vr_other = vr_other[::-1] # reverse string
+
+def printAttrs(attrsmap):
+  if len(attrsmap) == 0:
+    return ""
+  output = []
+  for (i,j) in list(attrsmap.items()):
+    output.append(i)
+    output.append("=\"")
+    output.append(saxutils.escape(j))
+    output.append("\" ")
+
+  return " " + "".join(output).strip()
+
+class DixHandler(handler.ContentHandler):
+  def __init__(self, out = sys.stdout):
+    handler.ContentHandler.__init__(self)
+    self._out = out
+    self._buf = []
+
+  def flush(self):
+    for i in self._buf:
+      self._out.write(i)
+    self._buf = []
+
+  def startElement(self, name, attrs):
+    if name == "e" and "vr" in attrs:
+      attrs2 = {i:j for (i,j) in list(attrs.items()) if i != "vr"}
+      vals = attrs["vr"].split()
+      if alternative in vals:
+        attrs2["vr"] = alternative
+      else:
+        attrs2["vr"] = vr_other
+      attrs = attrs2
+    self._buf.append("<" + name + printAttrs(attrs) + ">")
+
+  def endElement(self, name):
+    if len(self._buf) > 0 and self._buf[-1][0:1] == "<" and self._buf[-1][-1:] == ">" and self._buf[-1][1:2] != "/":
+      self._buf[-1] = self._buf[-1][0:-1]+"/>"
+      self.flush()
+    else:
+      self.flush()
+      self._out.write("</")
+      self._out.write(name)
+      self._out.write(">")
+
+  def characters(self, content):
+    self.flush()
+    self._out.write(saxutils.escape(content))
+
+parser = make_parser()
+parser.setContentHandler(DixHandler())
+
+with open(dixfile, "r", encoding="utf-8") as f:
+  parser.parse(f)

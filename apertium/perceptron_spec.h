@@ -211,7 +211,7 @@ public:
           }
           out << "]";
         } break;
-        default: assert(false); break;
+        default: throw 1; break;
       }
       return out;
     }
@@ -352,18 +352,16 @@ public:
         return strArr().size();
       } else if (type == WRDARRVAL) {
         return wrdArr().size();
-      } else {
-        assert(false);
       }
+      throw 1;
     }
     StackValue operator[](int n) const {
       if (type == STRARRVAL) {
         return StackValue(strArr()[n]);
       } else if (type == WRDARRVAL) {
         return StackValue(wrdArr()[n]);
-      } else {
-        assert(false);
       }
+      throw 1;
     }
     union StackValueUnion {
       int intval;

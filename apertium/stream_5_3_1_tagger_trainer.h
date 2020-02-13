@@ -28,7 +28,7 @@ namespace Apertium {
 class Stream_5_3_1_TaggerTrainer : private basic_5_3_1_Tagger,
                                    public basic_StreamTaggerTrainer {
 public:
-  Stream_5_3_1_TaggerTrainer(const Flags &Flags_);
+  Stream_5_3_1_TaggerTrainer(Flags &Flags_);
   void serialise(std::ostream &Serialised_basic_Tagger) const;
 
 private:

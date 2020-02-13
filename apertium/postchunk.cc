@@ -182,15 +182,17 @@ Postchunk::readPostchunk(string const &in)
 void
 Postchunk::collectRules(xmlNode *localroot)
 {
-  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
+  for(xmlNode *rule = localroot->children; rule != NULL; rule = rule->next)
   {
-    if(i->type == XML_ELEMENT_NODE)
+    if(rule->type == XML_ELEMENT_NODE)
     {
-      for(xmlNode *j = i->children; ; j = j->next)
+      size_t line = rule->line;
+      for(xmlNode *rulechild = rule->children; ; rulechild = rulechild->next)
       {
-        if(j->type == XML_ELEMENT_NODE && !xmlStrcmp(j->name, (const xmlChar *) "action"))
+        if(rulechild->type == XML_ELEMENT_NODE && !xmlStrcmp(rulechild->name, (const xmlChar *) "action"))
         {
-          rule_map.push_back(j);
+          rule_map.push_back(rulechild);
+          rule_lines.push_back(line);
           break;
         }
       }
@@ -611,7 +613,13 @@ Postchunk::processLet(xmlNode *localroot)
         return;
 
       case ti_clip_tl:
-        word[ti.getPos()]->setChunkPart(attr_items[ti.getContent()], evalString(rightSide));
+      {
+        bool match = word[ti.getPos()]->setChunkPart(attr_items[ti.getContent()], evalString(rightSide));
+        if(!match && trace)
+        {
+          wcerr << "apertium-postchunk warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+        }
+      }
         return;
 
       default:
@@ -642,8 +650,12 @@ Postchunk::processLet(xmlNode *localroot)
     }
 
 
-    word[pos]->setChunkPart(attr_items[(const char *) part],
-			    evalString(rightSide));
+    bool match = word[pos]->setChunkPart(attr_items[(const char *) part],
+					 evalString(rightSide));
+    if(!match && trace)
+    {
+      wcerr << "apertium-postchunk warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+    }
     evalStringCache[leftSide] = TransferInstr(ti_clip_tl, (const char *) part,
 					      pos, NULL);
   }
@@ -711,8 +723,12 @@ Postchunk::processModifyCase(xmlNode *localroot)
 
     string const result = copycase(evalString(rightSide),
 				   word[pos]->chunkPart(attr_items[(const char *) part]));
-    word[pos]->setChunkPart(attr_items[(const char *) part], result);
+    bool match = word[pos]->setChunkPart(attr_items[(const char *) part], result);
 
+    if(!match && trace)
+    {
+      wcerr << "apertium-postchunk warning: <modify-case> on line " << localroot->line << " sometimes discards its value." << endl;
+    }
   }
   else if(!xmlStrcmp(leftSide->name, (const xmlChar *) "var"))
   {
@@ -1617,12 +1633,13 @@ Postchunk::postchunk(FILE *in, FILE *out)
     int val = ms.classifyFinals(me->getFinals());
     if(val != -1)
     {
+      size_t lastrule_line = rule_lines[val-1];
       lastrule = rule_map[val-1];
       last = input_buffer.getPos();
 
       if(trace)
       {
-        wcerr << endl << L"apertium-postchunk: Rule " << val << L" ";
+        wcerr << endl << L"apertium-postchunk: Rule " << val << L" line " << lastrule_line << L" ";
         for (unsigned int ind = 0; ind < tmpword.size(); ind++)
         {
           if (ind != 0)

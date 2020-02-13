@@ -25,6 +25,7 @@ enum TransferInstrType
 {
   ti_clip_sl,
   ti_clip_tl,
+  ti_clip_ref,
   ti_var,
   ti_lit_tag,
   ti_lit,
@@ -32,8 +33,10 @@ enum TransferInstrType
   ti_get_case_from,
   ti_case_of_sl,
   ti_case_of_tl,
+  ti_case_of_ref,
   ti_linkto_sl,
   ti_linkto_tl,
+  ti_linkto_ref,
   ti_lu_count
 };
 

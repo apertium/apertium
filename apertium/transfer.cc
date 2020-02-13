@@ -240,15 +240,17 @@ Transfer::readTransfer(string const &in)
 void
 Transfer::collectRules(xmlNode *localroot)
 {
-  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
+  for(xmlNode *rule = localroot->children; rule != NULL; rule = rule->next)
   {
-    if(i->type == XML_ELEMENT_NODE)
+    if(rule->type == XML_ELEMENT_NODE)
     {
-      for(xmlNode *j = i->children; ; j = j->next)
+      size_t line = rule->line;
+      for(xmlNode *rulechild = rule->children; ; rulechild = rulechild->next)
       {
-        if(j->type == XML_ELEMENT_NODE && !xmlStrcmp(j->name, (const xmlChar *) "action"))
+        if(rulechild->type == XML_ELEMENT_NODE && !xmlStrcmp(rulechild->name, (const xmlChar *) "action"))
         {
-          rule_map.push_back(j);
+          rule_map.push_back(rulechild);
+          rule_lines.push_back(line);
           break;
         }
       }
@@ -313,6 +315,13 @@ Transfer::evalString(xmlNode *element)
         }
         break;
 
+      case ti_clip_ref:
+        if(checkIndex(element, ti.getPos(), lword))
+        {
+          return word[ti.getPos()]->reference(attr_items[ti.getContent()], ti.getCondition());
+        }
+        break;
+
       case ti_linkto_sl:
         if(checkIndex(element, ti.getPos(), lword))
         {
@@ -331,6 +340,20 @@ Transfer::evalString(xmlNode *element)
         if(checkIndex(element, ti.getPos(), lword))
         {
           if(word[ti.getPos()]->target(attr_items[ti.getContent()], ti.getCondition()) != "")
+          {
+            return "<" + string((char *) ti.getPointer()) + ">";
+          }
+          else
+          {
+            return "";
+          }
+        }
+        break;
+
+      case ti_linkto_ref:
+        if(checkIndex(element, ti.getPos(), lword))
+        {
+          if(word[ti.getPos()]->reference(attr_items[ti.getContent()], ti.getCondition()) != "")
           {
             return "<" + string((char *) ti.getPointer()) + ">";
           }
@@ -380,6 +403,13 @@ Transfer::evalString(xmlNode *element)
         }
         break;
 
+      case ti_case_of_ref:
+        if(checkIndex(element, ti.getPos(), lword))
+        {
+          return caseOf(word[ti.getPos()]->reference(attr_items[ti.getContent()]));
+        }
+        break;
+
       default:
         return "";
     }
@@ -425,6 +455,10 @@ Transfer::evalString(xmlNode *element)
       {
         evalStringCache[element] = TransferInstr(ti_linkto_sl, (const char *) part, pos, (void *) as, queue);
       }
+      else if(!xmlStrcmp(side, (const xmlChar *) "ref"))
+      {
+        evalStringCache[element] = TransferInstr(ti_linkto_ref, (const char *) part, pos, (void *) as, queue);
+      }
       else
       {
         evalStringCache[element] = TransferInstr(ti_linkto_tl, (const char *) part, pos, (void *) as, queue);
@@ -433,6 +467,10 @@ Transfer::evalString(xmlNode *element)
     else if(!xmlStrcmp(side, (const xmlChar *) "sl"))
     {
       evalStringCache[element] = TransferInstr(ti_clip_sl, (const char *) part, pos, NULL, queue);
+    }
+    else if(!xmlStrcmp(side, (const xmlChar *) "ref"))
+    {
+      evalStringCache[element] = TransferInstr(ti_clip_ref, (const char *) part, pos, NULL, queue);
     }
     else
     {
@@ -503,6 +541,10 @@ Transfer::evalString(xmlNode *element)
     if(!xmlStrcmp(side, (const xmlChar *) "sl"))
     {
       evalStringCache[element] = TransferInstr(ti_case_of_sl, (const char *) part, pos);
+    }
+    else if(!xmlStrcmp(side, (const xmlChar *) "ref"))
+    {
+      evalStringCache[element] = TransferInstr(ti_case_of_ref, (const char *) part, pos);
     }
     else
     {
@@ -929,13 +971,31 @@ Transfer::processLet(xmlNode *localroot)
 
       case ti_clip_sl:
         if (checkIndex(leftSide, ti.getPos(), lword)) {
-          word[ti.getPos()]->setSource(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
+          bool match = word[ti.getPos()]->setSource(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
+          if (!match && trace)
+          {
+            wcerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+          }
         }
         return;
 
       case ti_clip_tl:
         if (checkIndex(leftSide, ti.getPos(), lword)) {
-          word[ti.getPos()]->setTarget(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
+          bool match = word[ti.getPos()]->setTarget(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
+          if (!match && trace)
+          {
+            wcerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+          }
+        }
+        return;
+
+      case ti_clip_ref:
+        if (checkIndex(leftSide, ti.getPos(), lword)) {
+          bool match = word[ti.getPos()]->setReference(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
+          if (!match && trace)
+          {
+            wcerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+          }
         }
         return;
 
@@ -993,12 +1053,29 @@ Transfer::processLet(xmlNode *localroot)
 
     if(!xmlStrcmp(side, (const xmlChar *) "tl"))
     {
-      word[pos]->setTarget(attr_items[(const char *) part], evalString(rightSide), queue);
+      bool match = word[pos]->setTarget(attr_items[(const char *) part], evalString(rightSide), queue);
+      if(!match && trace)
+      {
+        wcerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+      }
       evalStringCache[leftSide] = TransferInstr(ti_clip_tl, (const char *) part, pos, NULL, queue);
+    }
+    else if(!xmlStrcmp(side, (const xmlChar *) "ref"))
+    {
+      bool match = word[pos]->setReference(attr_items[(const char *) part], evalString(rightSide), queue);
+      if(!match && trace)
+      {
+        wcerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+      }
+      evalStringCache[leftSide] = TransferInstr(ti_clip_ref, (const char *) part, pos, NULL, queue);
     }
     else
     {
-      word[pos]->setSource(attr_items[(const char *) part], evalString(rightSide), queue);
+      bool match = word[pos]->setSource(attr_items[(const char *) part], evalString(rightSide), queue);
+      if(!match && trace)
+      {
+        wcerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+      }
       evalStringCache[leftSide] = TransferInstr(ti_clip_sl, (const char *) part, pos, NULL, queue);
     }
   }
@@ -1084,13 +1161,31 @@ Transfer::processModifyCase(xmlNode *localroot)
     {
       string const result = copycase(evalString(rightSide),
 				      word[pos]->source(attr_items[(const char *) part], queue));
-      word[pos]->setSource(attr_items[(const char *) part], result);
+      bool match = word[pos]->setSource(attr_items[(const char *) part], result);
+      if(!match && trace)
+      {
+        wcerr << "apertium-transfer warning: <modify-case> on line " << localroot->line << " sometimes discards its value." << endl;
+      }
+    }
+    else if(!xmlStrcmp(side, (const xmlChar *) "ref"))
+    {
+      string const result = copycase(evalString(rightSide),
+              word[pos]->reference(attr_items[(const char *) part], queue));
+      bool match = word[pos]->setReference(attr_items[(const char *) part], result);
+      if(!match && trace)
+      {
+        wcerr << "apertium-transfer warning: <modify-case> on line " << localroot->line << " sometimes discards its value." << endl;
+      }
     }
     else
     {
       string const result = copycase(evalString(rightSide),
 				     word[pos]->target(attr_items[(const char *) part], queue));
-      word[pos]->setTarget(attr_items[(const char *) part], result);
+      bool match = word[pos]->setTarget(attr_items[(const char *) part], result);
+      if(!match && trace)
+      {
+        wcerr << "apertium-transfer warning: <modify-case> on line " << localroot->line << " sometimes discards its value." << endl;
+      }
     }
   }
   else if(!xmlStrcmp(leftSide->name, (const xmlChar *) "var"))
@@ -1146,7 +1241,13 @@ Transfer::processCallMacro(xmlNode *localroot)
       myword[idx] = word[pos];
       if(idx-1 >= 0)
       {
-        myblank[idx-1] = blank[lastpos];
+        if(lastpos + 1 > lblank) { // if a 1-pattern rule calls macro with same
+          noblank = "";            // param twice the blank array will be empty
+          myblank[idx-1] = &noblank;
+        }
+        else {
+          myblank[idx-1] = blank[lastpos];
+        }
       }
       idx++;
       lastpos = pos;
@@ -2036,6 +2137,8 @@ Transfer::transfer(FILE *in, FILE *out)
           {
             wstring sl;
             wstring tl;
+            wstring ref;
+
             int seenSlash = 0;
             for(wstring::const_iterator it = tmpword[0]->begin(); it != tmpword[0]->end(); it++)
             {
@@ -2047,17 +2150,25 @@ Transfer::transfer(FILE *in, FILE *out)
                   it++;
                   sl.push_back(*it);
                 }
-                else
+                else if(seenSlash == 1)
                 {
                   tl.push_back(*it);
                   it++;
                   tl.push_back(*it);
+                }
+                else
+                {
+                  ref.push_back(*it);
+                  it++;
+                  ref.push_back(*it);
                 }
                 continue;
               }
               else if(*it == L'/')
               {
                 seenSlash++;
+
+                ref.clear(); //the word after the last slash is the ref
                 continue;
               }
               if(seenSlash == 0)
@@ -2068,9 +2179,9 @@ Transfer::transfer(FILE *in, FILE *out)
               {
                 tl.push_back(*it);
               }
-              else if(seenSlash > 1)
+              else
               {
-                break;
+                ref.push_back(*it);
               }
             }
             //tmpword[0]->assign(sl);
@@ -2129,13 +2240,14 @@ Transfer::transfer(FILE *in, FILE *out)
     int val = ms.classifyFinals(me->getFinals(), banned_rules);
     if(val != -1)
     {
+      size_t lastrule_line = rule_lines[val-1];
       lastrule = rule_map[val-1];
       lastrule_id = val;
       last = input_buffer.getPos();
 
       if(trace)
       {
-        wcerr << endl << L"apertium-transfer: Rule " << val << L" ";
+        wcerr << endl << L"apertium-transfer: Rule " << val << L" line " << lastrule_line << L" ";
         for (unsigned int ind = 0; ind < tmpword.size(); ind++)
         {
           if (ind != 0)
@@ -2216,14 +2328,18 @@ Transfer::applyRule()
     if(useBilingual && preBilingual == false)
     {
       tr = fstp.biltransWithQueue(*tmpword[i], false);
+      wstring refx;
       word[i] = new TransferWord(UtfConverter::toUtf8(*tmpword[i]),
                                  UtfConverter::toUtf8(tr.first),
+                                 UtfConverter::toUtf8(refx),
                                  tr.second);
     }
     else if(preBilingual)
     {
       wstring sl;
       wstring tl;
+      wstring ref;
+
       int seenSlash = 0;
       for(wstring::const_iterator it = tmpword[i]->begin(); it != tmpword[i]->end(); it++)
       {
@@ -2235,11 +2351,17 @@ Transfer::applyRule()
             it++;
             sl.push_back(*it);
           }
-          else
+          else if(seenSlash == 1)
           {
             tl.push_back(*it);
             it++;
             tl.push_back(*it);
+          }
+          else
+          {
+            ref.push_back(*it);
+            it++;
+            ref.push_back(*it);
           }
           continue;
         }
@@ -2247,6 +2369,8 @@ Transfer::applyRule()
         if(*it == L'/')
         {
           seenSlash++;
+
+          ref.clear(); //word after last slash is ref
           continue;
         }
         if(seenSlash == 0)
@@ -2257,21 +2381,24 @@ Transfer::applyRule()
         {
           tl.push_back(*it);
         }
-        else if(seenSlash > 1)
+        else
         {
-          break;
+          ref.push_back(*it);
         }
       }
       tr = pair<wstring, int>(tl, false);
       word[i] = new TransferWord(UtfConverter::toUtf8(sl),
                                  UtfConverter::toUtf8(tr.first),
+                                 UtfConverter::toUtf8(ref),
                                  tr.second);
     }
     else // neither useBilingual nor preBilingual (sl==tl)
     {
       tr = pair<wstring, int>(*tmpword[i], false);
+      wstring refx;
       word[i] = new TransferWord(UtfConverter::toUtf8(*tmpword[i]),
                                  UtfConverter::toUtf8(tr.first),
+                                 UtfConverter::toUtf8(refx), 
                                  tr.second);
     }
   }

@@ -22,16 +22,16 @@ public:
   virtual void train(Stream &tagged, Stream &untagged, int iterations);
   // tagger
   virtual void deserialise(std::istream &serialised);
-  virtual void tag(Stream &input, std::wostream &output) const;
+  virtual void tag(Stream &input, std::wostream &output);
 
   void read_spec(const std::string &filename);
 
   friend std::wostream& operator<<(std::wostream &out, PerceptronTagger const &pt);
 protected:
-  virtual TaggedSentence tagSentence(const Sentence &untagged) const;
+  virtual TaggedSentence tagSentence(const Sentence &untagged);
   virtual void outputLexicalUnit(
     const LexicalUnit &lexical_unit, const Optional<Analysis> analysis,
-    std::wostream &output) const;
+    std::wostream &output);
 private:
   bool trainSentence(
     const TrainingSentence &sentence,

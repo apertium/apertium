@@ -20,33 +20,33 @@ basic_Tagger::Flags::Flags()
     : Debug(false), First(false), Mark(false), ShowSuperficial(false),
       NullFlush(false) {}
 
-bool basic_Tagger::Flags::getDebug() const { return Debug; }
+bool basic_Tagger::Flags::getDebug() { return Debug; }
 
 void basic_Tagger::Flags::setDebug(const bool &Debug_) { Debug = Debug_; }
 
-bool basic_Tagger::Flags::getSentSeg() const { return SentSeg; }
+bool basic_Tagger::Flags::getSentSeg() { return SentSeg; }
 
 void basic_Tagger::Flags::setSentSeg(const bool &SentSeg_) { SentSeg = SentSeg_; }
 
-bool basic_Tagger::Flags::getSkipErrors() const { return SkipErrors; }
+bool basic_Tagger::Flags::getSkipErrors() { return SkipErrors; }
 
 void basic_Tagger::Flags::setSkipErrors(const bool &SkipErrors_) { SkipErrors = SkipErrors_; }
 
-bool basic_Tagger::Flags::getFirst() const { return First; }
+bool basic_Tagger::Flags::getFirst() { return First; }
 
 void basic_Tagger::Flags::setFirst(const bool &First_) { First = First_; }
 
-bool basic_Tagger::Flags::getMark() const { return Mark; }
+bool basic_Tagger::Flags::getMark() { return Mark; }
 
 void basic_Tagger::Flags::setMark(const bool &Mark_) { Mark = Mark_; }
 
-bool basic_Tagger::Flags::getShowSuperficial() const { return ShowSuperficial; }
+bool basic_Tagger::Flags::getShowSuperficial() { return ShowSuperficial; }
 
 void basic_Tagger::Flags::setShowSuperficial(const bool &ShowSuperficial_) {
   ShowSuperficial = ShowSuperficial_;
 }
 
-bool basic_Tagger::Flags::getNullFlush() const { return NullFlush; }
+bool basic_Tagger::Flags::getNullFlush() { return NullFlush; }
 
 void basic_Tagger::Flags::setNullFlush(const bool &NullFlush_) {
   NullFlush = NullFlush_;
@@ -54,5 +54,5 @@ void basic_Tagger::Flags::setNullFlush(const bool &NullFlush_) {
 
 basic_Tagger::basic_Tagger() : TheFlags() {}
 
-basic_Tagger::basic_Tagger(const Flags &Flags_) : TheFlags(Flags_) {}
+basic_Tagger::basic_Tagger(Flags &Flags_) : TheFlags(Flags_) {}
 }

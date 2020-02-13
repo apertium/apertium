@@ -38,7 +38,7 @@ bool isSentenceEnd(StreamedType tok, Stream &in, bool sent_seg) {
 
 SentenceTagger::SentenceTagger() {}
 
-void SentenceTagger::tag(Stream &in, std::wostream &out, bool sent_seg) const {
+void SentenceTagger::tag(Stream &in, std::wostream &out, bool sent_seg) {
   clearBuffers();
 
   while (true) {
@@ -68,7 +68,7 @@ void SentenceTagger::clearBuffers() const {
   flushes.clear();
 }
 
-void SentenceTagger::tagAndPutSentence(std::wostream &out) const {
+void SentenceTagger::tagAndPutSentence(std::wostream &out) {
   TaggedSentence tagged_sent = tagSentence(lexical_sent);
   TaggedSentence::const_iterator ts_it = tagged_sent.begin();
 

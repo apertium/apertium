@@ -12,7 +12,7 @@ PerceptronTagger::PerceptronTagger(basic_Tagger::Flags flags) : basic_Tagger(fla
 
 PerceptronTagger::~PerceptronTagger() {};
 
-void PerceptronTagger::tag(Stream &in, std::wostream &out) const {
+void PerceptronTagger::tag(Stream &in, std::wostream &out) {
   SentenceStream::SentenceTagger::tag(in, out, TheFlags.getSentSeg());
 }
 
@@ -30,7 +30,7 @@ operator<<(std::wostream &out, PerceptronTagger const &pt) {
 }
 
 TaggedSentence
-PerceptronTagger::tagSentence(const Sentence &untagged_sent) const {
+PerceptronTagger::tagSentence(const Sentence &untagged_sent) {
   const size_t sent_len = untagged_sent.size();
 
   std::vector<AgendaItem> agenda;
@@ -100,7 +100,7 @@ PerceptronTagger::tagSentence(const Sentence &untagged_sent) const {
 
 void PerceptronTagger::outputLexicalUnit(
     const LexicalUnit &lexical_unit, const Optional<Analysis> analysis,
-    std::wostream &output) const {
+    std::wostream &output) {
   StreamTagger::outputLexicalUnit(lexical_unit, analysis, output);
 }
 

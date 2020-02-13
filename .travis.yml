@@ -1,0 +1,13 @@
+dist: xenial
+language: cpp
+compiler:
+  - clang
+  - gcc
+before_install:
+  - wget https://apertium.projectjj.com/apt/install-nightly.sh -O - | sudo bash
+  - sudo apt-get install -qfy lttoolbox-dev libxml2-utils xsltproc libpcre3 swig zipcmp
+script:
+  - autoreconf -fvi
+  - ./configure --enable-python-bindings
+  - make -j2
+  - make test

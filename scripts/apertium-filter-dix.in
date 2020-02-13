@@ -1,0 +1,13 @@
+#!/bin/bash
+case $# in
+  3)
+    LANG=$1
+    SIDE=$2
+    ;;
+  *)
+    echo "USAGE: apertium-filter-dix LANG SIDE FILE";
+    echo "With SIDE one of 'left' or 'right'";
+    exit 1;
+esac
+
+xsltproc --stringparam lang "$LANG" --stringparam side "$SIDE" @datarootdir@/apertium/filter-dix.xslt "$3"

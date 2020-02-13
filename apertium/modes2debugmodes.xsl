@@ -77,8 +77,11 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
       <xsl:when test="starts-with($p, 'lrx-proc')">
         <xsl:text>-lex</xsl:text>
       </xsl:when>
-      <xsl:when test="starts-with($p, 'apertium-transfer')">
+      <xsl:when test="starts-with($p, 'apertium-transfer') and not(contains($p, '-n'))">
         <xsl:text>-chunker</xsl:text>
+      </xsl:when>
+      <xsl:when test="starts-with($p, 'apertium-transfer') and contains($p, '-n')">
+        <xsl:text>-transfer2</xsl:text>
       </xsl:when>
       <xsl:when test="starts-with($p, 'apertium-interchunk')">
         <xsl:text>-interchunk</xsl:text>
@@ -100,6 +103,15 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
       </xsl:when>
       <xsl:when test="starts-with($p, 'hfst-proc')">
         <xsl:text>-morph</xsl:text>
+      </xsl:when>
+      <xsl:when test="starts-with($p, 'lsx-proc')">
+        <xsl:text>-autoseq</xsl:text>
+      </xsl:when>
+      <xsl:when test="starts-with($p, 'rtx-proc')">
+        <xsl:text>-transfer</xsl:text>
+      </xsl:when>
+      <xsl:when test="starts-with($p, 'apertium-anaphora')">
+        <xsl:text>-anaph</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>-NAMEME</xsl:text>
@@ -125,6 +137,12 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
       </xsl:when>
       <xsl:when test="starts-with($p, 'apertium-postchunk')">
         <xsl:text> -t</xsl:text>
+      </xsl:when>
+      <xsl:when test="starts-with($p, 'rtx-proc')">
+        <xsl:text> -r</xsl:text>
+      </xsl:when>
+      <xsl:when test="starts-with($p, 'apertium-anaphora')">
+        <xsl:text> -d</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text></xsl:text>
