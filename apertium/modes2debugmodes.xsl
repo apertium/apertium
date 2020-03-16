@@ -119,6 +119,38 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
     </xsl:choose>
   </xsl:template>
 
+  <xsl:template name="debugSuffixAlt">
+    <xsl:param name="progname"/>
+    <xsl:param name="suff-attr"/>
+    <xsl:variable name="p" select="normalize-space($progname)"/>
+    <!-- TODO: We also need to know what names have been used already
+         to make them unique! Might be easier to do uniquifying
+         outside XSLT -->
+    <xsl:choose>
+      <xsl:when test="$suff-attr != ''">
+        <xsl:text>-NOALT</xsl:text>
+      </xsl:when>
+      <xsl:when test="starts-with($p, 'lrx-proc')">
+        <xsl:text>-lextor</xsl:text>
+      </xsl:when>
+      <xsl:when test="starts-with($p, 'apertium-transfer') and not(contains($p, '-n'))">
+        <xsl:text>-transfer</xsl:text>
+      </xsl:when>
+      <xsl:when test="contains($p, '$1')">
+        <xsl:text>-generador</xsl:text>
+      </xsl:when>
+      <xsl:when test="starts-with($p, 'lt-proc')">
+        <xsl:text>-anmor</xsl:text>
+      </xsl:when>
+      <xsl:when test="starts-with($p, 'hfst-proc')">
+        <xsl:text>-anmor</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>-NOALT</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
   <xsl:template name="traceOpt">
     <xsl:param name="progname"/>
     <xsl:variable name="p" select="normalize-space($progname)"/>
@@ -151,6 +183,16 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
   </xsl:template>
 
   <xsl:template match="program">
+    <xsl:variable name="programName">
+      <xsl:call-template name="replaceString">
+        <xsl:with-param name="haystack" select="./@name"/>
+        <xsl:with-param name="needle" select="'$1'"/>
+        <xsl:with-param name="replacement" select="'-d'"/>
+      </xsl:call-template>
+      <xsl:call-template name="traceOpt">
+        <xsl:with-param name="progname" select="./@name"/>
+      </xsl:call-template>
+    </xsl:variable>
     <!-- Regular debug modes: -->
     <mode install="no">
       <xsl:attribute name="name">
@@ -164,14 +206,7 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
         <xsl:copy-of select="./preceding-sibling::*"/>
         <program>
           <xsl:attribute name="name">
-            <xsl:call-template name="replaceString">
-              <xsl:with-param name="haystack" select="./@name"/>
-              <xsl:with-param name="needle" select="'$1'"/>
-              <xsl:with-param name="replacement" select="'-d'"/>
-            </xsl:call-template>
-            <xsl:call-template name="traceOpt">
-              <xsl:with-param name="progname" select="./@name"/>
-            </xsl:call-template>
+            <xsl:value-of select="$programName"/>
           </xsl:attribute>
           <xsl:copy-of select="./*"/>
         </program>
@@ -191,19 +226,56 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
         <xsl:apply-templates select="./preceding-sibling::*" mode="untrim"/>
         <program>
           <xsl:attribute name="name">
-            <xsl:call-template name="replaceString">
-              <xsl:with-param name="haystack" select="./@name"/>
-              <xsl:with-param name="needle" select="'$1'"/>
-              <xsl:with-param name="replacement" select="'-d'"/>
-            </xsl:call-template>
-            <xsl:call-template name="traceOpt">
-              <xsl:with-param name="progname" select="./@name"/>
-            </xsl:call-template>
+            <xsl:value-of select="$programName"/>
           </xsl:attribute>
           <xsl:apply-templates select="./*" mode="untrim"/>
         </program>
       </pipeline>
     </mode>
+    <!-- Alternate names -->
+    <xsl:variable name="altDebugSuff">
+      <xsl:call-template name="debugSuffixAlt">
+        <xsl:with-param name="progname" select="./@name"/>
+        <xsl:with-param name="suff-attr" select="./@debug-suff"/>
+      </xsl:call-template>
+    </xsl:variable>
+    <xsl:choose>
+      <xsl:when test="$altDebugSuff != '-NOALT'">
+        <!-- Alternate names for regular modes -->
+        <mode install="no">
+          <xsl:attribute name="name">
+            <xsl:value-of select="../../@name"/>
+            <xsl:value-of select="$altDebugSuff"/>
+          </xsl:attribute>
+          <pipeline>
+            <xsl:copy-of select="./preceding-sibling::*"/>
+            <program>
+              <xsl:attribute name="name">
+                <xsl:value-of select="$programName"/>
+              </xsl:attribute>
+              <xsl:copy-of select="./*"/>
+            </program>
+          </pipeline>
+        </mode>
+        <!-- Alternate names for untrimmed modes -->
+        <mode install="no">
+          <xsl:attribute name="name">
+            <xsl:text>@</xsl:text>
+            <xsl:value-of select="../../@name"/>
+            <xsl:value-of select="$altDebugSuff"/>
+          </xsl:attribute>
+          <pipeline>
+            <xsl:apply-templates select="./preceding-sibling::*" mode="untrim"/>
+            <program>
+              <xsl:attribute name="name">
+                <xsl:value-of select="$programName"/>
+              </xsl:attribute>
+              <xsl:apply-templates select="./*" mode="untrim"/>
+            </program>
+          </pipeline>
+        </mode>
+      </xsl:when>
+    </xsl:choose>
   </xsl:template>
 
   <!-- For untrimmed modes, we assume they have the name
