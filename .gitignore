@@ -95,6 +95,13 @@ Makefile.in
 /scripts/apertium-translate-to-default-equivalent
 
 # Tests
+/tests/**/Makefile.in
+/tests/**/Makefile
+/tests/**/.libs
+/tests/odt/out.odt
+/tests/odt/run.log
+/tests/odt/run.trs
+
 /tests/tagger/test-find-similar-ambiguity-class
 /tests/data/nno-nob.t3x.bin
 

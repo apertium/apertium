@@ -1,13 +1,10 @@
-#                                               -*- Autoconf -*-
-# Process this file with autoconf to produce a configure script.
-
 AC_PREREQ(2.52)
 
 m4_define([required_lttoolbox_version], [3.5.0])
 m4_define([required_libxml_version], [2.6.17])
 m4_define([required_libpcre_version], [6.4])
 
-AC_INIT([apertium], [3.6.1], [apertium-stuff@lists.sourceforge.net])
+AC_INIT([apertium], [3.6.2], [apertium-stuff@lists.sourceforge.net])
 AC_CONFIG_HEADER([apertium/apertium_config.h])
 
 AC_CANONICAL_SYSTEM
@@ -17,7 +14,7 @@ GENERIC_LIBRARY_NAME=apertium
 # Release versioning
 GENERIC_MAJOR_VERSION=3
 GENERIC_MINOR_VERSION=6
-GENERIC_MICRO_VERSION=1
+GENERIC_MICRO_VERSION=2
 
 # API version (often = GENERIC_MAJOR_VERSION.GENERIC_MINOR_VERSION)
 GENERIC_API_VERSION=$GENERIC_MAJOR_VERSION.$GENERIC_MINOR_VERSION
@@ -156,6 +153,9 @@ AC_TYPE_SIZE_T
 
 # Checks for library functions.
 AC_FUNC_ERROR_AT_LINE
+
+# Checks for ICU
+AC_CHECK_ICU
 
 AC_CHECK_DECLS([fread_unlocked, fwrite_unlocked, fgetc_unlocked, fputc_unlocked, fputs_unlocked, getopt, getopt_long, fgetwc_unlocked, fputwc_unlocked, fgetws_unlocked, fputws_unlocked])
 AC_CHECK_FUNCS([setlocale strdup getopt snprintf mbtowc])

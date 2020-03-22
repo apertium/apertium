@@ -240,7 +240,8 @@ bin_PROGRAMS = apertium-cleanstream \
 	       apertium-tagger-readwords \
 	       apertium-perceptron-trace \
 	       apertium-tmxbuild \
-	       apertium-transfer
+	       apertium-transfer \
+	       apertium-adapt-docx
 
 bin_SCRIPTS =  $(GENERATEDSCRIPTS) apertium-get/apertium-get
 
@@ -344,11 +345,14 @@ apertium_tagger_readwords_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VER
 ###apertium_gen_wlist_lextor_translation_SOURCES = apertium_gen_wlist_lextor_translation.cc
 ###apertium_gen_wlist_lextor_translation_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 
+apertium_adapt_docx_SOURCES = adapt_docx.cc
+apertium_adapt_docx_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES) $(ICU_LIBS)
+
 
 if WINDOWS
-INCLUDES = -I$(top_srcdir)/utf8 -I$(top_srcdir)/apertium/win32 -I$(top_srcdir) $(APERTIUM_CFLAGS)
+INCLUDES = -I$(top_srcdir)/utf8 -I$(top_srcdir)/apertium/win32 -I$(top_srcdir) $(APERTIUM_CFLAGS) $(ICU_CFLAGS)
 else
-AM_CPPFLAGS = -I$(top_srcdir) $(APERTIUM_CFLAGS)
+AM_CPPFLAGS = -I$(top_srcdir) $(APERTIUM_CFLAGS) $(ICU_CFLAGS)
 endif
 CLEANFILES = *~ apertium_destxt.cc apertium_retxt.cc apertium_deshtml.cc \
              apertium_rehtml.cc apertium_desrtf.cc apertium_rertf.cc \
