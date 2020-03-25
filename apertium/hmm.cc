@@ -95,9 +95,9 @@ void HMM::train(MorphoStream &morpho_stream, unsigned long count) {
 
 HMM::HMM() {}
 
-HMM::HMM(TaggerDataHMM tdhmm)
+HMM::HMM(TaggerDataHMM _tdhmm)
+  : tdhmm(_tdhmm)
 {
-  tdhmm = tdhmm;
   eos = (tdhmm.getTagIndex())[L"TAG_SENT"];
 }
 
