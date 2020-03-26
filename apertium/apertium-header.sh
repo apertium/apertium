@@ -198,7 +198,7 @@ translate_docx ()
   done;
 
   find "$INPUT_TMPDIR" -name "*.xml" |\
-  grep -E -v -i '(settings|theme|styles|font|rels|docProps)' |\
+  grep -E -v -i '(settings|theme|styles|font|rels|docProps|Content_Types)' |\
   "$APERTIUM_PATH/apertium-adapt-docx" -n |\
   "$APERTIUM_PATH/apertium-deswxml" "${FORMAT_OPTIONS[@]}" |\
   if [ "$TRANSLATION_MEMORY_FILE" = "" ];
