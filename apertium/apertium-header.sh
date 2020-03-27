@@ -253,7 +253,7 @@ translate_pptx ()
     rm "$LOCALTEMP"
   done;
 
-  find . -path '**/slides/slide*.xml' |\
+  find "$INPUT_TMPDIR" -path '**/slides/slide*.xml' |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
   "$APERTIUM_PATH/apertium-despptx" "${FORMAT_OPTIONS[@]}" |\
   if [ "$TRANSLATION_MEMORY_FILE" = "" ];
