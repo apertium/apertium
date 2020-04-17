@@ -65,7 +65,7 @@ wchar_t_ExceptionType::~wchar_t_ExceptionType() throw() { delete[] what_; }
 const char *wchar_t_ExceptionType::what() const throw() { return what_; }
 
 std::size_t wchar_t_ExceptionType::size(const wchar_t *wchar_t_what_) {
-  std::mbstate_t ps = {0};
+  std::mbstate_t ps{};
   errno = 0;
   std::size_t size_ = std::wcsrtombs(NULL, &wchar_t_what_, 0, &ps);
 
@@ -78,7 +78,7 @@ std::size_t wchar_t_ExceptionType::size(const wchar_t *wchar_t_what_) {
 }
 
 void wchar_t_ExceptionType::constructor(const wchar_t *wchar_t_what_) {
-  std::mbstate_t ps = {0};
+  std::mbstate_t ps{};
   errno = 0;
   std::wcsrtombs(what_, &wchar_t_what_, size(wchar_t_what_), &ps);
 

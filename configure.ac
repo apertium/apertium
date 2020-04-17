@@ -4,7 +4,7 @@ m4_define([required_lttoolbox_version], [3.5.0])
 m4_define([required_libxml_version], [2.6.17])
 m4_define([required_libpcre_version], [6.4])
 
-AC_INIT([apertium], [3.6.2], [apertium-stuff@lists.sourceforge.net])
+AC_INIT([apertium], [3.6.3], [apertium-stuff@lists.sourceforge.net])
 AC_CONFIG_HEADER([apertium/apertium_config.h])
 
 AC_CANONICAL_SYSTEM
@@ -14,7 +14,7 @@ GENERIC_LIBRARY_NAME=apertium
 # Release versioning
 GENERIC_MAJOR_VERSION=3
 GENERIC_MINOR_VERSION=6
-GENERIC_MICRO_VERSION=2
+GENERIC_MICRO_VERSION=3
 
 # API version (often = GENERIC_MAJOR_VERSION.GENERIC_MINOR_VERSION)
 GENERIC_API_VERSION=$GENERIC_MAJOR_VERSION.$GENERIC_MINOR_VERSION

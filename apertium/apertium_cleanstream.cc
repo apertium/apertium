@@ -51,7 +51,7 @@ tryToSetLocale()
     return;
   }
 
-  cerr << "Warning: unsupported locale, fallback to \"C\"" << endl;
+  wcerr << "Warning: unsupported locale, fallback to \"C\"" << endl;
 
   setlocale(LC_ALL, "C");
 #endif
@@ -89,7 +89,7 @@ readFullBlock(FILE *input, wchar_t const delim1, wchar_t const delim2)
 
   if(c != delim2)
   {
-    cerr << "Error: expected: " << delim2 << ", saw: " << c << endl;
+    wcerr << "Error: expected: " << delim2 << ", saw: " << c << endl;
   }
 
   return result;
@@ -150,7 +150,7 @@ main (int argc, char** argv)
       }
       else
       {
-        cerr << "Error: stray '$'" << endl;
+        wcerr << "Error: stray '$'" << endl;
       }
     }
     else if(c == (wint_t) '\\')
@@ -179,6 +179,4 @@ main (int argc, char** argv)
   {
     fputwc_unlocked(L'\n', stdout);
   }
-
-  return 0;
 }

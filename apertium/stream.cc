@@ -31,26 +31,26 @@
 
 namespace Apertium {
 Stream::Stream(basic_Tagger::Flags &Flags_)
-    : TheCharacterStream(std::wcin), TheFilename(), TheLineNumber(1), TheLine(),
+    : TheLineNumber(1), TheCharacterStream(std::wcin), TheFilename(), TheLine(),
       TheFlags(Flags_), private_flush_(false), ThePreviousCase() {}
 
 Stream::Stream(basic_Tagger::Flags &Flags_,
                std::wifstream &CharacterStream_, const char *const Filename_)
-    : TheCharacterStream(CharacterStream_), TheFilename(Filename_),
-      TheLineNumber(1), TheLine(), TheFlags(Flags_), private_flush_(false),
+    : TheLineNumber(1), TheCharacterStream(CharacterStream_), TheFilename(Filename_),
+      TheLine(), TheFlags(Flags_), private_flush_(false),
       ThePreviousCase() {}
 
 Stream::Stream(basic_Tagger::Flags &Flags_,
                std::wifstream &CharacterStream_, const std::string &Filename_)
-    : TheCharacterStream(CharacterStream_), TheFilename(Filename_),
-      TheLineNumber(1), TheLine(), TheFlags(Flags_), private_flush_(false),
+    : TheLineNumber(1), TheCharacterStream(CharacterStream_), TheFilename(Filename_),
+      TheLine(), TheFlags(Flags_), private_flush_(false),
       ThePreviousCase() {}
 
 Stream::Stream(basic_Tagger::Flags &Flags_,
                std::wifstream &CharacterStream_,
                const std::stringstream &Filename_)
-    : TheCharacterStream(CharacterStream_), TheFilename(Filename_.str()),
-      TheLineNumber(1), TheLine(), TheFlags(Flags_), private_flush_(false),
+    : TheLineNumber(1), TheCharacterStream(CharacterStream_), TheFilename(Filename_.str()),
+      TheLine(), TheFlags(Flags_), private_flush_(false),
       ThePreviousCase() {}
 
 StreamedType Stream::get() {
