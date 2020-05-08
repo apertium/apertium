@@ -20,6 +20,7 @@ if __name__ == "__main__":
                    postchunk,
                    adaptdocx]:
         suite = unittest.TestLoader().loadTestsFromModule(module)
-        res = unittest.TextTestRunner(verbosity = 2).run(suite)
-        failures += len(res.failures)
+        res = unittest.TextTestRunner(verbosity=2).run(suite)
+        if(not(res.wasSuccessful())):
+            failures += 1
     sys.exit(min(failures, 255))
