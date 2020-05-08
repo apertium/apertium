@@ -392,6 +392,16 @@ void process(xmlNode *root)
 	//showParagraphs(root);
 }
 
+inline const unsigned char* printNl2spc(const unsigned char *p) {
+	while (*p && *p != '\x0A' && *p != '\x0D')
+		cout << *(p++);
+	cout << ' ';
+	while (*p == '\x0A' || *p == '\x0D')
+		++p;
+	return p;
+}
+
+
 // Opens a document, processes it and sends it to stdout
 // Can output the name (<file name="XXX"/>
 // The result can be pretty
@@ -409,13 +419,15 @@ void process(string fileName, bool outputsName, bool pretty)
 	if (outputsName)
 		cout << "<file name=\"" << fileName << "\"/> ";
 	const unsigned char *p = buffer;
-	while (*p && *p != '\x0A' && *p != '\x0D')
-		cout << *(p++);
-	cout << ' ';
-	while (*p == '\x0A' || *p == '\x0D')
-		++p;
-	cout << p << std::flush;
- 	xmlFree(buffer);
+	p = printNl2spc(p);
+	if (pretty)
+		cout << p;
+	else
+		do
+			p = printNl2spc(p);
+		while (*p);
+	cout << endl;
+        xmlFree(buffer);
 	xmlFreeDoc(document);
 }
 
@@ -470,12 +482,12 @@ int main(int argc, char *argv[])
 		}
 	}
 	if (argF) {
-		//cout << "out: " << outputName << ", name: " << name << ", pretty: " << pretty << endl;
+		// cerr << "out: " << outputsName << ", name: " << name << ", pretty: " << pretty << endl;
 		process(name, outputsName, pretty);
 	}
 	else {
 		while (cin >> name) {
-			//cout << "out: " << outputName << ", name: " << name << ", pretty: " << pretty << endl;
+			// cerr << "out: " << outputsName << ", name: " << name << ", pretty: " << pretty << endl;
 			process(name, outputsName, pretty);
 		}
 	}

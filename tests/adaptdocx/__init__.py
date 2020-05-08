@@ -15,13 +15,16 @@ class AdaptDocxTest(unittest.TestCase):
     def runTest(self):
         pass
 
+    def adapt(self, xmlFile):
+        entrada = (xmlFile + "\n").encode("utf8")
+        cmd = ["../apertium/apertium-adapt-docx"]
+        proc = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        return proc.communicate(entrada, 2)[0]
+
     def extractText(self, xmlFile, adapta):
         try:
             if adapta:
-                entrada = (xmlFile + "\n").encode("utf8")
-                cmd = ["../apertium/adapt-docx"]
-                proc = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-                entrada = proc.communicate(entrada, 2)[0]
+                entrada = self.adapt(xmlFile)
             else:
                 cmd = ["cat", xmlFile]
                 proc = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
@@ -53,3 +56,11 @@ class CorrectBoundariesTest(AdaptDocxTest):
                 esperat = [linia.strip("\n") for linia in f.readlines()]
             self.assertListEqual(obtingut, esperat)
 
+
+class NoNewlinesTest(AdaptDocxTest):
+
+    def runTest(self):
+        for nom in ["docx-newlines"]:
+            obtingut = self.adapt("data/" + nom + ".xml")
+            esperat = open("data/" + nom + ".adapted.xml", "rb").read()
+            self.assertEqual(obtingut, esperat)
