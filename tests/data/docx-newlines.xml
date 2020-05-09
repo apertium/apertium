@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?><ct:contentTypeSchema ct:_="" ma:_="" ma:contentTypeName="Dokument" ma:contentTypeID="0x01010089C9C9B929894F449A59A5E2753F23D7" ma:contentTypeVersion="6" ma:contentTypeDescription="Opprett et nytt dokument." ma:contentTypeScope="" ma:versionID="8feaba361558c6217486977eeb279fc8" xmlns:ct="http://schemas.microsoft.com/office/2006/metadata/contentType" xmlns:ma="http://schemas.microsoft.com/office/2006/metadata/properties/metaAttributes">
+<xsd:schema targetNamespace="http://schemas.microsoft.com/office/2006/metadata/properties" ma:root="true" ma:fieldsID="b405563996ab13c306057c48515418bf" ns2:_="" ns3:_="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:p="http://schemas.microsoft.com/office/2006/metadata/properties" xmlns:ns2="5cac65b5-be2e-44f8-a52e-ad563f12c668" xmlns:ns3="71749ec9-bf55-4ab3-9f1d-7beb5569ef3c">
+<xsd:import namespace="5cac65b5-be2e-44f8-a52e-ad563f12c668"/>
+<xsd:import namespace="71749ec9-bf55-4ab3-9f1d-7beb5569ef3c"/>
+</xsd:schema>
+</ct:contentTypeSchema>
