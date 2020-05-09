@@ -2437,6 +2437,9 @@ void
 Transfer::applyWord(wstring const &word_str)
 {
   ms.step(L'^');
+  
+  int secondary_flag = 0; //flag to recognise secondary tags
+    
   for(unsigned int i = 0, limit = word_str.size(); i < limit; i++)
   {
     switch(word_str[i])
@@ -2453,6 +2456,11 @@ Transfer::applyWord(wstring const &word_str)
       case L'<':
 	for(unsigned int j = i+1; j != limit; j++)
 	{
+      if(word_str[j] == L':') //if secondary tags reached, discard current tag
+      {
+          secondary_flag = 1;
+          break;
+      }
 	  if(word_str[j] == L'>')
 	  {
 	    int symbol = alphabet(word_str.substr(i, j-i+1));
@@ -2474,6 +2482,9 @@ Transfer::applyWord(wstring const &word_str)
 	ms.step(towlower(word_str[i]), any_char);
 	break;
     }
+    
+    if(secondary_flag == 1)
+        break; //stop processing word if secondary tags reached
   }
   ms.step(L'$');
 }
