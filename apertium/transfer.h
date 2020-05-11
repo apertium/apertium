@@ -61,7 +61,9 @@ private:
   Buffer<TransferToken> input_buffer;
   vector<wstring *> tmpword;
   vector<wstring *> tmpblank;
-
+  
+  string stags; //stores secondary tags of the LU that is being output
+    
   FSTProcessor fstp;
   FSTProcessor extended;
   bool isExtended;

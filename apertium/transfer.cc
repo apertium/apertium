@@ -304,6 +304,12 @@ Transfer::evalString(xmlNode *element)
       case ti_clip_sl:
         if(checkIndex(element, ti.getPos(), lword))
         {
+          if(ti.getContent().compare("lem") == 0 || ti.getContent().compare("lemh") == 0) //only get secondary tags if we're getting the lemma from the word
+          {
+              stags = word[ti.getPos()]->source(attr_items["stags"], ti.getCondition());
+              //cout << "\n##SLSTAGS::" <<stags << "##SLSTAGS##\n";
+          }
+            
           return word[ti.getPos()]->source(attr_items[ti.getContent()], ti.getCondition());
         }
         break;
@@ -311,6 +317,12 @@ Transfer::evalString(xmlNode *element)
       case ti_clip_tl:
         if(checkIndex(element, ti.getPos(), lword))
         {
+          if(ti.getContent().compare("lem") == 0 || ti.getContent().compare("lemh") == 0)
+          {
+              stags = word[ti.getPos()]->target(attr_items["stags"], ti.getCondition());
+              //cout << "\n##TLSTAGS::" <<stags << "##TLSTAGS##\n";
+          }
+            
           return word[ti.getPos()]->target(attr_items[ti.getContent()], ti.getCondition());
         }
         break;
@@ -651,7 +663,7 @@ Transfer::processOut(xmlNode *localroot)
   {
     if(i->type == XML_ELEMENT_NODE)
     {
-      if(defaultAttrs == lu)
+      if(defaultAttrs == lu) //stream_modification TODO
       {
         if(!xmlStrcmp(i->name, (const xmlChar *) "lu"))
         {
@@ -793,8 +805,11 @@ Transfer::processChunk(xmlNode *localroot)
         result.append(processTags(i));
         result.append("{");
       }
-      else if(!xmlStrcmp(i->name, (const xmlChar *) "lu"))
+      else if(!xmlStrcmp(i->name, (const xmlChar *) "lu")) //Need to add secondary tags here!
       {
+          //cout << "\n%%OUTNOW%%\n";
+          stags.clear();
+          
         string myword;
         for(xmlNode *j = i->children; j != NULL; j = j->next)
         {
@@ -803,6 +818,9 @@ Transfer::processChunk(xmlNode *localroot)
             myword.append(evalString(j));
           }
         }
+          //cout << "\n###MYWORD###\n" << myword << "\n###MYWORD###\n";
+          myword.append(stags); //from the LU that the lem or lemh has come from
+          //cout << "\n###WITHSTAGS###\n" << myword << "\n###WITHSTAGS###\n";
         if(myword != "")
         {
           result.append("^");
@@ -810,7 +828,7 @@ Transfer::processChunk(xmlNode *localroot)
           result.append("$");
         }
       }
-      else if(!xmlStrcmp(i->name, (const xmlChar *) "mlu"))
+      else if(!xmlStrcmp(i->name, (const xmlChar *) "mlu")) //stream modification TODO
       {
         bool first_time = true;
         string myword;

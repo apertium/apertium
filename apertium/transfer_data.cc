@@ -50,7 +50,8 @@ TransferData::TransferData()
   attr_items[L"lemq"] = L"\\#[- _][^<]+";
   attr_items[L"lemh"] = L"^(([^<#]|\"\\<\"|\"\\#\")+)";
   attr_items[L"whole"] = L"(.+)";
-  attr_items[L"tags"] = L"((<[^>]+>)+)";
+  attr_items[L"tags"] = L"((<[^:>]+>)+)"; //match all tags excluding secondary tags
+  attr_items[L"stags"] = L"((<[^>]+:[^>]+>)+)"; //match all secondary tags
   attr_items[L"chname"] = L"({([^/]+)\\/)"; // includes delimiters { and / !!!
   attr_items[L"chcontent"] = L"(\\{.+)";
   attr_items[L"content"] = L"(\\{.+)";
