@@ -15,11 +15,22 @@ class AdaptDocxTest(unittest.TestCase):
     def runTest(self):
         pass
 
+    def runCheckExit(self, proc, inp):
+        """Run proc on input, then close and assert that we exited with 0.
+Return output from proc."""
+        timeout = 2
+        res = proc.communicate(inp, timeout)
+        for fd in [proc.stdin, proc.stdout, proc.stderr]:
+            if fd is not None:
+                fd.close()
+        self.assertEqual(proc.poll(), 0)
+        return res
+
     def adapt(self, xmlFile):
         entrada = (xmlFile + "\n").encode("utf8")
         cmd = ["../apertium/apertium-adapt-docx"]
-        proc = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-        return proc.communicate(entrada, 2)[0]
+        proc = Popen(cmd, stdin=PIPE, stdout=PIPE)
+        return self.runCheckExit(proc, entrada)[0]
 
     def extractText(self, xmlFile, adapta):
         try:
@@ -27,11 +38,11 @@ class AdaptDocxTest(unittest.TestCase):
                 entrada = self.adapt(xmlFile)
             else:
                 cmd = ["cat", xmlFile]
-                proc = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-                entrada = proc.communicate(None, 2)[0]
+                proc = Popen(cmd, stdin=PIPE, stdout=PIPE)
+                entrada = self.runCheckExit(proc, None)[0]
             cmd = ["python3", "adaptdocx/extract_docx.py"]
-            proc = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-            result = proc.communicate(entrada, 2)[0]
+            proc = Popen(cmd, stdin=PIPE, stdout=PIPE)
+            result = self.runCheckExit(proc, entrada)[0]
             result = result.decode("utf8").split("\n")
             return result
         finally:
