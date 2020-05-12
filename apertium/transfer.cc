@@ -72,6 +72,8 @@ nwords(0)
   trace = false;
   trace_att = false;
   emptyblank = "";
+  in_out_lu = false;
+  in_let_var = false;
 }
 
 Transfer::~Transfer()
@@ -306,8 +308,17 @@ Transfer::evalString(xmlNode *element)
         {
           if(ti.getContent().compare("lem") == 0 || ti.getContent().compare("lemh") == 0) //only get secondary tags if we're getting the lemma from the word
           {
-              stags = word[ti.getPos()]->source(attr_items["stags"], ti.getCondition());
-              //cout << "\n##SLSTAGS::" <<stags << "##SLSTAGS##\n";
+              if(in_let_var)
+              {
+                  string temp_sl_stags = word[ti.getPos()]->source(attr_items["stags"], ti.getCondition());
+                  var_stags[var_val] = temp_sl_stags;
+                  if(trace)
+                    wcerr << "\nAdding secondary tags: " << temp_sl_stags << " with variable name:" << var_val << " in var_stags.\n\n";
+              }
+              else if(in_out_lu)
+              {
+                  stags = word[ti.getPos()]->source(attr_items["stags"], ti.getCondition());
+              }
           }
             
           return word[ti.getPos()]->source(attr_items[ti.getContent()], ti.getCondition());
@@ -319,8 +330,18 @@ Transfer::evalString(xmlNode *element)
         {
           if(ti.getContent().compare("lem") == 0 || ti.getContent().compare("lemh") == 0)
           {
-              stags = word[ti.getPos()]->target(attr_items["stags"], ti.getCondition());
-              //cout << "\n##TLSTAGS::" <<stags << "##TLSTAGS##\n";
+              if(in_let_var)
+              {
+                  string temp_tl_stags = word[ti.getPos()]->target(attr_items["stags"], ti.getCondition());
+                  var_stags[var_val] = temp_tl_stags;
+                  
+                  if(trace)
+                      wcerr << "\nAdding secondary tags: " << temp_tl_stags << " with variable name:" << var_val << " in var_stags.\n\n";
+              }
+              else if(in_out_lu)
+              {
+                  stags = word[ti.getPos()]->target(attr_items["stags"], ti.getCondition());
+              }
           }
             
           return word[ti.getPos()]->target(attr_items[ti.getContent()], ti.getCondition());
@@ -377,6 +398,7 @@ Transfer::evalString(xmlNode *element)
         break;
 
       case ti_var:
+        stags.append(var_stags[ti.getContent()]); //append secondary tags of this variable into stags
         return variables[ti.getContent()];
 
       case ti_lit_tag:
@@ -663,23 +685,31 @@ Transfer::processOut(xmlNode *localroot)
   {
     if(i->type == XML_ELEMENT_NODE)
     {
-      if(defaultAttrs == lu) //stream_modification TODO
+      if(defaultAttrs == lu)
       {
         if(!xmlStrcmp(i->name, (const xmlChar *) "lu"))
         {
-  	  string myword;
-	  for(xmlNode *j = i->children; j != NULL; j = j->next)
-	  {
-	    if(j->type == XML_ELEMENT_NODE)
-	    {
-	      myword.append(evalString(j));
+          in_out_lu = true;
+          stags.clear();
+            
+          string myword;
+          for(xmlNode *j = i->children; j != NULL; j = j->next)
+          {
+            if(j->type == XML_ELEMENT_NODE)
+            {
+              myword.append(evalString(j));
             }
-	  }
-	  if(myword != "")
-	  {
-  	    fputwc_unlocked(L'^', output);
-   	    fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
-	    fputwc_unlocked(L'$', output);
+          }
+            
+          in_out_lu = false;
+
+          myword.append(stags); //from the LU that the lem or lemh has come from - stags is added in evalString
+          
+          if(myword != "")
+          {
+            fputwc_unlocked(L'^', output);
+            fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
+            fputwc_unlocked(L'$', output);
           }
         }
         else if(!xmlStrcmp(i->name, (const xmlChar *) "mlu"))
@@ -807,8 +837,8 @@ Transfer::processChunk(xmlNode *localroot)
       }
       else if(!xmlStrcmp(i->name, (const xmlChar *) "lu")) //Need to add secondary tags here!
       {
-          //cout << "\n%%OUTNOW%%\n";
-          stags.clear();
+        in_out_lu = true;
+        stags.clear();
           
         string myword;
         for(xmlNode *j = i->children; j != NULL; j = j->next)
@@ -818,9 +848,10 @@ Transfer::processChunk(xmlNode *localroot)
             myword.append(evalString(j));
           }
         }
-          //cout << "\n###MYWORD###\n" << myword << "\n###MYWORD###\n";
-          myword.append(stags); //from the LU that the lem or lemh has come from
-          //cout << "\n###WITHSTAGS###\n" << myword << "\n###WITHSTAGS###\n";
+          in_out_lu = false;
+
+          myword.append(stags); //from the LU that the lem or lemh has come from - stags is added in evalString
+
         if(myword != "")
         {
           result.append("^");
@@ -828,7 +859,7 @@ Transfer::processChunk(xmlNode *localroot)
           result.append("$");
         }
       }
-      else if(!xmlStrcmp(i->name, (const xmlChar *) "mlu")) //stream modification TODO
+      else if(!xmlStrcmp(i->name, (const xmlChar *) "mlu"))
       {
         bool first_time = true;
         string myword;
@@ -1023,8 +1054,15 @@ Transfer::processLet(xmlNode *localroot)
   }
   if(leftSide->name != NULL && !xmlStrcmp(leftSide->name, (const xmlChar *) "var"))
   {
+    in_let_var = true;
+    var_val.clear();
+    
     string const val = (const char *) leftSide->properties->children->content;
+    
+    var_val = val; //current variable name - need it in evalString
     variables[val] = evalString(rightSide);
+      
+    in_let_var = false;
     evalStringCache[leftSide] = TransferInstr(ti_var, val, 0);
   }
   else if(!xmlStrcmp(leftSide->name, (const xmlChar *) "clip"))
