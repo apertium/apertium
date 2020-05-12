@@ -835,7 +835,7 @@ Transfer::processChunk(xmlNode *localroot)
         result.append(processTags(i));
         result.append("{");
       }
-      else if(!xmlStrcmp(i->name, (const xmlChar *) "lu")) //Need to add secondary tags here!
+      else if(!xmlStrcmp(i->name, (const xmlChar *) "lu"))
       {
         in_out_lu = true;
         stags.clear();
