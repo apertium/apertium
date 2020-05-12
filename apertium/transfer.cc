@@ -313,7 +313,9 @@ Transfer::evalString(xmlNode *element)
                   string temp_sl_stags = word[ti.getPos()]->source(attr_items["stags"], ti.getCondition());
                   var_stags[var_val] = temp_sl_stags;
                   if(trace)
+                  {
                     wcerr << "\nAdding secondary tags: " << temp_sl_stags << " with variable name:" << var_val << " in var_stags.\n\n";
+                  }
               }
               else if(in_out_lu)
               {
@@ -336,7 +338,9 @@ Transfer::evalString(xmlNode *element)
                   var_stags[var_val] = temp_tl_stags;
                   
                   if(trace)
+                  {
                       wcerr << "\nAdding secondary tags: " << temp_tl_stags << " with variable name:" << var_val << " in var_stags.\n\n";
+                  }
               }
               else if(in_out_lu)
               {
