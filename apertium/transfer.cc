@@ -316,7 +316,7 @@ Transfer::evalString(xmlNode *element)
               if(in_let_var)
               {
                   string temp_sl_secondary_tags = word[ti.getPos()]->source(attr_items["sectags"], ti.getCondition());
-                  var_secondary_tags[var_val] = temp_sl_secondary_tags;
+                  var_secondary_tags[var_val].append(temp_sl_secondary_tags);
                   if(trace)
                   {
                     wcerr << "\nAdding secondary tags: " << temp_sl_secondary_tags << " with variable name:" << var_val << " in var_secondary_tags.\n\n";
@@ -324,7 +324,7 @@ Transfer::evalString(xmlNode *element)
               }
               else if(in_out_lu)
               {
-                  secondary_tags = word[ti.getPos()]->source(attr_items["sectags"], ti.getCondition());
+                  secondary_tags.append(word[ti.getPos()]->source(attr_items["sectags"], ti.getCondition()));
               }
           }
             
@@ -340,7 +340,7 @@ Transfer::evalString(xmlNode *element)
               if(in_let_var)
               {
                   string temp_tl_secondary_tags = word[ti.getPos()]->target(attr_items["sectags"], ti.getCondition());
-                  var_secondary_tags[var_val] = temp_tl_secondary_tags;
+                  var_secondary_tags[var_val].append(temp_tl_secondary_tags);
                   
                   if(trace)
                   {
@@ -349,7 +349,7 @@ Transfer::evalString(xmlNode *element)
               }
               else if(in_out_lu)
               {
-                  secondary_tags = word[ti.getPos()]->target(attr_items["sectags"], ti.getCondition());
+                  secondary_tags.append(word[ti.getPos()]->target(attr_items["sectags"], ti.getCondition()));
               }
           }
             
@@ -1069,6 +1069,8 @@ Transfer::processLet(xmlNode *localroot)
     string const val = (const char *) leftSide->properties->children->content;
     
     var_val = val; //current variable name - need it in evalString
+    var_secondary_tags[var_val].clear();
+    
     variables[val] = evalString(rightSide);
       
     in_let_var = false;
