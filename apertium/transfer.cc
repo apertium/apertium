@@ -448,7 +448,7 @@ Transfer::evalString(xmlNode *element)
 
       case ti_var:
         secondary_tags.append(var_secondary_tags[ti.getContent()]); //append secondary tags of this variable into secondary_tags
-        /*
+        
         if(var_has_lemq[ti.getContent()])
         {
           string var_content = variables[ti.getContent()];
@@ -463,18 +463,12 @@ Transfer::evalString(xmlNode *element)
             }
             else if(var_content[index] == '\\')
             {
-              var_content_with_sectags.push_back(var_content[index]);
               index++;
-              var_content_with_sectags.push_back(var_content[index]);
               continue;
-            }
-            else
-            {
-              var_content_with_sectags.push_back(var_content[index]);
             }
           }
 
-          var_content_with_sectags.append(secondary_tags).append(var_content.substr(lemq_position, string::npos));
+          var_content_with_sectags = var_content.substr(0,lemq_position).append(secondary_tags).append(var_content.substr(lemq_position, string::npos));
           
           //cout << "\n###VARSTAGS::" << var_content_with_sectags << "::####\n";
           
@@ -482,7 +476,7 @@ Transfer::evalString(xmlNode *element)
           
           return var_content_with_sectags;
         }
-         */
+        
         
         return variables[ti.getContent()];
 
