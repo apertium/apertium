@@ -448,7 +448,7 @@ Transfer::evalString(xmlNode *element)
 
       case ti_var:
         secondary_tags.append(var_secondary_tags[ti.getContent()]); //append secondary tags of this variable into secondary_tags
-        
+        /*
         if(var_has_lemq[ti.getContent()])
         {
           string var_content = variables[ti.getContent()];
@@ -482,6 +482,7 @@ Transfer::evalString(xmlNode *element)
           
           return var_content_with_sectags;
         }
+         */
         
         return variables[ti.getContent()];
 
