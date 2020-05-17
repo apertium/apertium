@@ -63,13 +63,13 @@ private:
   vector<wstring *> tmpblank;
   
   //for secondary tags
-  bool in_out_lu; //flag to denote that lu in out is being processed
-  string secondary_tags; //stores secondary tags of the LU that is being output
+  bool in_lu; //flag to denote that lu is being processed
+  string secondary_tags; //stores secondary tags of the LU that is being processed
   bool in_let_var; //flag to denote that a var in let is being processed
   string var_val; //stores the name of the variable being processed
   map <string, string> var_secondary_tags; //map variable name to secondary tags of the word it takes lem/lemh from
   
-  bool gettingLemmaFromWord(TransferInstr tri);
+  bool gettingLemmaFromWord(string attr);
     
   FSTProcessor fstp;
   FSTProcessor extended;
