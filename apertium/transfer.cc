@@ -311,12 +311,12 @@ Transfer::evalString(xmlNode *element)
       case ti_clip_sl:
         if(checkIndex(element, ti.getPos(), lword))
         {
-            if(gettingLemmaFromWord(ti.getContent()))
+          if(gettingLemmaFromWord(ti.getContent()))
           {
             if(in_lu)
             {
                 secondary_tags.append(word[ti.getPos()]->source(attr_items["sectags"], ti.getCondition()));
-            //    wcout << "\n###EVALSLSTAGS::" << secondary_tags << "::\n";
+//               wcout << "\n###EVALSLSTAGS::" << secondary_tags << "::\n";
             }
             else if(in_let_var)
             {
@@ -328,7 +328,23 @@ Transfer::evalString(xmlNode *element)
               }
             }
           }
-            
+           else if(ti.getContent().compare("lemq") == 0)
+           {
+  //           cout << "\nLEMQ!\n";
+             if(in_lu)
+             {
+               string sectags_lemq = secondary_tags;
+               secondary_tags.clear();
+               
+               sectags_lemq.append(word[ti.getPos()]->source(attr_items[ti.getContent()], ti.getCondition()));
+               return sectags_lemq;
+             }
+             else if(in_let_var)
+             {
+               var_has_lemq[var_val] = true;
+             }
+           }
+          
           return word[ti.getPos()]->source(attr_items[ti.getContent()], ti.getCondition());
         }
         break;
@@ -338,16 +354,16 @@ Transfer::evalString(xmlNode *element)
         {
           if(gettingLemmaFromWord(ti.getContent()))
           {
-          //  cout << "\nLEM or LEMH\n";
-          //  if(in_lu)
-          //      cout <<"\nINLU!\n";
-          //  else
-          //      cout <<"\nNOTINLU!\n";
+  //          cout << "\nLEM or LEMH\n";
+ //           if(in_lu)
+ //               cout <<"\nINLU!\n";
+ //           else
+ //               cout <<"\nNOTINLU!\n";
             
             if(in_lu)
             {
               secondary_tags.append(word[ti.getPos()]->target(attr_items["sectags"], ti.getCondition()));
-            //  wcout << "\n###:: "<< word[ti.getPos()]->target(attr_items[ti.getContent()], ti.getCondition()) << "EVALTLSTAGS::" << secondary_tags << "::\n";
+              //wcout << "\n###:: "<< word[ti.getPos()]->target(attr_items[ti.getContent()], ti.getCondition()) << "EVALTLSTAGS::" << secondary_tags << "::\n";
             }
             else if(in_let_var)
             {
@@ -362,7 +378,7 @@ Transfer::evalString(xmlNode *element)
           }
           else if(ti.getContent().compare("lemq") == 0)
           {
-           // cout << "\nLEMQ!\n";
+            //cout << "\nLEMQ!\n";
             if(in_lu)
             {
               string sectags_lemq = secondary_tags;
@@ -371,7 +387,10 @@ Transfer::evalString(xmlNode *element)
               sectags_lemq.append(word[ti.getPos()]->target(attr_items[ti.getContent()], ti.getCondition()));
               return sectags_lemq;
             }
-            //else if(in_let_var) #TODO
+            else if(in_let_var)
+            {
+              var_has_lemq[var_val] = true;
+            }
           }
             
           return word[ti.getPos()]->target(attr_items[ti.getContent()], ti.getCondition());
@@ -429,6 +448,41 @@ Transfer::evalString(xmlNode *element)
 
       case ti_var:
         secondary_tags.append(var_secondary_tags[ti.getContent()]); //append secondary tags of this variable into secondary_tags
+        
+        if(var_has_lemq[ti.getContent()])
+        {
+          string var_content = variables[ti.getContent()];
+          string var_content_with_sectags = "";
+          int lemq_position = -1;
+          
+          for(size_t index = 0; index < var_content.size(); index++)
+          {
+            if(var_content[index] == '#')
+            {
+              lemq_position = index;
+            }
+            else if(var_content[index] == '\\')
+            {
+              var_content_with_sectags.push_back(var_content[index]);
+              index++;
+              var_content_with_sectags.push_back(var_content[index]);
+              continue;
+            }
+            else
+            {
+              var_content_with_sectags.push_back(var_content[index]);
+            }
+          }
+
+          var_content_with_sectags.append(secondary_tags).append(var_content.substr(lemq_position, string::npos));
+          
+          //cout << "\n###VARSTAGS::" << var_content_with_sectags << "::####\n";
+          
+          secondary_tags.clear();
+          
+          return var_content_with_sectags;
+        }
+        
         return variables[ti.getContent()];
 
       case ti_lit_tag:
@@ -664,16 +718,22 @@ Transfer::evalString(xmlNode *element)
     {
       if(i->type == XML_ELEMENT_NODE)
       {
+        in_lu = true;
+        secondary_tags.clear();
+        
         string myword;
 
         for(xmlNode *j = i->children; j != NULL; j = j->next)
         {
           if(j->type == XML_ELEMENT_NODE)
-	  {
+          {
             myword.append(evalString(j));
-	  }
+          }
         }
-         // wcout << "\n###EVALMLUMYWORD::" << myword << "::###\n";
+        
+        in_lu = false;
+        myword.append(secondary_tags); //from the LU that the lem or lemh has come from
+        //wcout << "\n###EVALMLUMYWORD::" << myword << "::###\n";
 
 	if(!first_time)
 	{
@@ -742,7 +802,7 @@ Transfer::processOut(xmlNode *localroot)
           in_lu = false;
 
           myword.append(secondary_tags); //from the LU that the lem or lemh has come from - secondary_tags is added in evalString
-        //  wcout << "\n###OUTMYWORD::" << myword << "::###\n";
+          //wcout << "\n###OUTMYWORD::" << myword << "::###\n";
           if(myword != "")
           {
             fputwc_unlocked(L'^', output);
@@ -758,6 +818,9 @@ Transfer::processOut(xmlNode *localroot)
 	  {
 	    if(j->type == XML_ELEMENT_NODE)
 	    {
+        in_lu = true;
+        secondary_tags.clear();
+        
               string myword;
 	      for(xmlNode *k = j->children; k != NULL; k = k->next)
 	      {
@@ -766,6 +829,9 @@ Transfer::processOut(xmlNode *localroot)
                   myword.append(evalString(k));
 	        }
 	      }
+        
+        in_lu = false;
+        myword.append(secondary_tags); //from the LU that the lem or lemh has come from
 
 	      if(!first_time)
 	      {
@@ -781,7 +847,7 @@ Transfer::processOut(xmlNode *localroot)
 	          first_time = false;
                 }
 	      }
-    //        wcout << "\n###OUTMLUMYWORD::" << myword << "::###\n";
+//            wcout << "\n###OUTMLUMYWORD::" << myword << "::###\n";
 	      fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
 	    }
 	  }
@@ -885,7 +951,7 @@ Transfer::processChunk(xmlNode *localroot)
           if(j->type == XML_ELEMENT_NODE)
           {
             myword.append(evalString(j));
-      //       wcout << "\n###CHUNKMYWORD::" << myword << "::###" << secondary_tags << "::\n";
+   //          wcout << "\n###CHUNKMYWORD::" << myword << "::###" << secondary_tags << "::\n";
           }
         }
           in_lu = false;
@@ -908,14 +974,20 @@ Transfer::processChunk(xmlNode *localroot)
           string mylocalword;
           if(j->type == XML_ELEMENT_NODE)
           {
+            in_lu = true;
+            secondary_tags.clear();
+            
             for(xmlNode *k = j->children; k != NULL; k = k->next)
             {
               if(k->type == XML_ELEMENT_NODE)
               {
                 mylocalword.append(evalString(k));
-          //        wcout << "\n###CHUNKMLUMLOCALYWORD::" << mylocalword << "::###\n";
+   //               wcout << "\n###CHUNKMLUMLOCALYWORD::" << mylocalword << "::###\n";
               }
             }
+            
+            in_lu = false;
+            mylocalword.append(secondary_tags); //from the LU that the lem or lemh has come from
 
             if(!first_time)
             {
@@ -1056,7 +1128,16 @@ Transfer::processLet(xmlNode *localroot)
     switch(ti.getType())
     {
       case ti_var:
+        in_let_var = true;
+        var_val = ti.getContent(); //current variable name - need it in evalString
+
+        var_secondary_tags[var_val].clear();
+        var_has_lemq[var_val] = false;
+        
         variables[ti.getContent()] = evalString(rightSide);
+          
+        in_let_var = false;
+        
         return;
 
       case ti_clip_sl:
@@ -1096,12 +1177,12 @@ Transfer::processLet(xmlNode *localroot)
   if(leftSide->name != NULL && !xmlStrcmp(leftSide->name, (const xmlChar *) "var"))
   {
     in_let_var = true;
-    var_val.clear();
     
     string const val = (const char *) leftSide->properties->children->content;
     
     var_val = val; //current variable name - need it in evalString
     var_secondary_tags[var_val].clear();
+    var_has_lemq[var_val] = false;
     
     variables[val] = evalString(rightSide);
       
@@ -1197,7 +1278,10 @@ Transfer::processAppend(xmlNode *localroot)
   {
     if(i->type == XML_ELEMENT_NODE)
     {
+      in_let_var = true;
+      var_val = name;
       variables[name].append(evalString(i));
+      in_let_var = false;
     }
   }
 }
