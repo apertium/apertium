@@ -68,7 +68,7 @@ private:
   bool in_let_var; //flag to denote that a var in let is being processed (or in append)
   string var_val; //stores the name of the variable being processed (in let or append)
   map <string, string> var_secondary_tags; //map variable name to secondary tags of the word it takes lem/lemh from
-  map <string, bool> var_has_lemq;
+  map <string, bool> var_has_lemq; //map variable name to bool->true if variable clips lemq
   
   bool gettingLemmaFromWord(string attr);
     
