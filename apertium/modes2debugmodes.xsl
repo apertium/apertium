@@ -139,10 +139,10 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
       <xsl:when test="contains($p, '$1')">
         <xsl:text>-generador</xsl:text>
       </xsl:when>
-      <xsl:when test="starts-with($p, 'lt-proc')">
+      <xsl:when test="starts-with($p, 'lt-proc') and not(contains($p, '-g')) and not(contains($p, '-b')) and not(contains($p, ' -p'))">
         <xsl:text>-anmor</xsl:text>
       </xsl:when>
-      <xsl:when test="starts-with($p, 'hfst-proc')">
+      <xsl:when test="starts-with($p, 'hfst-proc') and not(contains($p, '-g'))">
         <xsl:text>-anmor</xsl:text>
       </xsl:when>
       <xsl:otherwise>
