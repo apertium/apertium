@@ -53,6 +53,7 @@ void processStream(FILE *in, FILE *out, bool null_flush)
     if (c == 0 && null_flush)
     {
       fflush(out);
+      putc(c, out);
     }
     prev = c;
     c = fgetc(in);
