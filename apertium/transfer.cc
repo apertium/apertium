@@ -321,10 +321,6 @@ Transfer::evalString(xmlNode *element)
             {
               string temp_sl_secondary_tags = word[ti.getPos()]->source(attr_items["sectags"], ti.getCondition());
               var_secondary_tags[var_val].append(temp_sl_secondary_tags);
-              if(trace)
-              {
-                wcerr << "\nAdding secondary tags: " << temp_sl_secondary_tags << " with variable name:" << var_val << " in var_secondary_tags.\n\n";
-              }
             }
           }
            else if(ti.getContent().compare("lemq") == 0)
@@ -360,11 +356,6 @@ Transfer::evalString(xmlNode *element)
             {
               string temp_tl_secondary_tags = word[ti.getPos()]->target(attr_items["sectags"], ti.getCondition());
               var_secondary_tags[var_val].append(temp_tl_secondary_tags);
-              
-              if(trace)
-              {
-                wcerr << "\nAdding secondary tags: " << temp_tl_secondary_tags << " with variable name:" << var_val << " in var_secondary_tags.\n\n";
-              }
             }
           }
           else if(ti.getContent().compare("lemq") == 0)
