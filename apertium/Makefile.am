@@ -224,6 +224,7 @@ bin_PROGRAMS = apertium-cleanstream \
 	       apertium-prelatex \
 	       apertium-preprocess-transfer \
 	       apertium-pretransfer \
+	       apertium-posttransfer \
 	       apertium-rehtml \
 	       apertium-rehtml-noent \
 	       apertium-relatex \
@@ -267,6 +268,8 @@ apertium_DATA = deformat.xsl reformat.xsl new2old.xsl lexchoice.xsl \
 apertium_cleanstream_SOURCES = apertium_cleanstream.cc
 apertium_pretransfer_SOURCES = apertium_pretransfer.cc
 apertium_pretransfer_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
+apertium_posttransfer_SOURCES = apertium_posttransfer.cc
+apertium_posttransfer_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 apertium_multiple_translations_SOURCES = apertium-multiple-translations.cc
 apertium_multiple_translations_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 apertium_destxt_SOURCES = apertium_destxt.cc
