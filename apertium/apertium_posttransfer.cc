@@ -40,23 +40,23 @@ void usage(char *progname)
   exit(EXIT_FAILURE);
 }
 
-void processStream(FILE *in, FILE *out)
+void processStream(FILE *in, FILE *out, bool null_flush)
 {
   int prev = -1;
   int c = fgetc(in);
   while (c != EOF)
   {
     if (!((c == ' ') && (prev == ' ')))
-      {
+    {
       putc(c, out);
-      }
-    if (c == 0)
-      {
+    }
+    if (c == 0 && null_flush)
+    {
       fflush(out);
-      }
+    }
     prev = c;
     c = fgetc(in);
-    }
+  }
 }
 
 
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
-  processStream(input, output);
+  processStream(input, output, null_flush);
 
 #ifdef _MSC_VER
     _setmode(_fileno(input), _O_U8TEXT);
