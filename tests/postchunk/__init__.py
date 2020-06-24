@@ -53,12 +53,19 @@ stuff) to create new postchunk tests."""
 
         return b"".join(output).decode('utf-8')
 
-    def runTest(self):
-        compileCmd = ["../apertium/apertium-preprocess-transfer", self.t3xdata, self.bindata]
+    def compile(self):
+        compileCmd = ["../apertium/apertium-preprocess-transfer",
+                      self.t3xdata,
+                      self.bindata]
         self.assertEqual(call(compileCmd),
                          0)
+
+    def runTest(self):
+        self.compile()
         try:
-            cmd = ["../apertium/apertium-postchunk"] + self.flags + [self.t3xdata, self.bindata]
+            cmd = ["../apertium/apertium-postchunk"] \
+                + self.flags                         \
+                + [self.t3xdata, self.bindata]
             self.proc = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
             for inp, exp in zip(self.inputs, self.expectedOutputs):
@@ -99,3 +106,10 @@ class EmptyMacroPostchunkTest(PostchunkTest):
 class UseMacroPostchunkTest(PostchunkTest):
     inputs =          ["^thing<thing><sg>{^thing<thing><ND>$}$"]
     expectedOutputs = ["^thing<thing><sg>$"]
+
+
+class BincompatTest(SimplePostchunkTest):
+    bindata = "data/bincompat.t3x.bin"
+
+    def compile(self):
+        pass

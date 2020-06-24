@@ -53,12 +53,19 @@ stuff) to create new postchunk tests."""
 
         return b"".join(output).decode('utf-8')
 
-    def runTest(self):
-        compileCmd = ["../apertium/apertium-preprocess-transfer", self.t1xdata, self.bindata]
+    def compile(self):
+        compileCmd = ["../apertium/apertium-preprocess-transfer",
+                      self.t1xdata,
+                      self.bindata]
         self.assertEqual(call(compileCmd),
                          0)
+
+    def runTest(self):
+        self.compile()
         try:
-            cmd = ["../apertium/apertium-transfer"] + self.flags + [self.t1xdata, self.bindata]
+            cmd = ["../apertium/apertium-transfer"] \
+                + self.flags                        \
+                + [self.t1xdata, self.bindata]
             self.proc = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
             for inp, exp in zip(self.inputs, self.expectedOutputs):
@@ -87,3 +94,10 @@ class BasicTransferTest(TransferTest):
 class SlLemqTest(TransferTest):
     inputs =          ["^skyldes<vblex><pstv><pres>/komme# av<vblex><pres>$"]
     expectedOutputs = ["sl-lemq:'' tl-lemq:'# av'"]
+
+
+class BincompatTest(BasicTransferTest):
+    bindata = "data/bincompat.t1x.bin"
+
+    def compile(self):
+        pass

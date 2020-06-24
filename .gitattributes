@@ -9,3 +9,4 @@
 *.xml linguist-language=XML linguist-detectable=true
 *.xsd linguist-language=XML linguist-detectable=true
 *.odt binary
+*.bin binary
