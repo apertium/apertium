@@ -2079,21 +2079,47 @@ Transfer::readToken(FILE *in)
       content += L'[';
       while(true)
       {
-	int val2 = fgetwc_unlocked(in);
-	if(val2 == L'\\')
-	{
-	  content += L'\\';
-	  content += wchar_t(fgetwc_unlocked(in));
-	}
-	else if(val2 == L']')
-	{
-	  content += L']';
-	  break;
-	}
-	else
-	{
-	  content += wchar_t(val2);
-	}
+        int val2 = fgetwc_unlocked(in);
+        if(val2 == L'\\')
+        {
+          content += L'\\';
+          content += wchar_t(fgetwc_unlocked(in));
+        }
+        else if(val2 == L'[')
+        { //wordbound blank
+          content += L'[';
+          
+          while(true)
+          {
+            int val3 = fgetwc_unlocked(in);
+            if(val3 == L'\\')
+            {
+              content += L'\\';
+              content += wchar_t(fgetwc_unlocked(in));
+            }
+            else if(val3 == L'$') //[[..]]^..$ is the LU
+            {
+              return input_buffer.add(TransferToken(content, tt_word));
+            }
+            else if(val3 == L'\0' && null_flush)
+            {
+              fflush(output);
+            }
+            else
+            {
+              content += wchar_t(val3);
+            }
+          }
+        }
+        else if(val2 == L']')
+        {
+          content += L']';
+          break;
+        }
+        else
+        {
+          content += wchar_t(val2);
+        }
       }
     }
     else if(val == L'$')
@@ -2266,6 +2292,7 @@ Transfer::transfer(FILE *in, FILE *out)
           }
 
           pair<wstring, int> tr;
+          wstring tr_wblank;
           if(useBilingual && preBilingual == false)
           {
 	    if(isExtended && (*tmpword[0])[0] == L'*')
@@ -2290,6 +2317,7 @@ Transfer::transfer(FILE *in, FILE *out)
             wstring sl;
             wstring tl;
             wstring ref;
+            wstring wblank;
 
             int seenSlash = 0;
             for(wstring::const_iterator it = tmpword[0]->begin(); it != tmpword[0]->end(); it++)
@@ -2316,6 +2344,30 @@ Transfer::transfer(FILE *in, FILE *out)
                 }
                 continue;
               }
+              else if(*it == L'[' && *(it+1) == L'[')
+              {
+                while(true)
+                {
+                  if(*it == L'\\')
+                  {
+                    wblank.push_back(*it);
+                    it++;
+                    wblank.push_back(*it);
+                  }
+                  else if(*it == L'^' && *(it-1) == L']' && *(it-2) == L']')
+                  {
+                    break;
+                  }
+                  else
+                  {
+                    wblank.push_back(*it);
+                  }
+                  
+                  it++;
+                }
+                
+                continue;
+              }
               else if(*it == L'/')
               {
                 seenSlash++;
@@ -2338,6 +2390,7 @@ Transfer::transfer(FILE *in, FILE *out)
             }
             //tmpword[0]->assign(sl);
             tr = pair<wstring, int>(tl, false);
+            tr_wblank = wblank;
             //wcerr << L"pb: " << *tmpword[0] << L" :: " << sl << L" >> " << tl << endl ;
           }
           else
@@ -2347,6 +2400,7 @@ Transfer::transfer(FILE *in, FILE *out)
 
 	  if(tr.first.size() != 0)
 	  {
+      fputws_unlocked(tr_wblank.c_str(), output);
 	    if(defaultAttrs == lu)
 	    {
 	      fputwc_unlocked(L'^', output);
@@ -2480,10 +2534,11 @@ Transfer::applyRule()
     if(useBilingual && preBilingual == false)
     {
       tr = fstp.biltransWithQueue(*tmpword[i], false);
-      wstring refx;
+      wstring refx,wblankx;
       word[i] = new TransferWord(UtfConverter::toUtf8(*tmpword[i]),
                                  UtfConverter::toUtf8(tr.first),
                                  UtfConverter::toUtf8(refx),
+                                 UtfConverter::toUtf8(wblankx),
                                  tr.second);
     }
     else if(preBilingual)
@@ -2491,6 +2546,7 @@ Transfer::applyRule()
       wstring sl;
       wstring tl;
       wstring ref;
+      wstring wblank;
 
       int seenSlash = 0;
       for(wstring::const_iterator it = tmpword[i]->begin(); it != tmpword[i]->end(); it++)
@@ -2515,6 +2571,30 @@ Transfer::applyRule()
             it++;
             ref.push_back(*it);
           }
+          continue;
+        }
+        else if(*it == L'[' && *(it+1) == L'[')
+        {
+          while(true)
+          {
+            if(*it == L'\\')
+            {
+              wblank.push_back(*it);
+              it++;
+              wblank.push_back(*it);
+            }
+            else if(*it == L'^' && *(it-1) == L']' && *(it-2) == L']')
+            {
+              break;
+            }
+            else
+            {
+              wblank.push_back(*it);
+            }
+            
+            it++;
+          }
+          
           continue;
         }
 
@@ -2542,15 +2622,17 @@ Transfer::applyRule()
       word[i] = new TransferWord(UtfConverter::toUtf8(sl),
                                  UtfConverter::toUtf8(tr.first),
                                  UtfConverter::toUtf8(ref),
+                                 UtfConverter::toUtf8(wblank),
                                  tr.second);
     }
     else // neither useBilingual nor preBilingual (sl==tl)
     {
       tr = pair<wstring, int>(*tmpword[i], false);
-      wstring refx;
+      wstring refx,wblankx;
       word[i] = new TransferWord(UtfConverter::toUtf8(*tmpword[i]),
                                  UtfConverter::toUtf8(tr.first),
-                                 UtfConverter::toUtf8(refx), 
+                                 UtfConverter::toUtf8(refx),
+                                 UtfConverter::toUtf8(wblankx),
                                  tr.second);
     }
   }
@@ -2598,7 +2680,30 @@ Transfer::applyWord(wstring const &word_str)
         i++;
 	ms.step(towlower(word_str[i]), any_char);
 	break;
-
+        
+      case L'[':
+        if(word_str[i+1] == L'[')
+        {
+          while(true)
+          {
+            if(word_str[i] == L'\\')
+            {
+              i++;
+            }
+            else if(word_str[i] == L'^' && word_str[i-1] == L']' && word_str[i-2] == L']')
+            {
+              break;
+            }
+            
+            i++;
+          }
+        }
+        else
+        {
+          ms.step(towlower(word_str[i]), any_char);
+        }
+        break;
+        
       case L'/':
         i = limit;
         break;

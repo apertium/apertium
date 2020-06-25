@@ -45,6 +45,11 @@ private:
    * Reference word
    */
   string r_str;
+  
+  /**
+   * Wordbound blank
+   */
+  string b_str;
 
   /**
    * Queue length
@@ -100,9 +105,10 @@ public:
    * @param src source word
    * @param tgt target word
    * @param ref reference word
+   * @param blank wordbound blank
    * @param queue queue lenght
    */
-  TransferWord(string const &src, string const &tgt, string const &ref, int queue = 0);
+  TransferWord(string const &src, string const &tgt, string const &ref, string const &blank, int queue = 0);
 
   /**
    * Assignment operator
@@ -117,8 +123,9 @@ public:
    * @param src source word
    * @param tgt target word
    * @param ref reference word
+   * @param blank wordbound blank
    */
-  void init(string const &src, string const &tgt, string const &ref);
+  void init(string const &src, string const &tgt, string const &ref, string const &blank);
 
   /**
    * Reference a source language word part
@@ -143,6 +150,14 @@ public:
    * @returns reference to the part of string matched
    */
   string reference(ApertiumRE const &part, bool with_queue = true);
+  
+  /**
+   * Reference the wordbound blank part
+   * @param part regular expression to match
+   * @param with_queue access taking into account the queue
+   * @returns reference to the part of string matched
+   */
+  string blank(ApertiumRE const &part, bool with_queue = true);
 
   /**
    * Sets a value for a source language word part
