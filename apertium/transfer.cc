@@ -2735,9 +2735,12 @@ Transfer::applyWord(wstring const &word_str)
             {
               i++;
             }
-            else if(word_str[i] == L'^' && word_str[i-1] == L']' && word_str[i-2] == L']')
+            else if(i >= 4)
             {
-              break;
+              if(word_str[i] == L'^' && word_str[i-1] == L']' && word_str[i-2] == L']')
+              {
+                break;
+              }
             }
             
             i++;
