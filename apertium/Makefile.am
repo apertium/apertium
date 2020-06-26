@@ -93,7 +93,12 @@ h_sources = a.h \
 	    utils.h \
 	    wchar_t_exception.h \
 	    wchar_t_exception_type.h\
-	    xml_reader.h
+	    xml_reader.h \
+		ambiguous_chunker.h \
+		ambiguous_transfer.h \
+		case_handler.h \
+		transfer_literals.h \
+		xml_operations.h
 
 #DEPR.:
 #	    lextor_data.h
@@ -174,7 +179,11 @@ cc_sources = a.cc \
 	     tsx_reader.cc \
 	     utf_converter.cc \
 	     wchar_t_exception_type.cc\
-	     xml_reader.cc
+	     xml_reader.cc \
+		 ambiguous_chunker.cc \
+		 ambiguous_transfer.cc \
+		 case_handler.cc \
+		 xml_operations.cc
 #DEPR.:
 #	     lextor.cc
 #	     lextor_data.cc

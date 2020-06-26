@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <apertium/string_utils.h>
 #include "getopt_long.h"
+#include "ambiguous_transfer.h"
 #ifdef _MSC_VER
 #include <io.h>
 #include <fcntl.h>
@@ -41,9 +42,12 @@ void message(char *progname)
   wcerr << "       " << basename(progname) << " -x extended trules preproc biltrans [input [output]]" << endl;
   wcerr << "       " << basename(progname) << " -c trules preproc biltrans [input [output]]" << endl;
   wcerr << "       " << basename(progname) << " -t trules preproc biltrans [input [output]]" << endl;
+  wcerr << "       " << basename(progname) << " -a trules models k [input [output]]" << endl;
   wcerr << "  trules     transfer rules file" << endl;
   wcerr << "  preproc    result of preprocess trules file" << endl;
   wcerr << "  biltrans   bilingual letter transducer file" << endl;
+  wcerr << "  models     yasmet trained models file destination" << endl;
+  wcerr << "  k          beam size for beam search algorithm" << endl;
   wcerr << "  input      input file, standard input by default" << endl;
   wcerr << "  output     output file, standard output by default" << endl;
   wcerr << "  -b         input from lexical transfer" << endl;
@@ -53,6 +57,7 @@ void message(char *progname)
   wcerr << "  -t         trace (show rule numbers and patterns matched)" << endl;
   wcerr << "  -T         trace, for apertium-transfer-tools (also sets -t)" << endl;
   wcerr << "  -z         null-flushing output on '\0'" << endl;
+  wcerr	<< "  -a         ambiguous rules are applied, expected input from lexical transfer"	<< endl;
   wcerr << "  -h         shows this message" << endl;
 
 
@@ -103,6 +108,7 @@ int main(int argc, char *argv[])
 
   int option_index=0;
 
+  bool isAmbig;
   while (true) {
     static struct option long_options[] =
     {
@@ -113,11 +119,12 @@ int main(int argc, char *argv[])
       {"null-flush", no_argument, 0, 'z'},
       {"trace", no_argument, 0, 't'},
       {"trace_att", no_argument, 0, 'T'},
+      {"ambiguous", no_argument, 0, 'a' },
       {"help", no_argument, 0, 'h'},
       {0, 0, 0, 0}
     };
 
-    int c=getopt_long(argc, argv, "nbx:cztTh", long_options, &option_index);
+    int c=getopt_long(argc, argv, "nbx:cztTah", long_options, &option_index);
     if (c==-1)
       break;
 
@@ -153,6 +160,10 @@ int main(int argc, char *argv[])
         t.setNullFlush(true);
         break;
 
+      case 'a':
+        isAmbig = true;
+        break;
+
       case 'h':
       default:
         message(argv[0]);
@@ -165,16 +176,33 @@ int main(int argc, char *argv[])
   switch(argc - optind + 1)
   {
     case 6:
-      output = open_output(argv[argc-1]);
-      input = open_input(argv[argc-2]);
-      testfile(argv[argc-3]);
-      testfile(argv[argc-4]);
-      testfile(argv[argc-5]);
-      t.read(argv[argc-5], argv[argc-4], argv[argc-3]);
-      break;
+      if (isAmbig) {
+        output = open_output(argv[argc - 1]);
+        input = open_input(argv[argc - 2]);
+        testfile(argv[argc - 4]);
+        testfile(argv[argc - 5]);
+        AmbiguousTransfer::transfer(argv[argc - 5], argv[argc - 4], argv[argc - 3],
+					 input, output);
+      }
+      else {
+        output = open_output(argv[argc-1]);
+        input = open_input(argv[argc-2]);
+        testfile(argv[argc-3]);
+        testfile(argv[argc-4]);
+        testfile(argv[argc-5]);
+        t.read(argv[argc-5], argv[argc-4], argv[argc-3]);
+      }
+    break;
 
     case 5:
-      if(t.getUseBilingual() == false || t.getPreBilingual() == true)
+      if (isAmbig) {
+        input = open_input(argv[argc - 1]);
+        testfile(argv[argc - 3]);
+        testfile(argv[argc - 4]);
+        AmbiguousTransfer::transfer(argv[argc - 4], argv[argc - 3], argv[argc - 2],
+					 input, output);
+      }
+      else if(t.getUseBilingual() == false || t.getPreBilingual() == true)
       {
         output = open_output(argv[argc-1]);
         input = open_input(argv[argc-2]);
@@ -193,7 +221,13 @@ int main(int argc, char *argv[])
       break;
 
     case 4:
-      if(t.getUseBilingual() == false || t.getPreBilingual() == true)
+      if (isAmbig) {
+        testfile(argv[argc - 2]);
+        testfile(argv[argc - 3]);
+        AmbiguousTransfer::transfer(argv[argc - 3], argv[argc - 2], argv[argc - 1],
+					 input, output);
+      }
+      else if(t.getUseBilingual() == false || t.getPreBilingual() == true)
       {
         input = open_input(argv[argc-1]);
         testfile(argv[argc-2]);
@@ -230,7 +264,7 @@ int main(int argc, char *argv[])
   _setmode(_fileno(input), _O_U8TEXT);
   _setmode(_fileno(output), _O_U8TEXT);
 #endif
-
-  t.transfer(input, output);
+  if (!isAmbig)
+    t.transfer(input, output);
   return EXIT_SUCCESS;
 }
