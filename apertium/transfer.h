@@ -71,6 +71,8 @@ private:
   map <string, bool> var_has_lemq; //map variable name to bool->true if variable clips lemq
   
   bool in_wblank;
+  string wblank;
+  map <string, string> var_wblank;
   
   bool gettingLemmaFromWord(string attr);
     

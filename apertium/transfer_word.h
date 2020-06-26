@@ -153,11 +153,9 @@ public:
   
   /**
    * Reference the wordbound blank part
-   * @param part regular expression to match
-   * @param with_queue access taking into account the queue
-   * @returns reference to the part of string matched
+   * @returns reference to the wordbound blank
    */
-  string blank(ApertiumRE const &part, bool with_queue = true);
+  string blank();
 
   /**
    * Sets a value for a source language word part

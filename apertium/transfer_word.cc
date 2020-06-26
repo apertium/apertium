@@ -116,16 +116,9 @@ TransferWord::reference(ApertiumRE const &part, bool with_queue)
 }
 
 string
-TransferWord::blank(ApertiumRE const &part, bool with_queue)
+TransferWord::blank()
 {
-  if(with_queue) //TODO test removing
-  {
-    return part.match(b_str);
-  }
-  else
-  {
-    return part.match(b_str.substr(0, b_str.size() - queue_length));
-  }
+  return b_str;
 }
 
 bool
