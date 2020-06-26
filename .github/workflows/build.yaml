@@ -1,0 +1,25 @@
+name: apertium CI Build
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: dependencies
+      run: |
+           sudo apt-get -qy update
+           sudo apt-get -qfy install wget ca-certificates
+           wget -q https://apertium.projectjj.com/apt/install-nightly.sh -O - | sudo bash
+           sudo apt-get -qfy install --no-install-recommends build-essential automake autotools-dev flex pkg-config python3-lxml libicu-dev libpcre3-dev libxml2-dev libxml2-utils lttoolbox-dev unzip xsltproc zip zipcmp
+    - name: autoreconf
+      run: autoreconf -fvi
+    - name: configure
+      run: ./configure
+    - name: build
+      run: make -j4 V=1 VERBOSE=1
+    - name: tests
+      run: make test V=1 VERBOSE=1
+    - name: make install
+      run: sudo make install
