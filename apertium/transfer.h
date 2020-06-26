@@ -70,6 +70,8 @@ private:
   map <string, string> var_secondary_tags; //map variable name to secondary tags of the word it takes lem/lemh from
   map <string, bool> var_has_lemq; //map variable name to bool->true if variable clips lemq
   
+  bool in_wblank;
+  
   bool gettingLemmaFromWord(string attr);
     
   FSTProcessor fstp;
