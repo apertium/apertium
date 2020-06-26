@@ -2067,7 +2067,36 @@ Transfer::readToken(FILE *in)
     int val = fgetwc_unlocked(in);
     if(feof(in) || (val == 0 && internal_null_flush))
     {
+      in_wblank = false;
       return input_buffer.add(TransferToken(content, tt_eof));
+    }
+    if(in_wblank)
+    {
+      content += L"[[";
+      
+      while(true)
+      {
+        int val3 = fgetwc_unlocked(in);
+        if(val3 == L'\\')
+        {
+          content += L'\\';
+          content += wchar_t(fgetwc_unlocked(in));
+        }
+        else if(val3 == L'$') //[[..]]^..$ is the LU
+        {
+          in_wblank = false;
+          return input_buffer.add(TransferToken(content, tt_word));
+        }
+        else if(val3 == L'\0' && null_flush)
+        {
+          in_wblank = false;
+          fflush(output);
+        }
+        else
+        {
+          content += wchar_t(val3);
+        }
+      }
     }
     if(val == '\\')
     {
@@ -2087,29 +2116,10 @@ Transfer::readToken(FILE *in)
         }
         else if(val2 == L'[')
         { //wordbound blank
-          content += L'[';
+          in_wblank = true;
+          content.pop_back();
           
-          while(true)
-          {
-            int val3 = fgetwc_unlocked(in);
-            if(val3 == L'\\')
-            {
-              content += L'\\';
-              content += wchar_t(fgetwc_unlocked(in));
-            }
-            else if(val3 == L'$') //[[..]]^..$ is the LU
-            {
-              return input_buffer.add(TransferToken(content, tt_word));
-            }
-            else if(val3 == L'\0' && null_flush)
-            {
-              fflush(output);
-            }
-            else
-            {
-              content += wchar_t(val3);
-            }
-          }
+          return input_buffer.add(TransferToken(content, tt_blank));
         }
         else if(val2 == L']')
         {
@@ -2132,6 +2142,7 @@ Transfer::readToken(FILE *in)
     }
     else if(val == L'\0' && null_flush)
     {
+      in_wblank = false;
       fflush(output);
     }
     else
@@ -2344,28 +2355,45 @@ Transfer::transfer(FILE *in, FILE *out)
                 }
                 continue;
               }
-              else if(*it == L'[' && *(it+1) == L'[')
+              else if(*it == L'[')
               {
-                while(true)
+                if(*(it+1) == L'[') //wordbound blank
                 {
-                  if(*it == L'\\')
+                  while(true)
                   {
-                    wblank.push_back(*it);
+                    if(*it == L'\\')
+                    {
+                      wblank.push_back(*it);
+                      it++;
+                      wblank.push_back(*it);
+                    }
+                    else if(*it == L'^' && *(it-1) == L']' && *(it-2) == L']')
+                    {
+                      break;
+                    }
+                    else
+                    {
+                      wblank.push_back(*it);
+                    }
+                    
                     it++;
-                    wblank.push_back(*it);
                   }
-                  else if(*it == L'^' && *(it-1) == L']' && *(it-2) == L']')
+                }
+                else
+                {
+                  if(seenSlash == 0)
                   {
-                    break;
+                    sl.push_back(*it);
+                  }
+                  else if(seenSlash == 1)
+                  {
+                    tl.push_back(*it);
                   }
                   else
                   {
-                    wblank.push_back(*it);
+                    ref.push_back(*it);
                   }
-                  
-                  it++;
                 }
-                
                 continue;
               }
               else if(*it == L'/')
@@ -2527,14 +2555,7 @@ Transfer::applyRule()
     }
     else
     {
-      if(tmpblank.size() < i-1)
-      {
         blank[i-1] = new string(UtfConverter::toUtf8(*tmpblank[i-1]));
-      }
-      else
-      {
-        blank[i-1] = new string(UtfConverter::toUtf8(L""));
-      }
     }
 
     pair<wstring, int> tr;
