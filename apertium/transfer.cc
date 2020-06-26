@@ -2527,7 +2527,14 @@ Transfer::applyRule()
     }
     else
     {
-      blank[i-1] = new string(UtfConverter::toUtf8(*tmpblank[i-1]));
+      if(tmpblank.size() < i-1)
+      {
+        blank[i-1] = new string(UtfConverter::toUtf8(*tmpblank[i-1]));
+      }
+      else
+      {
+        blank[i-1] = new string(UtfConverter::toUtf8(L""));
+      }
     }
 
     pair<wstring, int> tr;
@@ -2573,28 +2580,45 @@ Transfer::applyRule()
           }
           continue;
         }
-        else if(*it == L'[' && *(it+1) == L'[')
+        else if(*it == L'[')
         {
-          while(true)
+          if(*(it+1) == L'[') //wordbound blank
           {
-            if(*it == L'\\')
+            while(true)
             {
-              wblank.push_back(*it);
+              if(*it == L'\\')
+              {
+                wblank.push_back(*it);
+                it++;
+                wblank.push_back(*it);
+              }
+              else if(*it == L'^' && *(it-1) == L']' && *(it-2) == L']')
+              {
+                break;
+              }
+              else
+              {
+                wblank.push_back(*it);
+              }
+              
               it++;
-              wblank.push_back(*it);
             }
-            else if(*it == L'^' && *(it-1) == L']' && *(it-2) == L']')
+          }
+          else
+          {
+            if(seenSlash == 0)
             {
-              break;
+              sl.push_back(*it);
+            }
+            else if(seenSlash == 1)
+            {
+              tl.push_back(*it);
             }
             else
             {
-              wblank.push_back(*it);
+              ref.push_back(*it);
             }
-            
-            it++;
           }
-          
           continue;
         }
 
