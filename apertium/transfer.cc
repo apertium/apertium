@@ -2209,6 +2209,7 @@ Transfer::transfer(FILE *in, FILE *out)
   unsigned int prev_last = last;
   int lastrule_id = -1;
   set<int> banned_rules;
+  in_wblank = false;
 
   output = out;
   ms.init(me->getInitial());
