@@ -2513,26 +2513,30 @@ Transfer::transfer(FILE *in, FILE *out)
 
 	  if(tr.first.size() != 0)
 	  {
-      fputws_unlocked(tr_wblank.c_str(), output);
 	    if(defaultAttrs == lu)
 	    {
+        fputws_unlocked(tr_wblank.c_str(), output);
 	      fputwc_unlocked(L'^', output);
 	      fputws_unlocked(tr.first.c_str(), output);
 	      fputwc_unlocked(L'$', output);
-            }
-            else
-            {
-              if(tr.first[0] == '*')
-              {
-                fputws_unlocked(L"^unknown<unknown>{^", output);
-              }
-              else
-              {
-	        fputws_unlocked(L"^default<default>{^", output);
-              }
-	      fputws_unlocked(tr.first.c_str(), output);
-	      fputws_unlocked(L"$}$", output);
-            }
+      }
+      else
+      {
+        if(tr.first[0] == '*')
+        {
+          fputws_unlocked(L"^unknown<unknown>{", output);
+          fputws_unlocked(tr_wblank.c_str(), output);
+          fputwc_unlocked(L'^', output);
+        }
+        else
+        {
+          fputws_unlocked(L"^default<default>{", output);
+          fputws_unlocked(tr_wblank.c_str(), output);
+          fputwc_unlocked(L'^', output);
+        }
+          fputws_unlocked(tr.first.c_str(), output);
+          fputws_unlocked(L"$}$", output);
+      }
 	  }
 	  banned_rules.clear();
 	  tmpword.clear();
