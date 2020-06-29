@@ -71,10 +71,12 @@ private:
   map <string, bool> var_has_lemq; //map variable name to bool->true if variable clips lemq
   
   bool in_wblank;
-  string wblank;
-  map <string, string> var_wblank;
+  string out_wblank;
+  string mlu_out_wblank;
+  map <string, string> var_out_wblank;
   
   bool gettingLemmaFromWord(string attr);
+  string combineWblanks(string wblank_current, string wblank_to_add);
     
   FSTProcessor fstp;
   FSTProcessor extended;

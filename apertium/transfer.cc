@@ -299,6 +299,62 @@ Transfer::gettingLemmaFromWord(string attr)
 }
 
 string
+Transfer::combineWblanks(string wblank_current, string wblank_to_add)
+{
+  if(wblank_current.empty())
+  {
+    return wblank_to_add;
+  }
+  
+  string new_out_wblank;
+  for(string::const_iterator it = wblank_current.begin(); it != wblank_current.end(); it++)
+  {
+    if(*it == '\\')
+    {
+      new_out_wblank += *it;
+      it++;
+      new_out_wblank += *it;
+    }
+    else if(*it == ']')
+    {
+      if(*(it+1) == ']')
+      {
+        new_out_wblank += ';';
+        break;
+      }
+    }
+    else
+    {
+      new_out_wblank += *it;
+    }
+  }
+  
+  for(string::const_iterator it = wblank_to_add.begin(); it != wblank_to_add.end(); it++)
+  {
+    if(*it == '\\')
+    {
+      new_out_wblank += *it;
+      it++;
+      new_out_wblank += *it;
+    }
+    else if(*it == '[')
+    {
+      if(*(it+1) == '[')
+      {
+        new_out_wblank += ' ';
+        it++;
+      }
+    }
+    else
+    {
+      new_out_wblank += *it;
+    }
+  }
+  
+  return new_out_wblank;
+}
+
+string
 Transfer::evalString(xmlNode *element)
 {
   map<xmlNode *, TransferInstr>::iterator it;
@@ -316,15 +372,14 @@ Transfer::evalString(xmlNode *element)
             if(in_lu)
             {
               secondary_tags.append(word[ti.getPos()]->source(attr_items["sectags"], ti.getCondition()));
-              wblank.append(word[ti.getPos()]->blank());
+              out_wblank = combineWblanks(out_wblank, word[ti.getPos()]->blank());
             }
             else if(in_let_var)
             {
               string temp_sl_secondary_tags = word[ti.getPos()]->source(attr_items["sectags"], ti.getCondition());
               var_secondary_tags[var_val].append(temp_sl_secondary_tags);
               
-              string temp_wblank = word[ti.getPos()]->blank();
-              var_wblank[var_val].append(temp_wblank);
+              var_out_wblank[var_val] = combineWblanks(var_out_wblank[var_val], word[ti.getPos()]->blank());
             }
           }
            else if(ti.getContent().compare("lemq") == 0)
@@ -355,15 +410,14 @@ Transfer::evalString(xmlNode *element)
             if(in_lu)
             {
               secondary_tags.append(word[ti.getPos()]->target(attr_items["sectags"], ti.getCondition()));
-              wblank.append(word[ti.getPos()]->blank());
+              out_wblank = combineWblanks(out_wblank, word[ti.getPos()]->blank());
             }
             else if(in_let_var)
             {
               string temp_tl_secondary_tags = word[ti.getPos()]->target(attr_items["sectags"], ti.getCondition());
               var_secondary_tags[var_val].append(temp_tl_secondary_tags);
               
-              string temp_wblank = word[ti.getPos()]->blank();
-              var_wblank[var_val].append(temp_wblank);
+              var_out_wblank[var_val] = combineWblanks(var_out_wblank[var_val], word[ti.getPos()]->blank());
             }
           }
           else if(ti.getContent().compare("lemq") == 0)
@@ -667,7 +721,7 @@ Transfer::evalString(xmlNode *element)
   {
     in_lu = true;
     secondary_tags.clear();
-    wblank.clear();
+    out_wblank.clear();
       
     string myword;
     for(xmlNode *i = element->children; i != NULL; i = i->next)
@@ -683,7 +737,7 @@ Transfer::evalString(xmlNode *element)
       
     if(myword != "")
     {
-      return wblank+"^"+myword+"$";
+      return out_wblank+"^"+myword+"$";
     }
     else
     {
@@ -695,6 +749,7 @@ Transfer::evalString(xmlNode *element)
     string value;
 
     bool first_time = true;
+    out_wblank.clear();
 
     for(xmlNode *i = element->children; i != NULL; i = i->next)
     {
@@ -737,7 +792,7 @@ Transfer::evalString(xmlNode *element)
 
     if(value != "")
     {
-      return "^"+value+"$";
+      return out_wblank+"^"+value+"$";
     }
     else
     {
@@ -770,7 +825,7 @@ Transfer::processOut(xmlNode *localroot)
         {
           in_lu = true;
           secondary_tags.clear();
-          wblank.clear();
+          out_wblank.clear();
             
           string myword;
           for(xmlNode *j = i->children; j != NULL; j = j->next)
@@ -786,7 +841,7 @@ Transfer::processOut(xmlNode *localroot)
           myword.append(secondary_tags);
           if(myword != "")
           {
-            fputws_unlocked(UtfConverter::fromUtf8(wblank).c_str(), output);
+            fputws_unlocked(UtfConverter::fromUtf8(out_wblank).c_str(), output);
             fputwc_unlocked(L'^', output);
             fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
             fputwc_unlocked(L'$', output);
@@ -926,7 +981,7 @@ Transfer::processChunk(xmlNode *localroot)
       {
         in_lu = true;
         secondary_tags.clear();
-        wblank.clear();
+        out_wblank.clear();
           
         string myword;
         for(xmlNode *j = i->children; j != NULL; j = j->next)
@@ -942,7 +997,7 @@ Transfer::processChunk(xmlNode *localroot)
           
         if(myword != "")
         {
-          result.append(wblank);
+          result.append(out_wblank);
           result.append("^");
           result.append(myword);
           result.append("$");
@@ -952,6 +1007,9 @@ Transfer::processChunk(xmlNode *localroot)
       {
         bool first_time = true;
         string myword;
+        
+        out_wblank.clear();
+        
         for(xmlNode *j = i->children; j != NULL; j = j->next)
         {
           string mylocalword;
@@ -987,6 +1045,7 @@ Transfer::processChunk(xmlNode *localroot)
         }
         if(myword != "")
         {
+          result.append(out_wblank);
           result.append("^");
           result.append(myword);
           result.append("$");
@@ -1114,7 +1173,7 @@ Transfer::processLet(xmlNode *localroot)
         var_val = ti.getContent();
 
         var_secondary_tags[var_val].clear();
-        var_wblank.clear();
+        var_out_wblank[var_val].clear();
         var_has_lemq[var_val] = false;
         
         variables[ti.getContent()] = evalString(rightSide);
@@ -1165,7 +1224,7 @@ Transfer::processLet(xmlNode *localroot)
     
     var_val = val;
     var_secondary_tags[var_val].clear();
-    var_wblank.clear();
+    var_out_wblank[var_val].clear();
     var_has_lemq[var_val] = false;
     
     variables[val] = evalString(rightSide);
