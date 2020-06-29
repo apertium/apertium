@@ -849,46 +849,55 @@ Transfer::processOut(xmlNode *localroot)
         }
         else if(!xmlStrcmp(i->name, (const xmlChar *) "mlu"))
         {
-	  fputwc_unlocked('^', output);
-	  bool first_time = true;
-	  for(xmlNode *j = i->children; j != NULL; j = j->next)
-	  {
-	    if(j->type == XML_ELEMENT_NODE)
-	    {
-        in_lu = true;
-        secondary_tags.clear();
-        
-              string myword;
-	      for(xmlNode *k = j->children; k != NULL; k = k->next)
-	      {
-	        if(k->type == XML_ELEMENT_NODE)
-	        {
-                  myword.append(evalString(k));
-	        }
-	      }
-        
-        in_lu = false;
-        myword.append(secondary_tags);
-
-	      if(!first_time)
-	      {
-	        if(myword != "" && myword[0] != '#')  //'+#' problem
-	        {
-	          fputwc_unlocked(L'+', output);
+          string myword;
+          bool first_time = true;
+          out_wblank.clear();
+          
+          for(xmlNode *j = i->children; j != NULL; j = j->next)
+          {
+            if(j->type == XML_ELEMENT_NODE)
+            {
+              in_lu = true;
+              secondary_tags.clear();
+              
+              string mylocalword;
+              for(xmlNode *k = j->children; k != NULL; k = k->next)
+              {
+                if(k->type == XML_ELEMENT_NODE)
+                {
+                  mylocalword.append(evalString(k));
                 }
-	      }
-	      else
-	      {
-	        if(myword != "")
-	        {
-	          first_time = false;
-                }
-	      }
+              }
+              
+              in_lu = false;
+              mylocalword.append(secondary_tags);
 
-	      fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
-	    }
-	  }
-	  fputwc_unlocked(L'$', output);
+              if(!first_time)
+              {
+                if(mylocalword != "" && mylocalword[0] != '#')  //'+#' problem
+                {
+                  myword += '+';
+                }
+              }
+              else
+              {
+                if(mylocalword != "")
+                {
+                  first_time = false;
+                }
+              }
+              
+              myword.append(mylocalword);
+            }
+          }
+          
+          if(myword != "")
+          {
+            fputws_unlocked(UtfConverter::fromUtf8(out_wblank).c_str(), output);
+            fputwc_unlocked('^', output);
+            fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
+            fputwc_unlocked(L'$', output);
+          }
         }
         else // 'b'
         {
