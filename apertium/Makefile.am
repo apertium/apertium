@@ -95,12 +95,6 @@ h_sources = a.h \
 	    wchar_t_exception_type.h\
 	    xml_reader.h
 
-#DEPR.:
-#	    lextor_data.h
-#	    lextor_eval.h
-#	    lextor.h
-#	    lextor_word.h
-
 cc_sources = a.cc \
 	     align.cc \
 	     analysis.cc \
@@ -175,11 +169,6 @@ cc_sources = a.cc \
 	     utf_converter.cc \
 	     wchar_t_exception_type.cc\
 	     xml_reader.cc
-#DEPR.:
-#	     lextor.cc
-#	     lextor_data.cc
-#	     lextor_eval.cc
-#	     lextor_word.cc
 
 library_includedir = $(includedir)/$(GENERIC_LIBRARY_NAME)-$(GENERIC_API_VERSION)/$(GENERIC_LIBRARY_NAME)
 library_include_HEADERS = $(h_sources)
@@ -192,11 +181,6 @@ GENERATEDSCRIPTS = apertium-gen-deformat apertium-gen-reformat \
                    apertium-validate-postchunk apertium apertium-unformat \
                    apertium-gen-modes apertium-validate-acx \
                    apertium-utils-fixlatex
-#DEPR.:
-                   #apertium-preprocess-corpus-lextor
-                   #apertium-gen-stopwords-lextor
-                   #apertium-gen-lextorbil
-                   #apertium-gen-lextormono apertium-gen-wlist-lextor
 
 lib_LTLIBRARIES = libapertium3.la
 libapertium3_la_SOURCES = $(h_sources) $(cc_sources)
@@ -327,26 +311,11 @@ apertium_interchunk_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) 
 apertium_postchunk_SOURCES = apertium_postchunk.cc
 apertium_postchunk_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 
-###apertium_lextor_SOURCES = apertium_lextor.cc
-###apertium_lextor_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
-
-#apertium_lextor_eval_SOURCES = apertium-lextor-eval.C
-#apertium_lextor_eval_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
-
 apertium_tagger_apply_new_rules_SOURCES = apertium_tagger_apply_new_rules.cc
 apertium_tagger_apply_new_rules_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 
 apertium_tagger_readwords_SOURCES = apertium_tagger_readwords.cc
 apertium_tagger_readwords_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
-
-###apertium_lextor_search_SOURCES = apertium-lextor-search.C
-###apertium_lextor_search_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
-
-###pruebas_lextor_SOURCES = pruebas-lextor.C
-###pruebas_lextor_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
-
-###apertium_gen_wlist_lextor_translation_SOURCES = apertium_gen_wlist_lextor_translation.cc
-###apertium_gen_wlist_lextor_translation_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
 
 apertium_adapt_docx_SOURCES = adapt_docx.cc
 apertium_adapt_docx_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES) $(ICU_LIBS)
@@ -598,68 +567,6 @@ apertium-unformat: Makefile.am apertium-unformat-header.sh
 	@cat apertium-unformat-header.sh >>$@
 	@chmod a+x $@
 
-
-#apertium-translator-lextor: Makefile.am trans-lextor-header.sh
-#	@echo "Creating apertium-translator-lextor script"
-#	@echo "#!$(BASH)" > $@
-#	@echo "APERTIUM_PATH=\"$(prefix)/bin\"" >>$@
-#	@echo "LTTOOLBOX_PATH=\"$(prefix)/bin\"" >>$@
-#	@cat trans-lextor-header.sh >>$@
-#	@chmod a+x $@
-
-#apertium-gen-oldbil: Makefile.am transformdicbil-header.sh
-#	@echo "Creating apertium-gen-oldbil script"
-#	@echo "#!$(BASH)" >$@
-#	@echo "APERTIUM_PATH=\"$(prefix)/bin\"" >>$@
-#	@echo "LTTOOLBOX_PATH=\"$(prefix)/bin\"" >>$@
-#	@echo "XSLTPROC_OPTIONS=\"\"">>$@
-#	@echo "STYLESHEET=\"$(apertiumdir)/new2old.xsl\"">>$@
-#	@cat transformdicbil-header.sh >>$@
-#	@chmod a+x $@
-
-apertium-gen-lextorbil: Makefile.am transformdic-header.sh
-	@echo "Creating apertium-gen-lextorbil script"
-	@echo "#!$(BASH)" >$@
-	@echo "APERTIUM_PATH=\"$(prefix)/bin\"" >>$@
-	@echo "LTTOOLBOX_PATH=\"$(prefix)/bin\"" >>$@
-	@echo "XSLTPROC_OPTIONS_LR=\"\"">>$@
-	@echo "XSLTPROC_OPTIONS_RL=\"--stringparam r2l yes\"">>$@
-	@echo "STYLESHEET=\"$(apertiumdir)/lexchoicebil.xsl\"">>$@
-	@cat transformdic-header.sh >>$@
-	@chmod a+x $@
-
-apertium-gen-lextormono: Makefile.am transformdic-header.sh
-	@echo "Creating apertium-gen-lextormono script"
-	@echo "#!$(BASH)" >$@
-	@echo "APERTIUM_PATH=\"$(prefix)/bin\"" >>$@
-	@echo "LTTOOLBOX_PATH=\"$(prefix)/bin\"" >>$@
-	@echo "XSLTPROC_OPTIONS_LR=\"\"">>$@
-	@echo "XSLTPROC_OPTIONS_RL=\"--stringparam r2l yes\"">>$@
-	@echo "STYLESHEET=\"$(apertiumdir)/lexchoice.xsl\"">>$@
-	@cat transformdic-header.sh >>$@
-	@chmod a+x $@
-
-apertium-gen-wlist-lextor: Makefile.am gen-wlist-lextor-header.sh
-	@echo "Creating apertium-gen-wlist-lextor script"
-	@echo "#!$(BASH)" >$@
-	@echo "LTTOOLBOX_PATH=\"$(prefix)/bin\"" >>$@
-	@cat gen-wlist-lextor-header.sh >>$@
-	@chmod a+x $@
-
-apertium-preprocess-corpus-lextor: Makefile.am preprocess-corpus-lextor.sh
-	@echo "Creating apertium-preprocess-corpus-lextor script"
-	@echo "#!$(BASH)" >$@
-	@echo "LTTOOLBOX_PATH=\"$(prefix)/bin\"" >>$@
-	@echo "APERTIUM_PATH=\"$(prefix)/bin\"" >>$@
-	@cat preprocess-corpus-lextor.sh >>$@
-	@chmod a+x $@
-
-apertium-gen-stopwords-lextor: Makefile.am gen-stopwords-lextor.sh
-	@echo "Creating apertium-gen-stopwords-lextor script"
-	@echo "#!$(BASH)" >$@
-	@cat gen-stopwords-lextor.sh >>$@
-	@chmod a+x $@
-
 man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
          apertium-deshtml-alt.1 \
          apertium-desodt.1 apertium-reodt.1 \
@@ -679,12 +586,6 @@ man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
          apertium-validate-postchunk.1 apertium-validate-modes.1 apertium-tagger-apply-new-rules.1 \
 	 apertium-validate-acx.1 apertium-multiple-translations.1 \
 	 apertium-unformat.1
-#DEPR.:
-#         apertium-lextor-eval.1
-#         apertium-gen-lextorbil.1
-#         apertium-gen-lextormono.1 apertium-gen-stopwords-lextor.1
-#         apertium-gen-wlist-lextor.1 apertium-gen-wlist-lextor-translation.1
-#         apertium-lextor.1 apertium-preprocess-corpus-lextor.1
 
 EXTRA_DIST = gen-header.sh deformat-header.sh \
              reformat.xsl deformat.xsl new2old.xsl lexchoice.xsl lexchoicebil.xsl \
@@ -700,8 +601,3 @@ EXTRA_DIST = gen-header.sh deformat-header.sh \
 			 tagger.rnc interchunk.rnc format.rnc  transfer.rnc postchunk.rnc modes.rnc \
              utils-fixlatex-header.sh \
              apertium-gen-modes.in apertium-createmodes.awk modes2bash.xsl modes2debugmodes.xsl
-#DEPR.:
-# trans-lextor-header.sh
-# gen-wlist-lextor-header.sh
-# gen-stopwords-lextor.sh
-# preprocess-corpus-lextor.sh
