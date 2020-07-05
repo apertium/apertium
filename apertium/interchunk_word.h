@@ -39,6 +39,11 @@ private:
    * Target language chunk content
    */
   string queue;
+  
+  /**
+   * Wordbound blank (for postchunk)
+   */
+  string blank;
 
   /**
    * Copy method
@@ -92,6 +97,12 @@ public:
    * @returns reference to the part of string matched
    */
   string chunkPart(ApertiumRE const &part);
+  
+  /**
+   * Reference the wordbound blank (for postchunk)
+   * @returns reference to the part of string matched
+   */
+  string getBlank();
 
   /**
    * Sets a value for a chunk part
