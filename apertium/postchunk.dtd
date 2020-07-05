@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
    Copyright (C) 2005 Universitat d'Alacant / Universidad de Alicante
 
@@ -17,7 +17,7 @@
 
     Draft of DTD for the structural transfer rule files
 
-    Sergio Ortiz, Gema Ramírez-Sánchez, Mireia Ginestí, Mikel L. Forcada,
+    Sergio Ortiz, Gema RamÃ­rez-SÃ¡nchez, Mireia GinestÃ­, Mikel L. Forcada,
     2005.07.29.
 -->
 
@@ -390,7 +390,7 @@ representing a lexical form in the matched pattern
 
 <!ELEMENT get-case-from (clip|lit|var)>
 <!ATTLIST get-case-from pos CDATA #REQUIRED>
-<!-- Atención, falta modificar todos los comentarios donde intervenga
+<!-- AtenciÃ³n, falta modificar todos los comentarios donde intervenga
 get-case-from -->
 
 <!ELEMENT case-of EMPTY>

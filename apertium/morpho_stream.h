@@ -17,7 +17,7 @@
 /**
  *  Word class and MorphoStream class definitions
  *
- *  @author	Felipe Sánchez-Martínez
+ *  @author	Felipe SÃ¡nchez-MartÃ­nez
  */
 
 #ifndef __MORPHOSTREAM_H

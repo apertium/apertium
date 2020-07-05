@@ -65,7 +65,7 @@ void clear_array_vector(vector<TTag> v[], int l);
  */
  int ntokens_multiword(wstring const &s);
 
-/** Devuelve el nº de guiones que contiene la cadena pasada como argumento
+/** Devuelve el nÂº de guiones que contiene la cadena pasada como argumento
   */
 int nguiones_fs(wstring const &cadena);
 

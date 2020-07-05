@@ -17,7 +17,7 @@
 /**
  *  First order hidden Markov model (HMM) implementation (header)
  *
- *  @author   Felipe Sánchez-Martínez - fsanchez@dlsi.ua.es
+ *  @author   Felipe SÃ¡nchez-MartÃ­nez - fsanchez@dlsi.ua.es
  */
 
 #ifndef __HMM_H

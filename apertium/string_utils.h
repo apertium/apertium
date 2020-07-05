@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2006 Universitat d'Alacant / Universidad de Alicante
- * author: Felipe Sánchez-Martínez
+ * author: Felipe SÃ¡nchez-MartÃ­nez
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
