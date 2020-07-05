@@ -200,8 +200,8 @@ TaggerWord::get_lexical_form(TTag &t, int const TAG_kEOF) {
 
   //if ((superficial_form.length()>0)&&(superficial_form[superficial_form.length()-1]=='\''))
   //   //Si la forma superficial termina en apostrofo metemos un espacio en blanco tras la cadena '/$'
-  //   //o '/'. De no hacerlo en la traducciÛn aparecer·n dos palabras sin blanco alguno.
-  //   ret+=" "; //Quiz· este no sea el sitio apropiado para hacer esto, lo suyo serÌa un mÛdulo
+  //   //o '/'. De no hacerlo en la traducci√≥n aparecer√°n dos palabras sin blanco alguno.
+  //   ret+=" "; //Quiz√° este no sea el sitio apropiado para hacer esto, lo suyo ser√≠a un m√≥dulo
   //             //antes del tagger o del anmor.
 
   return ret;

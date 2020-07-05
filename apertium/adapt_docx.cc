@@ -256,7 +256,7 @@ void showParagraphs(xmlNode *root)
 }
 
 // Find a suitable boundary at begin position or to the right
-// No boundary is allowed in groups "l·l" and "alpha-alpha"
+// No boundary is allowed in groups "lÂ·l" and "alpha-alpha"
 // TODO: adapt to source language
 size_t findBoundary(string _text, size_t begin)
 {
@@ -282,9 +282,9 @@ size_t findBoundary(string _text, size_t begin)
 			advance = u_isalpha(cur);
 		else if (u_isalpha(cur_1) && cur == '-')					// ?a|-
 			expectAlpha = true;
-		else if ((cur_2 == 'L' || cur_2 == 'l') && cur_1 == 0xB7)	// l·|?
+		else if ((cur_2 == 'L' || cur_2 == 'l') && cur_1 == 0xB7)	// lÂ·|?
 			advance = (cur == 'L' || cur == 'l');
-		else if ((cur_1 == 'L' || cur_1 == 'l') && cur == 0xB7)		// ?l|·
+		else if ((cur_1 == 'L' || cur_1 == 'l') && cur == 0xB7)		// ?l|Â·
 			expectL = true;
 		if (advance || expectAlpha || expectL)
 		{

@@ -449,7 +449,7 @@ void removeHungarianStopwords( SentenceList& huSentenceList )
 
     "egy",
 
-    "és",
+    "\xe9s",
 
     "nem", "ne",
 
@@ -457,7 +457,7 @@ void removeHungarianStopwords( SentenceList& huSentenceList )
 
     "van",
 
-    "õ",
+    "\xf5",
 
     "ha",
 
