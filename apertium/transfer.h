@@ -62,17 +62,12 @@ private:
   vector<wstring *> tmpword;
   vector<wstring *> tmpblank;
   
-  //for secondary tags
-  bool in_lu; //flag to denote that lu is being processed
-  string secondary_tags; //stores secondary tags of the LU that is being processed
-  bool in_let_var; //flag to denote that a var in let is being processed (or in append)
+  bool in_lu;
+  bool in_let_var;
   string var_val; //stores the name of the variable being processed (in let or append)
-  map <string, string> var_secondary_tags; //map variable name to secondary tags of the word it takes lem/lemh from
-  map <string, bool> var_has_lemq; //map variable name to bool->true if variable clips lemq
   
   bool in_wblank;
   string out_wblank;
-  string mlu_out_wblank;
   map <string, string> var_out_wblank;
   
   bool gettingLemmaFromWord(string attr);
