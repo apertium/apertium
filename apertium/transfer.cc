@@ -301,9 +301,17 @@ Transfer::gettingLemmaFromWord(string attr)
 string
 Transfer::combineWblanks(string wblank_current, string wblank_to_add)
 {
-  if(wblank_current.empty())
+  if(wblank_current.empty() && wblank_to_add.empty())
+  {
+    return wblank_current;
+  }
+  else if(wblank_current.empty())
   {
     return wblank_to_add;
+  }
+  else if(wblank_to_add.empty())
+  {
+    return wblank_current;
   }
   
   string new_out_wblank;
