@@ -19,8 +19,9 @@
 #include <iostream>
 #include <lttoolbox/lt_locale.h>
 
+wstring storeAndWriteWblank(FILE *input, FILE *output);
 void readAndWriteUntil(FILE *input, FILE *output, int const charcode);
-void procWord(FILE *input, FILE *output, bool surface_forms, bool compound_sep);
+void procWord(FILE *input, FILE *output, bool surface_forms, bool compound_sep, wstring wblank);
 void processStream(FILE *input, FILE *output, bool null_flush, bool surface_forms, bool compound_sep);
 
 #endif

@@ -84,11 +84,6 @@ class JoinGroupPretransferTest(PretransferTest):
     inputs =          ["[<div>]^a<vblex><pres>+c<po># b$",   "[<div>]^a<vblex><pres>+c<po>+d<po># b$"]
     expectedOutputs = ["[<div>]^a# b<vblex><pres>$ ^c<po>$", "[<div>]^a# b<vblex><pres>$ ^c<po>$ ^d<po>$"]
 
-
-# Proposed inline blank format:
-class InlineBlankPretransferTest(PretransferTest):
-    inputs =          ["[{<i>}]^a<vblex><pres>+c<po># b$",          "[{<i>}]^a<vblex><pres>+c<po>+d<po># b$"]
-    expectedOutputs = ["[{<i>}]^a# b<vblex><pres>$ [{<i>}]^c<po>$", "[{<i>}]^a# b<vblex><pres>$ [{<i>}]^c<po>$ [{<i>}]^d<po>$"]
-    @unittest.expectedFailure
-    def runTest(self):
-        super().runTest(self)
+class WordboundBlankTestPretransferTest(PretransferTest):
+    inputs =          ["[[t:i:abc123]]^a<vblex><pres>+c<po># b$", "[[t:i:xyz456]]^a<vblex><pres>+c<po>+d<po># b$"]
+    expectedOutputs = ["[[t:i:abc123]]^a# b<vblex><pres>$ [[t:i:abc123]]^c<po>$", "[[t:i:xyz456]]^a# b<vblex><pres>$ [[t:i:xyz456]]^c<po>$ [[t:i:xyz456]]^d<po>$"]

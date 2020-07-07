@@ -8,6 +8,45 @@
 #include <iostream>
 #include <string>
 
+wstring storeAndWriteWblank(FILE *input, FILE *output)
+{
+  int mychar;
+  wstring content = L"[[";
+
+  while(true)
+  {
+    mychar = fgetwc_unlocked(input);
+    if(feof(input))
+    {
+      wcerr << L"ERROR: Unexpected EOF" << endl;
+      exit(EXIT_FAILURE);
+    }
+    
+    content += mychar;
+    fputwc_unlocked(mychar, output);
+    
+    if(mychar == L'\\')
+    {
+      mychar = fgetwc(input);
+      content += mychar;
+      fputwc(mychar, output);
+    }
+    else if(mychar == L']')
+    {
+      mychar = fgetwc(input);
+      
+      if(mychar == L']')
+      {
+        content += mychar;
+        fputwc(mychar, output);
+        break;
+      }
+    }
+  }
+  
+  return content;
+}
+
 void readAndWriteUntil(FILE *input, FILE *output, int const charcode)
 {
   int mychar;
@@ -28,7 +67,7 @@ void readAndWriteUntil(FILE *input, FILE *output, int const charcode)
   }
 }
 
-void procWord(FILE *input, FILE *output, bool surface_forms, bool compound_sep)
+void procWord(FILE *input, FILE *output, bool surface_forms, bool compound_sep, wstring wblank = L"")
 {
   int mychar;
   wstring buffer = L"";
@@ -82,18 +121,24 @@ void procWord(FILE *input, FILE *output, bool surface_forms, bool compound_sep)
       }
       else if(in_tag == false && mychar == L'+')
       {
-        buffer.append(L"$ ^");
+        buffer.append(L"$ ");
+        buffer.append(wblank);
+        buffer.append(L"^");
       }
       else if(in_tag == false && mychar == L'~' and compound_sep == true)
       {
-        buffer.append(L"$^");
+        buffer.append(L"$");
+        buffer.append(wblank);
+        buffer.append(L"^");
       }
     }
     else
     {
       if(mychar == L'+' && queuing == true)
       {
-        buffer.append(L"$ ^");
+        buffer.append(L"$ ");
+        buffer.append(wblank);
+        buffer.append(L"^");
         buffer_mode = true;
       }
       else
@@ -119,8 +164,32 @@ void processStream(FILE *input, FILE *output, bool null_flush, bool surface_form
     {
       case L'[':
         fputwc_unlocked(L'[', output);
-        readAndWriteUntil(input, output, L']');
-        fputwc_unlocked(L']', output);
+        mychar = fgetwc_unlocked(input);
+        
+        if(mychar == L'[')
+        {
+          fputwc_unlocked(L'[', output);
+          wstring wblank = storeAndWriteWblank(input, output);
+          mychar = fgetwc_unlocked(input);
+          
+          if(mychar == L'^')
+          {
+            fputwc_unlocked(mychar, output);
+            procWord(input, output, surface_forms, compound_sep, wblank);
+            fputwc_unlocked(L'$', output);
+          }
+          else
+          {
+            wcerr << L"ERROR: Wordbound blank isn't immediately followed by the Lexical Unit." << endl;
+            exit(EXIT_FAILURE);
+          }
+        }
+        else
+        {
+          ungetwc(mychar, input);
+          readAndWriteUntil(input, output, L']');
+          fputwc_unlocked(L']', output);
+        }
         break;
 
       case L'\\':
