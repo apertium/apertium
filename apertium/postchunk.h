@@ -59,6 +59,13 @@ private:
   Buffer<TransferToken> input_buffer;
   vector<wstring *> tmpword;
   vector<wstring *> tmpblank;
+  
+  bool in_lu;
+  bool in_let_var;
+  string var_val;
+  bool in_wblank;
+  string out_wblank;
+  map <string, string> var_out_wblank;
 
   FILE *output;
   int any_char;
@@ -126,6 +133,8 @@ private:
   static wstring wordzero(wstring const &chunk);
   bool checkIndex(xmlNode *element, int index, int limit);
   void postchunk_wrapper_null_flush(FILE *in, FILE *out);
+  bool gettingLemmaFromWord(string attr);
+  string combineWblanks(string wblank_current, string wblank_to_add);
 
 public:
   Postchunk();

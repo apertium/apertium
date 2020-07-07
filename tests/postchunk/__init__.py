@@ -107,6 +107,9 @@ class UseMacroPostchunkTest(PostchunkTest):
     inputs =          ["^thing<thing><sg>{^thing<thing><ND>$}$"]
     expectedOutputs = ["^thing<thing><sg>$"]
 
+class WordboundBlankTest(PostchunkTest):
+    inputs =          ["^n_n<SN><sg>{[[t:b:123456]]^worda<n><ND><m>$ ;[testblank] [[t:s:xyzab12]]^wordb# xyz<n><ND><f>$}$"]
+    expectedOutputs = ["[[t:s:xyzab12]]^wordb# xyz<n><ND><f>$ ;[testblank] [[t:b:123456]]^worda<n><ND><m>$ [[t:b:123456; t:s:xyzab12]]^worda+wordb# xyz$"]
 
 class BincompatTest(SimplePostchunkTest):
     bindata = "data/bincompat.t3x.bin"

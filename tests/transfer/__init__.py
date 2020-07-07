@@ -95,6 +95,9 @@ class SlLemqTest(TransferTest):
     inputs =          ["^skyldes<vblex><pstv><pres>/komme# av<vblex><pres>$"]
     expectedOutputs = ["sl-lemq:'' tl-lemq:'# av'"]
 
+class WordboundBlankTest(TransferTest):
+    inputs =          ["[blank1] [[t:s:123456]]^worda<n><acr>/wordta<n><acr>$ ;[blank2]; [[t:b:xyz123; t:l:xyz347]]^wordb<n><acr>/wordtb<n><acr>$ [blank3];  [[t:i:abc123; t:s:abc123]]^hun<prn><f>/ho<prn><f>$"]
+    expectedOutputs = ["[blank1] ^prn<prn><f>{[[t:i:abc123; t:s:abc123]]^ho<prn><f>$ [[t:b:xyz123; t:l:xyz347]]^wordtb<nacr><sg><m>$}$ ;[blank2]; ^det<n><acr>{[[t:s:123456; t:i:abc123; t:s:abc123]]^wordta<n><acr>+ho<prn><f>$}$ [blank3];  "]
 
 class BincompatTest(BasicTransferTest):
     bindata = "data/bincompat.t1x.bin"

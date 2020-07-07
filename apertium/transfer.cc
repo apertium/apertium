@@ -295,7 +295,71 @@ Transfer::checkIndex(xmlNode *element, int index, int limit)
 bool
 Transfer::gettingLemmaFromWord(string attr)
 {
-    return (attr.compare("lem") == 0 || attr.compare("lemh") == 0);
+    return (attr.compare("lem") == 0 || attr.compare("lemh") == 0 || attr.compare("whole") == 0);
+}
+
+string
+Transfer::combineWblanks(string wblank_current, string wblank_to_add)
+{
+  if(wblank_current.empty() && wblank_to_add.empty())
+  {
+    return wblank_current;
+  }
+  else if(wblank_current.empty())
+  {
+    return wblank_to_add;
+  }
+  else if(wblank_to_add.empty())
+  {
+    return wblank_current;
+  }
+  
+  string new_out_wblank;
+  for(string::const_iterator it = wblank_current.begin(); it != wblank_current.end(); it++)
+  {
+    if(*it == '\\')
+    {
+      new_out_wblank += *it;
+      it++;
+      new_out_wblank += *it;
+    }
+    else if(*it == ']')
+    {
+      if(*(it+1) == ']')
+      {
+        new_out_wblank += ';';
+        break;
+      }
+    }
+    else
+    {
+      new_out_wblank += *it;
+    }
+  }
+  
+  for(string::const_iterator it = wblank_to_add.begin(); it != wblank_to_add.end(); it++)
+  {
+    if(*it == '\\')
+    {
+      new_out_wblank += *it;
+      it++;
+      new_out_wblank += *it;
+    }
+    else if(*it == '[')
+    {
+      if(*(it+1) == '[')
+      {
+        new_out_wblank += ' ';
+        it++;
+      }
+    }
+    else
+    {
+      new_out_wblank += *it;
+    }
+  }
+  
+  return new_out_wblank;
 }
 
 string
@@ -315,29 +379,13 @@ Transfer::evalString(xmlNode *element)
           {
             if(in_lu)
             {
-                secondary_tags.append(word[ti.getPos()]->source(attr_items["sectags"], ti.getCondition()));
+              out_wblank = combineWblanks(out_wblank, word[ti.getPos()]->blank());
             }
             else if(in_let_var)
             {
-              string temp_sl_secondary_tags = word[ti.getPos()]->source(attr_items["sectags"], ti.getCondition());
-              var_secondary_tags[var_val].append(temp_sl_secondary_tags);
+              var_out_wblank[var_val] = combineWblanks(var_out_wblank[var_val], word[ti.getPos()]->blank());
             }
           }
-           else if(ti.getContent().compare("lemq") == 0)
-           {
-             if(in_lu)
-             {
-               string sectags_lemq = secondary_tags;
-               secondary_tags.clear();
-               
-               sectags_lemq.append(word[ti.getPos()]->source(attr_items[ti.getContent()], ti.getCondition()));
-               return sectags_lemq;
-             }
-             else if(in_let_var)
-             {
-               var_has_lemq[var_val] = true;
-             }
-           }
           
           return word[ti.getPos()]->source(attr_items[ti.getContent()], ti.getCondition());
         }
@@ -350,27 +398,11 @@ Transfer::evalString(xmlNode *element)
           {
             if(in_lu)
             {
-              secondary_tags.append(word[ti.getPos()]->target(attr_items["sectags"], ti.getCondition()));
+              out_wblank = combineWblanks(out_wblank, word[ti.getPos()]->blank());
             }
             else if(in_let_var)
             {
-              string temp_tl_secondary_tags = word[ti.getPos()]->target(attr_items["sectags"], ti.getCondition());
-              var_secondary_tags[var_val].append(temp_tl_secondary_tags);
-            }
-          }
-          else if(ti.getContent().compare("lemq") == 0)
-          {
-            if(in_lu)
-            {
-              string sectags_lemq = secondary_tags;
-              secondary_tags.clear();
-              
-              sectags_lemq.append(word[ti.getPos()]->target(attr_items[ti.getContent()], ti.getCondition()));
-              return sectags_lemq;
-            }
-            else if(in_let_var)
-            {
-              var_has_lemq[var_val] = true;
+              var_out_wblank[var_val] = combineWblanks(var_out_wblank[var_val], word[ti.getPos()]->blank());
             }
           }
             
@@ -428,35 +460,7 @@ Transfer::evalString(xmlNode *element)
         break;
 
       case ti_var:
-        secondary_tags.append(var_secondary_tags[ti.getContent()]);
-        
-        if(var_has_lemq[ti.getContent()] && !secondary_tags.empty())
-        {
-          string var_content = variables[ti.getContent()];
-          string var_content_with_sectags = "";
-          int lemq_position = -1;
-          
-          for(size_t index = 0; index < var_content.size(); index++)
-          {
-            if(var_content[index] == '#')
-            {
-              lemq_position = index;
-            }
-            else if(var_content[index] == '\\')
-            {
-              index++;
-              continue;
-            }
-          }
-
-          var_content_with_sectags = var_content.substr(0,lemq_position).append(secondary_tags).append(var_content.substr(lemq_position, string::npos));
-          
-          secondary_tags.clear();
-          
-          return var_content_with_sectags;
-        }
-        
-        
+        out_wblank = combineWblanks(out_wblank, var_out_wblank[ti.getContent()]);
         return variables[ti.getContent()];
 
       case ti_lit_tag:
@@ -658,7 +662,7 @@ Transfer::evalString(xmlNode *element)
   else if(!xmlStrcmp(element->name, (const xmlChar *) "lu"))
   {
     in_lu = true;
-    secondary_tags.clear();
+    out_wblank.clear();
       
     string myword;
     for(xmlNode *i = element->children; i != NULL; i = i->next)
@@ -670,11 +674,10 @@ Transfer::evalString(xmlNode *element)
     }
     
     in_lu = false;
-    myword.append(secondary_tags);
       
     if(myword != "")
     {
-      return "^"+myword+"$";
+      return out_wblank+"^"+myword+"$";
     }
     else
     {
@@ -686,13 +689,13 @@ Transfer::evalString(xmlNode *element)
     string value;
 
     bool first_time = true;
+    out_wblank.clear();
 
     for(xmlNode *i = element->children; i != NULL; i = i->next)
     {
       if(i->type == XML_ELEMENT_NODE)
       {
         in_lu = true;
-        secondary_tags.clear();
         
         string myword;
 
@@ -705,7 +708,6 @@ Transfer::evalString(xmlNode *element)
         }
         
         in_lu = false;
-        myword.append(secondary_tags);
 
 	if(!first_time)
 	{
@@ -728,7 +730,7 @@ Transfer::evalString(xmlNode *element)
 
     if(value != "")
     {
-      return "^"+value+"$";
+      return out_wblank+"^"+value+"$";
     }
     else
     {
@@ -760,7 +762,7 @@ Transfer::processOut(xmlNode *localroot)
         if(!xmlStrcmp(i->name, (const xmlChar *) "lu"))
         {
           in_lu = true;
-          secondary_tags.clear();
+          out_wblank.clear();
             
           string myword;
           for(xmlNode *j = i->children; j != NULL; j = j->next)
@@ -773,9 +775,9 @@ Transfer::processOut(xmlNode *localroot)
             
           in_lu = false;
 
-          myword.append(secondary_tags);
           if(myword != "")
           {
+            fputws_unlocked(UtfConverter::fromUtf8(out_wblank).c_str(), output);
             fputwc_unlocked(L'^', output);
             fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
             fputwc_unlocked(L'$', output);
@@ -783,46 +785,53 @@ Transfer::processOut(xmlNode *localroot)
         }
         else if(!xmlStrcmp(i->name, (const xmlChar *) "mlu"))
         {
-	  fputwc_unlocked('^', output);
-	  bool first_time = true;
-	  for(xmlNode *j = i->children; j != NULL; j = j->next)
-	  {
-	    if(j->type == XML_ELEMENT_NODE)
-	    {
-        in_lu = true;
-        secondary_tags.clear();
-        
-              string myword;
-	      for(xmlNode *k = j->children; k != NULL; k = k->next)
-	      {
-	        if(k->type == XML_ELEMENT_NODE)
-	        {
-                  myword.append(evalString(k));
-	        }
-	      }
-        
-        in_lu = false;
-        myword.append(secondary_tags);
-
-	      if(!first_time)
-	      {
-	        if(myword != "" && myword[0] != '#')  //'+#' problem
-	        {
-	          fputwc_unlocked(L'+', output);
+          string myword;
+          bool first_time = true;
+          out_wblank.clear();
+          
+          for(xmlNode *j = i->children; j != NULL; j = j->next)
+          {
+            if(j->type == XML_ELEMENT_NODE)
+            {
+              in_lu = true;
+              
+              string mylocalword;
+              for(xmlNode *k = j->children; k != NULL; k = k->next)
+              {
+                if(k->type == XML_ELEMENT_NODE)
+                {
+                  mylocalword.append(evalString(k));
                 }
-	      }
-	      else
-	      {
-	        if(myword != "")
-	        {
-	          first_time = false;
-                }
-	      }
+              }
+              
+              in_lu = false;
 
-	      fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
-	    }
-	  }
-	  fputwc_unlocked(L'$', output);
+              if(!first_time)
+              {
+                if(mylocalword != "" && mylocalword[0] != '#')  //'+#' problem
+                {
+                  myword += '+';
+                }
+              }
+              else
+              {
+                if(mylocalword != "")
+                {
+                  first_time = false;
+                }
+              }
+              
+              myword.append(mylocalword);
+            }
+          }
+          
+          if(myword != "")
+          {
+            fputws_unlocked(UtfConverter::fromUtf8(out_wblank).c_str(), output);
+            fputwc_unlocked('^', output);
+            fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
+            fputwc_unlocked(L'$', output);
+          }
         }
         else // 'b'
         {
@@ -914,7 +923,7 @@ Transfer::processChunk(xmlNode *localroot)
       else if(!xmlStrcmp(i->name, (const xmlChar *) "lu"))
       {
         in_lu = true;
-        secondary_tags.clear();
+        out_wblank.clear();
           
         string myword;
         for(xmlNode *j = i->children; j != NULL; j = j->next)
@@ -925,11 +934,10 @@ Transfer::processChunk(xmlNode *localroot)
           }
         }
           in_lu = false;
-
-          myword.append(secondary_tags);
           
         if(myword != "")
         {
+          result.append(out_wblank);
           result.append("^");
           result.append(myword);
           result.append("$");
@@ -939,13 +947,15 @@ Transfer::processChunk(xmlNode *localroot)
       {
         bool first_time = true;
         string myword;
+        
+        out_wblank.clear();
+        
         for(xmlNode *j = i->children; j != NULL; j = j->next)
         {
           string mylocalword;
           if(j->type == XML_ELEMENT_NODE)
           {
             in_lu = true;
-            secondary_tags.clear();
             
             for(xmlNode *k = j->children; k != NULL; k = k->next)
             {
@@ -956,7 +966,6 @@ Transfer::processChunk(xmlNode *localroot)
             }
             
             in_lu = false;
-            mylocalword.append(secondary_tags);
 
             if(!first_time)
             {
@@ -974,6 +983,7 @@ Transfer::processChunk(xmlNode *localroot)
         }
         if(myword != "")
         {
+          result.append(out_wblank);
           result.append("^");
           result.append(myword);
           result.append("$");
@@ -1100,8 +1110,7 @@ Transfer::processLet(xmlNode *localroot)
         in_let_var = true;
         var_val = ti.getContent();
 
-        var_secondary_tags[var_val].clear();
-        var_has_lemq[var_val] = false;
+        var_out_wblank[var_val].clear();
         
         variables[ti.getContent()] = evalString(rightSide);
           
@@ -1150,8 +1159,7 @@ Transfer::processLet(xmlNode *localroot)
     string const val = (const char *) leftSide->properties->children->content;
     
     var_val = val;
-    var_secondary_tags[var_val].clear();
-    var_has_lemq[var_val] = false;
+    var_out_wblank[var_val].clear();
     
     variables[val] = evalString(rightSide);
       
@@ -2067,7 +2075,37 @@ Transfer::readToken(FILE *in)
     int val = fgetwc_unlocked(in);
     if(feof(in) || (val == 0 && internal_null_flush))
     {
+      in_wblank = false;
       return input_buffer.add(TransferToken(content, tt_eof));
+    }
+    if(in_wblank)
+    {
+      content = L"[[";
+      content+= wchar_t(val);
+      
+      while(true)
+      {
+        int val3 = fgetwc_unlocked(in);
+        if(val3 == L'\\')
+        {
+          content += L'\\';
+          content += wchar_t(fgetwc_unlocked(in));
+        }
+        else if(val3 == L'$') //[[..]]^..$ is the LU
+        {
+          in_wblank = false;
+          return input_buffer.add(TransferToken(content, tt_word));
+        }
+        else if(val3 == L'\0' && null_flush)
+        {
+          in_wblank = false;
+          fflush(output);
+        }
+        else
+        {
+          content += wchar_t(val3);
+        }
+      }
     }
     if(val == '\\')
     {
@@ -2079,21 +2117,28 @@ Transfer::readToken(FILE *in)
       content += L'[';
       while(true)
       {
-	int val2 = fgetwc_unlocked(in);
-	if(val2 == L'\\')
-	{
-	  content += L'\\';
-	  content += wchar_t(fgetwc_unlocked(in));
-	}
-	else if(val2 == L']')
-	{
-	  content += L']';
-	  break;
-	}
-	else
-	{
-	  content += wchar_t(val2);
-	}
+        int val2 = fgetwc_unlocked(in);
+        if(val2 == L'\\')
+        {
+          content += L'\\';
+          content += wchar_t(fgetwc_unlocked(in));
+        }
+        else if(val2 == L'[')
+        { //wordbound blank
+          in_wblank = true;
+          content.pop_back();
+          
+          return input_buffer.add(TransferToken(content, tt_blank));
+        }
+        else if(val2 == L']')
+        {
+          content += L']';
+          break;
+        }
+        else
+        {
+          content += wchar_t(val2);
+        }
       }
     }
     else if(val == L'$')
@@ -2106,6 +2151,7 @@ Transfer::readToken(FILE *in)
     }
     else if(val == L'\0' && null_flush)
     {
+      in_wblank = false;
       fflush(output);
     }
     else
@@ -2172,6 +2218,7 @@ Transfer::transfer(FILE *in, FILE *out)
   unsigned int prev_last = last;
   int lastrule_id = -1;
   set<int> banned_rules;
+  in_wblank = false;
 
   output = out;
   ms.init(me->getInitial());
@@ -2266,6 +2313,7 @@ Transfer::transfer(FILE *in, FILE *out)
           }
 
           pair<wstring, int> tr;
+          wstring tr_wblank;
           if(useBilingual && preBilingual == false)
           {
 	    if(isExtended && (*tmpword[0])[0] == L'*')
@@ -2290,6 +2338,7 @@ Transfer::transfer(FILE *in, FILE *out)
             wstring sl;
             wstring tl;
             wstring ref;
+            wstring wblank;
 
             int seenSlash = 0;
             for(wstring::const_iterator it = tmpword[0]->begin(); it != tmpword[0]->end(); it++)
@@ -2316,6 +2365,47 @@ Transfer::transfer(FILE *in, FILE *out)
                 }
                 continue;
               }
+              else if(*it == L'[')
+              {
+                if(*(it+1) == L'[') //wordbound blank
+                {
+                  while(true)
+                  {
+                    if(*it == L'\\')
+                    {
+                      wblank.push_back(*it);
+                      it++;
+                      wblank.push_back(*it);
+                    }
+                    else if(*it == L'^' && *(it-1) == L']' && *(it-2) == L']')
+                    {
+                      break;
+                    }
+                    else
+                    {
+                      wblank.push_back(*it);
+                    }
+                    
+                    it++;
+                  }
+                }
+                else
+                {
+                  if(seenSlash == 0)
+                  {
+                    sl.push_back(*it);
+                  }
+                  else if(seenSlash == 1)
+                  {
+                    tl.push_back(*it);
+                  }
+                  else
+                  {
+                    ref.push_back(*it);
+                  }
+                }
+                continue;
+              }
               else if(*it == L'/')
               {
                 seenSlash++;
@@ -2338,6 +2428,7 @@ Transfer::transfer(FILE *in, FILE *out)
             }
             //tmpword[0]->assign(sl);
             tr = pair<wstring, int>(tl, false);
+            tr_wblank = wblank;
             //wcerr << L"pb: " << *tmpword[0] << L" :: " << sl << L" >> " << tl << endl ;
           }
           else
@@ -2349,23 +2440,30 @@ Transfer::transfer(FILE *in, FILE *out)
 	  {
 	    if(defaultAttrs == lu)
 	    {
-	      fputwc_unlocked(L'^', output);
+        if(tr.first[0] != L'[' || tr.first[1] != L'[')
+        {
+          fputwc_unlocked(L'^', output);
+        }
 	      fputws_unlocked(tr.first.c_str(), output);
 	      fputwc_unlocked(L'$', output);
-            }
-            else
-            {
-              if(tr.first[0] == '*')
-              {
-                fputws_unlocked(L"^unknown<unknown>{^", output);
-              }
-              else
-              {
-	        fputws_unlocked(L"^default<default>{^", output);
-              }
-	      fputws_unlocked(tr.first.c_str(), output);
-	      fputws_unlocked(L"$}$", output);
-            }
+      }
+      else
+      {
+        if(tr.first[0] == '*')
+        {
+          fputws_unlocked(L"^unknown<unknown>{", output);
+          fputws_unlocked(tr_wblank.c_str(), output);
+          fputwc_unlocked(L'^', output);
+        }
+        else
+        {
+          fputws_unlocked(L"^default<default>{", output);
+          fputws_unlocked(tr_wblank.c_str(), output);
+          fputwc_unlocked(L'^', output);
+        }
+          fputws_unlocked(tr.first.c_str(), output);
+          fputws_unlocked(L"$}$", output);
+      }
 	  }
 	  banned_rules.clear();
 	  tmpword.clear();
@@ -2473,17 +2571,18 @@ Transfer::applyRule()
     }
     else
     {
-      blank[i-1] = new string(UtfConverter::toUtf8(*tmpblank[i-1]));
+        blank[i-1] = new string(UtfConverter::toUtf8(*tmpblank[i-1]));
     }
 
     pair<wstring, int> tr;
     if(useBilingual && preBilingual == false)
     {
       tr = fstp.biltransWithQueue(*tmpword[i], false);
-      wstring refx;
+      wstring refx,wblankx;
       word[i] = new TransferWord(UtfConverter::toUtf8(*tmpword[i]),
                                  UtfConverter::toUtf8(tr.first),
                                  UtfConverter::toUtf8(refx),
+                                 UtfConverter::toUtf8(wblankx),
                                  tr.second);
     }
     else if(preBilingual)
@@ -2491,6 +2590,7 @@ Transfer::applyRule()
       wstring sl;
       wstring tl;
       wstring ref;
+      wstring wblank;
 
       int seenSlash = 0;
       for(wstring::const_iterator it = tmpword[i]->begin(); it != tmpword[i]->end(); it++)
@@ -2514,6 +2614,47 @@ Transfer::applyRule()
             ref.push_back(*it);
             it++;
             ref.push_back(*it);
+          }
+          continue;
+        }
+        else if(*it == L'[')
+        {
+          if(*(it+1) == L'[') //wordbound blank
+          {
+            while(true)
+            {
+              if(*it == L'\\')
+              {
+                wblank.push_back(*it);
+                it++;
+                wblank.push_back(*it);
+              }
+              else if(*it == L'^' && *(it-1) == L']' && *(it-2) == L']')
+              {
+                break;
+              }
+              else
+              {
+                wblank.push_back(*it);
+              }
+              
+              it++;
+            }
+          }
+          else
+          {
+            if(seenSlash == 0)
+            {
+              sl.push_back(*it);
+            }
+            else if(seenSlash == 1)
+            {
+              tl.push_back(*it);
+            }
+            else
+            {
+              ref.push_back(*it);
+            }
           }
           continue;
         }
@@ -2542,15 +2683,17 @@ Transfer::applyRule()
       word[i] = new TransferWord(UtfConverter::toUtf8(sl),
                                  UtfConverter::toUtf8(tr.first),
                                  UtfConverter::toUtf8(ref),
+                                 UtfConverter::toUtf8(wblank),
                                  tr.second);
     }
     else // neither useBilingual nor preBilingual (sl==tl)
     {
       tr = pair<wstring, int>(*tmpword[i], false);
-      wstring refx;
+      wstring refx,wblankx;
       word[i] = new TransferWord(UtfConverter::toUtf8(*tmpword[i]),
                                  UtfConverter::toUtf8(tr.first),
-                                 UtfConverter::toUtf8(refx), 
+                                 UtfConverter::toUtf8(refx),
+                                 UtfConverter::toUtf8(wblankx),
                                  tr.second);
     }
   }
@@ -2598,7 +2741,33 @@ Transfer::applyWord(wstring const &word_str)
         i++;
 	ms.step(towlower(word_str[i]), any_char);
 	break;
-
+        
+      case L'[':
+        if(word_str[i+1] == L'[')
+        {
+          while(true)
+          {
+            if(word_str[i] == L'\\')
+            {
+              i++;
+            }
+            else if(i >= 4)
+            {
+              if(word_str[i] == L'^' && word_str[i-1] == L']' && word_str[i-2] == L']')
+              {
+                break;
+              }
+            }
+            
+            i++;
+          }
+        }
+        else
+        {
+          ms.step(towlower(word_str[i]), any_char);
+        }
+        break;
+        
       case L'/':
         i = limit;
         break;
@@ -2606,12 +2775,6 @@ Transfer::applyWord(wstring const &word_str)
       case L'<':
 	for(unsigned int j = i+1; j != limit; j++)
 	{
-      if(word_str[j] == L':') //if secondary tags reached, discard current tag and stop processing word
-      {
-          i = limit;
-          break;
-      }
-        
 	  if(word_str[j] == L'>')
 	  {
 	    int symbol = alphabet(word_str.substr(i, j-i+1));

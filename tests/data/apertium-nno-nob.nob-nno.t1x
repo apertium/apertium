@@ -9,6 +9,9 @@
     <def-cat n="prn">
       <cat-item tags="prn.*"/>
     </def-cat>
+    <def-cat n="nacr">
+      <cat-item tags="n.acr"/>
+    </def-cat>
   </section-def-cats>
   <section-def-attrs>
     <def-attr n="a_nom">
@@ -81,6 +84,37 @@
             <tags><tag><clip pos="1" side="tl" part="tags"/></tag></tags>
             <lu><clip pos="1" side="tl" part="whole"/></lu>
           </chunk>
+        </out>
+      </action>
+    </rule>
+
+    <rule comment="blankrule"> <!-- dummy rule for blank testing -->
+      <pattern>
+        <pattern-item n="nacr"/>
+        <pattern-item n="nacr"/>
+        <pattern-item n="prn"/>
+      </pattern>
+      <action>
+        <out>
+          <chunk name="prn" case="caseFirstWord">
+            <tags><tag><clip pos="3" side="tl" part="tags"/></tag></tags>
+            <lu><clip pos="3" side="tl" part="whole"/></lu>
+            <b/>
+            <lu>
+              <clip pos="2" side="tl" part="lem"/>
+              <lit-tag v="nacr.sg.m"/>
+            </lu>
+          </chunk>
+          <b pos="1"/>
+          <chunk name="det" case="caseFirstWord">
+            <tags><tag><clip pos="1" side="tl" part="tags"/></tag></tags>
+            <mlu>
+              <lu><clip pos="1" side="tl" part="whole"/></lu>
+              <b/>
+              <lu><clip pos="3" side="tl" part="whole"/></lu>
+            </mlu>
+          </chunk>
+          <b pos="2"/>
         </out>
       </action>
     </rule>

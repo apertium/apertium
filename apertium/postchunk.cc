@@ -232,6 +232,75 @@ Postchunk::checkIndex(xmlNode *element, int index, int limit)
   return true;
 }
 
+bool
+Postchunk::gettingLemmaFromWord(string attr)
+{
+    return (attr.compare("lem") == 0 || attr.compare("lemh") == 0 || attr.compare("whole") == 0);
+}
+
+string
+Postchunk::combineWblanks(string wblank_current, string wblank_to_add)
+{
+  if(wblank_current.empty() && wblank_to_add.empty())
+  {
+    return wblank_current;
+  }
+  else if(wblank_current.empty())
+  {
+    return wblank_to_add;
+  }
+  else if(wblank_to_add.empty())
+  {
+    return wblank_current;
+  }
+  
+  string new_out_wblank;
+  for(string::const_iterator it = wblank_current.begin(); it != wblank_current.end(); it++)
+  {
+    if(*it == '\\')
+    {
+      new_out_wblank += *it;
+      it++;
+      new_out_wblank += *it;
+    }
+    else if(*it == ']')
+    {
+      if(*(it+1) == ']')
+      {
+        new_out_wblank += ';';
+        break;
+      }
+    }
+    else
+    {
+      new_out_wblank += *it;
+    }
+  }
+  
+  for(string::const_iterator it = wblank_to_add.begin(); it != wblank_to_add.end(); it++)
+  {
+    if(*it == '\\')
+    {
+      new_out_wblank += *it;
+      it++;
+      new_out_wblank += *it;
+    }
+    else if(*it == '[')
+    {
+      if(*(it+1) == '[')
+      {
+        new_out_wblank += ' ';
+        it++;
+      }
+    }
+    else
+    {
+      new_out_wblank += *it;
+    }
+  }
+  
+  return new_out_wblank;
+}
 
 string
 Postchunk::evalString(xmlNode *element)
@@ -246,6 +315,18 @@ Postchunk::evalString(xmlNode *element)
       case ti_clip_tl:
         if(checkIndex(element, ti.getPos(), lword))
         {
+          if(gettingLemmaFromWord(ti.getContent()))
+          {
+            if(in_lu)
+            {
+              out_wblank = combineWblanks(out_wblank, word[ti.getPos()]->getBlank());
+            }
+            else if(in_let_var)
+            {
+              var_out_wblank[var_val] = combineWblanks(var_out_wblank[var_val], word[ti.getPos()]->getBlank());
+            }
+          }
+          
           return word[ti.getPos()]->chunkPart(attr_items[ti.getContent()]);
         }
         break;
@@ -254,6 +335,8 @@ Postchunk::evalString(xmlNode *element)
         return StringUtils::itoa_string(tmpword.size());
 
       case ti_var:
+        out_wblank = combineWblanks(out_wblank, var_out_wblank[ti.getContent()]);
+        
         return variables[ti.getContent()];
 
       case ti_lit_tag:
@@ -387,6 +470,9 @@ Postchunk::evalString(xmlNode *element)
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "lu"))
   {
+    in_lu = true;
+    out_wblank.clear();
+    
     string myword;
     for(xmlNode *i = element->children; i != NULL; i = i->next)
     {
@@ -395,10 +481,12 @@ Postchunk::evalString(xmlNode *element)
          myword.append(evalString(i));
        }
     }
+    
+    in_lu = false;
 
     if(myword != "")
     {
-      return "^"+myword+"$";
+      return out_wblank+"^"+myword+"$";
     }
     else
     {
@@ -410,20 +498,25 @@ Postchunk::evalString(xmlNode *element)
     string value;
 
     bool first_time = true;
+    out_wblank.clear();
 
     for(xmlNode *i = element->children; i != NULL; i = i->next)
     {
       if(i->type == XML_ELEMENT_NODE)
       {
+        in_lu = true;
+        
         string myword;
 
         for(xmlNode *j = i->children; j != NULL; j = j->next)
         {
           if(j->type == XML_ELEMENT_NODE)
-	  {
+          {
             myword.append(evalString(j));
-	  }
+          }
         }
+        
+        in_lu = false;
 
 	if(!first_time)
 	{
@@ -446,7 +539,7 @@ Postchunk::evalString(xmlNode *element)
 
     if(value != "")
     {
-      return "^"+value+"$";
+      return out_wblank+"^"+value+"$";
     }
     else
     {
@@ -472,6 +565,9 @@ Postchunk::processOut(xmlNode *localroot)
     {
       if(!xmlStrcmp(i->name, (const xmlChar *) "lu"))
       {
+        in_lu = true;
+        out_wblank.clear();
+        
         string myword;
         for(xmlNode *j = i->children; j != NULL; j = j->next)
         {
@@ -480,8 +576,12 @@ Postchunk::processOut(xmlNode *localroot)
             myword.append(evalString(j));
           }
         }
+        
+        in_lu = false;
+        
         if(myword != "")
         {
+          fputws_unlocked(UtfConverter::fromUtf8(out_wblank).c_str(), output);
           fputwc_unlocked(L'^', output);
           fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
           fputwc_unlocked(L'$', output);
@@ -489,38 +589,49 @@ Postchunk::processOut(xmlNode *localroot)
       }
       else if(!xmlStrcmp(i->name, (const xmlChar *) "mlu"))
       {
-        fputwc_unlocked(L'^', output);
+        string myword;
         bool first_time = true;
+        out_wblank.clear();
+        
         for(xmlNode *j = i->children; j != NULL; j = j->next)
         {
           if(j->type == XML_ELEMENT_NODE)
           {
-            string myword;
+            in_lu = true;
+            
+            string mylocalword;
             for(xmlNode *k = j->children; k != NULL; k = k->next)
             {
               if(k->type == XML_ELEMENT_NODE)
               {
-                myword.append(evalString(k));
+                mylocalword.append(evalString(k));
               }
             }
+            
+            in_lu = false;
 
             if(!first_time)
             {
-              if(myword != "")
+              if(mylocalword != "")
               {
-                fputwc_unlocked('+', output);
+                myword += '+';
               }
             }
-	    else
-	    {
-	      if(myword != "")
-	      {
-	        first_time = false;
+            else
+            {
+              if(mylocalword != "")
+              {
+                first_time = false;
               }
-	    }
-	    fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
-	  }
+            }
+            
+            myword.append(mylocalword);
+          }
         }
+
+        fputws_unlocked(UtfConverter::fromUtf8(out_wblank).c_str(), output);
+        fputwc_unlocked('^', output);
+        fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
         fputwc_unlocked(L'$', output);
       }
       else // 'b'
@@ -609,7 +720,13 @@ Postchunk::processLet(xmlNode *localroot)
     switch(ti.getType())
     {
       case ti_var:
+        in_let_var = true;
+        var_val = ti.getContent();
+        var_out_wblank[var_val].clear();
+        
         variables[ti.getContent()] = evalString(rightSide);
+        
+        in_let_var = false;
         return;
 
       case ti_clip_tl:
@@ -628,8 +745,16 @@ Postchunk::processLet(xmlNode *localroot)
   }
   if(!xmlStrcmp(leftSide->name, (const xmlChar *) "var"))
   {
+    in_let_var = true;
+    
     string const val = (const char *) leftSide->properties->children->content;
+    
+    var_val = val;
+    var_out_wblank[var_val].clear();
+    
     variables[val] = evalString(rightSide);
+    
+    in_let_var = false;
     evalStringCache[leftSide] = TransferInstr(ti_var, val, 0);
   }
   else if(!xmlStrcmp(leftSide->name, (const xmlChar *) "clip"))
@@ -678,7 +803,10 @@ Postchunk::processAppend(xmlNode *localroot)
   {
     if(i->type == XML_ELEMENT_NODE)
     {
+      in_let_var = true;
+      var_val = name;
       variables[name].append(evalString(i));
+      in_let_var = false;
     }
   }
 }
@@ -2081,27 +2209,115 @@ Postchunk::splitWordsAndBlanks(wstring const &chunk, vector<wstring *> &words,
     }
     else if(chunk[i] == L'[')
     {
-      if (!(lastblank && blanks.back()))
+      if(chunk[i+1] == L'[') //wordbound blank
       {
-        blanks.push_back(new wstring());
-      }
-      wstring &ref = *(blanks.back());
-      ref += L'[';
-      while(chunk[++i] != L']')
-      {
-        if(chunk[i] == L'\\')
+        if(!lastblank)
         {
-          ref += L'\\';
-          ref += chunk[++i];
+          blanks.push_back(new wstring(L""));
         }
-        else
-        {
-          ref += chunk[i];
-        }
-      }
-      ref += chunk[i];
+        lastblank = false;
+        wstring *myword = new wstring();
+        wstring &ref = *myword;
 
-      lastblank = true;
+        while(true)
+        {
+          if(chunk[i] == L'\\')
+          {
+            ref += L'\\';
+            ref += chunk[++i];
+          }
+          else if(chunk[i] == L']' && chunk[i-1] == L']')
+          {
+            ref += chunk[i];
+            i++; //i->"^"
+            break;
+          }
+          else
+          {
+            ref += chunk[i];
+          }
+          
+          i++;
+        }
+        
+        while(chunk[++i] != L'$')
+        {
+          if(chunk[i] == L'\\')
+          {
+            ref += L'\\';
+            ref += chunk[++i];
+          }
+          else if(chunk[i] == L'<')
+          {
+            if(iswdigit(chunk[i+1]))
+            {
+              // replace tag
+              unsigned long value = wcstoul(chunk.c_str()+i+1,
+                                            NULL, 0) - 1;
+              if(vectags.size() > value)
+              {
+                ref.append(vectags[value]);
+              }
+              while(chunk[++i] != L'>');
+            }
+            else
+            {
+              ref += L'<';
+              while(chunk[++i] != L'>') ref += chunk[i];
+              ref += L'>';
+            }
+          }
+          else
+          {
+            if(uppercase_all)
+            {
+              ref += towupper(chunk[i]);
+            }
+            else if(uppercase_first)
+            {
+              if(iswalnum(chunk[i]))
+              {
+                ref += towupper(chunk[i]);
+                uppercase_first = false;
+              }
+              else
+              {
+                ref += chunk[i];
+              }
+            }
+            else
+            {
+              ref += chunk[i];
+            }
+          }
+        }
+
+        words.push_back(myword);
+      }
+      else
+      {
+        if (!(lastblank && blanks.back()))
+        {
+          blanks.push_back(new wstring());
+        }
+        wstring &ref = *(blanks.back());
+        ref += L'[';
+        while(chunk[++i] != L']')
+        {
+          if(chunk[i] == L'\\')
+          {
+            ref += L'\\';
+            ref += chunk[++i];
+          }
+          else
+          {
+            ref += chunk[i];
+          }
+        }
+        ref += chunk[i];
+
+        lastblank = true;
+      }
     }
     else
     {
