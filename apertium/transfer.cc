@@ -2440,6 +2440,7 @@ Transfer::transfer(FILE *in, FILE *out)
 	  {
 	    if(defaultAttrs == lu)
 	    {
+        fputws_unlocked(tr_wblank.c_str(), output);
         if(tr.first[0] != L'[' || tr.first[1] != L'[')
         {
           fputwc_unlocked(L'^', output);
