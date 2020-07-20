@@ -489,7 +489,7 @@ Postchunk::evalString(xmlNode *element)
     
     if(lword == 1)
     {
-      out_wblank = word[0]->getBlank();
+      out_wblank = word[1]->getBlank();
     }
 
     if(myword != "")
@@ -547,7 +547,7 @@ Postchunk::evalString(xmlNode *element)
     
     if(lword == 1)
     {
-      out_wblank = word[0]->getBlank();
+      out_wblank = word[1]->getBlank();
     }
 
     if(value != "")
@@ -594,7 +594,7 @@ Postchunk::processOut(xmlNode *localroot)
         
         if(lword == 1)
         {
-          out_wblank = word[0]->getBlank();
+          out_wblank = word[1]->getBlank();
         }
         
         if(myword != "")
@@ -649,7 +649,7 @@ Postchunk::processOut(xmlNode *localroot)
         
         if(lword == 1)
         {
-          out_wblank = word[0]->getBlank();
+          out_wblank = word[1]->getBlank();
         }
 
         fputws_unlocked(UtfConverter::fromUtf8(out_wblank).c_str(), output);

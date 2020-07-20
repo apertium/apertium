@@ -56,6 +56,7 @@ private:
   InterchunkWord **word;
   string **blank;
   int lword, lblank;
+  int last_lword;
   Buffer<TransferToken> input_buffer;
   vector<wstring *> tmpword;
   vector<wstring *> tmpblank;

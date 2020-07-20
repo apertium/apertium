@@ -17,6 +17,9 @@
     <def-cat n="n_n">
       <cat-item name="n_n"/>
     </def-cat>
+    <def-cat n="thing_wb">
+      <cat-item name="thing_wb"/>
+    </def-cat>
   </section-def-cats>
 
 
@@ -150,6 +153,25 @@
           <mlu>
             <lu><clip pos="1" part="lemh"/></lu>
             <lu><clip pos="2" part="lem"/></lu>
+          </mlu>
+        </out>
+      </action>
+    </rule>
+
+    <rule comment="CHUNK: thing_wblank">
+      <pattern>
+        <pattern-item n="thing_wb"/>
+      </pattern>
+      <action>
+        <call-macro n="default_to_chunk_number"><with-param pos="1"/><with-param pos="0"/></call-macro>
+        <out>
+          <lu><concat><lit v="newthing"/><lit-tag v="adj.sg"/></concat></lu>
+          <b/>
+          <lu><clip pos="1" part="whole"/></lu>
+          <b/>
+          <mlu>
+            <lu><clip pos="1" part="whole"/></lu>
+            <lu><concat><lit v="newpr"/><lit-tag v="pr"/></concat></lu>
           </mlu>
         </out>
       </action>
