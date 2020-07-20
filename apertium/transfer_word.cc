@@ -26,7 +26,7 @@ TransferWord::copy(TransferWord const &o)
   s_str = o.s_str;
   t_str = o.t_str;
   r_str = o.r_str;
-  b_str = o.b_str;
+  wb_str = o.wb_str;
   queue_length = o.queue_length;
 }
 
@@ -40,9 +40,9 @@ queue_length(0)
 {
 }
 
-TransferWord::TransferWord(string const &src, string const &tgt, string const &ref, string const &blank, int queue)
+TransferWord::TransferWord(string const &src, string const &tgt, string const &ref, string const &wblank, int queue)
 {
-  init(src, tgt, ref, blank);
+  init(src, tgt, ref, wblank);
   queue_length = queue;
 }
 
@@ -68,12 +68,12 @@ TransferWord::operator =(TransferWord const &o)
 }
 
 void
-TransferWord::init(string const &src, string const &tgt, string const &ref, string const &blank)
+TransferWord::init(string const &src, string const &tgt, string const &ref, string const &wblank)
 {
   s_str = src;
   t_str = tgt;
   r_str = ref;
-  b_str = blank;
+  wb_str = wblank;
 }
 
 string
@@ -116,9 +116,9 @@ TransferWord::reference(ApertiumRE const &part, bool with_queue)
 }
 
 string
-TransferWord::blank()
+TransferWord::getWblank()
 {
-  return b_str;
+  return wb_str;
 }
 
 bool

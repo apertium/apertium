@@ -111,6 +111,9 @@ class WordboundBlankTest(PostchunkTest):
     inputs =          ["^n_n<SN><sg>{[[t:b:123456]]^worda<n><ND><m>$ ;[testblank] [[t:s:xyzab12]]^wordb# xyz<n><ND><f>$}$"]
     expectedOutputs = ["[[t:s:xyzab12]]^wordb# xyz<n><ND><f>$ ;[testblank] [[t:b:123456]]^worda<n><ND><m>$ [[t:b:123456; t:s:xyzab12]]^worda+wordb# xyz$"]
 
+class SingleLUWordboundBlankTest(PostchunkTest):
+    inputs =          ["^thing_wb<thing><sg>{^[[t:i:xyzabc]]thing<thing><ND>$}$ ^n_n<SN><sg>{[[t:b:123456]]^worda<n><ND><m>$ ;[testblank] [[t:s:xyzab12]]^wordb# xyz<n><ND><f>$}$ [blanks] ^thing_wb<thing><sg>{^[[t:i:xyzabc]]thing<thing><ND>$}$ [blankx] ^vblex<vblex><imp>{[[t:b:123zbc]]^gå<vblex><imp>$}$^default<default>{^.<sent><clb>$}$ [blanks3] ^thing<thing><sg>{^[[t:i:xyzabc]]thing<thing><ND>$}$"]
+    expectedOutputs = ["[[t:i:xyzabc]]^newthing<adj><sg>$ [[t:i:xyzabc]]^thing<thing><sg>$ [[t:i:xyzabc]]^thing<thing><sg>+newpr<pr>$ [[t:s:xyzab12]]^wordb# xyz<n><ND><f>$ ;[testblank] [[t:b:123456]]^worda<n><ND><m>$ [[t:b:123456; t:s:xyzab12]]^worda+wordb# xyz$ [blanks] [[t:i:xyzabc]]^newthing<adj><sg>$ [[t:i:xyzabc]]^thing<thing><sg>$ [[t:i:xyzabc]]^thing<thing><sg>+newpr<pr>$ [blankx] [[t:b:123zbc]]^gå<vblex><imp>$^.<sent><clb>$ [blanks3] [[t:i:xyzabc]]^thing<thing><sg>$"]
 class BincompatTest(SimplePostchunkTest):
     bindata = "data/bincompat.t3x.bin"
 

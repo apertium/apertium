@@ -89,7 +89,7 @@ InterchunkWord::init(string const &chunk)
   
   if(b_end > 0)
   {
-    this->blank = chunk.substr(0, b_end);
+    this->wblank = chunk.substr(0, b_end);
     this->chunk = chunk.substr(b_end);
   }
   else
@@ -126,9 +126,9 @@ InterchunkWord::chunkPart(ApertiumRE const &part)
 }
 
 string
-InterchunkWord::getBlank()
+InterchunkWord::getWblank()
 {
-  return blank;
+  return wblank;
 }
 
 bool

@@ -315,15 +315,15 @@ Postchunk::evalString(xmlNode *element)
       case ti_clip_tl:
         if(checkIndex(element, ti.getPos(), lword))
         {
-          if(gettingLemmaFromWord(ti.getContent()))
+          if(gettingLemmaFromWord(ti.getContent()) && lword > 1)
           {
             if(in_lu)
             {
-              out_wblank = combineWblanks(out_wblank, word[ti.getPos()]->getBlank());
+              out_wblank = combineWblanks(out_wblank, word[ti.getPos()]->getWblank());
             }
             else if(in_let_var)
             {
-              var_out_wblank[var_val] = combineWblanks(var_out_wblank[var_val], word[ti.getPos()]->getBlank());
+              var_out_wblank[var_val] = combineWblanks(var_out_wblank[var_val], word[ti.getPos()]->getWblank());
             }
           }
           
@@ -335,7 +335,10 @@ Postchunk::evalString(xmlNode *element)
         return StringUtils::itoa_string(tmpword.size());
 
       case ti_var:
+        if(lword > 1)
+        {
         out_wblank = combineWblanks(out_wblank, var_out_wblank[ti.getContent()]);
+        }
         
         return variables[ti.getContent()];
 
@@ -483,6 +486,11 @@ Postchunk::evalString(xmlNode *element)
     }
     
     in_lu = false;
+    
+    if(lword == 1)
+    {
+      out_wblank = word[1]->getWblank();
+    }
 
     if(myword != "")
     {
@@ -536,6 +544,11 @@ Postchunk::evalString(xmlNode *element)
 	value.append(myword);
       }
     }
+    
+    if(lword == 1)
+    {
+      out_wblank = word[1]->getWblank();
+    }
 
     if(value != "")
     {
@@ -578,6 +591,11 @@ Postchunk::processOut(xmlNode *localroot)
         }
         
         in_lu = false;
+        
+        if(lword == 1)
+        {
+          out_wblank = word[1]->getWblank();
+        }
         
         if(myword != "")
         {
@@ -627,6 +645,11 @@ Postchunk::processOut(xmlNode *localroot)
             
             myword.append(mylocalword);
           }
+        }
+        
+        if(lword == 1)
+        {
+          out_wblank = word[1]->getWblank();
         }
 
         fputws_unlocked(UtfConverter::fromUtf8(out_wblank).c_str(), output);

@@ -43,7 +43,7 @@ private:
   /**
    * Wordbound blank (for postchunk)
    */
-  string blank;
+  string wblank;
 
   /**
    * Copy method
@@ -100,9 +100,9 @@ public:
   
   /**
    * Reference the wordbound blank (for postchunk)
-   * @returns reference to the part of string matched
+   * @returns reference to the wblank string
    */
-  string getBlank();
+  string getWblank();
 
   /**
    * Sets a value for a chunk part

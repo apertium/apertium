@@ -110,7 +110,6 @@
             <tags><tag><clip pos="1" side="tl" part="tags"/></tag></tags>
             <mlu>
               <lu><clip pos="1" side="tl" part="whole"/></lu>
-              <b/>
               <lu><clip pos="3" side="tl" part="whole"/></lu>
             </mlu>
           </chunk>
@@ -118,5 +117,32 @@
         </out>
       </action>
     </rule>
+
+    <rule comment="blankrule_single">
+      <pattern>
+        <pattern-item n="nacr"/>
+      </pattern>
+      <action>
+        <out>
+          <chunk name="nacr" case="caseFirstWord">
+            <tags><tag><clip pos="1" side="tl" part="tags"/></tag></tags>
+            <lu><concat><lit v="test"/><lit-tag v="n.sg"/></concat></lu>
+            <b/>
+            <lu><clip pos="1" side="tl" part="whole"/></lu>
+          </chunk>
+          <b/>
+          <chunk name="nacr2" case="caseFirstWord">
+            <tags><tag><clip pos="1" side="tl" part="tags"/></tag></tags>
+            <lu><concat><lit v="testlem"/><lit-tag v="n.pl"/></concat></lu>
+            <b/>
+            <mlu>
+              <lu><clip pos="1" side="tl" part="whole"/></lu>
+              <lu><concat><lit v="postp"/><lit-tag v="adj.sg"/></concat></lu>
+            </mlu>
+          </chunk>
+        </out>
+      </action>
+    </rule>
+
   </section-rules>
 </transfer>

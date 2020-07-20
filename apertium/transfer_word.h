@@ -49,7 +49,7 @@ private:
   /**
    * Wordbound blank
    */
-  string b_str;
+  string wb_str;
 
   /**
    * Queue length
@@ -105,10 +105,10 @@ public:
    * @param src source word
    * @param tgt target word
    * @param ref reference word
-   * @param blank wordbound blank
+   * @param wblank wordbound blank
    * @param queue queue lenght
    */
-  TransferWord(string const &src, string const &tgt, string const &ref, string const &blank, int queue = 0);
+  TransferWord(string const &src, string const &tgt, string const &ref, string const &wblank, int queue = 0);
 
   /**
    * Assignment operator
@@ -123,9 +123,9 @@ public:
    * @param src source word
    * @param tgt target word
    * @param ref reference word
-   * @param blank wordbound blank
+   * @param wblank wordbound blank
    */
-  void init(string const &src, string const &tgt, string const &ref, string const &blank);
+  void init(string const &src, string const &tgt, string const &ref, string const &wblank);
 
   /**
    * Reference a source language word part
@@ -155,7 +155,7 @@ public:
    * Reference the wordbound blank part
    * @returns reference to the wordbound blank
    */
-  string blank();
+  string getWblank();
 
   /**
    * Sets a value for a source language word part
