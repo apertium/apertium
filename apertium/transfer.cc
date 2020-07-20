@@ -375,7 +375,7 @@ Transfer::evalString(xmlNode *element)
       case ti_clip_sl:
         if(checkIndex(element, ti.getPos(), lword))
         {
-          if(gettingLemmaFromWord(ti.getContent()) && lword > 1)
+          if(gettingLemmaFromWord(ti.getContent()) && last_lword > 1)
           {
             if(in_lu)
             {
@@ -394,7 +394,7 @@ Transfer::evalString(xmlNode *element)
       case ti_clip_tl:
         if(checkIndex(element, ti.getPos(), lword))
         {
-          if(gettingLemmaFromWord(ti.getContent()) && lword > 1)
+          if(gettingLemmaFromWord(ti.getContent()) && last_lword > 1)
           {
             if(in_lu)
             {
@@ -460,7 +460,7 @@ Transfer::evalString(xmlNode *element)
         break;
 
       case ti_var:
-        if(lword > 1)
+        if(last_lword > 1)
         {
           out_wblank = combineWblanks(out_wblank, var_out_wblank[ti.getContent()]);
         }
@@ -678,7 +678,7 @@ Transfer::evalString(xmlNode *element)
     
     in_lu = false;
     
-    if(lword == 1)
+    if(last_lword == 1)
     {
       out_wblank = word[0]->blank();
     }
@@ -736,7 +736,7 @@ Transfer::evalString(xmlNode *element)
       }
     }
 
-    if(lword == 1)
+    if(last_lword == 1)
     {
       out_wblank = word[0]->blank();
     }
@@ -788,7 +788,7 @@ Transfer::processOut(xmlNode *localroot)
             
           in_lu = false;
           
-          if(lword == 1)
+          if(last_lword == 1)
           {
             out_wblank = word[0]->blank();
           }
@@ -843,7 +843,7 @@ Transfer::processOut(xmlNode *localroot)
             }
           }
           
-          if(lword == 1)
+          if(last_lword == 1)
           {
             out_wblank = word[0]->blank();
           }
@@ -959,7 +959,7 @@ Transfer::processChunk(xmlNode *localroot)
         
         in_lu = false;
         
-        if(lword == 1)
+        if(last_lword == 1)
         {
           out_wblank = word[0]->blank();
         }
@@ -1011,7 +1011,7 @@ Transfer::processChunk(xmlNode *localroot)
           myword.append(mylocalword);
         }
         
-        if(lword == 1)
+        if(last_lword == 1)
         {
           out_wblank = word[0]->blank();
         }
@@ -2530,6 +2530,7 @@ Transfer::transfer(FILE *in, FILE *out)
       lastrule = rule_map[val-1];
       lastrule_id = val;
       last = input_buffer.getPos();
+      last_lword = tmpword.size();
 
       if(trace)
       {

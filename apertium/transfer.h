@@ -57,6 +57,7 @@ private:
   TransferWord **word;
   string **blank;
   int lword, lblank;
+  int last_lword;
   string noblank = "";
   Buffer<TransferToken> input_buffer;
   vector<wstring *> tmpword;
