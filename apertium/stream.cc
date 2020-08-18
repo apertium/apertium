@@ -76,6 +76,7 @@ StreamedType Stream::get() {
       case L'[':
         if (ThePreviousCase) {
           switch (ThePreviousCase->ThePreviousCase) {
+          case L'[':
           case L']':
           case L'$':
             break;
@@ -83,7 +84,7 @@ StreamedType Stream::get() {
             std::wstringstream Message;
             Message << L"unexpected '" << Character_ << L"' following '"
                     << ThePreviousCase->ThePreviousCase
-                    << L"', '[' expected to follow ']' or '$'";
+                    << L"', '[' expected to follow '[', ']' or '$'";
             throw wchar_t_Exception::Stream::UnexpectedCase(
                 Message_what(Message));
           }
@@ -103,6 +104,7 @@ StreamedType Stream::get() {
 
         switch (ThePreviousCase->ThePreviousCase) {
         case L'[':
+        case L']':
           push_back_Character(TheStreamedType, Lemma, Character_);
           ThePreviousCase = PreviousCaseType(Character_);
           continue;
@@ -110,7 +112,7 @@ StreamedType Stream::get() {
           std::wstringstream Message;
           Message << L"unexpected '" << Character_ << L"' following '"
                   << ThePreviousCase->ThePreviousCase
-                  << L"', ']' expected to follow '['";
+                  << L"', ']' expected to follow '[' or ']'";
           throw wchar_t_Exception::Stream::UnexpectedCase(
               Message_what(Message));
         }
