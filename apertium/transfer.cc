@@ -686,13 +686,13 @@ Transfer::evalString(xmlNode *element)
       
     if(myword != "")
     {
-      if(myword[0] != L'[' && myword[1] != L'[')
+      if(myword[0] != L'[' || myword[1] != L'[')
       {
-        return myword+"$";
+        return out_wblank+"^"+myword+"$";
       }
       else
       {
-        return out_wblank+"^"+myword+"$";
+        return myword+"$";
       }
     }
     else
@@ -803,13 +803,10 @@ Transfer::processOut(xmlNode *localroot)
 
           if(myword != "")
           {
-            if(myword[0] != L'[' && myword[1] != L'[')
-            {
-              fputwc_unlocked(L'^', output);
-            }
-            else
+            if(myword[0] != L'[' || myword[1] != L'[')
             {
               fputws_unlocked(UtfConverter::fromUtf8(out_wblank).c_str(), output);
+              fputwc_unlocked(L'^', output);
             }
             
             fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
@@ -2490,9 +2487,9 @@ Transfer::transfer(FILE *in, FILE *out)
 	  {
 	    if(defaultAttrs == lu)
 	    {
-        fputws_unlocked(tr_wblank.c_str(), output);
         if(tr.first[0] != L'[' || tr.first[1] != L'[')
         {
+          fputws_unlocked(tr_wblank.c_str(), output);
           fputwc_unlocked(L'^', output);
         }
 	      fputws_unlocked(tr.first.c_str(), output);
