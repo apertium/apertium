@@ -686,7 +686,14 @@ Transfer::evalString(xmlNode *element)
       
     if(myword != "")
     {
-      return out_wblank+"^"+myword+"$";
+      if(myword[0] != L'[' && myword[1] != L'[')
+      {
+        return myword+"$";
+      }
+      else
+      {
+        return out_wblank+"^"+myword+"$";
+      }
     }
     else
     {
@@ -796,8 +803,15 @@ Transfer::processOut(xmlNode *localroot)
 
           if(myword != "")
           {
-            fputws_unlocked(UtfConverter::fromUtf8(out_wblank).c_str(), output);
-            fputwc_unlocked(L'^', output);
+            if(myword[0] != L'[' && myword[1] != L'[')
+            {
+              fputwc_unlocked(L'^', output);
+            }
+            else
+            {
+              fputws_unlocked(UtfConverter::fromUtf8(out_wblank).c_str(), output);
+            }
+            
             fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
             fputwc_unlocked(L'$', output);
           }
