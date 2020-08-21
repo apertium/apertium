@@ -226,6 +226,8 @@ bin_PROGRAMS = apertium-cleanstream \
 	       apertium-perceptron-trace \
 	       apertium-tmxbuild \
 	       apertium-transfer \
+	       apertium-wblank-attach \
+	       apertium-wblank-detach \
 	       apertium-adapt-docx
 
 bin_SCRIPTS =  $(GENERATEDSCRIPTS) apertium-get/apertium-get
@@ -316,6 +318,9 @@ apertium_tagger_apply_new_rules_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJ
 
 apertium_tagger_readwords_SOURCES = apertium_tagger_readwords.cc
 apertium_tagger_readwords_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
+
+apertium_wblank_attach_SOURCES = wblank-attach.cc
+apertium_wblank_detach_SOURCES = wblank-detach.cc
 
 apertium_adapt_docx_SOURCES = adapt_docx.cc
 apertium_adapt_docx_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES) $(ICU_LIBS)
