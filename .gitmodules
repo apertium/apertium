@@ -1,3 +1,0 @@
-[submodule "apertium/apertium-get"]
-	path = apertium/apertium-get
-	url = https://github.com/unhammer/apertium-get
