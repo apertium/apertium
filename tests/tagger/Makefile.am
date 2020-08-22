@@ -14,4 +14,4 @@ apertiumlib = $(prefix)/lib
 apertiumsysconf = $(prefix)/etc/apertium
 
 test_find_similar_ambiguity_class_SOURCES = test_find_similar_ambiguity_classes.cc
-test_find_similar_ambiguity_class_LDADD = -L$(top_srcdir)/$(PACKAGE_NAME)/.libs/ $(APERTIUM_LIBS) -l$(PACKAGE_NAME)$(VERSION_MAJOR)
+test_find_similar_ambiguity_class_LDADD = -L$(top_srcdir)/$(PACKAGE_NAME)/.libs/ -l$(PACKAGE_NAME)$(VERSION_MAJOR)

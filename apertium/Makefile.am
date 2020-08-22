@@ -228,7 +228,10 @@ bin_PROGRAMS = apertium-cleanstream \
 	       apertium-transfer \
 	       apertium-wblank-attach \
 	       apertium-wblank-detach \
+	       apertium-wblank-mode \
 	       apertium-adapt-docx
+
+bin_SCRIPTS = $(GENERATEDSCRIPTS)
 
 instdir = apertium
 
@@ -246,11 +249,11 @@ apertium_DATA = deformat.xsl reformat.xsl new2old.xsl lexchoice.xsl \
 
 apertium_cleanstream_SOURCES = apertium_cleanstream.cc
 apertium_pretransfer_SOURCES = apertium_pretransfer.cc
-apertium_pretransfer_LDADD = $(APERTIUM_LIBS) -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
+apertium_pretransfer_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 apertium_posttransfer_SOURCES = apertium_posttransfer.cc
-apertium_posttransfer_LDADD = $(APERTIUM_LIBS) -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
+apertium_posttransfer_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 apertium_multiple_translations_SOURCES = apertium-multiple-translations.cc
-apertium_multiple_translations_LDADD = $(APERTIUM_LIBS) -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
+apertium_multiple_translations_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 apertium_destxt_SOURCES = apertium_destxt.cc
 apertium_retxt_SOURCES = apertium_retxt.cc
 apertium_deshtml_SOURCES = apertium_deshtml.cc
@@ -274,49 +277,50 @@ apertium_repptx_SOURCES = apertium_repptx.cc
 apertium_desmediawiki_SOURCES = apertium_desmediawiki.cc
 apertium_remediawiki_SOURCES = apertium_remediawiki.cc
 apertium_prelatex_SOURCES = apertium_prelatex.cc
-apertium_prelatex_LDADD= $(APERTIUM_LIBS) -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
+apertium_prelatex_LDADD= -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 apertium_postlatex_SOURCES = apertium_postlatex.cc
-apertium_postlatex_LDADD= $(APERTIUM_LIBS) -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
+apertium_postlatex_LDADD= -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 apertium_postlatex_raw_SOURCES = apertium_postlatex_raw.cc
-apertium_postlatex_raw_LDADD= $(APERTIUM_LIBS) -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
+apertium_postlatex_raw_LDADD= -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_tagger_SOURCES = apertium_tagger.cc
-apertium_tagger_LDADD = $(APERTIUM_LIBS) -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
+apertium_tagger_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_perceptron_trace_SOURCES = apertium_perceptron_trace.cc
-apertium_perceptron_trace_LDADD = $(APERTIUM_LIBS) -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
+apertium_perceptron_trace_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_tmxbuild_SOURCES = apertium_tmxbuild.cc
-apertium_tmxbuild_LDADD = $(APERTIUM_LIBS) -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
+apertium_tmxbuild_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_preprocess_transfer_SOURCES = transferpp.cc
-apertium_preprocess_transfer_LDADD = $(APERTIUM_LIBS) \
+apertium_preprocess_transfer_LDADD = \
                                      -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_filter_ambiguity_SOURCES = apertium_filter_ambiguity.cc
-apertium_filter_ambiguity_LDADD = $(APERTIUM_LIBS) \
+apertium_filter_ambiguity_LDADD = \
                                   -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_transfer_SOURCES = apertium_transfer.cc
-apertium_transfer_LDADD = $(APERTIUM_LIBS) -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
+apertium_transfer_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_interchunk_SOURCES = apertium_interchunk.cc
-apertium_interchunk_LDADD = $(APERTIUM_LIBS) -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
+apertium_interchunk_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_postchunk_SOURCES = apertium_postchunk.cc
-apertium_postchunk_LDADD = $(APERTIUM_LIBS) -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
+apertium_postchunk_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_tagger_apply_new_rules_SOURCES = apertium_tagger_apply_new_rules.cc
-apertium_tagger_apply_new_rules_LDADD = $(APERTIUM_LIBS) -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
+apertium_tagger_apply_new_rules_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_tagger_readwords_SOURCES = apertium_tagger_readwords.cc
-apertium_tagger_readwords_LDADD = $(APERTIUM_LIBS) -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
+apertium_tagger_readwords_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_wblank_attach_SOURCES = wblank-attach.cc
 apertium_wblank_detach_SOURCES = wblank-detach.cc
+apertium_wblank_mode_SOURCES = wblank-mode.cc
 
 apertium_adapt_docx_SOURCES = adapt_docx.cc
-apertium_adapt_docx_LDADD = $(APERTIUM_LIBS) -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES) $(ICU_LIBS)
+apertium_adapt_docx_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES) $(ICU_LIBS)
 
 
 if WINDOWS
@@ -521,7 +525,7 @@ apertium-gen-deformat: Makefile.am deformat-header.sh
           else echo "$(XSLTPROC) \"$(apertiumdir)\"/deformat.xsl \"\$$FILE1\" \"\\\$$mode=\$$MODE\" >/tmp/\$$\$$.deformat.l && \\"; \
           fi >> $@
 	@echo "$(FLEX) \$$FLEXOPTS -o/tmp/\$$\$$.lex.cc /tmp/\$$\$$.deformat.l && \\" >> $@
-	@echo "$(CXX) -DGENFORMAT $(CXXFLAGS) -w $(APERTIUM_CFLAGS) -I $(apertiuminclude) -o \"\$$FILE2\" /tmp/\$$\$$.lex.cc $(APERTIUM_LIBS) 2>/dev/null && \\" >> $@
+	@echo "$(CXX) -DGENFORMAT $(CXXFLAGS) -w $(APERTIUM_CFLAGS) -I $(apertiuminclude) -o \"\$$FILE2\" /tmp/\$$\$$.lex.cc 2>/dev/null && \\" >> $@
 	@echo "rm /tmp/\$$\$$.deformat.l /tmp/\$$\$$.lex.cc" >> $@
 	@chmod a+x $@
 
@@ -532,7 +536,7 @@ apertium-gen-reformat: Makefile.am gen-header.sh
 	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/format.dtd --noout \"\$$FILE1\" && \\" >> $@
 	@echo "$(XSLTPROC) \"$(apertiumdir)\"/reformat.xsl \"\$$FILE1\" >/tmp/\$$\$$.reformat.l && \\" >> $@
 	@echo "$(FLEX) \$$FLEXOPTS -o/tmp/\$$\$$.lex.cc /tmp/\$$\$$.reformat.l && \\" >> $@
-	@echo "$(CXX) -DGENFORMAT $(CXXFLAGS) -w $(APERTIUM_CFLAGS) -I $(apertiuminclude) -o \"\$$FILE2\" /tmp/\$$\$$.lex.cc $(APERTIUM_LIBS) 2>/dev/null &&\\" >> $@
+	@echo "$(CXX) -DGENFORMAT $(CXXFLAGS) -w $(APERTIUM_CFLAGS) -I $(apertiuminclude) -o \"\$$FILE2\" /tmp/\$$\$$.lex.cc 2>/dev/null &&\\" >> $@
 	@echo "rm /tmp/\$$\$$.reformat.l /tmp/\$$\$$.lex.cc" >> $@
 	@chmod a+x $@
 
