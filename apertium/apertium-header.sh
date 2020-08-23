@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # -*- sh-basic-offset: 2 -*-
 
 # Copyright (C) 2005 Universitat d'Alacant / Universidad de Alicante

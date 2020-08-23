@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 INPUT_FILE="/dev/stdin"
 OUTPUT_FILE="/dev/stdout"

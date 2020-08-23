@@ -1,9 +1,6 @@
-#!/bin/bash
-
-
-#!/bin/sh
-
+#!/usr/bin/env bash
 set -e -u
+
 cd "$(dirname "$0")"
 
 rm -f out.odt

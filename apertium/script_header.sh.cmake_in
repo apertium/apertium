@@ -1,4 +1,4 @@
-#!${BASH}
+#!/usr/bin/env bash
 
 export APERTIUM_PATH=${APERTIUM_PATH}
 export LTTOOLBOX_PATH=${LTTOOLBOX_PATH}

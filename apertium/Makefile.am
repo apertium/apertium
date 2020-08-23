@@ -465,42 +465,42 @@ apertium_postlatex_raw.cc: apertium-postlatex-raw.l
 
 apertium-validate-tagger: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-tagger script"
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@cat validate-header.sh >> $@
 	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/tagger.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-transfer: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-transfer script"
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@cat validate-header.sh >> $@
 	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/transfer.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-interchunk: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-interchunk script"
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@cat validate-header.sh >> $@
 	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/interchunk.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-postchunk: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-postchunk script"
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@cat validate-header.sh >> $@
 	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/postchunk.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-acx: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-acx script"
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@cat validate-header.sh >> $@
 	@echo "$(XMLLINT) --relaxng \"$(prefix)\"/share/lttoolbox/acx.rng --schema \"$(prefix)\"/share/lttoolbox/acx.xsd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-modes: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-modes script"
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@cat validate-header.sh >> $@
 	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/modes.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
@@ -508,7 +508,7 @@ apertium-validate-modes: Makefile.am validate-header.sh
 
 apertium-validate-dictionary: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-dictionary script"
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@cat validate-header.sh >> $@
 	@echo "# xsd is a non-final command, so just treated as a warning when compiling:" >> $@
 	@echo "$(XMLLINT) --schema \"$(prefix)\"/share/lttoolbox/dix.xsd --noout \"\$$FILE1\" 2>&1 | grep -ve ' validates$$' -e ' fails to validate$$'" >> $@
@@ -517,7 +517,7 @@ apertium-validate-dictionary: Makefile.am validate-header.sh
 
 apertium-gen-deformat: Makefile.am deformat-header.sh
 	@echo "Creating apertium-gen-deformat script"
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@cat deformat-header.sh >> $@
 	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/format.dtd --noout \"\$$FILE1\" && \\" >> $@
 	@if [ `basename $(XSLTPROC)` == xsltproc ]; \
@@ -531,7 +531,7 @@ apertium-gen-deformat: Makefile.am deformat-header.sh
 
 apertium-gen-reformat: Makefile.am gen-header.sh
 	@echo "Creating apertium-gen-reformat script"
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@cat gen-header.sh >> $@
 	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/format.dtd --noout \"\$$FILE1\" && \\" >> $@
 	@echo "$(XSLTPROC) \"$(apertiumdir)\"/reformat.xsl \"\$$FILE1\" >/tmp/\$$\$$.reformat.l && \\" >> $@
@@ -541,7 +541,7 @@ apertium-gen-reformat: Makefile.am gen-header.sh
 	@chmod a+x $@
 
 apertium-gen-modes: apertium-gen-modes.in Makefile.am
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@echo "APERTIUMDIR=$(apertiumdir)" >> $@
 	@echo "XMLLINT=$(XMLLINT)" >> $@
 	@echo "XSLTPROC=$(XSLTPROC)" >> $@
@@ -550,13 +550,13 @@ apertium-gen-modes: apertium-gen-modes.in Makefile.am
 
 apertium-utils-fixlatex: Makefile.am utils-fixlatex-header.sh
 	@echo "Creating apertium-utils-fixlatex script"
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@cat utils-fixlatex-header.sh >> $@
 	@chmod a+x $@
 
 apertium: Makefile.am apertium-header.sh
 	@echo 'Creating apertium script'
-	@echo '#!$(BASH)' > $@
+	@echo '#!/usr/bin/env bash' > $@
 	@echo 'APERTIUM_PATH="$${APERTIUM_PATH:-$(prefix)/bin}"' >>$@
 	@echo 'DEFAULT_DIRECTORY="$(prefix)/share/apertium"' >>$@
 	@cat apertium-header.sh >>$@
@@ -564,7 +564,7 @@ apertium: Makefile.am apertium-header.sh
 
 apertium-unformat: Makefile.am apertium-unformat-header.sh
 	@echo "Creating apertium-unformat script"
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@echo "APERTIUM_PATH=\"$(prefix)/bin\"" >>$@
 	@cat apertium-unformat-header.sh >>$@
 	@chmod a+x $@
