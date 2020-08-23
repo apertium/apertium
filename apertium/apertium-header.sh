@@ -66,16 +66,16 @@ check_encoding () {
 
 check_transfuse () {
   local has_tf=`command -v tf-extract`
-  if [[ "x$APERTIUM_TRANSFUSE" = "x1" || "x$APERTIUM_TRANSFUSE" = "xyes" ]]; then
+  if [[ "$APERTIUM_TRANSFUSE" = "1" || "$APERTIUM_TRANSFUSE" = "yes" ]]; then
     if [[ -z "$has_tf" ]]; then
       echo "APERTIUM_TRANSFUSE=$APERTIUM_TRANSFUSE but couldn't find Transfuse's tf-extract in PATH"
       exit 1
     fi
   fi
 
-  if [[ "x$APERTIUM_TRANSFUSE" = "x0" || "x$APERTIUM_TRANSFUSE" = "xno" || -z "$has_tf" ]]; then
+  if [[ "$APERTIUM_TRANSFUSE" = "0" || "$APERTIUM_TRANSFUSE" = "no" || -z "$has_tf" ]]; then
     USE_TRANSFUSE=no
-  elif [[ "x$APERTIUM_TRANSFUSE" = "x1" || "x$APERTIUM_TRANSFUSE" = "xyes" || ! -z "$has_tf" ]]; then
+  elif [[ "$APERTIUM_TRANSFUSE" = "1" || "$APERTIUM_TRANSFUSE" = "yes" || ! -z "$has_tf" ]]; then
     USE_TRANSFUSE=yes
   fi
 }
@@ -116,7 +116,7 @@ translate_latex()
   apertium-prelatex "$INFILE" | \
     apertium-utils-fixlatex | \
     apertium-deslatex "${FORMAT_OPTIONS[@]}" | \
-    if [[ "$TRANSLATION_MEMORY_FILE" = "" ]];
+    if [[ -z "$TRANSLATION_MEMORY_FILE" ]];
     then cat;
     else lt-tmxproc "$TMCOMPFILE";
     fi | \
@@ -604,7 +604,7 @@ case "$FORMAT" in
     FORMAT="rtf";
     OPTION="-n";
     MILOCALE=$(locale -a | grep -E -i -v -m1 'utf|^C|^POSIX$')
-    if [[ "$MILOCALE" = "" ]]; then
+    if [[ -z "$MILOCALE" ]]; then
       echo "Error: Install a ISO-8859-1 compatible locale in your system";
       exit 1;
     fi
@@ -664,13 +664,13 @@ fi | if [[ -z "$TRANSLATION_MEMORY_FILE" ]];
      else
        lt-tmxproc "$TMCOMPFILE"
      fi | bash <(apertium-wblank-mode "$NULL_FLUSH" "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ "$FORMAT" = "none" ]]; then
-                   if [ "$REDIR" = "" ]; then
+                   if [[ -z "$REDIR" ]]; then
                        cat
                    else
                      cat > "$OUT_FILE"
                    fi
                else
-                 if [ "$REDIR" = "" ]; then
+                 if [[ -z "$REDIR" ]]; then
                      apertium-re$FORMAT
                  else
                    apertium-re$FORMAT > "$OUT_FILE"
