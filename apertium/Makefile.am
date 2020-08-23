@@ -343,114 +343,114 @@ CLEANFILES = *~ apertium_destxt.cc apertium_retxt.cc apertium_deshtml.cc \
              $(GENERATEDSCRIPTS)
 
 apertium_destxt.cc: txt-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl txt-format.xml >$@tmp
+	xsltproc deformat.xsl txt-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_desxpresstag.cc: xpresstag-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl xpresstag-format.xml >$@tmp
+	xsltproc deformat.xsl xpresstag-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_rexpresstag.cc: xpresstag-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl xpresstag-format.xml >$@tmp
+	xsltproc reformat.xsl xpresstag-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_retxt.cc: txt-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl txt-format.xml >$@tmp
+	xsltproc reformat.xsl txt-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_deshtml.cc: html-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl html-format.xml >$@tmp
+	xsltproc deformat.xsl html-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_deshtml_alt.cc: html-alt-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl $< >$@tmp
+	xsltproc deformat.xsl $< >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_rehtml.cc: html-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl html-format.xml >$@tmp
+	xsltproc reformat.xsl html-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_rehtml_noent.cc: html-noent-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl html-noent-format.xml >$@tmp
+	xsltproc reformat.xsl html-noent-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_desodt.cc: odt-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl odt-format.xml >$@tmp
+	xsltproc deformat.xsl odt-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_reodt.cc: odt-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl odt-format.xml >$@tmp
+	xsltproc reformat.xsl odt-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_desrtf.cc: rtf-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl rtf-format.xml >$@tmp
+	xsltproc deformat.xsl rtf-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_rertf.cc: rtf-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl rtf-format.xml >$@tmp
+	xsltproc reformat.xsl rtf-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_deswxml.cc: wxml-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl wxml-format.xml >$@tmp
+	xsltproc deformat.xsl wxml-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_rewxml.cc: wxml-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl wxml-format.xml >$@tmp
+	xsltproc reformat.xsl wxml-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_deslatex.cc: latex-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl latex-format.xml >$@tmp
+	xsltproc deformat.xsl latex-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_relatex.cc: latex-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl latex-format.xml >$@tmp
+	xsltproc reformat.xsl latex-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 
 
 apertium_desxlsx.cc: xlsx-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl xlsx-format.xml >$@tmp
+	xsltproc deformat.xsl xlsx-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_rexlsx.cc: xlsx-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl xlsx-format.xml >$@tmp
+	xsltproc reformat.xsl xlsx-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_despptx.cc: pptx-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl pptx-format.xml >$@tmp
+	xsltproc deformat.xsl pptx-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_repptx.cc: pptx-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl pptx-format.xml >$@tmp
+	xsltproc reformat.xsl pptx-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_desmediawiki.cc: mediawiki-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl mediawiki-format.xml >$@tmp
+	xsltproc deformat.xsl mediawiki-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_remediawiki.cc: mediawiki-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl mediawiki-format.xml >$@tmp
+	xsltproc reformat.xsl mediawiki-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
@@ -467,42 +467,42 @@ apertium-validate-tagger: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-tagger script"
 	@echo "#!/usr/bin/env bash" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/tagger.dtd --noout \"\$$FILE1\"" >>$@
+	@echo "xmllint --dtdvalid \"$(apertiumdir)\"/tagger.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-transfer: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-transfer script"
 	@echo "#!/usr/bin/env bash" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/transfer.dtd --noout \"\$$FILE1\"" >>$@
+	@echo "xmllint --dtdvalid \"$(apertiumdir)\"/transfer.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-interchunk: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-interchunk script"
 	@echo "#!/usr/bin/env bash" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/interchunk.dtd --noout \"\$$FILE1\"" >>$@
+	@echo "xmllint --dtdvalid \"$(apertiumdir)\"/interchunk.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-postchunk: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-postchunk script"
 	@echo "#!/usr/bin/env bash" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/postchunk.dtd --noout \"\$$FILE1\"" >>$@
+	@echo "xmllint --dtdvalid \"$(apertiumdir)\"/postchunk.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-acx: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-acx script"
 	@echo "#!/usr/bin/env bash" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --relaxng \"$(prefix)\"/share/lttoolbox/acx.rng --schema \"$(prefix)\"/share/lttoolbox/acx.xsd --noout \"\$$FILE1\"" >>$@
+	@echo "xmllint --relaxng \"$(prefix)\"/share/lttoolbox/acx.rng --schema \"$(prefix)\"/share/lttoolbox/acx.xsd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-modes: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-modes script"
 	@echo "#!/usr/bin/env bash" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/modes.dtd --noout \"\$$FILE1\"" >>$@
+	@echo "xmllint --dtdvalid \"$(apertiumdir)\"/modes.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 
@@ -511,18 +511,18 @@ apertium-validate-dictionary: Makefile.am validate-header.sh
 	@echo "#!/usr/bin/env bash" > $@
 	@cat validate-header.sh >> $@
 	@echo "# xsd is a non-final command, so just treated as a warning when compiling:" >> $@
-	@echo "$(XMLLINT) --schema \"$(prefix)\"/share/lttoolbox/dix.xsd --noout \"\$$FILE1\" 2>&1 | grep -ve ' validates$$' -e ' fails to validate$$'" >> $@
-	@echo "$(XMLLINT) --dtdvalid \"$(prefix)\"/share/lttoolbox/dix.dtd --noout \"\$$FILE1\"" >> $@
+	@echo "xmllint --schema \"$(prefix)\"/share/lttoolbox/dix.xsd --noout \"\$$FILE1\" 2>&1 | grep -ve ' validates$$' -e ' fails to validate$$'" >> $@
+	@echo "xmllint --dtdvalid \"$(prefix)\"/share/lttoolbox/dix.dtd --noout \"\$$FILE1\"" >> $@
 	@chmod a+x $@
 
 apertium-gen-deformat: Makefile.am deformat-header.sh
 	@echo "Creating apertium-gen-deformat script"
 	@echo "#!/usr/bin/env bash" > $@
 	@cat deformat-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/format.dtd --noout \"\$$FILE1\" && \\" >> $@
-	@if [ `basename $(XSLTPROC)` == xsltproc ]; \
-	  then echo "$(XSLTPROC) --stringparam mode \$$MODE \"$(apertiumdir)\"/deformat.xsl \"\$$FILE1\" >/tmp/\$$\$$.deformat.l && \\"; \
-          else echo "$(XSLTPROC) \"$(apertiumdir)\"/deformat.xsl \"\$$FILE1\" \"\\\$$mode=\$$MODE\" >/tmp/\$$\$$.deformat.l && \\"; \
+	@echo "xmllint --dtdvalid \"$(apertiumdir)\"/format.dtd --noout \"\$$FILE1\" && \\" >> $@
+	@if [ `basename xsltproc` == xsltproc ]; \
+	  then echo "xsltproc --stringparam mode \$$MODE \"$(apertiumdir)\"/deformat.xsl \"\$$FILE1\" >/tmp/\$$\$$.deformat.l && \\"; \
+          else echo "xsltproc \"$(apertiumdir)\"/deformat.xsl \"\$$FILE1\" \"\\\$$mode=\$$MODE\" >/tmp/\$$\$$.deformat.l && \\"; \
           fi >> $@
 	@echo "$(FLEX) \$$FLEXOPTS -o/tmp/\$$\$$.lex.cc /tmp/\$$\$$.deformat.l && \\" >> $@
 	@echo "$(CXX) -DGENFORMAT $(CXXFLAGS) -w $(APERTIUM_CFLAGS) -I $(apertiuminclude) -o \"\$$FILE2\" /tmp/\$$\$$.lex.cc 2>/dev/null && \\" >> $@
@@ -533,8 +533,8 @@ apertium-gen-reformat: Makefile.am gen-header.sh
 	@echo "Creating apertium-gen-reformat script"
 	@echo "#!/usr/bin/env bash" > $@
 	@cat gen-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/format.dtd --noout \"\$$FILE1\" && \\" >> $@
-	@echo "$(XSLTPROC) \"$(apertiumdir)\"/reformat.xsl \"\$$FILE1\" >/tmp/\$$\$$.reformat.l && \\" >> $@
+	@echo "xmllint --dtdvalid \"$(apertiumdir)\"/format.dtd --noout \"\$$FILE1\" && \\" >> $@
+	@echo "xsltproc \"$(apertiumdir)\"/reformat.xsl \"\$$FILE1\" >/tmp/\$$\$$.reformat.l && \\" >> $@
 	@echo "$(FLEX) \$$FLEXOPTS -o/tmp/\$$\$$.lex.cc /tmp/\$$\$$.reformat.l && \\" >> $@
 	@echo "$(CXX) -DGENFORMAT $(CXXFLAGS) -w $(APERTIUM_CFLAGS) -I $(apertiuminclude) -o \"\$$FILE2\" /tmp/\$$\$$.lex.cc 2>/dev/null &&\\" >> $@
 	@echo "rm /tmp/\$$\$$.reformat.l /tmp/\$$\$$.lex.cc" >> $@
@@ -543,8 +543,8 @@ apertium-gen-reformat: Makefile.am gen-header.sh
 apertium-gen-modes: apertium-gen-modes.in Makefile.am
 	@echo "#!/usr/bin/env bash" > $@
 	@echo "APERTIUMDIR=$(apertiumdir)" >> $@
-	@echo "XMLLINT=$(XMLLINT)" >> $@
-	@echo "XSLTPROC=$(XSLTPROC)" >> $@
+	@echo "XMLLINT=xmllint" >> $@
+	@echo "XSLTPROC=xsltproc" >> $@
 	@cat $< >> $@
 	@chmod a+x $@
 
