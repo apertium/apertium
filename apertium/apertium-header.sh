@@ -16,7 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-
 message ()
 {
   echo "USAGE: $(basename "$0") [-d datadir] [-f format] [-u] <direction> [in [out]]"
@@ -97,20 +96,20 @@ translate_latex()
   locale_utf8
 
   set -o pipefail
-  "$APERTIUM_PATH/apertium-prelatex" "$INFILE" | \
-    "$APERTIUM_PATH/apertium-utils-fixlatex" | \
-    "$APERTIUM_PATH/apertium-deslatex" "${FORMAT_OPTIONS[@]}" | \
+  apertium-prelatex "$INFILE" | \
+    apertium-utils-fixlatex | \
+    apertium-deslatex "${FORMAT_OPTIONS[@]}" | \
     if [ "$TRANSLATION_MEMORY_FILE" = "" ];
     then cat;
-    else "$APERTIUM_PATH/lt-tmxproc" "$TMCOMPFILE";
+    else lt-tmxproc "$TMCOMPFILE";
     fi | \
       if [ ! -x "$DATADIR/modes/$PAIR.mode" ]; then
       sh "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
     else "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
     fi | \
-      "$APERTIUM_PATH/apertium-relatex"| \
+      apertium-relatex| \
       awk '{gsub("</CONTENTS-noeos>", "</CONTENTS>"); print;}' | \
-      if [ "$REDIR" == "" ]; then "$APERTIUM_PATH/apertium-postlatex-raw"; else "$APERTIUM_PATH/apertium-postlatex-raw" > "$SALIDA"; fi
+      if [ "$REDIR" == "" ]; then apertium-postlatex-raw; else apertium-postlatex-raw > "$SALIDA"; fi
 
     if [ "$BORRAFICHERO" = "true" ]; then
       rm -Rf "$INFILE"
@@ -143,16 +142,16 @@ translate_odt ()
   unzip -q -o -d "$INPUT_TMPDIR" "$INFILE"
   find "$INPUT_TMPDIR" -name content.xml -o -name styles.xml |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
-  "$APERTIUM_PATH/apertium-desodt" "${FORMAT_OPTIONS[@]}" |\
+  apertium-desodt "${FORMAT_OPTIONS[@]}" |\
   if [ "$TRANSLATION_MEMORY_FILE" = "" ];
   then cat;
-  else "$APERTIUM_PATH/lt-tmxproc" "$TMCOMPFILE";
+  else lt-tmxproc "$TMCOMPFILE";
   fi | \
     if [ ! -x "$DATADIR/modes/$PAIR.mode" ]; then
     sh "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
   else "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
   fi | \
-    "$APERTIUM_PATH/apertium-reodt"|\
+    apertium-reodt|\
   awk '{punto = index($0, "/>") + 3; cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("[?]> ", "?>\n", cola); print cola > name;}'
   VUELVE=$(pwd)
   cd "$INPUT_TMPDIR"
@@ -192,24 +191,24 @@ translate_docx ()
 
   find "$INPUT_TMPDIR" -name "*.xlsx" -print0 | while read -r -d '' i; do
     LOCALTEMP=$(mktemp "$TMPDIR/apertium.XXXXXXXX");
-    "$APERTIUM_PATH/apertium" -f xlsx -d "$DATADIR" "$OPCIONU" "$PAIR" <"$i" >"$LOCALTEMP";
+    apertium -f xlsx -d "$DATADIR" "$OPCIONU" "$PAIR" <"$i" >"$LOCALTEMP";
     cp "$LOCALTEMP" "$i";
     rm "$LOCALTEMP";
   done;
 
   find "$INPUT_TMPDIR" -name "*.xml" |\
   grep -E -v -i '(settings|theme|styles|font|rels|docProps|Content_Types)' |\
-  "$APERTIUM_PATH/apertium-adapt-docx" -n |\
-  "$APERTIUM_PATH/apertium-deswxml" "${FORMAT_OPTIONS[@]}" |\
+  apertium-adapt-docx -n |\
+  apertium-deswxml "${FORMAT_OPTIONS[@]}" |\
   if [ "$TRANSLATION_MEMORY_FILE" = "" ];
   then cat;
-  else "$APERTIUM_PATH/lt-tmxproc" "$TMCOMPFILE";
+  else lt-tmxproc "$TMCOMPFILE";
   fi | \
     if [ ! -x "$DATADIR/modes/$PAIR.mode" ]; then
     sh "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
   else "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
   fi | \
-    "$APERTIUM_PATH/apertium-rewxml"|\
+    apertium-rewxml|\
   awk '{punto = index($0, "/>") + 3; cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("[?]> ", "?>\n", cola); print cola > name;}'
   VUELVE=$(pwd)
   cd "$INPUT_TMPDIR"
@@ -248,23 +247,23 @@ translate_pptx ()
 
   find "$INPUT_TMPDIR" -name "*.xlsx" -print0 | while read -r -d '' i; do
     LOCALTEMP=$(mktemp "$TMPDIR/apertium.XXXXXXXX")
-    "$APERTIUM_PATH/apertium" -f xlsx -d "$DATADIR" "$OPCIONU" "$PAIR" <"$i" >"$LOCALTEMP";
+    apertium -f xlsx -d "$DATADIR" "$OPCIONU" "$PAIR" <"$i" >"$LOCALTEMP";
     cp "$LOCALTEMP" "$i"
     rm "$LOCALTEMP"
   done;
 
   find "$INPUT_TMPDIR" -path '**/slides/slide*.xml' |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
-  "$APERTIUM_PATH/apertium-despptx" "${FORMAT_OPTIONS[@]}" |\
+  apertium-despptx "${FORMAT_OPTIONS[@]}" |\
   if [ "$TRANSLATION_MEMORY_FILE" = "" ];
   then cat;
-  else "$APERTIUM_PATH/lt-tmxproc" "$TMCOMPFILE";
+  else lt-tmxproc "$TMCOMPFILE";
   fi | \
     if [ ! -x "$DATADIR/modes/$PAIR.mode" ]; then
     sh "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
   else "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
   fi | \
-    "$APERTIUM_PATH/apertium-repptx" |\
+    apertium-repptx |\
   awk '{punto = index($0, "/>") + 3; cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("[?]> ", "?>\n", cola); print cola > name;}'
   VUELVE=$(pwd)
   cd "$INPUT_TMPDIR"
@@ -298,16 +297,16 @@ translate_xlsx ()
   unzip -q -o -d "$INPUT_TMPDIR" "$INFILE"
   find "$INPUT_TMPDIR" -name "sharedStrings.xml" |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
-  "$APERTIUM_PATH/apertium-desxlsx" "${FORMAT_OPTIONS[@]}" |\
+  apertium-desxlsx "${FORMAT_OPTIONS[@]}" |\
   if [ "$TRANSLATION_MEMORY_FILE" = "" ];
   then cat;
-  else "$APERTIUM_PATH/lt-tmxproc" "$TMCOMPFILE";
+  else lt-tmxproc "$TMCOMPFILE";
   fi | \
     if [ ! -x "$DATADIR/modes/$PAIR.mode" ]; then
     sh "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
   else "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
   fi | \
-    "$APERTIUM_PATH/apertium-rexlsx" |\
+    apertium-rexlsx |\
   awk '{punto = index($0, "/>") + 3; cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("[?]> ", "?>\n", cola); print cola > name;}'
   VUELVE=$(pwd)
   cd "$INPUT_TMPDIR"
@@ -325,33 +324,33 @@ translate_xlsx ()
 
 translate_htmlnoent ()
 {
-  "$APERTIUM_PATH/apertium-deshtml" "${FORMAT_OPTIONS[@]}" "$INFILE" | \
+  apertium-deshtml "${FORMAT_OPTIONS[@]}" "$INFILE" | \
       if [ "$TRANSLATION_MEMORY_FILE" = "" ]; then
           cat
-      else "$APERTIUM_PATH/lt-tmxproc" "$TMCOMPFILE";
+      else lt-tmxproc "$TMCOMPFILE";
       fi | if [ ! -x "$DATADIR/modes/$PAIR.mode" ]; then
       sh "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
   else "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
   fi | if [ "$FORMAT" = "none" ]; then
       if [ "$REDIR" == "" ]; then cat; else cat > "$SALIDA"; fi
   else
-    if [ "$REDIR" == "" ]; then "$APERTIUM_PATH/apertium-rehtml-noent"; else "$APERTIUM_PATH/apertium-rehtml-noent" > "$SALIDA"; fi
+    if [ "$REDIR" == "" ]; then apertium-rehtml-noent; else apertium-rehtml-noent > "$SALIDA"; fi
   fi
 }
 
 translate_htmlalt ()
 {
-  "$APERTIUM_PATH/apertium-deshtml-alt" "${FORMAT_OPTIONS[@]}" "$INFILE" | \
+  apertium-deshtml-alt "${FORMAT_OPTIONS[@]}" "$INFILE" | \
       if [ "$TRANSLATION_MEMORY_FILE" = "" ]; then
           cat
-      else "$APERTIUM_PATH/lt-tmxproc" "$TMCOMPFILE";
+      else lt-tmxproc "$TMCOMPFILE";
       fi | if [ ! -x "$DATADIR/modes/$PAIR.mode" ]; then
       sh "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
   else "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
   fi | if [ "$FORMAT" = "none" ]; then
       if [ "$REDIR" == "" ]; then cat; else cat > "$SALIDA"; fi
   else
-    if [ "$REDIR" == "" ]; then "$APERTIUM_PATH/apertium-rehtml-noent"; else "$APERTIUM_PATH/apertium-rehtml-noent" > "$SALIDA"; fi
+    if [ "$REDIR" == "" ]; then apertium-rehtml-noent; else apertium-rehtml-noent > "$SALIDA"; fi
   fi
 }
 
@@ -359,12 +358,12 @@ translate_line ()
 {
   # TODO: lt-proc inserts spaces before parts of mwe's that cross
   # lines, even though the parts get output as individual lu's
-  "$APERTIUM_PATH/apertium-destxt" -n "$INFILE" | \
+  apertium-destxt -n "$INFILE" | \
       sed 's/[[:space:]]*\[$/[][/' |\
       if [ "$TRANSLATION_MEMORY_FILE" = "" ]; then
           cat
       else
-        "$APERTIUM_PATH/lt-tmxproc" "$TMCOMPFILE";
+        lt-tmxproc "$TMCOMPFILE";
       fi | \
           if [ ! -x "$DATADIR/modes/$PAIR.mode" ]; then
               sh "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
@@ -372,9 +371,9 @@ translate_line ()
             "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
           fi | \
               if [ "$REDIR" == "" ]; then
-                  "$APERTIUM_PATH/apertium-retxt"
+                  apertium-retxt
               else
-                  "$APERTIUM_PATH/apertium-retxt" > "$SALIDA"
+                  apertium-retxt > "$SALIDA"
               fi
 }
 
@@ -393,7 +392,7 @@ trap 'rm -Rf "$TMCOMPFILE"' EXIT
 PAIR=""
 INFILE="/dev/stdin"
 FORMAT="txt"
-DATADIR=$DEFAULT_DIRECTORY
+DATADIR=$APERTIUM_DATADIR
 TRANSLATION_MEMORY_DIRECTION=$PAIR
 LIST_MODES_AND_EXIT=false
 FORMAT_OPTIONS=()
@@ -461,7 +460,7 @@ elif [[ ! -r "$INFILE" ]]; then
 fi
 
 if [[ -n $TRANSLATION_MEMORY_FILE ]]; then
-  if ! "$APERTIUM_PATH/lt-tmxcomp" "$TRANSLATION_MEMORY_DIRECTION" "$TRANSLATION_MEMORY_FILE" "$TMCOMPFILE" >/dev/null; then
+  if ! lt-tmxcomp "$TRANSLATION_MEMORY_DIRECTION" "$TRANSLATION_MEMORY_FILE" "$TMCOMPFILE" >/dev/null; then
     echo "Error: Cannot compile TM '$TRANSLATION_MEMORY_FILE'" >&2
     echo"   hint: use -o parameter" >&2
     message >&2
@@ -643,12 +642,12 @@ set -e -o pipefail
 if [ "$FORMAT" = "none" ]; then
     cat "$INFILE"
 else
-  "$APERTIUM_PATH/apertium-des$FORMAT" "${FORMAT_OPTIONS[@]}" "$INFILE"
+  apertium-des$FORMAT "${FORMAT_OPTIONS[@]}" "$INFILE"
 fi | if [ "$TRANSLATION_MEMORY_FILE" = "" ];
      then
          cat
      else
-       "$APERTIUM_PATH/lt-tmxproc" "$TMCOMPFILE"
+       lt-tmxproc "$TMCOMPFILE"
      fi | if [ ! -x "$DATADIR/modes/$PAIR.mode" ]; then
               sh "$DATADIR/modes/$PAIR.mode" "$OPTION" "$OPTION_TAGGER"
           else
@@ -661,9 +660,9 @@ fi | if [ "$TRANSLATION_MEMORY_FILE" = "" ];
                    fi
                else
                  if [ "$REDIR" = "" ]; then
-                     "$APERTIUM_PATH/apertium-re$FORMAT"
+                     apertium-re$FORMAT
                  else
-                   "$APERTIUM_PATH/apertium-re$FORMAT" > "$SALIDA"
+                   apertium-re$FORMAT > "$SALIDA"
                  fi
                fi
 
