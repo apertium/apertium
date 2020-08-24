@@ -19,7 +19,7 @@
 message () {
   echo "USAGE: $(basename "$0") [-d datadir] [-f format] [-u] <direction> [in [out]]"
   echo " -d datadir       directory of linguistic data"
-  echo " -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx, pptx,"
+  echo " -f format        one of: txt (default), html, rtf, odt, odp, docx, wxml, xlsx, pptx,"
   echo "                  xpresstag, html-noent, html-alt, latex, latex-raw, line"
   echo " -a               display ambiguity"
   echo " -u               don't display marks '*' for unknown words"
@@ -506,7 +506,7 @@ case "$FORMAT" in
     else OPTION="-g";
     fi;
     ;;
-  odt)
+  odt|odp)
     if [[ "$UWORDS" = "no" ]]; then OPTION="-n";
     else OPTION="-g";
     fi;
@@ -608,7 +608,7 @@ case "$FORMAT" in
     export LC_CTYPE=$MILOCALE
     ;;
 
-  odtu)
+  odtu|odpu)
     OPTION="-n"
     translate_odt
     exit 0
