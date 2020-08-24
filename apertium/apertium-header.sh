@@ -142,7 +142,7 @@ translate_latex_raw()
 translate_odt () {
   check_transfuse
   if [[ $USE_TRANSFUSE = "yes" ]]; then
-    tf-extract -f odt | bash <(apertium-wblank-mode -z "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
+    cat "$INFILE" | tf-extract -f odt | bash <(apertium-wblank-mode -z "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
     return
   fi
 
@@ -186,7 +186,7 @@ translate_odt () {
 translate_docx () {
   check_transfuse
   if [[ $USE_TRANSFUSE = "yes" ]]; then
-    tf-extract -f docx | bash <(apertium-wblank-mode -z "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
+    cat "$INFILE" | tf-extract -f docx | bash <(apertium-wblank-mode -z "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
     return
   fi
 
@@ -243,7 +243,7 @@ translate_docx () {
 translate_pptx () {
   check_transfuse
   if [[ $USE_TRANSFUSE = "yes" ]]; then
-    tf-extract -f pptx | bash <(apertium-wblank-mode -z "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
+    cat "$INFILE" | tf-extract -f pptx | bash <(apertium-wblank-mode -z "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
     return
   fi
 
@@ -337,7 +337,7 @@ translate_xlsx () {
 translate_html () {
   check_transfuse
   if [[ $USE_TRANSFUSE = "yes" ]]; then
-    tf-extract -f html | bash <(apertium-wblank-mode -z "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
+    cat "$INFILE" | tf-extract -f html | bash <(apertium-wblank-mode -z "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
     return
   fi
 
@@ -348,8 +348,13 @@ translate_html () {
     fi | bash <(apertium-wblank-mode $NULL_FLUSH "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then apertium-rehtml; else apertium-rehtml > "$OUT_FILE"; fi
 }
 
-translate_htmlnoent ()
-{
+translate_htmlnoent () {
+  check_transfuse
+  if [[ $USE_TRANSFUSE = "yes" ]]; then
+    cat "$INFILE" | tf-extract -f html | bash <(apertium-wblank-mode -z "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
+    return
+  fi
+
   apertium-deshtml "${FORMAT_OPTIONS[@]}" "$INFILE" | \
     if [[ -z "$TRANSLATION_MEMORY_FILE" ]]; then
       cat
