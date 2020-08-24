@@ -16,8 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-message ()
-{
+message () {
   echo "USAGE: $(basename "$0") [-d datadir] [-f format] [-u] <direction> [in [out]]"
   echo " -d datadir       directory of linguistic data"
   echo " -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx, pptx,"
@@ -37,15 +36,13 @@ message ()
   exit 1
 }
 
-list_directions ()
-{
+list_directions () {
   for mode in "$DATADIR"/modes/*.mode; do
     echo "  $(basename "${mode%%.mode}")"
   done
 }
 
-locale_utf8 ()
-{
+locale_utf8 () {
   export LC_CTYPE
   LC_CTYPE=$(locale -a|grep -i "utf[.-]*8"|head -1)
   if [[ -z ${LC_CTYPE} ]]; then
@@ -65,7 +62,8 @@ check_encoding () {
 }
 
 check_transfuse () {
-  local has_tf=`command -v tf-extract`
+  local has_tf
+  has_tf=$(command -v tf-extract)
   if [[ "$APERTIUM_TRANSFUSE" = "1" || "$APERTIUM_TRANSFUSE" = "yes" ]]; then
     if [[ -z "$has_tf" ]]; then
       echo "APERTIUM_TRANSFUSE=$APERTIUM_TRANSFUSE but couldn't find Transfuse's tf-extract in PATH"
@@ -75,13 +73,12 @@ check_transfuse () {
 
   if [[ "$APERTIUM_TRANSFUSE" = "0" || "$APERTIUM_TRANSFUSE" = "no" || -z "$has_tf" ]]; then
     USE_TRANSFUSE=no
-  elif [[ "$APERTIUM_TRANSFUSE" = "1" || "$APERTIUM_TRANSFUSE" = "yes" || ! -z "$has_tf" ]]; then
+  elif [[ "$APERTIUM_TRANSFUSE" = "1" || "$APERTIUM_TRANSFUSE" = "yes" || -n "$has_tf" ]]; then
     USE_TRANSFUSE=yes
   fi
 }
 
-test_zip ()
-{
+test_zip () {
   if ! command -v zip &>/dev/null; then
     echo "Error: Install 'zip' command in your system";
     exit 1;
@@ -93,16 +90,14 @@ test_zip ()
   fi
 }
 
-test_gawk ()
-{
+test_gawk () {
   if ! command -v gawk &>/dev/null; then
     echo "Error: Install 'gawk' in your system"
     exit 1
   fi
 }
 
-translate_latex()
-{
+translate_latex() {
   test_gawk
 
   if [[ -z "$INFILE" || "$INFILE" = /dev/stdin ]]; then
@@ -120,7 +115,7 @@ translate_latex()
     then cat;
     else lt-tmxproc "$TMCOMPFILE";
     fi | \
-      bash <(apertium-wblank-mode $NULL_FLUSH "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | \
+      bash <(apertium-wblank-mode "${NULL_FLUSH[@]}" "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | \
       apertium-relatex| \
       awk '{gsub("</CONTENTS-noeos>", "</CONTENTS>"); print;}' | \
       if [[ -z "$REDIR" ]]; then apertium-postlatex-raw; else apertium-postlatex-raw > "$OUT_FILE"; fi
@@ -133,8 +128,7 @@ translate_latex()
 # TODO: What was the intended difference between this and
 # translate_latex? They were identical, apart from one not cleaning up
 # tmp files
-translate_latex_raw()
-{
+translate_latex_raw() {
   translate_latex
 }
 
@@ -142,7 +136,7 @@ translate_latex_raw()
 translate_odt () {
   check_transfuse
   if [[ $USE_TRANSFUSE = "yes" ]]; then
-    cat "$INFILE" | tf-extract -f odt | bash <(apertium-wblank-mode -z "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
+    tf-extract -f odt "$INFILE" | bash <(apertium-wblank-mode -z "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
     return
   fi
 
@@ -165,7 +159,7 @@ translate_odt () {
   then cat;
   else lt-tmxproc "$TMCOMPFILE";
   fi | \
-    bash <(apertium-wblank-mode $NULL_FLUSH "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | \
+    bash <(apertium-wblank-mode "${NULL_FLUSH[@]}" "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | \
     apertium-reodt|\
   awk '{punto = index($0, "/>") + 3; cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("[?]> ", "?>\n", cola); print cola > name;}'
   VUELVE=$(pwd)
@@ -186,7 +180,7 @@ translate_odt () {
 translate_docx () {
   check_transfuse
   if [[ $USE_TRANSFUSE = "yes" ]]; then
-    cat "$INFILE" | tf-extract -f docx | bash <(apertium-wblank-mode -z "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
+    tf-extract -f docx "$INFILE" | bash <(apertium-wblank-mode -z "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
     return
   fi
 
@@ -223,7 +217,7 @@ translate_docx () {
   then cat;
   else lt-tmxproc "$TMCOMPFILE";
   fi | \
-    bash <(apertium-wblank-mode $NULL_FLUSH "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | \
+    bash <(apertium-wblank-mode "${NULL_FLUSH[@]}" "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | \
     apertium-rewxml|\
   awk '{punto = index($0, "/>") + 3; cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("[?]> ", "?>\n", cola); print cola > name;}'
   VUELVE=$(pwd)
@@ -243,7 +237,7 @@ translate_docx () {
 translate_pptx () {
   check_transfuse
   if [[ $USE_TRANSFUSE = "yes" ]]; then
-    cat "$INFILE" | tf-extract -f pptx | bash <(apertium-wblank-mode -z "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
+    tf-extract -f pptx "$INFILE" | bash <(apertium-wblank-mode -z "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
     return
   fi
 
@@ -279,7 +273,7 @@ translate_pptx () {
   then cat;
   else lt-tmxproc "$TMCOMPFILE";
   fi | \
-    bash <(apertium-wblank-mode $NULL_FLUSH "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | \
+    bash <(apertium-wblank-mode "${NULL_FLUSH[@]}" "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | \
     apertium-repptx |\
   awk '{punto = index($0, "/>") + 3; cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("[?]> ", "?>\n", cola); print cola > name;}'
   VUELVE=$(pwd)
@@ -317,7 +311,7 @@ translate_xlsx () {
   then cat;
   else lt-tmxproc "$TMCOMPFILE";
   fi | \
-    bash <(apertium-wblank-mode $NULL_FLUSH "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | \
+    bash <(apertium-wblank-mode "${NULL_FLUSH[@]}" "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | \
     apertium-rexlsx |\
   awk '{punto = index($0, "/>") + 3; cabeza = substr($0, 1, punto-1); cola = substr($0, punto); n1 = substr(cabeza, index(cabeza, "\"")+1); name = substr(n1, 1, index(n1, "\"")-1); gsub("[?]> ", "?>\n", cola); print cola > name;}'
   VUELVE=$(pwd)
@@ -337,7 +331,7 @@ translate_xlsx () {
 translate_html () {
   check_transfuse
   if [[ $USE_TRANSFUSE = "yes" ]]; then
-    cat "$INFILE" | tf-extract -f html | bash <(apertium-wblank-mode -z "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
+    tf-extract -f html "$INFILE" | bash <(apertium-wblank-mode -z "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
     return
   fi
 
@@ -345,13 +339,13 @@ translate_html () {
     if [[ -z "$TRANSLATION_MEMORY_FILE" ]]; then
       cat
     else lt-tmxproc "$TMCOMPFILE";
-    fi | bash <(apertium-wblank-mode $NULL_FLUSH "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then apertium-rehtml; else apertium-rehtml > "$OUT_FILE"; fi
+    fi | bash <(apertium-wblank-mode "${NULL_FLUSH[@]}" "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then apertium-rehtml; else apertium-rehtml > "$OUT_FILE"; fi
 }
 
 translate_htmlnoent () {
   check_transfuse
   if [[ $USE_TRANSFUSE = "yes" ]]; then
-    cat "$INFILE" | tf-extract -f html | bash <(apertium-wblank-mode -z "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
+    tf-extract -f html "$INFILE" | bash <(apertium-wblank-mode -z "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
     return
   fi
 
@@ -359,20 +353,18 @@ translate_htmlnoent () {
     if [[ -z "$TRANSLATION_MEMORY_FILE" ]]; then
       cat
     else lt-tmxproc "$TMCOMPFILE";
-    fi | bash <(apertium-wblank-mode $NULL_FLUSH "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then apertium-rehtml-noent; else apertium-rehtml-noent > "$OUT_FILE"; fi
+    fi | bash <(apertium-wblank-mode "${NULL_FLUSH[@]}" "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then apertium-rehtml-noent; else apertium-rehtml-noent > "$OUT_FILE"; fi
 }
 
-translate_htmlalt ()
-{
+translate_htmlalt () {
   apertium-deshtml-alt "${FORMAT_OPTIONS[@]}" "$INFILE" | \
     if [[ -z "$TRANSLATION_MEMORY_FILE" ]]; then
       cat
     else lt-tmxproc "$TMCOMPFILE";
-    fi | bash <(apertium-wblank-mode $NULL_FLUSH "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then apertium-rehtml-noent; else apertium-rehtml-noent > "$OUT_FILE"; fi
+    fi | bash <(apertium-wblank-mode "${NULL_FLUSH[@]}" "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ -z "$REDIR" ]]; then apertium-rehtml-noent; else apertium-rehtml-noent > "$OUT_FILE"; fi
 }
 
-translate_line ()
-{
+translate_line () {
   # TODO: lt-proc inserts spaces before parts of mwe's that cross
   # lines, even though the parts get output as individual lu's
   apertium-destxt -n "$INFILE" | \
@@ -382,7 +374,7 @@ translate_line ()
       else
         lt-tmxproc "$TMCOMPFILE";
       fi | \
-          bash <(apertium-wblank-mode $NULL_FLUSH "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | \
+          bash <(apertium-wblank-mode "${NULL_FLUSH[@]}" "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | \
               if [[ -z "$REDIR" ]]; then
                   apertium-retxt
               else
@@ -410,7 +402,7 @@ DATADIR=$APERTIUM_DATADIR
 TRANSLATION_MEMORY_DIRECTION=$PAIR
 LIST_MODES_AND_EXIT=false
 FORMAT_OPTIONS=()
-NULL_FLUSH=""
+NULL_FLUSH=()
 
 # Skip (but store) non-option arguments that come before options:
 declare -a ARGS_PREOPT ARGS_ALL
@@ -425,7 +417,7 @@ while [[ $OPTIND -le $# ]]; do
 done
 
 
-while getopts ":uahlf:d:m:o:n" opt; do
+while getopts ":uahlzf:d:m:o:n" opt; do
   case "$opt" in
     f) FORMAT=$OPTARG ;;
     d) DATADIR=$OPTARG ;;
@@ -435,7 +427,7 @@ while getopts ":uahlf:d:m:o:n" opt; do
     n) FORMAT_OPTIONS+=(-n) ;;
     a) OPTION_TAGGER="-m" ;;
     l) LIST_MODES_AND_EXIT=true ;;
-    z) NULL_FLUSH="-z" ;;
+    z) NULL_FLUSH+=(-z) ;;
     h) message ;;
     \?) echo "ERROR: Unknown option $OPTARG" >&2; message >&2 ;;
     :) echo "ERROR: $OPTARG requires an argument" >&2; message >&2 ;;
@@ -668,7 +660,7 @@ fi | if [[ -z "$TRANSLATION_MEMORY_FILE" ]];
     cat
   else
     lt-tmxproc "$TMCOMPFILE"
-  fi | bash <(apertium-wblank-mode $NULL_FLUSH "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ "$FORMAT" = "none" ]]; then
+  fi | bash <(apertium-wblank-mode "${NULL_FLUSH[@]}" "$DATADIR/modes/$PAIR.mode") "$OPTION" "$OPTION_TAGGER" | if [[ "$FORMAT" = "none" ]]; then
     if [[ -z "$REDIR" ]]; then
       cat
     else

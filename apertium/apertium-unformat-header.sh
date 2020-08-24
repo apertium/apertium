@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+PATH="${APERTIUM_PATH}:${PATH}"
 INPUT_FILE="/dev/stdin"
 OUTPUT_FILE="/dev/stdout"
 
