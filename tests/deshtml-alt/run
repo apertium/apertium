@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-APERTIUM_TRANSFUSE=no
+export APERTIUM_TRANSFUSE=no
 set -e -u
 
 cd "$(dirname "$0")"

@@ -5,7 +5,7 @@ cd "$(dirname "$0")"
 
 rm -f out.odt
 
-APERTIUM_TRANSFUSE=no
+export APERTIUM_TRANSFUSE=no
 export APERTIUM_PATH=../../apertium
 ../../apertium/apertium -f odt -d . sample in.odt out.odt
 
