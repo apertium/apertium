@@ -6,5 +6,5 @@ includedir=@includedir@
 Name: apertium
 Description: rule-based machine translation system
 Version: @VERSION@
-Libs: -L${libdir} -l@PACKAGE_NAME@@VERSION_MAJOR@ @APERTIUM_LIBS@
-Cflags: -I${includedir}/@PACKAGE_NAME@-@VERSION_API@ -I${libdir}/@PACKAGE_NAME@-@VERSION_API@/include @APERTIUM_CFLAGS@
+Libs: -L${libdir} -l@PACKAGE_NAME@@VERSION_MAJOR@
+Cflags: -I${includedir}/@PACKAGE_NAME@-@VERSION_API@ -I${libdir}/@PACKAGE_NAME@-@VERSION_API@/include
