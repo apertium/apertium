@@ -1,5 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
+PATH="${APERTIUM_PATH}:${PATH}"
 INPUT_FILE="/dev/stdin"
 OUTPUT_FILE="/dev/stdout"
 
@@ -56,9 +57,9 @@ unformat_latex()
        BORRAFICHERO="true"
   fi
 
-  "$APERTIUM_PATH/apertium-prelatex" "$FICHERO" | \
-  "$APERTIUM_PATH/apertium-utils-fixlatex" | \
-  "$APERTIUM_PATH/apertium-deslatex"  >"$SALIDA"
+  apertium-prelatex "$FICHERO" | \
+  apertium-utils-fixlatex | \
+  apertium-deslatex  >"$SALIDA"
 
   if [ "$BORRAFICHERO" = "true" ]
   then rm -Rf "$FICHERO"
@@ -76,7 +77,7 @@ unformat_odt ()
   unzip -q -o -d "$INPUT_TMPDIR" "$FICHERO"
   find "$INPUT_TMPDIR" | grep content\\\.xml |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
-  "$APERTIUM_PATH/apertium-desodt" >"$SALIDA"
+  apertium-desodt >"$SALIDA"
   rm -Rf "$INPUT_TMPDIR"
 }
 
@@ -91,7 +92,7 @@ unformat_docx ()
 
   for i in $(find "$INPUT_TMPDIR"|grep "xlsx$");
   do LOCALTEMP=$(mktemp $TMPDIR/apertium.XXXXXXXX)
-     "$APERTIUM_PATH/apertium" -f xlsx -d "$DIRECTORY" "$OPCIONU" "$PREFIJO" <"$i" >"$LOCALTEMP";
+     apertium -f xlsx -d "$DIRECTORY" "$OPCIONU" "$PREFIJO" <"$i" >"$LOCALTEMP";
      cp "$LOCALTEMP" "$i";
      rm "$LOCALTEMP";
   done;
@@ -99,7 +100,7 @@ unformat_docx ()
   find "$INPUT_TMPDIR" | grep "xml" |\
   grep -v -i \\\(settings\\\|theme\\\|styles\\\|font\\\|rels\\\|docProps\\\) |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
-  "$APERTIUM_PATH/apertium-deswxml" >"$SALIDA"
+  apertium-deswxml >"$SALIDA"
   rm -Rf "$INPUT_TMPDIR"
 }
 
@@ -114,14 +115,14 @@ unformat_pptx ()
 
   for i in $(find "$INPUT_TMPDIR"|grep "xlsx$");
   do LOCALTEMP=$(mktemp $TMPDIR/apertium.XXXXXXXX)
-     "$APERTIUM_PATH/apertium" -f xlsx -d "$DIRECTORY" "$OPCIONU" "$PREFIJO" <"$i" >"$LOCALTEMP"
+     apertium -f xlsx -d "$DIRECTORY" "$OPCIONU" "$PREFIJO" <"$i" >"$LOCALTEMP"
      cp "$LOCALTEMP" "$i"
      rm "$LOCALTEMP"
   done;
 
   find . -path '**/slides/slide*.xml' |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
-  "$APERTIUM_PATH/apertium-despptx" >"$SALIDA"
+  apertium-despptx >"$SALIDA"
   rm -Rf "$INPUT_TMPDIR"
 }
 
@@ -136,7 +137,7 @@ unformat_xlsx ()
   unzip -q -o -d "$INPUT_TMPDIR" "$FICHERO"
   find "$INPUT_TMPDIR" | grep "sharedStrings.xml" |\
   awk '{printf "<file name=\"" $0 "\"/>"; PART = $0; while(getline < PART) printf(" %s", $0); printf("\n");}' |\
-  "$APERTIUM_PATH/apertium-desxlsx" >"$SALIDA"
+  apertium-desxlsx >"$SALIDA"
   rm -Rf "$INPUT_TMPDIR"
 
 }
@@ -225,4 +226,4 @@ case "$FORMATADOR" in
 
 esac
 
-"$APERTIUM_PATH/apertium-des$FORMATADOR" "$FICHERO" >"$SALIDA"
+apertium-des$FORMATADOR "$FICHERO" >"$SALIDA"

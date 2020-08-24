@@ -170,7 +170,7 @@ cc_sources = a.cc \
 	     wchar_t_exception_type.cc\
 	     xml_reader.cc
 
-library_includedir = $(includedir)/$(GENERIC_LIBRARY_NAME)-$(GENERIC_API_VERSION)/$(GENERIC_LIBRARY_NAME)
+library_includedir = $(includedir)/$(PACKAGE_NAME)-$(VERSION_API)/$(PACKAGE_NAME)
 library_include_HEADERS = $(h_sources)
 
 GENERATEDSCRIPTS = apertium-gen-deformat apertium-gen-reformat \
@@ -184,7 +184,7 @@ GENERATEDSCRIPTS = apertium-gen-deformat apertium-gen-reformat \
 
 lib_LTLIBRARIES = libapertium3.la
 libapertium3_la_SOURCES = $(h_sources) $(cc_sources)
-libapertium3_la_LDFLAGS = -version-info $(GENERIC_LIBRARY_VERSION) -release $(GENERIC_RELEASE)
+libapertium3_la_LDFLAGS = -version-info $(SOVERSION) -release $(VERSION_API)
 
 bin_PROGRAMS = apertium-cleanstream \
 	       apertium-deshtml \
@@ -226,19 +226,17 @@ bin_PROGRAMS = apertium-cleanstream \
 	       apertium-perceptron-trace \
 	       apertium-tmxbuild \
 	       apertium-transfer \
+	       apertium-wblank-attach \
+	       apertium-wblank-detach \
+	       apertium-wblank-mode \
 	       apertium-adapt-docx
 
-bin_SCRIPTS =  $(GENERATEDSCRIPTS) apertium-get/apertium-get
-
-# Workaround for git-svn clone not getting externals; should do
-# nothing in normal SVN checkouts
-apertium-get/apertium-get:
-	svn checkout https://github.com/unhammer/apertium-get/trunk apertium-get
+bin_SCRIPTS = $(GENERATEDSCRIPTS)
 
 instdir = apertium
 
 apertiumdir = $(prefix)/share/apertium
-apertiuminclude = $(prefix)/include/apertium-$(GENERIC_API_VERSION)
+apertiuminclude = $(prefix)/include/apertium-$(VERSION_API)
 apertiumlib = $(prefix)/lib
 apertiumsysconf = $(prefix)/etc/apertium
 
@@ -251,11 +249,11 @@ apertium_DATA = deformat.xsl reformat.xsl new2old.xsl lexchoice.xsl \
 
 apertium_cleanstream_SOURCES = apertium_cleanstream.cc
 apertium_pretransfer_SOURCES = apertium_pretransfer.cc
-apertium_pretransfer_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
+apertium_pretransfer_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 apertium_posttransfer_SOURCES = apertium_posttransfer.cc
-apertium_posttransfer_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
+apertium_posttransfer_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 apertium_multiple_translations_SOURCES = apertium-multiple-translations.cc
-apertium_multiple_translations_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
+apertium_multiple_translations_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 apertium_destxt_SOURCES = apertium_destxt.cc
 apertium_retxt_SOURCES = apertium_retxt.cc
 apertium_deshtml_SOURCES = apertium_deshtml.cc
@@ -279,50 +277,54 @@ apertium_repptx_SOURCES = apertium_repptx.cc
 apertium_desmediawiki_SOURCES = apertium_desmediawiki.cc
 apertium_remediawiki_SOURCES = apertium_remediawiki.cc
 apertium_prelatex_SOURCES = apertium_prelatex.cc
-apertium_prelatex_LDADD= $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
+apertium_prelatex_LDADD= -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 apertium_postlatex_SOURCES = apertium_postlatex.cc
-apertium_postlatex_LDADD= $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
+apertium_postlatex_LDADD= -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 apertium_postlatex_raw_SOURCES = apertium_postlatex_raw.cc
-apertium_postlatex_raw_LDADD= $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
+apertium_postlatex_raw_LDADD= -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_tagger_SOURCES = apertium_tagger.cc
-apertium_tagger_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
+apertium_tagger_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_perceptron_trace_SOURCES = apertium_perceptron_trace.cc
-apertium_perceptron_trace_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
+apertium_perceptron_trace_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_tmxbuild_SOURCES = apertium_tmxbuild.cc
-apertium_tmxbuild_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
+apertium_tmxbuild_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_preprocess_transfer_SOURCES = transferpp.cc
-apertium_preprocess_transfer_LDADD = $(APERTIUM_LIBS) \
-                                     -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
+apertium_preprocess_transfer_LDADD = \
+                                     -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_filter_ambiguity_SOURCES = apertium_filter_ambiguity.cc
-apertium_filter_ambiguity_LDADD = $(APERTIUM_LIBS) \
-                                  -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
+apertium_filter_ambiguity_LDADD = \
+                                  -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_transfer_SOURCES = apertium_transfer.cc
-apertium_transfer_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
+apertium_transfer_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_interchunk_SOURCES = apertium_interchunk.cc
-apertium_interchunk_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
+apertium_interchunk_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_postchunk_SOURCES = apertium_postchunk.cc
-apertium_postchunk_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
+apertium_postchunk_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_tagger_apply_new_rules_SOURCES = apertium_tagger_apply_new_rules.cc
-apertium_tagger_apply_new_rules_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
+apertium_tagger_apply_new_rules_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_tagger_readwords_SOURCES = apertium_tagger_readwords.cc
-apertium_tagger_readwords_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES)
+apertium_tagger_readwords_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
+
+apertium_wblank_attach_SOURCES = wblank-attach.cc
+apertium_wblank_detach_SOURCES = wblank-detach.cc
+apertium_wblank_mode_SOURCES = wblank-mode.cc
 
 apertium_adapt_docx_SOURCES = adapt_docx.cc
-apertium_adapt_docx_LDADD = $(APERTIUM_LIBS) -lapertium$(GENERIC_MAJOR_VERSION) $(lib_LTLIBRARIES) $(ICU_LIBS)
+apertium_adapt_docx_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES) $(ICU_LIBS)
 
 
 if WINDOWS
-INCLUDES = -I$(top_srcdir)/utf8 -I$(top_srcdir)/apertium/win32 -I$(top_srcdir) $(APERTIUM_CFLAGS) $(ICU_CFLAGS)
+AM_CPPFLAGS = -I$(top_srcdir)/utf8 -I$(top_srcdir)/apertium/win32 -I$(top_srcdir) $(APERTIUM_CFLAGS) $(ICU_CFLAGS)
 else
 AM_CPPFLAGS = -I$(top_srcdir) $(APERTIUM_CFLAGS) $(ICU_CFLAGS)
 endif
@@ -341,114 +343,114 @@ CLEANFILES = *~ apertium_destxt.cc apertium_retxt.cc apertium_deshtml.cc \
              $(GENERATEDSCRIPTS)
 
 apertium_destxt.cc: txt-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl txt-format.xml >$@tmp
+	xsltproc deformat.xsl txt-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_desxpresstag.cc: xpresstag-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl xpresstag-format.xml >$@tmp
+	xsltproc deformat.xsl xpresstag-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_rexpresstag.cc: xpresstag-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl xpresstag-format.xml >$@tmp
+	xsltproc reformat.xsl xpresstag-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_retxt.cc: txt-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl txt-format.xml >$@tmp
+	xsltproc reformat.xsl txt-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_deshtml.cc: html-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl html-format.xml >$@tmp
+	xsltproc deformat.xsl html-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_deshtml_alt.cc: html-alt-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl $< >$@tmp
+	xsltproc deformat.xsl $< >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_rehtml.cc: html-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl html-format.xml >$@tmp
+	xsltproc reformat.xsl html-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_rehtml_noent.cc: html-noent-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl html-noent-format.xml >$@tmp
+	xsltproc reformat.xsl html-noent-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_desodt.cc: odt-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl odt-format.xml >$@tmp
+	xsltproc deformat.xsl odt-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_reodt.cc: odt-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl odt-format.xml >$@tmp
+	xsltproc reformat.xsl odt-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_desrtf.cc: rtf-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl rtf-format.xml >$@tmp
+	xsltproc deformat.xsl rtf-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_rertf.cc: rtf-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl rtf-format.xml >$@tmp
+	xsltproc reformat.xsl rtf-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_deswxml.cc: wxml-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl wxml-format.xml >$@tmp
+	xsltproc deformat.xsl wxml-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_rewxml.cc: wxml-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl wxml-format.xml >$@tmp
+	xsltproc reformat.xsl wxml-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_deslatex.cc: latex-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl latex-format.xml >$@tmp
+	xsltproc deformat.xsl latex-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_relatex.cc: latex-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl latex-format.xml >$@tmp
+	xsltproc reformat.xsl latex-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 
 
 apertium_desxlsx.cc: xlsx-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl xlsx-format.xml >$@tmp
+	xsltproc deformat.xsl xlsx-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_rexlsx.cc: xlsx-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl xlsx-format.xml >$@tmp
+	xsltproc reformat.xsl xlsx-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_despptx.cc: pptx-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl pptx-format.xml >$@tmp
+	xsltproc deformat.xsl pptx-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_repptx.cc: pptx-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl pptx-format.xml >$@tmp
+	xsltproc reformat.xsl pptx-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_desmediawiki.cc: mediawiki-format.xml Makefile.am deformat.xsl
-	$(XSLTPROC) deformat.xsl mediawiki-format.xml >$@tmp
+	xsltproc deformat.xsl mediawiki-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
 apertium_remediawiki.cc: mediawiki-format.xml Makefile.am reformat.xsl
-	$(XSLTPROC) reformat.xsl mediawiki-format.xml >$@tmp
+	xsltproc reformat.xsl mediawiki-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
@@ -463,106 +465,106 @@ apertium_postlatex_raw.cc: apertium-postlatex-raw.l
 
 apertium-validate-tagger: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-tagger script"
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/tagger.dtd --noout \"\$$FILE1\"" >>$@
+	@echo "xmllint --dtdvalid \"$(apertiumdir)\"/tagger.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-transfer: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-transfer script"
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/transfer.dtd --noout \"\$$FILE1\"" >>$@
+	@echo "xmllint --dtdvalid \"$(apertiumdir)\"/transfer.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-interchunk: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-interchunk script"
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/interchunk.dtd --noout \"\$$FILE1\"" >>$@
+	@echo "xmllint --dtdvalid \"$(apertiumdir)\"/interchunk.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-postchunk: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-postchunk script"
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/postchunk.dtd --noout \"\$$FILE1\"" >>$@
+	@echo "xmllint --dtdvalid \"$(apertiumdir)\"/postchunk.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-acx: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-acx script"
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --relaxng \"$(prefix)\"/share/lttoolbox/acx.rng --schema \"$(prefix)\"/share/lttoolbox/acx.xsd --noout \"\$$FILE1\"" >>$@
+	@echo "xmllint --relaxng \"$(prefix)\"/share/lttoolbox/acx.rng --schema \"$(prefix)\"/share/lttoolbox/acx.xsd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 apertium-validate-modes: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-modes script"
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@cat validate-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/modes.dtd --noout \"\$$FILE1\"" >>$@
+	@echo "xmllint --dtdvalid \"$(apertiumdir)\"/modes.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
 
 apertium-validate-dictionary: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-dictionary script"
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@cat validate-header.sh >> $@
 	@echo "# xsd is a non-final command, so just treated as a warning when compiling:" >> $@
-	@echo "$(XMLLINT) --schema \"$(prefix)\"/share/lttoolbox/dix.xsd --noout \"\$$FILE1\" 2>&1 | grep -ve ' validates$$' -e ' fails to validate$$'" >> $@
-	@echo "$(XMLLINT) --dtdvalid \"$(prefix)\"/share/lttoolbox/dix.dtd --noout \"\$$FILE1\"" >> $@
+	@echo "xmllint --schema \"$(prefix)\"/share/lttoolbox/dix.xsd --noout \"\$$FILE1\" 2>&1 | grep -ve ' validates$$' -e ' fails to validate$$'" >> $@
+	@echo "xmllint --dtdvalid \"$(prefix)\"/share/lttoolbox/dix.dtd --noout \"\$$FILE1\"" >> $@
 	@chmod a+x $@
 
 apertium-gen-deformat: Makefile.am deformat-header.sh
 	@echo "Creating apertium-gen-deformat script"
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@cat deformat-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/format.dtd --noout \"\$$FILE1\" && \\" >> $@
-	@if [ `basename $(XSLTPROC)` == xsltproc ]; \
-	  then echo "$(XSLTPROC) --stringparam mode \$$MODE \"$(apertiumdir)\"/deformat.xsl \"\$$FILE1\" >/tmp/\$$\$$.deformat.l && \\"; \
-          else echo "$(XSLTPROC) \"$(apertiumdir)\"/deformat.xsl \"\$$FILE1\" \"\\\$$mode=\$$MODE\" >/tmp/\$$\$$.deformat.l && \\"; \
+	@echo "xmllint --dtdvalid \"$(apertiumdir)\"/format.dtd --noout \"\$$FILE1\" && \\" >> $@
+	@if [ `basename xsltproc` == xsltproc ]; \
+	  then echo "xsltproc --stringparam mode \$$MODE \"$(apertiumdir)\"/deformat.xsl \"\$$FILE1\" >/tmp/\$$\$$.deformat.l && \\"; \
+          else echo "xsltproc \"$(apertiumdir)\"/deformat.xsl \"\$$FILE1\" \"\\\$$mode=\$$MODE\" >/tmp/\$$\$$.deformat.l && \\"; \
           fi >> $@
 	@echo "$(FLEX) \$$FLEXOPTS -o/tmp/\$$\$$.lex.cc /tmp/\$$\$$.deformat.l && \\" >> $@
-	@echo "$(CXX) -DGENFORMAT $(CXXFLAGS) -w $(APERTIUM_CFLAGS) -I $(apertiuminclude) -o \"\$$FILE2\" /tmp/\$$\$$.lex.cc $(APERTIUM_LIBS) 2>/dev/null && \\" >> $@
+	@echo "$(CXX) -DGENFORMAT $(CXXFLAGS) -w $(APERTIUM_CFLAGS) -I $(apertiuminclude) -o \"\$$FILE2\" /tmp/\$$\$$.lex.cc 2>/dev/null && \\" >> $@
 	@echo "rm /tmp/\$$\$$.deformat.l /tmp/\$$\$$.lex.cc" >> $@
 	@chmod a+x $@
 
 apertium-gen-reformat: Makefile.am gen-header.sh
 	@echo "Creating apertium-gen-reformat script"
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@cat gen-header.sh >> $@
-	@echo "$(XMLLINT) --dtdvalid \"$(apertiumdir)\"/format.dtd --noout \"\$$FILE1\" && \\" >> $@
-	@echo "$(XSLTPROC) \"$(apertiumdir)\"/reformat.xsl \"\$$FILE1\" >/tmp/\$$\$$.reformat.l && \\" >> $@
+	@echo "xmllint --dtdvalid \"$(apertiumdir)\"/format.dtd --noout \"\$$FILE1\" && \\" >> $@
+	@echo "xsltproc \"$(apertiumdir)\"/reformat.xsl \"\$$FILE1\" >/tmp/\$$\$$.reformat.l && \\" >> $@
 	@echo "$(FLEX) \$$FLEXOPTS -o/tmp/\$$\$$.lex.cc /tmp/\$$\$$.reformat.l && \\" >> $@
-	@echo "$(CXX) -DGENFORMAT $(CXXFLAGS) -w $(APERTIUM_CFLAGS) -I $(apertiuminclude) -o \"\$$FILE2\" /tmp/\$$\$$.lex.cc $(APERTIUM_LIBS) 2>/dev/null &&\\" >> $@
+	@echo "$(CXX) -DGENFORMAT $(CXXFLAGS) -w $(APERTIUM_CFLAGS) -I $(apertiuminclude) -o \"\$$FILE2\" /tmp/\$$\$$.lex.cc 2>/dev/null &&\\" >> $@
 	@echo "rm /tmp/\$$\$$.reformat.l /tmp/\$$\$$.lex.cc" >> $@
 	@chmod a+x $@
 
 apertium-gen-modes: apertium-gen-modes.in Makefile.am
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@echo "APERTIUMDIR=$(apertiumdir)" >> $@
-	@echo "XMLLINT=$(XMLLINT)" >> $@
-	@echo "XSLTPROC=$(XSLTPROC)" >> $@
+	@echo "XMLLINT=xmllint" >> $@
+	@echo "XSLTPROC=xsltproc" >> $@
 	@cat $< >> $@
 	@chmod a+x $@
 
 apertium-utils-fixlatex: Makefile.am utils-fixlatex-header.sh
 	@echo "Creating apertium-utils-fixlatex script"
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@cat utils-fixlatex-header.sh >> $@
 	@chmod a+x $@
 
 apertium: Makefile.am apertium-header.sh
 	@echo 'Creating apertium script'
-	@echo '#!$(BASH)' > $@
+	@echo '#!/usr/bin/env bash' > $@
 	@echo 'APERTIUM_PATH="$${APERTIUM_PATH:-$(prefix)/bin}"' >>$@
-	@echo 'DEFAULT_DIRECTORY="$(prefix)/share/apertium"' >>$@
+	@echo 'APERTIUM_DATADIR="$${APERTIUM_DATADIR:-$(prefix)/share/apertium}"' >>$@
 	@cat apertium-header.sh >>$@
 	@chmod a+x $@
 
 apertium-unformat: Makefile.am apertium-unformat-header.sh
 	@echo "Creating apertium-unformat script"
-	@echo "#!$(BASH)" > $@
+	@echo "#!/usr/bin/env bash" > $@
 	@echo "APERTIUM_PATH=\"$(prefix)/bin\"" >>$@
 	@cat apertium-unformat-header.sh >>$@
 	@chmod a+x $@

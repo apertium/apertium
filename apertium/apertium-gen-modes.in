@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Makefile.am prepends APERTIUMDIR, XMLLINT, XSLTPROC and the right shebang
 
 show_help () {

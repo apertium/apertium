@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /usr/bin/env bash
 
 # If the user specified a --prefix, take that, otherwise /usr/local/
 # is the default.
