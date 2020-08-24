@@ -59,10 +59,7 @@ int main(int argc, char* argv[]) {
 	trim(mode);
 
 	// Don't change the mode twice
-	if (mode.find("apertium-wblank-") != std::string::npos) {
-		std::cout << mode << std::endl;
-		return 0;
-	}
+	bool has_helpers = (mode.find("apertium-wblank-") != std::string::npos);
 
 	// Convert old-style transfer to new-style
 	if (mode.find("lt-proc -b") == std::string::npos) {
@@ -81,7 +78,7 @@ int main(int argc, char* argv[]) {
 		tmp.assign(mode.begin() + e, l);
 		trim(tmp);
 
-		if (add_z) {
+		if (add_z && tmp.find(" -z") == std::string::npos) {
 			auto s = tmp.find_first_of(" \t\r\n");
 			if (s != std::string::npos) {
 				tmp.insert(s, " -z");
@@ -91,11 +88,13 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
-		if (tmp.find("automorf.bin") != std::string::npos || tmp.find("automorf.hfst") != std::string::npos) {
-			tmp += " | apertium-wblank-attach";
-		}
-		else if (tmp.find("autogen.bin") != std::string::npos || tmp.find("autogen.hfst") != std::string::npos) {
-			tmp.insert(0, "apertium-wblank-detach | ");
+		if (!has_helpers) {
+			if (tmp.find("automorf.bin") != std::string::npos || tmp.find("automorf.hfst") != std::string::npos) {
+				tmp += " | apertium-wblank-attach";
+			}
+			else if (tmp.find("autogen.bin") != std::string::npos || tmp.find("autogen.hfst") != std::string::npos) {
+				tmp.insert(0, "apertium-wblank-detach | ");
+			}
 		}
 
 		new_mode += tmp;
