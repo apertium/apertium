@@ -35,7 +35,6 @@ int main(int argc, char* argv[]) {
 	std::cin.rdbuf()->pubsetbuf(inbuf.data(), inbuf.size());
 
 	std::string blank;
-	std::string unesc;
 
 	bool in_token = false;
 	bool in_blank = false;
@@ -49,7 +48,6 @@ int main(int argc, char* argv[]) {
 			if (in_blank) {
 				blank += c;
 				blank += n;
-				unesc += n;
 			}
 			else {
 				std::cout.put(c);
@@ -63,7 +61,6 @@ int main(int argc, char* argv[]) {
 			if (!blank.empty()) {
 				std::cout << blank;
 				blank.clear();
-				unesc.clear();
 			}
 			std::cout.put(c);
 			std::cout.flush();
@@ -91,7 +88,6 @@ int main(int argc, char* argv[]) {
 
 		if (in_blank) {
 			blank += c;
-			unesc += c;
 		}
 		else {
 			std::cout.put(c);
@@ -102,12 +98,11 @@ int main(int argc, char* argv[]) {
 		}
 		else if (in_blank && c == ']') {
 			in_blank = false;
-			if (unesc[0] == '[' && unesc[1] == '[') {
+			if (blank[0] == '[' && blank[1] == '[') {
 				had_wblank = true;
 			}
 			std::cout << blank;
 			blank.clear();
-			unesc.clear();
 		}
 		else if (had_wblank && !in_blank && c == '$') {
 			std::cout << "[[/]]";

@@ -48,6 +48,7 @@ int main(int argc, char* argv[]) {
 	std::cin.rdbuf()->pubsetbuf(inbuf.data(), inbuf.size());
 
 	std::vector<std::string> wbs;
+	std::vector<size_t> wb_stack;
 	std::string blank;
 	std::string unesc;
 
@@ -139,16 +140,20 @@ int main(int argc, char* argv[]) {
 		}
 		else if (in_blank && c == ']') {
 			in_blank = false;
-			if (unesc[0] == '[' && unesc[1] == '[' && unesc[2] == '/' && unesc[3] == ']' && unesc[4] == ']') {
-				if (wbs.empty()) {
+			if (blank[0] == '[' && blank[1] == '[' && blank[2] == '/' && blank[3] == ']' && blank[4] == ']') {
+				if (wb_stack.empty()) {
 					std::cerr << "tf-apertium-spread warning: Too many [[/]] on line " << line << std::endl;
 				}
 				else {
-					wbs.pop_back();
+					for (size_t i = 0 ; i < wb_stack.back() ; ++i) {
+						wbs.pop_back();
+					}
+					wb_stack.pop_back();
 				}
 			}
-			else if (unesc[0] == '[' && unesc[1] == '[') {
+			else if (blank[0] == '[' && blank[1] == '[') {
 				blank.assign(unesc.begin() + 2, unesc.end() - 2);
+				wb_stack.push_back(0);
 				size_t b = 0;
 				while (b < blank.size()) {
 					size_t e = blank.find(';', b);
@@ -156,6 +161,7 @@ int main(int argc, char* argv[]) {
 					trim_wb(unesc);
 					// Deduplicate
 					if (!unesc.empty() && std::find(wbs.begin(), wbs.end(), unesc) == wbs.end()) {
+						++wb_stack.back();
 						wbs.push_back(unesc);
 					}
 					b = std::max(e, e + 1);
