@@ -143,6 +143,7 @@ private:
   TransferToken & readToken(FILE *in);
   bool checkIndex(xmlNode *element, int index, int limit);
   void transfer_wrapper_null_flush(FILE *in, FILE *out);
+  void tmp_clear();
 public:
   Transfer();
   ~Transfer();

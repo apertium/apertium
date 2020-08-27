@@ -2233,6 +2233,13 @@ Transfer::setTraceATT(bool trace)
 }
 
 void
+Transfer::tmp_clear()
+{
+  tmpblank.clear();
+  tmpword.clear();
+}
+
+void
 Transfer::transfer_wrapper_null_flush(FILE *in, FILE *out)
 {
   null_flush = false;
@@ -2240,6 +2247,7 @@ Transfer::transfer_wrapper_null_flush(FILE *in, FILE *out)
 
   while(!feof(in))
   {
+    tmp_clear();
     transfer(in, out);
     fputwc_unlocked(L'\0', out);
     int code = fflush(out);
