@@ -17,6 +17,15 @@
     <def-cat n="n_n">
       <cat-item name="n_n"/>
     </def-cat>
+    <def-cat n="n_n2">
+      <cat-item name="n_n2"/>
+    </def-cat>
+    <def-cat n="n_n3">
+      <cat-item name="n_n3"/>
+    </def-cat>
+    <def-cat n="n_n4">
+      <cat-item name="n_n4"/>
+    </def-cat>
     <def-cat n="thing_wb">
       <cat-item name="thing_wb"/>
     </def-cat>
@@ -173,6 +182,64 @@
             <lu><clip pos="1" part="whole"/></lu>
             <lu><concat><lit v="newpr"/><lit-tag v="pr"/></concat></lu>
           </mlu>
+        </out>
+      </action>
+    </rule>
+
+    <rule comment="CHUNK: superblank rule 1">
+      <pattern>
+        <pattern-item n="n_n2"/>
+      </pattern>
+      <action>
+        <let><clip pos="2" part="art"/><clip pos="0" part="art"/></let>
+        <out>
+          <lu><clip pos="2" part="whole"/></lu>
+          <b/>
+          <lu><clip pos="1" part="whole"/></lu>
+          <b/>
+          <mlu>
+            <lu><clip pos="1" part="lemh"/></lu>
+            <lu><clip pos="2" part="lem"/></lu>
+          </mlu>
+          <b/>
+          <lu><clip pos="3" part="whole"/></lu>
+        </out>
+      </action>
+    </rule>
+
+    <rule comment="CHUNK: superblank rule 2">
+      <pattern>
+        <pattern-item n="n_n3"/>
+      </pattern>
+      <action>
+        <let><clip pos="2" part="art"/><clip pos="0" part="art"/></let>
+        <out>
+          <lu><clip pos="2" part="whole"/></lu>
+          <lu><clip pos="1" part="whole"/></lu>
+          <mlu>
+            <lu><clip pos="1" part="lemh"/></lu>
+            <lu><clip pos="2" part="lem"/></lu>
+          </mlu>
+          <lu><clip pos="3" part="whole"/></lu>
+        </out>
+      </action>
+    </rule>
+
+    <rule comment="CHUNK: superblank rule 3">
+      <pattern>
+        <pattern-item n="n_n4"/>
+      </pattern>
+      <action>
+        <let><clip pos="2" part="art"/><clip pos="0" part="art"/></let>
+        <out>
+          <lu><clip pos="2" part="whole"/></lu>
+          <lu><clip pos="1" part="whole"/></lu>
+          <b/>
+          <mlu>
+            <lu><clip pos="1" part="lemh"/></lu>
+            <lu><clip pos="2" part="lem"/></lu>
+          </mlu>
+          <lu><clip pos="3" part="whole"/></lu>
         </out>
       </action>
     </rule>

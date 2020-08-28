@@ -52,7 +52,6 @@ Transfer::destroy()
 Transfer::Transfer() :
 word(0),
 lword(0),
-lblank(0),
 last_lword(0),
 output(0),
 any_char(0),
@@ -2595,14 +2594,6 @@ Transfer::applyRule()
       word = new TransferWord *[limit];
       std::fill(word, word+limit, (TransferWord *)(0));
       lword = limit;
-      if(limit != 1)
-      {
-        lblank = limit - 1;
-      }
-      else
-      {
-        lblank = 0;
-      }
     }
     else
     {

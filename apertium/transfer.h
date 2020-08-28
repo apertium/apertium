@@ -57,7 +57,7 @@ private:
   xmlNode *root_element;
   TransferWord **word;
   queue <string> blank_queue;
-  int lword, lblank;
+  int lword;
   int last_lword;
   Buffer<TransferToken> input_buffer;
   vector<wstring *> tmpword;

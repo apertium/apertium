@@ -114,6 +114,26 @@ class WordboundBlankTest(PostchunkTest):
 class SingleLUWordboundBlankTest(PostchunkTest):
     inputs =          ["^thing_wb<thing><sg>{^[[t:i:xyzabc]]thing<thing><ND>$}$ ^n_n<SN><sg>{[[t:b:123456]]^worda<n><ND><m>$ ;[testblank] [[t:s:xyzab12]]^wordb# xyz<n><ND><f>$}$ [blanks] ^thing_wb<thing><sg>{^[[t:i:xyzabc]]thing<thing><ND>$}$ [blankx] ^vblex<vblex><imp>{[[t:b:123zbc]]^gå<vblex><imp>$}$^default<default>{^.<sent><clb>$}$ [blanks3] ^thing<thing><sg>{^[[t:i:xyzabc]]thing<thing><ND>$}$"]
     expectedOutputs = ["[[t:i:xyzabc]]^newthing<adj><sg>$ [[t:i:xyzabc]]^thing<thing><sg>$ [[t:i:xyzabc]]^thing<thing><sg>+newpr<pr>$ [[t:s:xyzab12]]^wordb# xyz<n><ND><f>$ ;[testblank] [[t:b:123456]]^worda<n><ND><m>$ [[t:b:123456; t:s:xyzab12]]^worda+wordb# xyz$ [blanks] [[t:i:xyzabc]]^newthing<adj><sg>$ [[t:i:xyzabc]]^thing<thing><sg>$ [[t:i:xyzabc]]^thing<thing><sg>+newpr<pr>$ [blankx] [[t:b:123zbc]]^gå<vblex><imp>$^.<sent><clb>$ [blanks3] [[t:i:xyzabc]]^thing<thing><sg>$"]
+
+class SuperblankTest(PostchunkTest):
+    inputs =          [ "[blank1];; ^n_n<SN><sg>{^worda<n><ND><m>$ ;[blank2] ^wordb# xyz<n><ND><f>$}$ ;[blank3]; ",
+                        "[blank1];; ^n_k<SN><sgn>{^worda<nn><NDn><mn>$ ;[blank2] ^wordb# xyz<nn><NDn><fn>$}$ ;[blank3]; ", #Blanks when no rules match
+                        "[blank1];; ^n_n2<SN><sg>{^worda<n><ND><m>$ ;[blank2] ^wordb# xyz<n><ND><f>$ ;[blank3]; ^wordc<n>$}$ ;[blank4]; ", #When output rule has more <b/> than input blanks
+                        "[blank1];; ^n_n3<SN><sg>{^worda<n><ND><m>$ ;[blank2] ^wordb# xyz<n><ND><f>$ ;[blank3]; ^wordc<n>$}$ ;[blank4]; ", #Output rule has no <b/>
+                        "[blank1];; ^n_n4<SN><sg>{^worda<n><ND><m>$ ;[blank2] ^wordb# xyz<n><ND><f>$ ;[blank3]; ^wordc<n>$}$ ;[blank4]; ", #Output rule has one <b/>
+                        "[blank1];; ^n_n<SN><sg>{^worda<n><ND><m>$ ;[blank2] ^wordb# xyz<n><ND><f>$}$ ;[blank3]; ^n_n4<SN><sg>{^worda<n><ND><m>$ ;[blank4] ^wordb# xyz<n><ND><f>$ ;[blank5]; ^wordc<n>$}$ ;[blank6]; "] #Multiple matching rules
+    
+    expectedOutputs = [ "[blank1];; ^wordb# xyz<n><ND><f>$ ;[blank2] ^worda<n><ND><m>$ ^worda+wordb# xyz$ ;[blank3]; ",
+                        "[blank1];; ^worda<nn><NDn><mn>$ ;[blank2] ^wordb# xyz<nn><NDn><fn>$ ;[blank3]; ",
+                        "[blank1];; ^wordb# xyz<n><ND><f>$ ;[blank2] ^worda<n><ND><m>$ ;[blank3]; ^worda+wordb# xyz$ ^wordc<n>$ ;[blank4]; ",
+                        "[blank1];; ^wordb# xyz<n><ND><f>$^worda<n><ND><m>$^worda+wordb# xyz$^wordc<n>$ ;[blank2]  ;[blank3];  ;[blank4]; ",
+                        "[blank1];; ^wordb# xyz<n><ND><f>$^worda<n><ND><m>$ ;[blank2] ^worda+wordb# xyz$^wordc<n>$ ;[blank3];  ;[blank4]; ",
+                        "[blank1];; ^wordb# xyz<n><ND><f>$ ;[blank2] ^worda<n><ND><m>$ ^worda+wordb# xyz$ ;[blank3]; ^wordb# xyz<n><ND><f>$^worda<n><ND><m>$ ;[blank4] ^worda+wordb# xyz$^wordc<n>$ ;[blank5];  ;[blank6]; "]
+
+
+
+
+
 class BincompatTest(SimplePostchunkTest):
     bindata = "data/bincompat.t3x.bin"
 
