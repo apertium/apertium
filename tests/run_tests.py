@@ -8,6 +8,7 @@ import unittest
 import tagger
 import pretransfer
 import transfer
+import interchunk
 import postchunk
 import adaptdocx
 
@@ -17,6 +18,7 @@ if __name__ == "__main__":
     for module in [tagger,
                    pretransfer,
                    transfer,
+                   interchunk,
                    postchunk,
                    adaptdocx]:
         suite = unittest.TestLoader().loadTestsFromModule(module)

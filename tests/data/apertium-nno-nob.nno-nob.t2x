@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- -*- nxml -*- -->
+<interchunk>
+  <section-def-cats>
+    <def-cat n="SN">
+      <cat-item tags="SN"/>
+      <cat-item tags="SN.*"/>
+    </def-cat>
+    <def-cat n="prn">
+      <cat-item tags="prn"/>
+      <cat-item tags="prn.*"/>
+    </def-cat>
+    <def-cat n="prn2">
+      <cat-item tags="prn2"/>
+      <cat-item tags="prn2.*"/>
+    </def-cat>
+    <def-cat n="test1">
+      <cat-item tags="test1"/>
+      <cat-item tags="test1.*"/>
+    </def-cat>
+    <def-cat n="test2">
+      <cat-item tags="test2"/>
+      <cat-item tags="test2.*"/>
+    </def-cat>
+    <def-cat n="test3">
+      <cat-item tags="test3"/>
+      <cat-item tags="test3.*"/>
+    </def-cat>
+    <def-cat n="test4">
+      <cat-item tags="test4"/>
+      <cat-item tags="test4.*"/>
+    </def-cat>
+    <def-cat n="test5">
+      <cat-item tags="test5"/>
+      <cat-item tags="test5.*"/>
+    </def-cat>
+    <def-cat n="SENT">
+      <cat-item tags="SENT"/>
+    </def-cat>
+  </section-def-cats>
+
+  <section-def-attrs>
+    <def-attr n="a_nbr">
+      <attr-item tags="sg"/>
+      <attr-item tags="pl"/>
+      <attr-item tags="sp"/>
+      <attr-item tags="ND"/>
+    </def-attr>
+    <def-attr n="a_cas">
+      <attr-item tags="nom"/>
+      <attr-item tags="acc"/>
+      <attr-item tags="dat"/>
+      <attr-item tags="gen"/>
+      <attr-item tags="ins"/>
+      <attr-item tags="loc"/>
+      <attr-item tags="abl"/>
+    </def-attr>
+  </section-def-attrs>
+
+  <section-rules>
+    <rule comment="REGLA: SN">
+      <pattern>
+        <pattern-item n="SN"/>
+      </pattern>
+      <action>
+        <out>
+          <chunk>
+            <clip pos="1" part="lem"/>
+            <clip pos="1" part="tags"/>
+            <clip pos="1" part="chcontent"/>
+          </chunk>
+        </out>
+      </action>
+    </rule>
+
+    <rule comment="prntest">
+      <pattern>
+        <pattern-item n="prn"/>
+        <pattern-item n="prn2"/>
+      </pattern>
+      <action>
+        <out>
+          <chunk>
+            <clip pos="2" part="lem"/>
+            <clip pos="2" part="tags"/>
+            <clip pos="2" part="chcontent"/>
+          </chunk>
+          <chunk>
+            <clip pos="1" part="lem"/>
+            <clip pos="1" part="tags"/>
+            <clip pos="1" part="chcontent"/>
+          </chunk>
+        </out>
+      </action>
+    </rule>
+
+    <rule comment="superblankrule1">
+      <pattern>
+        <pattern-item n="test1"/>
+        <pattern-item n="test2"/>
+        <pattern-item n="test3"/>
+      </pattern>
+      <action>
+        <out>
+          <chunk>
+            <clip pos="2" part="lem"/>
+            <clip pos="2" part="tags"/>
+            <clip pos="2" part="chcontent"/>
+          </chunk>
+          <b/>
+          <chunk>
+            <clip pos="1" part="lem"/>
+            <clip pos="1" part="tags"/>
+            <clip pos="1" part="chcontent"/>
+          </chunk>
+          <b/>
+          <chunk>
+            <clip pos="3" part="lem"/>
+            <clip pos="3" part="tags"/>
+            <clip pos="3" part="chcontent"/>
+          </chunk>
+        </out>
+      </action>
+    </rule>
+
+    <rule comment="superblankrule2">
+      <pattern>
+        <pattern-item n="test2"/>
+        <pattern-item n="test2"/>
+        <pattern-item n="test3"/>
+      </pattern>
+      <action>
+        <out>
+          <chunk>
+            <clip pos="2" part="lem"/>
+            <clip pos="2" part="tags"/>
+            <clip pos="2" part="chcontent"/>
+          </chunk>
+          <b/>
+          <chunk>
+            <clip pos="1" part="lem"/>
+            <clip pos="1" part="tags"/>
+            <clip pos="1" part="chcontent"/>
+          </chunk>
+          <b/>
+          <chunk>
+            <clip pos="2" part="lem"/>
+            <clip pos="2" part="tags"/>
+            <clip pos="2" part="chcontent"/>
+          </chunk>
+          <b/>
+          <chunk>
+            <clip pos="1" part="lem"/>
+            <clip pos="1" part="tags"/>
+            <clip pos="1" part="chcontent"/>
+          </chunk>
+          <b/>
+          <chunk>
+            <clip pos="3" part="lem"/>
+            <clip pos="3" part="tags"/>
+            <clip pos="3" part="chcontent"/>
+          </chunk>
+        </out>
+      </action>
+    </rule>
+
+    <rule comment="superblankrule3">
+      <pattern>
+        <pattern-item n="test3"/>
+        <pattern-item n="test2"/>
+        <pattern-item n="test1"/>
+      </pattern>
+      <action>
+        <out>
+          <chunk>
+            <clip pos="2" part="lem"/>
+            <clip pos="2" part="tags"/>
+            <clip pos="2" part="chcontent"/>
+          </chunk>
+          <chunk>
+            <clip pos="1" part="lem"/>
+            <clip pos="1" part="tags"/>
+            <clip pos="1" part="chcontent"/>
+          </chunk>
+          <chunk>
+            <clip pos="3" part="lem"/>
+            <clip pos="3" part="tags"/>
+            <clip pos="3" part="chcontent"/>
+          </chunk>
+        </out>
+      </action>
+    </rule>
+
+    <rule comment="superblankrule4">
+      <pattern>
+        <pattern-item n="test1"/>
+        <pattern-item n="test3"/>
+        <pattern-item n="test2"/>
+      </pattern>
+      <action>
+        <out>
+          <chunk>
+            <clip pos="2" part="lem"/>
+            <clip pos="2" part="tags"/>
+            <clip pos="2" part="chcontent"/>
+          </chunk>
+          <chunk>
+            <clip pos="1" part="lem"/>
+            <clip pos="1" part="tags"/>
+            <clip pos="1" part="chcontent"/>
+          </chunk>
+          <b/>
+          <chunk>
+            <clip pos="3" part="lem"/>
+            <clip pos="3" part="tags"/>
+            <clip pos="3" part="chcontent"/>
+          </chunk>
+        </out>
+      </action>
+    </rule>
+
+  </section-rules>
+</interchunk>
+

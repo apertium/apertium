@@ -118,9 +118,9 @@ class SingleLUWordboundBlankTest(PostchunkTest):
 class SuperblankTest(PostchunkTest):
     inputs =          [ "[blank1];; ^n_n<SN><sg>{^worda<n><ND><m>$ ;[blank2] ^wordb# xyz<n><ND><f>$}$ ;[blank3]; ",
                         "[blank1];; ^n_k<SN><sgn>{^worda<nn><NDn><mn>$ ;[blank2] ^wordb# xyz<nn><NDn><fn>$}$ ;[blank3]; ", #Blanks when no rules match
-                        "[blank1];; ^n_n2<SN><sg>{^worda<n><ND><m>$ ;[blank2] ^wordb# xyz<n><ND><f>$ ;[blank3]; ^wordc<n>$}$ ;[blank4]; ", #When output rule has more <b/> than input blanks
-                        "[blank1];; ^n_n3<SN><sg>{^worda<n><ND><m>$ ;[blank2] ^wordb# xyz<n><ND><f>$ ;[blank3]; ^wordc<n>$}$ ;[blank4]; ", #Output rule has no <b/>
-                        "[blank1];; ^n_n4<SN><sg>{^worda<n><ND><m>$ ;[blank2] ^wordb# xyz<n><ND><f>$ ;[blank3]; ^wordc<n>$}$ ;[blank4]; ", #Output rule has one <b/>
+                        "[blank1];; ^n_n2<SN><sg>{^worda<n><ND><m>$ ;[blank2] ^wordb# xyz<n><ND><f>$ ;[blank3]; ^wordc<n>$}$ ;[blank4]; ", #superblank rule 1 -> When output rule has more <b/> than input blanks, print all then spaces
+                        "[blank1];; ^n_n3<SN><sg>{^worda<n><ND><m>$ ;[blank2] ^wordb# xyz<n><ND><f>$ ;[blank3]; ^wordc<n>$}$ ;[blank4]; ", #superblank rule 2 -> Output rule has no <b/>, flush all blanks after rule output
+                        "[blank1];; ^n_n4<SN><sg>{^worda<n><ND><m>$ ;[blank2] ^wordb# xyz<n><ND><f>$ ;[blank3]; ^wordc<n>$}$ ;[blank4]; ", #superblank rule 3 -> Output rule has one <b/>, print one blank, then flush all after rule output
                         "[blank1];; ^n_n<SN><sg>{^worda<n><ND><m>$ ;[blank2] ^wordb# xyz<n><ND><f>$}$ ;[blank3]; ^n_n4<SN><sg>{^worda<n><ND><m>$ ;[blank4] ^wordb# xyz<n><ND><f>$ ;[blank5]; ^wordc<n>$}$ ;[blank6]; "] #Multiple matching rules
     
     expectedOutputs = [ "[blank1];; ^wordb# xyz<n><ND><f>$ ;[blank2] ^worda<n><ND><m>$ ^worda+wordb# xyz$ ;[blank3]; ",
