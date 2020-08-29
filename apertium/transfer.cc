@@ -2602,7 +2602,16 @@ Transfer::applyRule()
     {
       if(int(blank_queue.size()) < last_lword - 1)
       {
-        blank_queue.push(string(UtfConverter::toUtf8(*tmpblank[i-1])));
+        string blank_to_add = string(UtfConverter::toUtf8(*tmpblank[i-1]));
+        
+        if(!blank_to_add.empty())
+        {
+          blank_queue.push(blank_to_add);
+        }
+        else
+        {
+          blank_queue.push(" ");
+        }
       }
     }
 
