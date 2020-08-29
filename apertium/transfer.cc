@@ -881,9 +881,12 @@ Transfer::processOut(xmlNode *localroot)
     }
   }
   
-  while(!blank_queue.empty()) //flush remaining blanks
+  while(!blank_queue.empty()) //flush remaining blanks that are not spaces
   {
-    fputws_unlocked(UtfConverter::fromUtf8(blank_queue.front()).c_str(), output);
+    if(blank_queue.front().compare(" ") != 0)
+    {
+      fputws_unlocked(UtfConverter::fromUtf8(blank_queue.front()).c_str(), output);
+    }
     blank_queue.pop();
   }
 }
@@ -2597,7 +2600,7 @@ Transfer::applyRule()
     }
     else
     {
-      if(int(blank_queue.size()) + 1 < last_lword)
+      if(int(blank_queue.size()) < last_lword - 1)
       {
         blank_queue.push(string(UtfConverter::toUtf8(*tmpblank[i-1])));
       }

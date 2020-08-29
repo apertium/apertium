@@ -46,9 +46,8 @@ Interchunk::destroy()
 
 Interchunk::Interchunk() :
 word(0),
-blank(0),
 lword(0),
-lblank(0),
+last_lword(0),
 output(0),
 any_char(0),
 any_tag(0),
@@ -62,7 +61,6 @@ nwords(0)
   null_flush = false;
   internal_null_flush = false;
   trace = false;
-  emptyblank = "";
 }
 
 Interchunk::~Interchunk()
@@ -270,11 +268,15 @@ Interchunk::evalString(xmlNode *element)
         return ti.getContent();
 
       case ti_b:
-        if(ti.getPos() >= 0 && checkIndex(element, ti.getPos(), lblank))
+        if(!blank_queue.empty())
         {
-          return !blank?"":*(blank[ti.getPos()]);
+          string retblank = blank_queue.front();
+          blank_queue.pop();
+          
+          return retblank;
         }
-        else {
+        else
+        {
           return " ";
         }
         break;
@@ -419,6 +421,15 @@ Interchunk::processOut(xmlNode *localroot)
         fputws_unlocked(UtfConverter::fromUtf8(evalString(i)).c_str(), output);
       }
     }
+  }
+  
+  while(!blank_queue.empty()) //flush remaining blanks that are not spaces
+  {
+    if(blank_queue.front().compare(" ") != 0)
+    {
+      fputws_unlocked(UtfConverter::fromUtf8(blank_queue.front()).c_str(), output);
+    }
+    blank_queue.pop();
   }
 }
 
@@ -649,38 +660,19 @@ Interchunk::processCallMacro(xmlNode *localroot)
   {
     myword = new InterchunkWord *[npar];
   }
-  string **myblank = NULL;
-  if(npar > 0)
-  {
-    myblank = new string *[npar];
-    myblank[npar-1] = &emptyblank;
-  }
 
   int idx = 0;
-  int lastpos = 0;
   for(xmlNode *i = localroot->children; npar && i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE)
     {
       int pos = atoi((const char *) i->properties->children->content)-1;
       myword[idx] = word[pos];
-      if(idx-1 >= 0)
-      {
-        if(lastpos + 1 > lblank) { // if a 1-pattern rule calls macro with same
-          noblank = "";            // param twice the blank array will be empty
-          myblank[idx-1] = &noblank;
-        }
-        else {
-          myblank[idx-1] = blank[lastpos];
-        }
-      }
       idx++;
-      lastpos = pos;
     }
   }
 
   swap(myword, word);
-  swap(myblank, blank);
   swap(npar, lword);
 
   for(xmlNode *i = macro->children; i != NULL; i = i->next)
@@ -692,11 +684,9 @@ Interchunk::processCallMacro(xmlNode *localroot)
   }
 
   swap(myword, word);
-  swap(myblank, blank);
   swap(npar, lword);
 
   delete[] myword;
-  delete[] myblank;
 }
 
 void
@@ -1481,6 +1471,8 @@ Interchunk::interchunk(FILE *in, FILE *out)
       size_t lastrule_line = rule_lines[val-1];
       lastrule = rule_map[val-1];
       last = input_buffer.getPos();
+      
+      last_lword = tmpword.size();
 
       if(trace)
       {
@@ -1543,20 +1535,13 @@ Interchunk::applyRule()
     {
       word = new InterchunkWord *[limit];
       lword = limit;
-      if(limit != 1)
-      {
-        blank = new string *[limit - 1];
-        lblank = limit - 1;
-      }
-      else
-      {
-        blank = NULL;
-        lblank = 0;
-      }
     }
     else
     {
-      blank[i-1] = new string(UtfConverter::toUtf8(*tmpblank[i-1]));
+      if(int(blank_queue.size()) < last_lword - 1)
+      {
+        blank_queue.push(string(UtfConverter::toUtf8(*tmpblank[i-1])));
+      }
     }
 
     word[i] = new InterchunkWord(UtfConverter::toUtf8(*tmpword[i]));
@@ -1573,16 +1558,8 @@ Interchunk::applyRule()
     }
     delete[] word;
   }
-  if(blank)
-  {
-    for(unsigned int i = 0; i != limit - 1; i++)
-    {
-      delete blank[i];
-    }
-    delete[] blank;
-  }
+
   word = NULL;
-  blank = NULL;
   tmpword.clear();
   tmpblank.clear();
   ms.init(me->getInitial());

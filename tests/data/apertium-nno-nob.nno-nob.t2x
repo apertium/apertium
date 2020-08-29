@@ -219,6 +219,28 @@
       </action>
     </rule>
 
+    <rule comment="superblankrule5">
+      <pattern>
+        <pattern-item n="test1"/>
+        <pattern-item n="test2"/>
+      </pattern>
+      <action>
+        <out>
+          <chunk>
+            <clip pos="2" part="lem"/>
+            <clip pos="2" part="tags"/>
+            <clip pos="2" part="chcontent"/>
+          </chunk>
+          <b/>
+          <chunk>
+            <clip pos="1" part="lem"/>
+            <clip pos="1" part="tags"/>
+            <clip pos="1" part="chcontent"/>
+          </chunk>
+        </out>
+      </action>
+    </rule>
+
   </section-rules>
 </interchunk>
 
