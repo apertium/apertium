@@ -34,6 +34,7 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <queue>
 
 using namespace std;
 
@@ -55,9 +56,9 @@ private:
   xmlDoc *doc;
   xmlNode *root_element;
   InterchunkWord **word;
-  string **blank;
-  int lword, lblank;
-  string noblank = "";
+  queue <string> blank_queue;
+  int lword;
+  int last_lword;
   Buffer<TransferToken> input_buffer;
   vector<wstring *> tmpword;
   vector<wstring *> tmpblank;

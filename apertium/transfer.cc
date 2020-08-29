@@ -51,9 +51,7 @@ Transfer::destroy()
 
 Transfer::Transfer() :
 word(0),
-blank(0),
 lword(0),
-lblank(0),
 last_lword(0),
 output(0),
 any_char(0),
@@ -72,7 +70,6 @@ nwords(0)
   internal_null_flush = false;
   trace = false;
   trace_att = false;
-  emptyblank = "";
   in_lu = false;
   in_let_var = false;
 }
@@ -472,11 +469,15 @@ Transfer::evalString(xmlNode *element)
         return ti.getContent();
 
       case ti_b:
-        if(ti.getPos() >= 0 && checkIndex(element, ti.getPos(), lblank))
+        if(!blank_queue.empty())
         {
-          return !blank?"":*(blank[ti.getPos()]);
+          string retblank = blank_queue.front();
+          blank_queue.pop();
+          
+          return retblank;
         }
-        else {
+        else
+        {
           return " ";
         }
         break;
@@ -588,15 +589,7 @@ Transfer::evalString(xmlNode *element)
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "b"))
   {
-    if(element->properties == NULL)
-    {
-      evalStringCache[element] = TransferInstr(ti_b, " ", -1);
-    }
-    else
-    {
-      int pos = atoi((const char *) element->properties->children->content) - 1;
-      evalStringCache[element] = TransferInstr(ti_b, "", pos);
-    }
+    evalStringCache[element] = TransferInstr(ti_b, " ", -1);
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "get-case-from"))
   {
@@ -886,6 +879,15 @@ Transfer::processOut(xmlNode *localroot)
         }
       }
     }
+  }
+  
+  while(!blank_queue.empty()) //flush remaining blanks that are not spaces
+  {
+    if(blank_queue.front().compare(" ") != 0)
+    {
+      fputws_unlocked(UtfConverter::fromUtf8(blank_queue.front()).c_str(), output);
+    }
+    blank_queue.pop();
   }
 }
 
@@ -1427,15 +1429,8 @@ Transfer::processCallMacro(xmlNode *localroot)
     myword = new TransferWord *[npar];
     std::fill(myword, myword+npar, (TransferWord *)(0));
   }
-  string **myblank = NULL;
-  if(npar > 0)
-  {
-    myblank = new string *[npar];
-    myblank[npar-1] = &emptyblank;
-  }
-
+  
   int idx = 0;
-  int lastpos = 0;
   for(xmlNode *i = localroot->children; npar && i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE)
@@ -1446,23 +1441,12 @@ Transfer::processCallMacro(xmlNode *localroot)
       }
       int pos = atoi((const char *) i->properties->children->content)-1;
       myword[idx] = word[pos];
-      if(idx-1 >= 0)
-      {
-        if(lastpos + 1 > lblank) { // if a 1-pattern rule calls macro with same
-          noblank = "";            // param twice the blank array will be empty
-          myblank[idx-1] = &noblank;
-        }
-        else {
-          myblank[idx-1] = blank[lastpos];
-        }
-      }
+
       idx++;
-      lastpos = pos;
     }
   }
 
   swap(myword, word);
-  swap(myblank, blank);
   swap(npar, lword);
 
   for(xmlNode *i = macro->children; i != NULL; i = i->next)
@@ -1474,11 +1458,9 @@ Transfer::processCallMacro(xmlNode *localroot)
   }
 
   swap(myword, word);
-  swap(myblank, blank);
   swap(npar, lword);
 
   delete[] myword;
-  delete[] myblank;
 }
 
 int
@@ -2615,20 +2597,22 @@ Transfer::applyRule()
       word = new TransferWord *[limit];
       std::fill(word, word+limit, (TransferWord *)(0));
       lword = limit;
-      if(limit != 1)
-      {
-        blank = new string *[limit - 1];
-        lblank = limit - 1;
-      }
-      else
-      {
-        blank = NULL;
-        lblank = 0;
-      }
     }
     else
     {
-        blank[i-1] = new string(UtfConverter::toUtf8(*tmpblank[i-1]));
+      if(int(blank_queue.size()) < last_lword - 1)
+      {
+        string blank_to_add = string(UtfConverter::toUtf8(*tmpblank[i-1]));
+        
+        if(!blank_to_add.empty())
+        {
+          blank_queue.push(blank_to_add);
+        }
+        else
+        {
+          blank_queue.push(" ");
+        }
+      }
     }
 
     pair<wstring, int> tr;
@@ -2767,17 +2751,7 @@ Transfer::applyRule()
     }
     delete[] word;
   }
-  if(blank)
-  {
-    for(unsigned int i = 0; i != limit - 1; i++)
-    {
-      delete blank[i];
-      blank[i] = 0;
-    }
-    delete[] blank;
-  }
   word = NULL;
-  blank = NULL;
   tmpword.clear();
   tmpblank.clear();
   ms.init(me->getInitial());

@@ -12,6 +12,12 @@
     <def-cat n="nacr">
       <cat-item tags="n.acr"/>
     </def-cat>
+    <def-cat n="det">
+      <cat-item tags="det"/>
+    </def-cat>
+    <def-cat n="adj">
+      <cat-item tags="adj"/>
+    </def-cat>
   </section-def-cats>
   <section-def-attrs>
     <def-attr n="a_nom">
@@ -99,13 +105,12 @@
           <chunk name="prn" case="caseFirstWord">
             <tags><tag><clip pos="3" side="tl" part="tags"/></tag></tags>
             <lu><clip pos="3" side="tl" part="whole"/></lu>
-            <b/>
             <lu>
               <clip pos="2" side="tl" part="lem"/>
               <lit-tag v="nacr.sg.m"/>
             </lu>
           </chunk>
-          <b pos="1"/>
+          <b/>
           <chunk name="det" case="caseFirstWord">
             <tags><tag><clip pos="1" side="tl" part="tags"/></tag></tags>
             <mlu>
@@ -113,7 +118,7 @@
               <lu><clip pos="3" side="tl" part="whole"/></lu>
             </mlu>
           </chunk>
-          <b pos="2"/>
+          <b/>
         </out>
       </action>
     </rule>
@@ -139,6 +144,63 @@
               <lu><clip pos="1" side="tl" part="whole"/></lu>
               <lu><concat><lit v="postp"/><lit-tag v="adj.sg"/></concat></lu>
             </mlu>
+          </chunk>
+        </out>
+      </action>
+    </rule>
+
+    <rule comment="superblankrule1">
+      <pattern>
+        <pattern-item n="det"/>
+        <pattern-item n="adj"/>
+        <pattern-item n="nacr"/>
+      </pattern>
+      <action>
+        <out>
+          <chunk name ="test1" case="caseFirstWord">
+            <tags><tag><clip pos="2" side="tl" part="tags"/></tag></tags>
+            <lu><clip pos="1" side="tl" part="whole"/></lu>
+            <lu><clip pos="2" side="tl" part="whole"/></lu>
+            <lu><clip pos="3" side="tl" part="whole"/></lu>
+          </chunk>
+        </out>
+      </action>
+    </rule>
+
+    <rule comment="superblankrule2">
+      <pattern>
+        <pattern-item n="adj"/>
+        <pattern-item n="det"/>
+        <pattern-item n="nacr"/>
+      </pattern>
+      <action>
+        <out>
+          <chunk name ="test1" case="caseFirstWord">
+            <tags><tag><clip pos="2" side="tl" part="tags"/></tag></tags>
+            <lu><clip pos="2" side="tl" part="whole"/></lu>
+            <b/>
+            <lu><clip pos="3" side="tl" part="whole"/></lu>
+          </chunk>
+        </out>
+      </action>
+    </rule>
+
+    <rule comment="superblankrule3">
+      <pattern>
+        <pattern-item n="nacr"/>
+        <pattern-item n="det"/>
+      </pattern>
+      <action>
+        <out>
+          <chunk name ="test1" case="caseFirstWord">
+            <tags><tag><clip pos="2" side="tl" part="tags"/></tag></tags>
+            <lu><clip pos="1" side="tl" part="whole"/></lu>
+            <b/>
+            <lu><clip pos="2" side="tl" part="whole"/></lu>
+            <b/>
+            <lu><clip pos="1" side="tl" part="whole"/></lu>
+            <b/>
+            <lu><clip pos="2" side="tl" part="whole"/></lu>
           </chunk>
         </out>
       </action>

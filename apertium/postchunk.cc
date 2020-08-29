@@ -48,9 +48,7 @@ Postchunk::destroy()
 
 Postchunk::Postchunk() :
 word(0),
-blank(0),
 lword(0),
-lblank(0),
 output(0),
 any_char(0),
 any_tag(0),
@@ -347,11 +345,15 @@ Postchunk::evalString(xmlNode *element)
         return ti.getContent();
 
       case ti_b:
-        if(ti.getPos() >= 0 && checkIndex(element, ti.getPos(), lblank))
+        if(!blank_queue.empty())
         {
-          return !blank?"":*(blank[ti.getPos()]);
+          string retblank = blank_queue.front();
+          blank_queue.pop();
+          
+          return retblank;
         }
-        else {
+        else
+        {
           return " ";
         }
         break;
@@ -663,6 +665,15 @@ Postchunk::processOut(xmlNode *localroot)
       }
     }
   }
+  
+  while(!blank_queue.empty()) //flush remaining blanks that are not spaces
+  {
+    if(blank_queue.front().compare(" ") != 0)
+    {
+      fputws_unlocked(UtfConverter::fromUtf8(blank_queue.front()).c_str(), output);
+    }
+    blank_queue.pop();
+  }
 }
 
 void
@@ -915,17 +926,11 @@ Postchunk::processCallMacro(xmlNode *localroot)
   {
     myword = new InterchunkWord *[npar+1];
   }
-  string **myblank = NULL;
-  if(npar > 0)
-  {
-    myblank = new string *[npar];
-  }
 
   myword[0] = word[0];
 
   bool indexesOK = true;
   int idx = 1;
-  int lastpos = 0;
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE)
@@ -936,18 +941,11 @@ Postchunk::processCallMacro(xmlNode *localroot)
         pos = 1;
       }
       myword[idx] = word[pos];
-      if(blank)
-      {
-        myblank[idx-1] = blank[lastpos];
-      }
-
       idx++;
-      lastpos = pos;
     }
   }
 
   swap(myword, word);
-  swap(myblank, blank);
   swap(npar, lword);
 
   if(indexesOK) {
@@ -964,11 +962,9 @@ Postchunk::processCallMacro(xmlNode *localroot)
   }
 
   swap(myword, word);
-  swap(myblank, blank);
   swap(npar, lword);
 
   delete[] myword;
-  delete[] myblank;
 }
 
 void
@@ -1850,22 +1846,18 @@ Postchunk::applyRule()
 
   for(unsigned int i = 1, limit = tmpword.size()+1; i != limit; i++)
   {
-    if(i == 1)
+    if(i != 1)
     {
-      if(limit != 2)
+      string blank_to_add = string(UtfConverter::toUtf8(*tmpblank[i-1]));
+      
+      if(!blank_to_add.empty())
       {
-        blank = new string *[limit - 2];
-        lblank = limit - 3;
+        blank_queue.push(blank_to_add);
       }
       else
       {
-        blank = NULL;
-        lblank = 0;
+        blank_queue.push(" ");
       }
-    }
-    else
-    {
-      blank[i-2] = new string(UtfConverter::toUtf8(*tmpblank[i-1]));
     }
 
     word[i] = new InterchunkWord(UtfConverter::toUtf8(*tmpword[i-1]));
@@ -1882,16 +1874,7 @@ Postchunk::applyRule()
     }
     delete[] word;
   }
-  if(blank)
-  {
-    for(unsigned int i = 0, limit = tmpword.size() - 1; i != limit; i++)
-    {
-      delete blank[i];
-    }
-    delete[] blank;
-  }
   word = NULL;
-  blank = NULL;
 
   for(unsigned int i = 0, limit = tmpword.size(); i != limit; i++)
   {
