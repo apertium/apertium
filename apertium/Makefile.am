@@ -4,12 +4,7 @@ h_sources = a.h \
 	    align.h \
 	    analysis.h \
 	    apertium_re.h \
-	    basic_5_3_1_tagger.h \
-	    basic_5_3_2_tagger.h \
-	    basic_5_3_3_tagger.h \
 	    basic_exception_type.h \
-	    basic_stream_tagger.h \
-	    basic_stream_tagger_trainer.h \
 	    basic_tagger.h \
 	    collection.h \
 	    constant_manager.h \
@@ -44,12 +39,6 @@ h_sources = a.h \
 	    sentence_stream.h \
 	    serialiser.h \
 	    stream.h \
-	    stream_5_3_1_tagger.h \
-	    stream_5_3_2_tagger.h \
-	    stream_5_3_3_tagger.h \
-	    stream_5_3_1_tagger_trainer.h \
-	    stream_5_3_2_tagger_trainer.h \
-	    stream_5_3_3_tagger_trainer.h \
 	    stream_tagger.h \
 	    stream_tagger_trainer.h \
 	    streamed_type.h \
@@ -88,6 +77,7 @@ h_sources = a.h \
 	    trx_reader.h \
 	    tsx_reader.h \
 	    ttag.h \
+	    unigram_tagger.h \
 	    unlocked_cstdio.h \
 	    utf_converter.h \
 	    utils.h \
@@ -99,11 +89,7 @@ cc_sources = a.cc \
 	     align.cc \
 	     analysis.cc \
 	     apertium_re.cc \
-	     basic_5_3_1_tagger.cc \
-	     basic_5_3_2_tagger.cc \
 	     basic_exception_type.cc \
-	     basic_stream_tagger.cc \
-	     basic_stream_tagger_trainer.cc \
 	     basic_tagger.cc \
 	     collection.cc \
 	     constant_manager.cc \
@@ -130,12 +116,6 @@ cc_sources = a.cc \
 	     postchunk.cc \
 	     sentence_stream.cc \
 	     stream.cc \
-	     stream_5_3_1_tagger.cc \
-	     stream_5_3_2_tagger.cc \
-	     stream_5_3_3_tagger.cc \
-	     stream_5_3_1_tagger_trainer.cc \
-	     stream_5_3_2_tagger_trainer.cc \
-	     stream_5_3_3_tagger_trainer.cc \
 	     stream_tagger.cc \
 	     stream_tagger_trainer.cc \
 	     string_utils.cc \
@@ -166,6 +146,7 @@ cc_sources = a.cc \
 	     transfer_word_list.cc \
 	     trx_reader.cc \
 	     tsx_reader.cc \
+	     unigram_tagger.cc \
 	     utf_converter.cc \
 	     wchar_t_exception_type.cc\
 	     xml_reader.cc
