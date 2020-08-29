@@ -22,6 +22,12 @@
 #include "lexical_unit.h"
 #include "streamed_type.h"
 
+#if ENABLE_DEBUG
+#include <iomanip>
+#include <iostream>
+#include <limits>
+#endif
+
 namespace Apertium {
 
 UnigramTagger::UnigramTagger(Flags &Flags_)
@@ -276,9 +282,10 @@ UnigramTagger::tag(const LexicalUnit &LexicalUnit_, std::wostream &Output)
 #endif
     const Analysis& a_ = LexicalUnit_.TheAnalyses[n];
     long double s = score(a_);
-    if(s > max_score)
+    if(n == 0 || s > max_score)
     {
       TheAnalysis = a_;
+      max_score = s;
     }
 #if ENABLE_DEBUG
     std::wcerr << L"score(\"" << a_ << L"\") ==\n "

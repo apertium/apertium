@@ -52,6 +52,9 @@ protected:
 
   UnigramTaggerModel model;
 
+  // Models are described in http://coltekin.net/cagri/papers/trmorph-tools.pdf
+  // section 5.3
+
   // dar<v><inf>+se<prn>+lo<prn>
 
   // Analysis => count
