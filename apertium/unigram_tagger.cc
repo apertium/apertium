@@ -20,20 +20,7 @@
 #include "deserialiser.h"
 #include "serialiser.h"
 #include "lexical_unit.h"
-#include "stream.h"
 #include "streamed_type.h"
-
-#include <cstddef>
-#include <istream>
-#include <map>
-#include <ostream>
-
-#if ENABLE_DEBUG
-
-#include <sstream>
-#include <string>
-
-#endif // ENABLE_DEBUG
 
 namespace Apertium {
 
@@ -349,40 +336,40 @@ UnigramTagger::multiplyModel(const std::size_t &OccurrenceCoefficientMultiplier)
   switch(model)
   {
     case UnigramTaggerModel1:
-      for(auto Analysis_ : Model1)
+      for(auto& Analysis_ : Model1)
       {
         Analysis_.second *= OccurrenceCoefficientMultiplier;
       }
       break;
     case UnigramTaggerModel2:
-      for(auto a_ : Model2)
+      for(auto& a_ : Model2)
       {
-        for(auto r_ : a_.second)
+        for(auto& r_ : a_.second)
         {
           r_.second *= OccurrenceCoefficientMultiplier;
         }
       }
       break;
     case UnigramTaggerModel3:
-      for(auto i_ : Model3.first)
+      for(auto& i_ : Model3.first)
       {
-        for(auto Lemma_ : i_.second)
+        for(auto& Lemma_ : i_.second)
         {
           Lemma_.second *= OccurrenceCoefficientMultiplier;
         }
       }
 
-      for(auto i_ : Model3.second.first)
+      for(auto& i_ : Model3.second.first)
       {
-        for(auto Lemma_ : i_.second)
+        for(auto& Lemma_ : i_.second)
         {
           Lemma_.second *= OccurrenceCoefficientMultiplier;
         }
       }
 
-      for(auto Lemma_ : Model3.second.second)
+      for(auto& Lemma_ : Model3.second.second)
       {
-        for(auto i_ : Lemma_.second)
+        for(auto& i_ : Lemma_.second)
         {
           i_.second *= OccurrenceCoefficientMultiplier;
         }
