@@ -18,9 +18,9 @@
 
 #include "apertium_config.h"
 
-#include "basic_stream_tagger.h"
-#include "basic_stream_tagger_trainer.h"
 #include "basic_tagger.h"
+#include "stream_tagger.h"
+#include "stream_tagger_trainer.h"
 #include "constructor_eq_delete.h"
 #include "err_exception.h"
 #include "file_tagger.h"

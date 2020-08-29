@@ -19,19 +19,12 @@
 
 #include "align.h"
 #include "basic_exception_type.h"
-#include "basic_stream_tagger.h"
-#include "basic_stream_tagger_trainer.h"
 #include "basic_tagger.h"
 #include "err_exception.h"
 #include "exception.h"
 #include "file_tagger.h"
 #include "linebreak.h"
-#include "stream_5_3_1_tagger.h"
-#include "stream_5_3_1_tagger_trainer.h"
-#include "stream_5_3_2_tagger.h"
-#include "stream_5_3_2_tagger_trainer.h"
-#include "stream_5_3_3_tagger.h"
-#include "stream_5_3_3_tagger_trainer.h"
+#include "unigram_tagger.h"
 #include <apertium/perceptron_tagger.h>
 #include <apertium/hmm.h>
 #include <apertium/lswpost.h>
@@ -180,22 +173,21 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
       }
       switch (*TheFunctionTypeType) {
       case Unigram: {
+        UnigramTagger UnigramTagger_(TheFlags);
         switch (*TheUnigramType) {
-        case Stream_5_3_1: {
-          Stream_5_3_1_Tagger Stream_5_3_1_Tagger_(TheFlags);
-          g_StreamTagger(Stream_5_3_1_Tagger_);
-        } break;
-        case Stream_5_3_2: {
-          Stream_5_3_2_Tagger Stream_5_3_2_Tagger_(TheFlags);
-          g_StreamTagger(Stream_5_3_2_Tagger_);
-        } break;
-        case Stream_5_3_3: {
-          Stream_5_3_3_Tagger Stream_5_3_3_Tagger_(TheFlags);
-          g_StreamTagger(Stream_5_3_3_Tagger_);
-        } break;
+        case Stream_5_3_1:
+          UnigramTagger_.setModel(UnigramTaggerModel1);
+          break;
+        case Stream_5_3_2:
+          UnigramTagger_.setModel(UnigramTaggerModel2);
+          break;
+        case Stream_5_3_3:
+          UnigramTagger_.setModel(UnigramTaggerModel3);
+          break;
         default:
           std::abort();
         }
+        g_StreamTagger(UnigramTagger_);
       } break;
       case SlidingWindow: {
         LSWPoST SlidingWindowTagger_;
@@ -241,22 +233,21 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
 
       switch (*TheFunctionTypeType) {
       case Unigram: {
+        UnigramTagger UnigramTagger_(TheFlags);
         switch (*TheUnigramType) {
-        case Stream_5_3_1: {
-          Stream_5_3_1_TaggerTrainer Stream_5_3_1_TaggerTrainer_(TheFlags);
-          s_StreamTaggerTrainer(Stream_5_3_1_TaggerTrainer_);
-        } break;
-        case Stream_5_3_2: {
-          Stream_5_3_2_TaggerTrainer Stream_5_3_2_TaggerTrainer_(TheFlags);
-          s_StreamTaggerTrainer(Stream_5_3_2_TaggerTrainer_);
-        } break;
-        case Stream_5_3_3: {
-          Stream_5_3_3_TaggerTrainer Stream_5_3_3_TaggerTrainer_(TheFlags);
-          s_StreamTaggerTrainer(Stream_5_3_3_TaggerTrainer_);
-        } break;
+        case Stream_5_3_1:
+          UnigramTagger_.setModel(UnigramTaggerModel1);
+          break;
+        case Stream_5_3_2:
+          UnigramTagger_.setModel(UnigramTaggerModel2);
+          break;
+        case Stream_5_3_3:
+          UnigramTagger_.setModel(UnigramTaggerModel3);
+          break;
         default:
           std::abort();
         }
+        s_StreamTaggerTrainer(UnigramTagger_);
       } break;
       case SlidingWindow: {
         std::stringstream what_;
