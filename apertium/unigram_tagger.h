@@ -52,13 +52,32 @@ protected:
 
   UnigramTaggerModel model;
 
+  // dar<v><inf>+se<prn>+lo<prn>
+
+  // Analysis => count
+  // P(analysis)
+  // dar<v><inf>+se<prn>+lo<prn> => 1
   std::map<Analysis, std::size_t> Model1;
 
+  // Analysis without lemma => lemma => count
+  // P(lemma | tags)
+  // <v><inf>+se<prn>+lo<prn> => dar => 1
   std::map<a, std::map<Lemma, std::size_t> > Model2;
 
-  std::pair<std::map<i, std::map<Lemma, std::size_t> >,
-            std::pair<std::map<i, std::map<Lemma, std::size_t> >,
-                      std::map<Lemma, std::map<i, std::size_t> > > > Model3;
+  // First tag group => lemma => count
+  // P(lemma | tags)
+  // <v><inf> => dar => 1
+  std::map<i, std::map<Lemma, std::size_t> > Model3_l_t;
+
+  // Subsequent tag groups => lemma => count
+  // P(compound lemma | previous tags)
+  // <v><inf> => se => 1, <prn> => lo => 1
+  std::map<i, std::map<Lemma, std::size_t> > Model3_cl_ct;
+
+  // Lemma => first tag group => count
+  // P(compound tags | corresponding lemma)
+  // se => <prn> => 1, lo => <prn> => 1
+  std::map<Lemma, std::map<i, std::size_t> > Model3_ct_cl;
 
   long double score(const Analysis& Analysis_);
 

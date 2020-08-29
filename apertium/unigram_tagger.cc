@@ -54,7 +54,9 @@ UnigramTagger::serialise(std::ostream& o) const
       ::serialise(Model2, o);
       break;
     case UnigramTaggerModel3:
-      ::serialise(Model3, o);
+      ::serialise(Model3_l_t, o);
+      ::serialise(Model3_cl_ct, o);
+      ::serialise(Model3_ct_cl, o);
       break;
     default:
       throw Exception::apertium_tagger::InvalidArgument(
@@ -74,11 +76,9 @@ UnigramTagger::deserialise(std::istream& s)
       Model2 = Deserialiser<std::map<a, std::map<Lemma, std::size_t> > >::deserialise(s);
       break;
     case UnigramTaggerModel3:
-      Model3 = Deserialiser<
-        std::pair<std::map<i, std::map<Lemma, std::size_t> >,
-                  std::pair<std::map<i, std::map<Lemma, std::size_t> >,
-                            std::map<Lemma, std::map<i, std::size_t> > > > >::
-        deserialise(s);
+      Model3_l_t   = Deserialiser<std::map<i, std::map<Lemma, std::size_t> > >::deserialise(s);
+      Model3_cl_ct = Deserialiser<std::map<i, std::map<Lemma, std::size_t> > >::deserialise(s);
+      Model3_ct_cl = Deserialiser<std::map<Lemma, std::map<i, std::size_t> > >::deserialise(s);
       break;
     default:
       throw Exception::apertium_tagger::InvalidArgument(
@@ -122,7 +122,7 @@ UnigramTagger::score(const Analysis& Analysis_) {
         }
         typeCount_a += Model2.find(a_)->second.size();
 
-        for(auto it : Model2[a_])
+        for(auto& it : Model2[a_])
         {
           tokenCount_a += it.second;
         }
@@ -156,17 +156,17 @@ UnigramTagger::model3_score(const Analysis &Analysis_)
 
   i i_(Analysis_);
   Lemma l_(Analysis_);
-  if(Model3.first.find(i_) != Model3.first.end())
+  if(Model3_l_t.find(i_) != Model3_l_t.end())
   {
-    if(Model3.first[i_].find(l_) != Model3.first[i_].end())
+    if(Model3_l_t[i_].find(l_) != Model3_l_t[i_].end())
     {
-      tokenCount_r_i += Model3.first[i_][l_];
+      tokenCount_r_i += Model3_l_t[i_][l_];
     }
-    for(auto Lemma_ : Model3.first[i_])
+    for(auto& Lemma_ : Model3_l_t[i_])
     {
       tokenCount_i += Lemma_.second;
     }
-    typeCount_i = (1 - Model3.first[i_].count(l_)) + Model3.first[i_].size();
+    typeCount_i = (1 - Model3_l_t[i_].count(l_)) + Model3_l_t[i_].size();
   }
 
 #if ENABLE_DEBUG
@@ -191,31 +191,31 @@ UnigramTagger::model3_score(const Analysis &Analysis_)
     long double tokenCount_d = 1;
     long double typeCount_d = 1;
 
-    if(Model3.second.first.find(i_prev) != Model3.second.first.end())
+    if(Model3_cl_ct.find(i_prev) != Model3_cl_ct.end())
     {
-      if(Model3.second.first[i_prev].find(l) != Model3.second.first[i_prev].end())
+      if(Model3_cl_ct[i_prev].find(l) != Model3_cl_ct[i_prev].end())
       {
-        tokenCount_d_i += Model3.second.first[i_prev][l];
+        tokenCount_d_i += Model3_cl_ct[i_prev][l];
       }
-      for(auto Lemma_ : Model3.second.first[i_prev])
+      for(auto& Lemma_ : Model3_cl_ct[i_prev])
       {
         tokenCount_i += Lemma_.second;
       }
-      typeCount_i = (1 - Model3.second.first[i_prev].count(l)) +
-                    Model3.second.first[i_prev].size();
+      typeCount_i = (1 - Model3_cl_ct[i_prev].count(l)) +
+                    Model3_cl_ct[i_prev].size();
     }
-    if(Model3.second.second.find(l) != Model3.second.second.end())
+    if(Model3_ct_cl.find(l) != Model3_ct_cl.end())
     {
-      if(Model3.second.second[l].find(i_cur) != Model3.second.second[l].end())
+      if(Model3_ct_cl[l].find(i_cur) != Model3_ct_cl[l].end())
       {
-        tokenCount_i_d += Model3.second.second[l][i_cur];
+        tokenCount_i_d += Model3_ct_cl[l][i_cur];
       }
-      for(auto i_ : Model3.second.second[l])
+      for(auto& i_ : Model3_ct_cl[l])
       {
         tokenCount_d += i_.second;
       }
-      typeCount_d = (1 - Model3.second.second[l].count(i_cur)) +
-                    Model3.second.second[l].size();
+      typeCount_d = (1 - Model3_ct_cl[l].count(i_cur)) +
+                    Model3_ct_cl[l].size();
     }
 
 #if ENABLE_DEBUG
@@ -306,7 +306,7 @@ UnigramTagger::train_Analysis(const Analysis &Analysis_, const std::size_t &Coef
           .first->second += Coefficient_;
       break;
     case UnigramTaggerModel3:
-      Model3.first.insert(
+      Model3_l_t.insert(
                        std::make_pair(i(Analysis_), std::map<Lemma, std::size_t>()))
           .first->second.insert(std::make_pair(Lemma(Analysis_), 0))
           .first->second += Coefficient_;
@@ -314,11 +314,11 @@ UnigramTagger::train_Analysis(const Analysis &Analysis_, const std::size_t &Coef
       for (std::vector<Morpheme>::const_iterator Morpheme_ =
                Analysis_.TheMorphemes.begin() + 1;
            Morpheme_ != Analysis_.TheMorphemes.end(); ++Morpheme_) {
-        Model3.second.first.insert(std::make_pair(i(*(Morpheme_ - 1)),
+        Model3_cl_ct.insert(std::make_pair(i(*(Morpheme_ - 1)),
                                                   std::map<Lemma, std::size_t>()))
             .first->second.insert(std::make_pair(Lemma(*Morpheme_), 0))
             .first->second += Coefficient_;
-        Model3.second.second.insert(std::make_pair(Lemma(*Morpheme_),
+        Model3_ct_cl.insert(std::make_pair(Lemma(*Morpheme_),
                                                    std::map<i, std::size_t>()))
             .first->second.insert(std::make_pair(i(*Morpheme_), 0))
             .first->second += Coefficient_;
@@ -351,7 +351,7 @@ UnigramTagger::multiplyModel(const std::size_t &OccurrenceCoefficientMultiplier)
       }
       break;
     case UnigramTaggerModel3:
-      for(auto& i_ : Model3.first)
+      for(auto& i_ : Model3_l_t)
       {
         for(auto& Lemma_ : i_.second)
         {
@@ -359,7 +359,7 @@ UnigramTagger::multiplyModel(const std::size_t &OccurrenceCoefficientMultiplier)
         }
       }
 
-      for(auto& i_ : Model3.second.first)
+      for(auto& i_ : Model3_cl_ct)
       {
         for(auto& Lemma_ : i_.second)
         {
@@ -367,7 +367,7 @@ UnigramTagger::multiplyModel(const std::size_t &OccurrenceCoefficientMultiplier)
         }
       }
 
-      for(auto& Lemma_ : Model3.second.second)
+      for(auto& Lemma_ : Model3_ct_cl)
       {
         for(auto& i_ : Lemma_.second)
         {
@@ -401,7 +401,7 @@ UnigramTagger::train(Stream &TaggedCorpus) {
     }
 
     std::size_t coefficient = OccurrenceCoefficient / analysis_count;
-    for (auto Analysis_ : StreamedType_.TheLexicalUnit->TheAnalyses) {
+    for (auto& Analysis_ : StreamedType_.TheLexicalUnit->TheAnalyses) {
       train_Analysis(Analysis_, coefficient);
     }
   }
