@@ -422,15 +422,6 @@ Interchunk::processOut(xmlNode *localroot)
       }
     }
   }
-  
-  while(!blank_queue.empty()) //flush remaining blanks that are not spaces
-  {
-    if(blank_queue.front().compare(" ") != 0)
-    {
-      fputws_unlocked(UtfConverter::fromUtf8(blank_queue.front()).c_str(), output);
-    }
-    blank_queue.pop();
-  }
 }
 
 string
@@ -1291,6 +1282,15 @@ Interchunk::processRule(xmlNode *localroot)
     {
       processInstruction(i);
     }
+  }
+  
+  while(!blank_queue.empty()) //flush remaining blanks that are not spaces
+  {
+    if(blank_queue.front().compare(" ") != 0)
+    {
+      fputws_unlocked(UtfConverter::fromUtf8(blank_queue.front()).c_str(), output);
+    }
+    blank_queue.pop();
   }
 }
 
