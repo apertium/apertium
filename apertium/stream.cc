@@ -16,18 +16,12 @@
 #include "stream.h"
 
 #include "analysis.h"
-#include "basic_tagger.h"
-#include "streamed_type.h"
 #include "wchar_t_exception.h"
 
 #include <climits>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
-#include <istream>
-#include <ostream>
-#include <sstream>
-#include <string>
 
 namespace Apertium {
 Stream::Stream(basic_Tagger::Flags &Flags_)

@@ -22,6 +22,7 @@
 
 #include <cstddef>
 #include <istream>
+#include <ostream>
 #include <sstream>
 #include <string>
 

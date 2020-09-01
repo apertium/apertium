@@ -15,9 +15,7 @@
 
 #include "lemma.h"
 
-#include "analysis.h"
 #include "exception.h"
-#include "morpheme.h"
 
 namespace Apertium {
 bool operator==(const Lemma &a_, const Lemma &b_) {

@@ -1,6 +1,6 @@
-#include <apertium/mtx_reader.h>
 #include <apertium/perceptron_tagger.h>
-#include <apertium/perceptron_spec.h>
+
+#include <apertium/mtx_reader.h>
 #include <apertium/wchar_t_exception.h>
 #include <algorithm>
 #include <map>

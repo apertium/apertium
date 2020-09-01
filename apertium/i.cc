@@ -15,9 +15,7 @@
 
 #include "i.h"
 
-#include "analysis.h"
 #include "exception.h"
-#include "morpheme.h"
 
 namespace Apertium {
 bool operator==(const i &a_, const i &b_) { return a_.TheTags == b_.TheTags; }
