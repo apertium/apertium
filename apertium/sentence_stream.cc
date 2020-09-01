@@ -1,9 +1,8 @@
-#include <algorithm>
-#include <apertium/stream_tagger.h>
 #include <apertium/sentence_stream.h>
+
 #include <apertium/exception.h>
-#include <apertium/wchar_t_exception.h>
 #include <iostream>
+#include <algorithm>
 
 namespace Apertium {
 namespace SentenceStream {
@@ -121,7 +120,7 @@ TrainingCorpus::TrainingCorpus(Stream &tagged, Stream &untagged,
         what_ << "Tagged token: "
               << tagged_token.TheLexicalUnit->TheSurfaceForm << "\n";
         what_ << "Rerun with --skip-on-error to skip this sentence.";
-        throw wchar_t_Exception::UnalignedStreams(what_);
+        throw Exception::UnalignedStreams(what_);
       }
 
       skipped++;

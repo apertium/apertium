@@ -16,22 +16,24 @@
 #ifndef EXCEPTION_TYPE_H
 #define EXCEPTION_TYPE_H
 
-#include "basic_exception_type.h"
-
+#include <exception>
 #include <sstream>
 #include <string>
 
 namespace Apertium {
-class ExceptionType : public basic_ExceptionType {
+class ExceptionType : public std::exception {
 public:
   ExceptionType(const char *const what_);
   ExceptionType(const std::string &what_);
   ExceptionType(const std::stringstream &what_);
+  ExceptionType(const wchar_t *wchar_t_what_);
+  ExceptionType(const std::wstring &wchar_t_what_);
+  ExceptionType(const std::wstringstream &wchar_t_what_);
   virtual ~ExceptionType() throw() = 0;
   const char *what() const throw();
 
 protected:
-  const std::string what_;
+  std::string what_;
 };
 }
 

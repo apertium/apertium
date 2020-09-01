@@ -21,7 +21,6 @@
 #include "basic_tagger.h"
 #include "stream_tagger.h"
 #include "constructor_eq_delete.h"
-#include "err_exception.h"
 #include "file_tagger.h"
 #include "optional.h"
 #include <apertium/file_morpho_stream.h>

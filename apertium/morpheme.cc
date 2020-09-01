@@ -16,11 +16,6 @@
 #include "morpheme.h"
 
 #include "exception.h"
-#include "tag.h"
-
-#include <iostream>
-#include <string>
-#include <vector>
 
 namespace Apertium {
 bool operator==(const Morpheme &a, const Morpheme &b) {

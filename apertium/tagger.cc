@@ -18,9 +18,7 @@
 #include "apertium_config.h"
 
 #include "align.h"
-#include "basic_exception_type.h"
 #include "basic_tagger.h"
-#include "err_exception.h"
 #include "exception.h"
 #include "file_tagger.h"
 #include "linebreak.h"
@@ -154,7 +152,7 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
         help();
         return;
       default:
-        throw err_Exception();
+        throw Exception::apertium_tagger::err_Exception("");
       }
     }
 
@@ -288,9 +286,9 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
     default:
       std::abort();
     }
-  } catch (const basic_ExceptionType &basic_ExceptionType_) {
-    std::wcerr << "apertium-tagger: " << basic_ExceptionType_.what() << std::endl;
-    throw err_Exception();
+  } catch (const ExceptionType &ExceptionType_) {
+    std::wcerr << "apertium-tagger: " << ExceptionType_.what() << std::endl;
+    throw Exception::apertium_tagger::err_Exception("");
   }
 }
 
@@ -586,10 +584,10 @@ void apertium_tagger::g_StreamTagger(StreamTagger &StreamTagger_) {
 
   try {
     StreamTagger_.deserialise(SerialisedAnalysisFrequencies);
-  } catch (const basic_ExceptionType &basic_ExceptionType_) {
+  } catch (const ExceptionType &ExceptionType_) {
     std::stringstream what_;
     what_ << "can't deserialise SERIALISED_TAGGER file \"" << argv[optind]
-          << "\" Reason: " << basic_ExceptionType_.what();
+          << "\" Reason: " << ExceptionType_.what();
     throw Exception::apertium_tagger::deserialise(what_);
   }
   if (nonoptarg < 2) {

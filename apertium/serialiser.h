@@ -17,9 +17,7 @@
 #define APERTIUM_SERIALISER_H
 
 #include "a.h"
-#include "basic_exception_type.h"
 #include "analysis.h"
-#include "exception.h"
 #include "i.h"
 #include "lemma.h"
 #include "morpheme.h"
@@ -28,14 +26,12 @@
 
 #include <lttoolbox/serialiser.h>
 #include <stdint.h>
-#include <apertium/perceptron_spec.h>
 #include <cstddef>
 #include <limits>
 #include <ios>
 #include <limits>
 #include <map>
 #include <ostream>
-#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>

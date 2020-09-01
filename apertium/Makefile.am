@@ -4,14 +4,12 @@ h_sources = a.h \
 	    align.h \
 	    analysis.h \
 	    apertium_re.h \
-	    basic_exception_type.h \
 	    basic_tagger.h \
 	    collection.h \
 	    constant_manager.h \
 	    constructor_eq_delete.h \
 	    deserialiser.h \
 	    endian_double_util.h \
-	    err_exception.h \
 	    exception.h \
 	    exception_type.h \
 	    feature_vec.h \
@@ -80,15 +78,12 @@ h_sources = a.h \
 	    unlocked_cstdio.h \
 	    utf_converter.h \
 	    utils.h \
-	    wchar_t_exception.h \
-	    wchar_t_exception_type.h\
 	    xml_reader.h
 
 cc_sources = a.cc \
 	     align.cc \
 	     analysis.cc \
 	     apertium_re.cc \
-	     basic_exception_type.cc \
 	     basic_tagger.cc \
 	     collection.cc \
 	     constant_manager.cc \
@@ -146,7 +141,6 @@ cc_sources = a.cc \
 	     tsx_reader.cc \
 	     unigram_tagger.cc \
 	     utf_converter.cc \
-	     wchar_t_exception_type.cc\
 	     xml_reader.cc
 
 library_includedir = $(includedir)/$(PACKAGE_NAME)-$(VERSION_API)/$(PACKAGE_NAME)
