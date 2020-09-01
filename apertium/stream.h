@@ -16,7 +16,7 @@
 #ifndef STREAM_H
 #define STREAM_H
 
-#include "basic_tagger.h"
+#include "tagger_flags.h"
 #include "optional.h"
 #include "streamed_type.h"
 
@@ -29,12 +29,12 @@
 namespace Apertium {
 class Stream {
 public:
-  Stream(basic_Tagger::Flags &Flags_);
-  Stream(basic_Tagger::Flags &Flags_, std::wifstream &CharacterStream_,
+  Stream(TaggerFlags &Flags_);
+  Stream(TaggerFlags &Flags_, std::wifstream &CharacterStream_,
          const char *const Filename_);
-  Stream(basic_Tagger::Flags &Flags_, std::wifstream &CharacterStream_,
+  Stream(TaggerFlags &Flags_, std::wifstream &CharacterStream_,
          const std::string &Filename_);
-  Stream(basic_Tagger::Flags &Flags_, std::wifstream &CharacterStream_,
+  Stream(TaggerFlags &Flags_, std::wifstream &CharacterStream_,
          const std::stringstream &Filename_);
   StreamedType get();
   StreamedType peek();
@@ -43,7 +43,7 @@ public:
 
   static void outputLexicalUnit(
     const LexicalUnit &lexical_unit, const Optional<Analysis> analysis,
-    std::wostream &output, basic_Tagger::Flags &flags);
+    std::wostream &output, TaggerFlags &flags);
 
   std::size_t TheLineNumber;
 private:
@@ -67,7 +67,7 @@ private:
   std::wistream &TheCharacterStream;
   Optional<std::string> TheFilename;
   std::wstring TheLine;
-  basic_Tagger::Flags &TheFlags;
+  TaggerFlags &TheFlags;
   bool private_flush_ : 1;
   Optional<PreviousCaseType> ThePreviousCase;
 };

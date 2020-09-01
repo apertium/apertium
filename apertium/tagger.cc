@@ -18,7 +18,6 @@
 #include "apertium_config.h"
 
 #include "align.h"
-#include "basic_tagger.h"
 #include "exception.h"
 #include "file_tagger.h"
 #include "linebreak.h"
@@ -72,32 +71,32 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
 
       switch (The_val) {
       case 'b':
-        flagOptionCase(&basic_Tagger::Flags::getSentSeg,
-                       &basic_Tagger::Flags::setSentSeg);
+        flagOptionCase(&TaggerFlags::getSentSeg,
+                       &TaggerFlags::setSentSeg);
         break;
       case 'd':
-        flagOptionCase(&basic_Tagger::Flags::getDebug,
-                       &basic_Tagger::Flags::setDebug);
+        flagOptionCase(&TaggerFlags::getDebug,
+                       &TaggerFlags::setDebug);
         break;
       case 'e':
-        flagOptionCase(&basic_Tagger::Flags::getSkipErrors,
-                       &basic_Tagger::Flags::setSkipErrors);
+        flagOptionCase(&TaggerFlags::getSkipErrors,
+                       &TaggerFlags::setSkipErrors);
         break;
       case 'f':
-        flagOptionCase(&basic_Tagger::Flags::getFirst,
-                       &basic_Tagger::Flags::setFirst);
+        flagOptionCase(&TaggerFlags::getFirst,
+                       &TaggerFlags::setFirst);
         break;
       case 'm':
-        flagOptionCase(&basic_Tagger::Flags::getMark,
-                       &basic_Tagger::Flags::setMark);
+        flagOptionCase(&TaggerFlags::getMark,
+                       &TaggerFlags::setMark);
         break;
       case 'p':
-        flagOptionCase(&basic_Tagger::Flags::getShowSuperficial,
-                       &basic_Tagger::Flags::setShowSuperficial);
+        flagOptionCase(&TaggerFlags::getShowSuperficial,
+                       &TaggerFlags::setShowSuperficial);
         break;
       case 'z':
-        flagOptionCase(&basic_Tagger::Flags::getNullFlush,
-                       &basic_Tagger::Flags::setNullFlush);
+        flagOptionCase(&TaggerFlags::getNullFlush,
+                       &TaggerFlags::setNullFlush);
         break;
       case 'u':
         functionTypeTypeOptionCase(Unigram);
@@ -428,8 +427,8 @@ void apertium_tagger::set_indexptr() {
 }
 
 void apertium_tagger::flagOptionCase(
-    bool (basic_Tagger::Flags::*GetFlag)(),
-    void (basic_Tagger::Flags::*SetFlag)(const bool &)) {
+    bool (TaggerFlags::*GetFlag)(),
+    void (TaggerFlags::*SetFlag)(const bool &)) {
   if ((TheFlags.*GetFlag)()) {
     std::stringstream what_;
     what_ << "unexpected '" << option_string() << "' following '"

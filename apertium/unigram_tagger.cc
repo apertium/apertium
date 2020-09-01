@@ -28,8 +28,8 @@
 
 namespace Apertium {
 
-UnigramTagger::UnigramTagger(Flags &Flags_)
-    : basic_Tagger(Flags_),
+UnigramTagger::UnigramTagger(TaggerFlags &Flags_)
+    : StreamTagger(Flags_),
       model(UnigramTaggerModelUnknown), OccurrenceCoefficient(1) {}
 
 UnigramTagger::~UnigramTagger() {}

@@ -24,23 +24,23 @@
 #include <iostream>
 
 namespace Apertium {
-Stream::Stream(basic_Tagger::Flags &Flags_)
+Stream::Stream(TaggerFlags &Flags_)
     : TheLineNumber(1), TheCharacterStream(std::wcin), TheFilename(), TheLine(),
       TheFlags(Flags_), private_flush_(false), ThePreviousCase() {}
 
-Stream::Stream(basic_Tagger::Flags &Flags_,
+Stream::Stream(TaggerFlags &Flags_,
                std::wifstream &CharacterStream_, const char *const Filename_)
     : TheLineNumber(1), TheCharacterStream(CharacterStream_), TheFilename(Filename_),
       TheLine(), TheFlags(Flags_), private_flush_(false),
       ThePreviousCase() {}
 
-Stream::Stream(basic_Tagger::Flags &Flags_,
+Stream::Stream(TaggerFlags &Flags_,
                std::wifstream &CharacterStream_, const std::string &Filename_)
     : TheLineNumber(1), TheCharacterStream(CharacterStream_), TheFilename(Filename_),
       TheLine(), TheFlags(Flags_), private_flush_(false),
       ThePreviousCase() {}
 
-Stream::Stream(basic_Tagger::Flags &Flags_,
+Stream::Stream(TaggerFlags &Flags_,
                std::wifstream &CharacterStream_,
                const std::stringstream &Filename_)
     : TheLineNumber(1), TheCharacterStream(CharacterStream_), TheFilename(Filename_.str()),
@@ -617,7 +617,7 @@ bool Stream::flush_() const { return private_flush_; }
 
 void Stream::outputLexicalUnit(
     const LexicalUnit &lexical_unit, const Optional<Analysis> analysis,
-    std::wostream &output, basic_Tagger::Flags &flags) {
+    std::wostream &output, TaggerFlags &flags) {
   using namespace std::rel_ops;
   output << L"^";
 

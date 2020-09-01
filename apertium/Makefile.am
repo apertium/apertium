@@ -4,7 +4,6 @@ h_sources = a.h \
 	    align.h \
 	    analysis.h \
 	    apertium_re.h \
-	    basic_tagger.h \
 	    collection.h \
 	    constant_manager.h \
 	    constructor_eq_delete.h \
@@ -48,6 +47,7 @@ h_sources = a.h \
 	    tagger_data_hmm.h \
 	    tagger_data_lsw.h \
 	    tagger_data_percep_coarse_tags.h \
+	    tagger_flags.h \
 	    tagger_utils.h \
 	    tagger_word.h \
 	    tmx_aligner_tool.h \
@@ -84,7 +84,6 @@ cc_sources = a.cc \
 	     align.cc \
 	     analysis.cc \
 	     apertium_re.cc \
-	     basic_tagger.cc \
 	     collection.cc \
 	     constant_manager.cc \
 	     endian_double_util.cc \
@@ -119,6 +118,7 @@ cc_sources = a.cc \
 	     tagger_data_hmm.cc \
 	     tagger_data_lsw.cc \
 	     tagger_data_percep_coarse_tags.cc \
+	     tagger_flags.cc \
 	     tagger_utils.cc \
 	     tagger_word.cc \
 	     tmx_aligner_tool.cc \

@@ -2,13 +2,16 @@
 #define STREAM_TAGGER_H
 
 #include "stream.h"
-#include "basic_tagger.h"
 #include <istream>
 #include <ostream>
 
 namespace Apertium {
-class StreamTagger : protected virtual basic_Tagger {
+class StreamTagger {
+protected:
+  TaggerFlags TheFlags;
 public:
+  StreamTagger();
+  StreamTagger(TaggerFlags& Flags_);
   virtual ~StreamTagger();
   virtual void serialise(std::ostream &Serialised_basic_Tagger) const = 0;
   virtual void deserialise(std::istream &Serialised_basic_Tagger) = 0;

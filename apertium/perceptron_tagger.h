@@ -13,7 +13,7 @@ namespace Apertium {
 class PerceptronTagger : public StreamTagger, SentenceStream::SentenceTagger {
 public:
   friend int perceptron_trace(int argc, char* argv[]);
-  PerceptronTagger(basic_Tagger::Flags TheFlags);
+  PerceptronTagger(TaggerFlags TheFlags);
   virtual ~PerceptronTagger();
   // trainer
   virtual void serialise(std::ostream &serialised) const;

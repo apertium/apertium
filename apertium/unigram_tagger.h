@@ -88,7 +88,7 @@ protected:
   std::size_t OccurrenceCoefficient;
 
 public:
-  UnigramTagger(Flags& Flags_);
+  UnigramTagger(TaggerFlags& Flags_);
   ~UnigramTagger();
   void setModel(const UnigramTaggerModel& m);
   UnigramTaggerModel getModel();

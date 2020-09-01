@@ -18,7 +18,7 @@
 
 #include "apertium_config.h"
 
-#include "basic_tagger.h"
+#include "tagger_flags.h"
 #include "stream_tagger.h"
 #include "constructor_eq_delete.h"
 #include "file_tagger.h"
@@ -44,8 +44,8 @@ private:
   static std::string option_string(const struct option &option_);
   static void locale_global_();
   void set_indexptr();
-  void flagOptionCase(bool (basic_Tagger::Flags::*GetFlag)(),
-                      void (basic_Tagger::Flags::*SetFlag)(const bool &));
+  void flagOptionCase(bool (TaggerFlags::*GetFlag)(),
+                      void (TaggerFlags::*SetFlag)(const bool &));
   std::string option_string();
   void functionTypeTypeOptionCase(const FunctionTypeType &FunctionTypeType_);
   void functionTypeOptionCase(const FunctionType &FunctionType_);
@@ -90,7 +90,7 @@ private:
   Optional<FunctionType> TheFunctionType;
   unsigned long TheFunctionTypeOptionArgument;
   unsigned long CgAugmentedMode;
-  basic_Tagger::Flags TheFlags;
+  TaggerFlags TheFlags;
 };
 }
 

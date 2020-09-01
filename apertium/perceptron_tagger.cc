@@ -8,7 +8,7 @@
 
 namespace Apertium {
 
-PerceptronTagger::PerceptronTagger(basic_Tagger::Flags flags) : basic_Tagger(flags) {};
+PerceptronTagger::PerceptronTagger(TaggerFlags flags) : StreamTagger(flags) {};
 
 PerceptronTagger::~PerceptronTagger() {};
 
