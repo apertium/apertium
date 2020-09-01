@@ -94,6 +94,8 @@ void HMM::train(MorphoStream &morpho_stream, unsigned long count) {
 
 HMM::HMM() {}
 
+HMM::HMM(TaggerFlags& Flags_) : FILE_Tagger(Flags_) {}
+
 HMM::HMM(TaggerDataHMM _tdhmm)
   : tdhmm(_tdhmm)
 {
@@ -668,7 +670,7 @@ HMM::train(MorphoStream &morpho_stream) {
 }
 
 void
-HMM::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First) {
+HMM::tagger(MorphoStream &morpho_stream, FILE *Output) {
   int i, j, k, nw;
   TaggerWord *word = NULL;
   TTag tag;
@@ -684,7 +686,7 @@ HMM::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First) {
   vector <TaggerWord> wpend;
   int nwpend;
 
-  morpho_stream.setNullFlush(null_flush);
+  morpho_stream.setNullFlush(TheFlags.getNullFlush());
 
   Collection &output = tdhmm.getOutput();
 
@@ -707,7 +709,7 @@ HMM::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First) {
     if (tags.size()==0) // This is an unknown word
       tags = tdhmm.getOpenClass();
 
-    ambg_class_tags = require_similar_ambiguity_class(tdhmm, tags, *word, debug);
+    ambg_class_tags = require_similar_ambiguity_class(tdhmm, tags, *word, TheFlags.getDebug());
 
     k = output[ambg_class_tags];  //Ambiguity class the word belongs to
 
@@ -737,16 +739,16 @@ HMM::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First) {
       if (prob>0)
 	loli -= log(prob);
       else {
-        if (debug)
+        if (TheFlags.getDebug())
 	  wcerr<<L"Problem with word '"<<word->get_superficial_form()<<L"' "<<word->get_string_tags()<<L"\n";
       }
       for (unsigned t=0; t<best[nwpend%2][tag].size(); t++) {
-	if (First) {
+	if (TheFlags.getFirst()) {
 	  wstring const &micad = wpend[t].get_all_chosen_tag_first(best[nwpend%2][tag][t], (tdhmm.getTagIndex())[L"TAG_kEOF"]);
 	  fputws_unlocked(micad.c_str(), Output);
 	} else {
 	  // print Output
-	  wpend[t].set_show_sf(show_sf);
+	  wpend[t].set_show_sf(TheFlags.getShowSuperficial());
 	  wstring const &micad = wpend[t].get_lexical_form(best[nwpend%2][tag][t], (tdhmm.getTagIndex())[L"TAG_kEOF"]);
 	  fputws_unlocked(micad.c_str(), Output);
 	}
@@ -761,7 +763,7 @@ HMM::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First) {
 
     if(morpho_stream.getEndOfFile())
     {
-      if(null_flush)
+      if(TheFlags.getNullFlush())
       {
         fputwc_unlocked(L'\0', Output);
         tags.clear();
@@ -775,7 +777,7 @@ HMM::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First) {
     word = morpho_stream.get_next_word();
   }
 
-  if ((tags.size()>1)&&(debug)) {
+  if ((tags.size()>1)&&(TheFlags.getDebug())) {
     wstring errors;
     errors = L"The text to disambiguate has finished, but there are ambiguous words that has not been disambiguated.\n";
     errors+= L"This message should never appears. If you are reading this ..... these are very bad news.\n";

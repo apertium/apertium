@@ -16,6 +16,7 @@
 #ifndef FILE_TAGGER_H
 #define FILE_TAGGER_H
 
+#include <apertium/tagger_flags.h>
 #include <apertium/tagger_data.h>
 #include <apertium/morpho_stream.h>
 
@@ -27,14 +28,14 @@ namespace Apertium {
 class FILE_Tagger {
 public:
   FILE_Tagger();
+  FILE_Tagger(TaggerFlags& Flags_);
   virtual ~FILE_Tagger();
   virtual void deserialise(FILE *Serialised_FILE_Tagger) = 0;
   void set_debug(const bool &Debug);
   void set_show_sf(const bool &ShowSuperficial);
   void setNullFlush(const bool &NullFlush);
-  virtual void tagger(FILE *Input, FILE *Output, const bool &First = false);
-  virtual void tagger(MorphoStream &morpho_stream, FILE *Output,
-                      const bool &First = false) = 0;
+  virtual void tagger(FILE *Input, FILE *Output);
+  virtual void tagger(MorphoStream &morpho_stream, FILE *Output) = 0;
   virtual std::vector<std::wstring> &getArrayTags() = 0;
   void init_and_train(MorphoStream &lexmorfo, unsigned long Count);
   void init_and_train(FILE *Corpus, unsigned long Count);
@@ -62,9 +63,7 @@ public:
 protected:
   virtual void deserialise(const TaggerData &Deserialised_FILE_Tagger) = 0;
   virtual void post_ambg_class_scan() = 0;
-  bool debug;
-  bool show_sf;
-  bool null_flush;
+  TaggerFlags TheFlags;
 };
 }
 
