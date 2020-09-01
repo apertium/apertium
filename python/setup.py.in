@@ -33,7 +33,8 @@ def get_sources():
                   'linebreak.cc', 'lswpost.cc', 'morpheme.cc', 'morpho_stream.cc', 'mtx_reader.cc', 'perceptron_spec.cc',
                   'perceptron_tagger.cc', 'sentence_stream.cc', 'shell_utils.cc', 'stream.cc', 'stream_tagger.cc',
                   'tag.cc', 'tagger.cc', 'tagger_data.cc', 'tagger_data_hmm.cc', 'tagger_data_lsw.cc',
-                  'tagger_data_percep_coarse_tags.cc', 'tagger_utils.cc', 'tagger_word.cc', 'tsx_reader.cc']
+                  'tagger_data_percep_coarse_tags.cc', 'tagger_utils.cc', 'tagger_word.cc', 'tsx_reader.cc'
+                  'unigram_tagger.cc']
     rel_path = '@top_srcdir@/apertium'
     sources.extend(path.join(rel_path, f) for f in cc_sources)
     return sources
