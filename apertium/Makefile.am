@@ -40,7 +40,6 @@ h_sources = a.h \
 	    serialiser.h \
 	    stream.h \
 	    stream_tagger.h \
-	    stream_tagger_trainer.h \
 	    streamed_type.h \
 	    string_to_wostream.h \
 	    string_utils.h \
@@ -117,7 +116,6 @@ cc_sources = a.cc \
 	     sentence_stream.cc \
 	     stream.cc \
 	     stream_tagger.cc \
-	     stream_tagger_trainer.cc \
 	     string_utils.cc \
 	     shell_utils.cc \
 	     tag.cc \

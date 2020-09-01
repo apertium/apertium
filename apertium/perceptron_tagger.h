@@ -6,12 +6,11 @@
 #include <apertium/perceptron_spec.h>
 #include <apertium/stream.h>
 #include <apertium/stream_tagger.h>
-#include <apertium/stream_tagger_trainer.h>
 #include <apertium/feature_vec.h>
 #include <apertium/feature_vec_averager.h>
 
 namespace Apertium {
-class PerceptronTagger : public StreamTagger, public StreamTaggerTrainer, SentenceStream::SentenceTagger {
+class PerceptronTagger : public StreamTagger, SentenceStream::SentenceTagger {
 public:
   friend int perceptron_trace(int argc, char* argv[]);
   PerceptronTagger(basic_Tagger::Flags TheFlags);

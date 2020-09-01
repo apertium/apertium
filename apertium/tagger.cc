@@ -615,7 +615,7 @@ void apertium_tagger::g_StreamTagger(StreamTagger &StreamTagger_) {
 }
 
 void apertium_tagger::s_StreamTaggerTrainer(
-    StreamTaggerTrainer &StreamTaggerTrainer_) {
+    StreamTagger &StreamTaggerTrainer_) {
   locale_global_();
 
   if (TheFunctionTypeOptionArgument != 0 && *TheFunctionTypeType != Perceptron) {

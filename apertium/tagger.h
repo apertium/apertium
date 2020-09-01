@@ -20,7 +20,6 @@
 
 #include "basic_tagger.h"
 #include "stream_tagger.h"
-#include "stream_tagger_trainer.h"
 #include "constructor_eq_delete.h"
 #include "err_exception.h"
 #include "file_tagger.h"
@@ -70,7 +69,7 @@ private:
     FILE *Dictionary, FILE *UntaggedCorpus);
 
   void g_StreamTagger(StreamTagger &StreamTagger_);
-  void s_StreamTaggerTrainer(StreamTaggerTrainer &StreamTaggerTrainer_);
+  void s_StreamTaggerTrainer(StreamTagger &StreamTaggerTrainer_);
   void g_FILE_Tagger(FILE_Tagger &FILE_Tagger_);
   void r_FILE_Tagger(FILE_Tagger &FILE_Tagger_);
   void s_FILE_Tagger(FILE_Tagger &FILE_Tagger_);
