@@ -6,7 +6,6 @@ h_sources = a.h \
 	    apertium_re.h \
 	    collection.h \
 	    constant_manager.h \
-	    constructor_eq_delete.h \
 	    deserialiser.h \
 	    endian_double_util.h \
 	    exception.h \

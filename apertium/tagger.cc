@@ -19,7 +19,6 @@
 
 #include "align.h"
 #include "exception.h"
-#include "file_tagger.h"
 #include "linebreak.h"
 #include "unigram_tagger.h"
 #include <apertium/perceptron_tagger.h>
@@ -290,6 +289,8 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
     throw Exception::apertium_tagger::err_Exception("");
   }
 }
+
+apertium_tagger::~apertium_tagger() {}
 
 void apertium_tagger::help() {
 

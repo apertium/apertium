@@ -20,7 +20,6 @@
 
 #include "tagger_flags.h"
 #include "stream_tagger.h"
-#include "constructor_eq_delete.h"
 #include "file_tagger.h"
 #include "optional.h"
 #include <apertium/file_morpho_stream.h>
@@ -29,9 +28,10 @@
 #include <string>
 
 namespace Apertium {
-class apertium_tagger : private constructor_eq_delete {
+class apertium_tagger {
 public:
   apertium_tagger(int &argc, char **&argv);
+  ~apertium_tagger();
 
 private:
   enum FunctionTypeType { Unigram, SlidingWindow, Perceptron };
