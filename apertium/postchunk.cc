@@ -1849,15 +1849,7 @@ Postchunk::applyRule()
     if(i != 1)
     {
       string blank_to_add = string(UtfConverter::toUtf8(*tmpblank[i-1]));
-      
-      if(!blank_to_add.empty())
-      {
-        blank_queue.push(blank_to_add);
-      }
-      else
-      {
-        blank_queue.push(" ");
-      }
+      blank_queue.push(blank_to_add);
     }
 
     word[i] = new InterchunkWord(UtfConverter::toUtf8(*tmpword[i-1]));
