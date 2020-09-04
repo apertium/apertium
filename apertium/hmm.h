@@ -73,6 +73,7 @@ public:
    void init_probabilities_kupiec_(MorphoStream &lexmorfo);
    void train(MorphoStream &morpho_stream, unsigned long count);
    HMM();
+   HMM(Apertium::TaggerFlags& Flags_);
    HMM(TaggerDataHMM *tdhmm);
 
    /** Constructor
@@ -142,8 +143,7 @@ public:
     *  @param in the input stream with the untagged text to tag
     *  @param out the output stream with the tagged text
     */
-   void tagger(MorphoStream &morpho_stream, FILE *Output,
-               const bool &First = false);
+   void tagger(MorphoStream &morpho_stream, FILE *Output);
 
    /** Prints the A matrix.
     */

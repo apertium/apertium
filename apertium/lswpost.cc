@@ -84,6 +84,8 @@ void LSWPoST::train(MorphoStream &morpho_stream, unsigned long count) {
 
 LSWPoST::LSWPoST() {}
 
+LSWPoST::LSWPoST(TaggerFlags& Flags_) : FILE_Tagger(Flags_) {}
+
 LSWPoST::LSWPoST(TaggerDataLSW t) {
   tdlsw = t;
   eos = (tdlsw.getTagIndex())[L"TAG_SENT"];
@@ -330,36 +332,36 @@ LSWPoST::print_para_matrix() {
 }
 
 void
-LSWPoST::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First) {
+LSWPoST::tagger(MorphoStream &morpho_stream, FILE *Output) {
   TaggerWord *word_left = NULL, *word_mid = NULL, *word_right = NULL;
   set<TTag> tags_left, tags_mid, tags_right;
   set<TTag>::iterator iter_left, iter_mid, iter_right;
-  morpho_stream.setNullFlush(null_flush);
+  morpho_stream.setNullFlush(TheFlags.getNullFlush());
 
   word_left = new TaggerWord();          // word left
   word_left->add_tag(eos, L"sent", tdlsw.getPreferRules());
-  word_left->set_show_sf(show_sf);
+  word_left->set_show_sf(TheFlags.getShowSuperficial());
   tags_left = word_left->get_tags();          // tags left
 
-  warn_absent_ambiguity_class(tdlsw, tags_left, *word_left, debug);
+  warn_absent_ambiguity_class(tdlsw, tags_left, *word_left, TheFlags.getDebug());
   word_mid = morpho_stream.get_next_word(); // word mid
-  word_mid->set_show_sf(show_sf);
+  word_mid->set_show_sf(TheFlags.getShowSuperficial());
   tags_mid = word_mid->get_tags();          // tags mid
 
-  warn_absent_ambiguity_class(tdlsw, tags_mid, *word_mid, debug);
+  warn_absent_ambiguity_class(tdlsw, tags_mid, *word_mid, TheFlags.getDebug());
   if (morpho_stream.getEndOfFile()) {
     delete word_left;
     delete word_mid;
     return;
   }
   word_right = morpho_stream.get_next_word(); // word_right
-  word_right->set_show_sf(show_sf);
+  word_right->set_show_sf(TheFlags.getShowSuperficial());
 
   wstring micad;
 
   while (word_right) {
     tags_right = word_right->get_tags();
-    warn_absent_ambiguity_class(tdlsw, tags_right, *word_right, debug);
+    warn_absent_ambiguity_class(tdlsw, tags_right, *word_right, TheFlags.getDebug());
 
     set<TTag> *tags_avail;
     tags_avail = &tags_mid;
@@ -381,7 +383,7 @@ LSWPoST::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First) {
     micad = word_mid->get_lexical_form(tag_max, (tdlsw.getTagIndex())[L"TAG_kEOF"]);
     fputws_unlocked(micad.c_str(), Output);
     if (morpho_stream.getEndOfFile()) {
-      if (null_flush) {
+      if (TheFlags.getNullFlush()) {
         fputwc_unlocked(L'\0', Output);
       }
       fflush(Output);
@@ -395,7 +397,7 @@ LSWPoST::tagger(MorphoStream &morpho_stream, FILE *Output, const bool &First) {
     tags_mid = tags_right;
     word_right = morpho_stream.get_next_word();
     if (word_right != NULL) {
-      word_right->set_show_sf(show_sf);
+      word_right->set_show_sf(TheFlags.getShowSuperficial());
     }
   }
   delete word_left;

@@ -18,7 +18,6 @@
 
 #include "stream.h"
 #include "stream_tagger.h"
-#include "stream_tagger_trainer.h"
 #include <istream>
 #include <ostream>
 
@@ -43,7 +42,7 @@ enum UnigramTaggerModel {
   UnigramTaggerModel3 = 3
 };
 
-class UnigramTagger : public StreamTagger, public StreamTaggerTrainer {
+class UnigramTagger : public StreamTagger {
 private:
   long double model3_score(const Analysis &Analysis_);
   void tag(const LexicalUnit &LexicalUnit_, std::wostream &Output);
@@ -89,7 +88,7 @@ protected:
   std::size_t OccurrenceCoefficient;
 
 public:
-  UnigramTagger(Flags& Flags_);
+  UnigramTagger(TaggerFlags& Flags_);
   ~UnigramTagger();
   void setModel(const UnigramTaggerModel& m);
   UnigramTaggerModel getModel();

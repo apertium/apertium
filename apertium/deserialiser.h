@@ -18,8 +18,6 @@
 
 #include "a.h"
 #include "analysis.h"
-#include "basic_exception_type.h"
-#include "exception.h"
 #include "i.h"
 #include "lemma.h"
 #include "morpheme.h"
@@ -28,13 +26,9 @@
 
 #include <lttoolbox/deserialiser.h>
 #include <stdint.h>
-#include <apertium/perceptron_spec.h>
 #include <cstddef>
-#include <limits>
 #include <istream>
 #include <limits>
-#include <map>
-#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>

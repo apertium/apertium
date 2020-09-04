@@ -18,11 +18,8 @@
 
 #include "apertium_config.h"
 
-#include "basic_tagger.h"
+#include "tagger_flags.h"
 #include "stream_tagger.h"
-#include "stream_tagger_trainer.h"
-#include "constructor_eq_delete.h"
-#include "err_exception.h"
 #include "file_tagger.h"
 #include "optional.h"
 #include <apertium/file_morpho_stream.h>
@@ -31,9 +28,10 @@
 #include <string>
 
 namespace Apertium {
-class apertium_tagger : private constructor_eq_delete {
+class apertium_tagger {
 public:
   apertium_tagger(int &argc, char **&argv);
+  ~apertium_tagger();
 
 private:
   enum FunctionTypeType { Unigram, SlidingWindow, Perceptron };
@@ -46,8 +44,8 @@ private:
   static std::string option_string(const struct option &option_);
   static void locale_global_();
   void set_indexptr();
-  void flagOptionCase(bool (basic_Tagger::Flags::*GetFlag)(),
-                      void (basic_Tagger::Flags::*SetFlag)(const bool &));
+  void flagOptionCase(bool (TaggerFlags::*GetFlag)(),
+                      void (TaggerFlags::*SetFlag)(const bool &));
   std::string option_string();
   void functionTypeTypeOptionCase(const FunctionTypeType &FunctionTypeType_);
   void functionTypeOptionCase(const FunctionType &FunctionType_);
@@ -70,7 +68,7 @@ private:
     FILE *Dictionary, FILE *UntaggedCorpus);
 
   void g_StreamTagger(StreamTagger &StreamTagger_);
-  void s_StreamTaggerTrainer(StreamTaggerTrainer &StreamTaggerTrainer_);
+  void s_StreamTaggerTrainer(StreamTagger &StreamTaggerTrainer_);
   void g_FILE_Tagger(FILE_Tagger &FILE_Tagger_);
   void r_FILE_Tagger(FILE_Tagger &FILE_Tagger_);
   void s_FILE_Tagger(FILE_Tagger &FILE_Tagger_);
@@ -92,7 +90,7 @@ private:
   Optional<FunctionType> TheFunctionType;
   unsigned long TheFunctionTypeOptionArgument;
   unsigned long CgAugmentedMode;
-  basic_Tagger::Flags TheFlags;
+  TaggerFlags TheFlags;
 };
 }
 

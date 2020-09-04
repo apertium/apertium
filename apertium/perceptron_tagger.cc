@@ -1,14 +1,14 @@
-#include <apertium/mtx_reader.h>
 #include <apertium/perceptron_tagger.h>
-#include <apertium/perceptron_spec.h>
-#include <apertium/wchar_t_exception.h>
+
+#include <apertium/mtx_reader.h>
+#include <apertium/exception.h>
 #include <algorithm>
 #include <map>
 #include <set>
 
 namespace Apertium {
 
-PerceptronTagger::PerceptronTagger(basic_Tagger::Flags flags) : basic_Tagger(flags) {};
+PerceptronTagger::PerceptronTagger(TaggerFlags flags) : StreamTagger(flags) {};
 
 PerceptronTagger::~PerceptronTagger() {};
 
@@ -190,7 +190,7 @@ bool PerceptronTagger::trainSentence(
         }
         what_ << L"Required: " << *tagged_tok << L"\n";
         what_ << L"Rerun with --skip-on-error to skip this sentence.";
-        throw Apertium::wchar_t_Exception::PerceptronTagger::CorrectAnalysisUnavailable(what_);
+        throw Apertium::Exception::PerceptronTagger::CorrectAnalysisUnavailable(what_);
       }
     }
     // Apply the beam

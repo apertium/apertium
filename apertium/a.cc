@@ -15,7 +15,6 @@
 
 #include "a.h"
 
-#include "analysis.h"
 #include "exception.h"
 
 namespace Apertium {

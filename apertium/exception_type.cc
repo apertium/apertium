@@ -15,6 +15,7 @@
 
 #include "exception_type.h"
 
+#include "utf_converter.h"
 #include <sstream>
 #include <string>
 
@@ -25,6 +26,21 @@ ExceptionType::ExceptionType(const std::string &what_) : what_(what_) {}
 
 ExceptionType::ExceptionType(const std::stringstream &what_)
     : what_(what_.str()) {}
+
+ExceptionType::ExceptionType(const wchar_t *const what_)
+{
+  this->what_ = UtfConverter::toUtf8(what_);
+}
+
+ExceptionType::ExceptionType(const std::wstring &what_)
+{
+  this->what_ = UtfConverter::toUtf8(what_);
+}
+
+ExceptionType::ExceptionType(const std::wstringstream &what_)
+{
+  this->what_ = UtfConverter::toUtf8(what_.str());
+}
 
 ExceptionType::~ExceptionType() throw() {}
 

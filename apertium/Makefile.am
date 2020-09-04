@@ -4,14 +4,10 @@ h_sources = a.h \
 	    align.h \
 	    analysis.h \
 	    apertium_re.h \
-	    basic_exception_type.h \
-	    basic_tagger.h \
 	    collection.h \
 	    constant_manager.h \
-	    constructor_eq_delete.h \
 	    deserialiser.h \
 	    endian_double_util.h \
-	    err_exception.h \
 	    exception.h \
 	    exception_type.h \
 	    feature_vec.h \
@@ -40,7 +36,6 @@ h_sources = a.h \
 	    serialiser.h \
 	    stream.h \
 	    stream_tagger.h \
-	    stream_tagger_trainer.h \
 	    streamed_type.h \
 	    string_to_wostream.h \
 	    string_utils.h \
@@ -51,6 +46,7 @@ h_sources = a.h \
 	    tagger_data_hmm.h \
 	    tagger_data_lsw.h \
 	    tagger_data_percep_coarse_tags.h \
+	    tagger_flags.h \
 	    tagger_utils.h \
 	    tagger_word.h \
 	    tmx_aligner_tool.h \
@@ -81,16 +77,12 @@ h_sources = a.h \
 	    unlocked_cstdio.h \
 	    utf_converter.h \
 	    utils.h \
-	    wchar_t_exception.h \
-	    wchar_t_exception_type.h\
 	    xml_reader.h
 
 cc_sources = a.cc \
 	     align.cc \
 	     analysis.cc \
 	     apertium_re.cc \
-	     basic_exception_type.cc \
-	     basic_tagger.cc \
 	     collection.cc \
 	     constant_manager.cc \
 	     endian_double_util.cc \
@@ -117,7 +109,6 @@ cc_sources = a.cc \
 	     sentence_stream.cc \
 	     stream.cc \
 	     stream_tagger.cc \
-	     stream_tagger_trainer.cc \
 	     string_utils.cc \
 	     shell_utils.cc \
 	     tag.cc \
@@ -126,6 +117,7 @@ cc_sources = a.cc \
 	     tagger_data_hmm.cc \
 	     tagger_data_lsw.cc \
 	     tagger_data_percep_coarse_tags.cc \
+	     tagger_flags.cc \
 	     tagger_utils.cc \
 	     tagger_word.cc \
 	     tmx_aligner_tool.cc \
@@ -148,7 +140,6 @@ cc_sources = a.cc \
 	     tsx_reader.cc \
 	     unigram_tagger.cc \
 	     utf_converter.cc \
-	     wchar_t_exception_type.cc\
 	     xml_reader.cc
 
 library_includedir = $(includedir)/$(PACKAGE_NAME)-$(VERSION_API)/$(PACKAGE_NAME)

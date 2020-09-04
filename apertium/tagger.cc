@@ -18,11 +18,7 @@
 #include "apertium_config.h"
 
 #include "align.h"
-#include "basic_exception_type.h"
-#include "basic_tagger.h"
-#include "err_exception.h"
 #include "exception.h"
-#include "file_tagger.h"
 #include "linebreak.h"
 #include "unigram_tagger.h"
 #include <apertium/perceptron_tagger.h>
@@ -74,32 +70,32 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
 
       switch (The_val) {
       case 'b':
-        flagOptionCase(&basic_Tagger::Flags::getSentSeg,
-                       &basic_Tagger::Flags::setSentSeg);
+        flagOptionCase(&TaggerFlags::getSentSeg,
+                       &TaggerFlags::setSentSeg);
         break;
       case 'd':
-        flagOptionCase(&basic_Tagger::Flags::getDebug,
-                       &basic_Tagger::Flags::setDebug);
+        flagOptionCase(&TaggerFlags::getDebug,
+                       &TaggerFlags::setDebug);
         break;
       case 'e':
-        flagOptionCase(&basic_Tagger::Flags::getSkipErrors,
-                       &basic_Tagger::Flags::setSkipErrors);
+        flagOptionCase(&TaggerFlags::getSkipErrors,
+                       &TaggerFlags::setSkipErrors);
         break;
       case 'f':
-        flagOptionCase(&basic_Tagger::Flags::getFirst,
-                       &basic_Tagger::Flags::setFirst);
+        flagOptionCase(&TaggerFlags::getFirst,
+                       &TaggerFlags::setFirst);
         break;
       case 'm':
-        flagOptionCase(&basic_Tagger::Flags::getMark,
-                       &basic_Tagger::Flags::setMark);
+        flagOptionCase(&TaggerFlags::getMark,
+                       &TaggerFlags::setMark);
         break;
       case 'p':
-        flagOptionCase(&basic_Tagger::Flags::getShowSuperficial,
-                       &basic_Tagger::Flags::setShowSuperficial);
+        flagOptionCase(&TaggerFlags::getShowSuperficial,
+                       &TaggerFlags::setShowSuperficial);
         break;
       case 'z':
-        flagOptionCase(&basic_Tagger::Flags::getNullFlush,
-                       &basic_Tagger::Flags::setNullFlush);
+        flagOptionCase(&TaggerFlags::getNullFlush,
+                       &TaggerFlags::setNullFlush);
         break;
       case 'u':
         functionTypeTypeOptionCase(Unigram);
@@ -154,7 +150,7 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
         help();
         return;
       default:
-        throw err_Exception();
+        throw Exception::apertium_tagger::err_Exception("");
       }
     }
 
@@ -167,7 +163,7 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
     switch (*TheFunctionType) {
     case Tagger:
       if (!TheFunctionTypeType) {
-        HMM HiddenMarkovModelTagger_;
+        HMM HiddenMarkovModelTagger_(TheFlags);
         g_FILE_Tagger(HiddenMarkovModelTagger_);
         break;
       }
@@ -190,7 +186,7 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
         g_StreamTagger(UnigramTagger_);
       } break;
       case SlidingWindow: {
-        LSWPoST SlidingWindowTagger_;
+        LSWPoST SlidingWindowTagger_(TheFlags);
         g_FILE_Tagger(SlidingWindowTagger_);
       } break;
       case Perceptron: {
@@ -204,7 +200,7 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
       break;
     case Retrain:
       if (!TheFunctionTypeType) {
-        HMM HiddenMarkovModelTagger_;
+        HMM HiddenMarkovModelTagger_(TheFlags);
         r_FILE_Tagger(HiddenMarkovModelTagger_);
         break;
       }
@@ -216,7 +212,7 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
         throw Exception::apertium_tagger::InvalidOption(what_);
       }
       case SlidingWindow: {
-        LSWPoST SlidingWindowTagger_;
+        LSWPoST SlidingWindowTagger_(TheFlags);
         r_FILE_Tagger(SlidingWindowTagger_);
       } break;
       default:
@@ -226,7 +222,7 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
       break;
     case Supervised:
       if (!TheFunctionTypeType) {
-        HMM HiddenMarkovModelTagger_;
+        HMM HiddenMarkovModelTagger_(TheFlags);
         s_FILE_Tagger(HiddenMarkovModelTagger_);
         break;
       }
@@ -265,7 +261,7 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
       break;
     case Train:
       if (!TheFunctionTypeType) {
-        HMM HiddenMarkovModelTagger_;
+        HMM HiddenMarkovModelTagger_(TheFlags);
         t_FILE_Tagger(HiddenMarkovModelTagger_);
         break;
       }
@@ -277,7 +273,7 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
         throw Exception::apertium_tagger::InvalidOption(what_);
       }
       case SlidingWindow: {
-        LSWPoST SlidingWindowTagger_;
+        LSWPoST SlidingWindowTagger_(TheFlags);
         t_FILE_Tagger(SlidingWindowTagger_);
       } break;
       default:
@@ -288,11 +284,13 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
     default:
       std::abort();
     }
-  } catch (const basic_ExceptionType &basic_ExceptionType_) {
-    std::wcerr << "apertium-tagger: " << basic_ExceptionType_.what() << std::endl;
-    throw err_Exception();
+  } catch (const ExceptionType &ExceptionType_) {
+    std::wcerr << "apertium-tagger: " << ExceptionType_.what() << std::endl;
+    throw Exception::apertium_tagger::err_Exception("");
   }
 }
+
+apertium_tagger::~apertium_tagger() {}
 
 void apertium_tagger::help() {
 
@@ -430,8 +428,8 @@ void apertium_tagger::set_indexptr() {
 }
 
 void apertium_tagger::flagOptionCase(
-    bool (basic_Tagger::Flags::*GetFlag)(),
-    void (basic_Tagger::Flags::*SetFlag)(const bool &)) {
+    bool (TaggerFlags::*GetFlag)(),
+    void (TaggerFlags::*SetFlag)(const bool &)) {
   if ((TheFlags.*GetFlag)()) {
     std::stringstream what_;
     what_ << "unexpected '" << option_string() << "' following '"
@@ -546,7 +544,6 @@ void apertium_tagger::get_file_arguments(
 
 void apertium_tagger::init_FILE_Tagger(FILE_Tagger &FILE_Tagger_, string const &TsxFn) {
   FILE_Tagger_.deserialise(TsxFn);
-  FILE_Tagger_.set_debug(TheFlags.getDebug());
   TaggerWord::setArrayTags(FILE_Tagger_.getArrayTags());
 }
 
@@ -586,10 +583,10 @@ void apertium_tagger::g_StreamTagger(StreamTagger &StreamTagger_) {
 
   try {
     StreamTagger_.deserialise(SerialisedAnalysisFrequencies);
-  } catch (const basic_ExceptionType &basic_ExceptionType_) {
+  } catch (const ExceptionType &ExceptionType_) {
     std::stringstream what_;
     what_ << "can't deserialise SERIALISED_TAGGER file \"" << argv[optind]
-          << "\" Reason: " << basic_ExceptionType_.what();
+          << "\" Reason: " << ExceptionType_.what();
     throw Exception::apertium_tagger::deserialise(what_);
   }
   if (nonoptarg < 2) {
@@ -615,7 +612,7 @@ void apertium_tagger::g_StreamTagger(StreamTagger &StreamTagger_) {
 }
 
 void apertium_tagger::s_StreamTaggerTrainer(
-    StreamTaggerTrainer &StreamTaggerTrainer_) {
+    StreamTagger &StreamTaggerTrainer_) {
   locale_global_();
 
   if (TheFunctionTypeOptionArgument != 0 && *TheFunctionTypeType != Perceptron) {
@@ -662,21 +659,18 @@ void apertium_tagger::g_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
       try_open_file("SERIALISED_TAGGER", argv[optind], "rb");
   FILE_Tagger_.deserialise(Serialised_FILE_Tagger);
   try_close_file("SERIALISED_TAGGER", argv[optind], Serialised_FILE_Tagger);
-  FILE_Tagger_.set_debug(TheFlags.getDebug());
   TaggerWord::setArrayTags(FILE_Tagger_.getArrayTags());
   TaggerWord::generate_marks = TheFlags.getMark();
-  FILE_Tagger_.set_show_sf(TheFlags.getShowSuperficial());
-  FILE_Tagger_.setNullFlush(TheFlags.getNullFlush());
   if (nonoptarg < 2)
-    FILE_Tagger_.tagger(stdin, stdout, TheFlags.getFirst());
+    FILE_Tagger_.tagger(stdin, stdout);
   else {
     FILE *Input = try_open_file("INPUT", argv[optind + 1], "r");
 
     if (nonoptarg < 3)
-      FILE_Tagger_.tagger(Input, stdout, TheFlags.getFirst());
+      FILE_Tagger_.tagger(Input, stdout);
     else {
       FILE *Output = try_open_file_utf8("OUTPUT", argv[optind + 2], "w");
-      FILE_Tagger_.tagger(Input, Output, TheFlags.getFirst());
+      FILE_Tagger_.tagger(Input, Output);
       try_close_file("OUTPUT", argv[optind + 2], Output);
     }
 
@@ -701,7 +695,6 @@ void apertium_tagger::r_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
   FILE_Tagger_.deserialise(Serialised_FILE_Tagger);
   try_close_file("SERIALISED_TAGGER", ProbFn, Serialised_FILE_Tagger);
 
-  FILE_Tagger_.set_debug(TheFlags.getDebug());
   TaggerWord::setArrayTags(FILE_Tagger_.getArrayTags());
 
   FILE *UntaggedCorpus;

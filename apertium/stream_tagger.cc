@@ -1,8 +1,10 @@
 #include <apertium/stream_tagger.h>
-#include <apertium/stream.h>
-#include <utility>
 
 namespace Apertium {
+StreamTagger::StreamTagger() : TheFlags() {}
+
+StreamTagger::StreamTagger(TaggerFlags& Flags_) : TheFlags(Flags_) {}
+
 StreamTagger::~StreamTagger() {}
 
 void StreamTagger::outputLexicalUnit(

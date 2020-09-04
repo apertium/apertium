@@ -24,24 +24,26 @@
 #include <cstdio>
 
 namespace Apertium {
-FILE_Tagger::FILE_Tagger() : debug(false), show_sf(false), null_flush(false) {}
+FILE_Tagger::FILE_Tagger() : TheFlags() {}
+
+FILE_Tagger::FILE_Tagger(TaggerFlags& Flags_) : TheFlags(Flags_) {}
 
 FILE_Tagger::~FILE_Tagger() {}
 
-void FILE_Tagger::set_debug(const bool &Debug) { debug = Debug; }
+void FILE_Tagger::set_debug(const bool &Debug) { TheFlags.setDebug(Debug); }
 
 void FILE_Tagger::set_show_sf(const bool &ShowSuperficial) {
-  show_sf = ShowSuperficial;
+  TheFlags.setShowSuperficial(ShowSuperficial);
 }
 
 void FILE_Tagger::setNullFlush(const bool &NullFlush) {
-  null_flush = NullFlush;
+  TheFlags.setNullFlush(NullFlush);
 }
 
-void FILE_Tagger::tagger(FILE *Input, FILE *Output, const bool &First) {
-  FileMorphoStream morpho_stream(Input, debug, &get_tagger_data());
+void FILE_Tagger::tagger(FILE *Input, FILE *Output) {
+  FileMorphoStream morpho_stream(Input, TheFlags.getDebug(), &get_tagger_data());
 
-  tagger(morpho_stream, Output, First);
+  tagger(morpho_stream, Output);
 }
 
 void FILE_Tagger::init_and_train(MorphoStream &lexmorfo, unsigned long count) {

@@ -64,6 +64,7 @@ public:
   void init_probabilities_kupiec_(MorphoStream &lexmorfo);
   void train(MorphoStream &morpho_stream, unsigned long count);
   LSWPoST();
+  LSWPoST(Apertium::TaggerFlags& Flags_);
   LSWPoST(TaggerDataLSW *tdlsw);
 
    /** Constructor
@@ -101,7 +102,6 @@ public:
 
    /** Do the tagging
     */
-   void tagger(MorphoStream &morpho_stream, FILE *Output,
-               const bool &First = false);
+   void tagger(MorphoStream &morpho_stream, FILE *Output);
 };
 #endif
