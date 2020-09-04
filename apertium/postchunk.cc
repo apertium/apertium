@@ -62,6 +62,10 @@ nwords(0)
   null_flush = false;
   internal_null_flush = false;
   trace = false;
+  in_lu = false;
+  in_out = false;
+  in_let_var = false;
+  in_wblank = false;
 }
 
 Postchunk::~Postchunk()
@@ -348,7 +352,10 @@ Postchunk::evalString(xmlNode *element)
         if(!blank_queue.empty())
         {
           string retblank = blank_queue.front();
-          blank_queue.pop();
+          if(in_out)
+          {
+            blank_queue.pop();
+          }
           
           return retblank;
         }
@@ -574,6 +581,8 @@ Postchunk::evalString(xmlNode *element)
 void
 Postchunk::processOut(xmlNode *localroot)
 {
+  in_out = true;
+  
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE)
@@ -665,6 +674,8 @@ Postchunk::processOut(xmlNode *localroot)
       }
     }
   }
+  
+  in_out = false;
 }
 
 void

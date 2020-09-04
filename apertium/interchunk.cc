@@ -61,6 +61,7 @@ nwords(0)
   null_flush = false;
   internal_null_flush = false;
   trace = false;
+  in_out = false;
 }
 
 Interchunk::~Interchunk()
@@ -271,7 +272,11 @@ Interchunk::evalString(xmlNode *element)
         if(!blank_queue.empty())
         {
           string retblank = blank_queue.front();
-          blank_queue.pop();
+          
+          if(in_out)
+          {
+            blank_queue.pop();
+          }
           
           return retblank;
         }
@@ -408,6 +413,8 @@ Interchunk::evalString(xmlNode *element)
 void
 Interchunk::processOut(xmlNode *localroot)
 {
+  in_out = true;
+  
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE)
@@ -422,6 +429,8 @@ Interchunk::processOut(xmlNode *localroot)
       }
     }
   }
+  
+  in_out = false;
 }
 
 string

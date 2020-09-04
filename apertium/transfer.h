@@ -63,6 +63,7 @@ private:
   vector<wstring *> tmpword;
   vector<wstring *> tmpblank;
   
+  bool in_out;
   bool in_lu;
   bool in_let_var;
   string var_val; //stores the name of the variable being processed (in let or append)

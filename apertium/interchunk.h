@@ -75,7 +75,7 @@ private:
   bool null_flush;
   bool internal_null_flush;
   bool trace;
-  string emptyblank;
+  bool in_out;
 
   void destroy();
   void readData(FILE *input);

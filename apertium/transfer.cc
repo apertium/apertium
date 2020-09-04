@@ -72,6 +72,8 @@ nwords(0)
   trace_att = false;
   in_lu = false;
   in_let_var = false;
+  in_out = false;
+  in_wblank = false;
 }
 
 Transfer::~Transfer()
@@ -472,7 +474,10 @@ Transfer::evalString(xmlNode *element)
         if(!blank_queue.empty())
         {
           string retblank = blank_queue.front();
-          blank_queue.pop();
+          if(in_out)
+          {
+            blank_queue.pop();
+          }
           
           return retblank;
         }
@@ -767,6 +772,8 @@ Transfer::evalString(xmlNode *element)
 void
 Transfer::processOut(xmlNode *localroot)
 {
+  in_out = true;
+  
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
     if(i->type == XML_ELEMENT_NODE)
@@ -880,6 +887,8 @@ Transfer::processOut(xmlNode *localroot)
       }
     }
   }
+  
+  in_out = false;
 }
 
 string
