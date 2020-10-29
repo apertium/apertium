@@ -163,7 +163,6 @@ extern "C" {
 #include &lt;regex.h&gt;
 }
 
-#include &lt;string&gt;
 #include &lt;lttoolbox/lt_locale.h&gt;
 #include &lt;lttoolbox/ltstr.h&gt;
 #include &lt;apertium/string_to_wostream.h&gt;

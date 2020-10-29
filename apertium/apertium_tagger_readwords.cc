@@ -16,14 +16,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
-#include <iostream>
-#include <clocale>
-#include <apertium/tagger_word.h>
-#include <apertium/tagger_data.h>
-#include <apertium/tsx_reader.h>
-*/
-
 #include "getopt_long.h"
 #include <apertium/utf_converter.h>
 #include <apertium/file_morpho_stream.h>

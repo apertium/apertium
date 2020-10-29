@@ -3,7 +3,6 @@
 #include "apertium/tagger_data_hmm.h"
 #include "apertium/tagger_data.h"
 #include <iostream>
-#include <iostream>
 #include <sstream>
 #include <algorithm>
 

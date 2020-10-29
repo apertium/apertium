@@ -22,7 +22,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include "getopt_long.h"
-#include <apertium/string_utils.h>
 
 #include <apertium/hmm.h>
 #include <apertium/tagger_data_hmm.h>

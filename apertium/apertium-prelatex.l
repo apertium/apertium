@@ -19,7 +19,6 @@ extern "C" {
 #include <regex.h>
 }
 
-#include <string>
 #include <lttoolbox/lt_locale.h>
 #include <lttoolbox/ltstr.h>
 #ifndef GENFORMAT
