@@ -3,6 +3,15 @@
  NEWS for apertium
 ===================
 
+Version 3.7.0
+-------------
+
+* Support for [wordbound blanks stream
+  format](https://wiki.apertium.org/wiki/Wordbound_blanks), a GSOC 2020
+  project
+* Bugfixes: #90, #91, #92, #93, #94, #100, #102, #103, #105, #109
+
+
 SVN
 ---
 
