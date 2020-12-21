@@ -91,7 +91,7 @@ Interchunk::readData(FILE *in)
   me = new MatchExe(t, finals);
 
   // attr_items
-  bool recompile_attrs = Compression::string_read(in) != string(pcre_version());
+  bool recompile_attrs = Compression::string_read(in) != pcre_version_endian();
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
   {
     string const cad_k = UtfConverter::toUtf8(Compression::wstring_read(in));

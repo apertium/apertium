@@ -224,7 +224,7 @@ TransferData::write(FILE *output)
 void
 TransferData::writeRegexps(FILE *output)
 {
-  Compression::string_write(string(pcre_version()), output);
+  Compression::string_write(pcre_version_endian(), output);
   Compression::multibyte_write(attr_items.size(), output);
 
   map<wstring, wstring, Ltstr>::iterator it, limit;

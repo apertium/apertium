@@ -2,7 +2,7 @@ AC_PREREQ(2.52)
 
 m4_define([PKG_VERSION_MAJOR], [3])
 m4_define([PKG_VERSION_MINOR], [7])
-m4_define([PKG_VERSION_PATCH], [0])
+m4_define([PKG_VERSION_PATCH], [1])
 
 AC_INIT([apertium], [PKG_VERSION_MAJOR.PKG_VERSION_MINOR.PKG_VERSION_PATCH], [apertium-stuff@lists.sourceforge.net], [apertium], [https://wiki.apertium.org/])
 AC_CONFIG_HEADER([apertium/apertium_config.h])

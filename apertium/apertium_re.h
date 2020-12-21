@@ -24,6 +24,8 @@
 
 using namespace std;
 
+std::string& pcre_version_endian();
+
 class ApertiumRE
 {
 private:

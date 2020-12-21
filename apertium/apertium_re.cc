@@ -23,6 +23,19 @@
 using namespace Apertium;
 using namespace std;
 
+std::string& pcre_version_endian() {
+  static std::string pve;
+  if (pve.empty()) {
+    pve = pcre_version();
+#ifdef WORDS_BIGENDIAN
+    pve += "-be";
+#else
+    pve += "-le";
+#endif
+  }
+  return pve;
+}
+
 ApertiumRE::ApertiumRE() :
 re(0)
 {
