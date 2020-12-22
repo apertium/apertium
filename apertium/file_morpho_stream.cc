@@ -219,7 +219,7 @@ FileMorphoStream::lrlmClassify(wstring const &str, int &ivwords)
 	if(str[last_pos+1] == L'+' && last_pos+1 < limit )
 	{
 	  floor = last_pos + 1;
-	  last_pos = floor;
+	  last_pos = floor + 1;
           vwords[ivwords]->set_plus_cut(true);
           if (((int)vwords.size())<=((int)(ivwords+1)))
             vwords.push_back(new TaggerWord(true));
