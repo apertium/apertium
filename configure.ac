@@ -47,24 +47,14 @@ then
   AC_MSG_ERROR([You don't have xmllint installed.])
 fi
 
-  AC_PATH_PROG(XSLTPROC, xsltproc, no)
-  if test x$ac_cv_path_XSLTPROC = x
-  then
-    AC_MSG_ERROR([You don't have xsltproc installed.])
-  fi
-  if test x$ac_cv_path_XSLTPROC = xno
-  then
-    AC_MSG_ERROR([You don't have xsltproc installed.])
-  fi
-
-AC_PATH_PROG(BASH, bash, no)
-if test x$ac_cv_path_BASH = x
+AC_PATH_PROG(XSLTPROC, xsltproc, no)
+if test x$ac_cv_path_XSLTPROC = x
 then
-  AC_MSG_ERROR([You don't have bash installed.])
+  AC_MSG_ERROR([You don't have xsltproc installed.])
 fi
-if test x$ac_cv_path_BASH = xno
+if test x$ac_cv_path_XSLTPROC = xno
 then
-  AC_MSG_ERROR([You don't have bash installed.])
+  AC_MSG_ERROR([You don't have xsltproc installed.])
 fi
 
 AC_PATH_PROG(FLEX, flex, no)
