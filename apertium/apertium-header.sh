@@ -78,10 +78,27 @@ check_transfuse () {
   fi
 }
 
+setvar_wrap () {
+    gawk -v var="${AP_SETVAR}" '
+BEGIN           { RS="\0|\n"; }
+NR==1    && var { printf "[<STREAMCMD:SETVAR:%s>]", var }
+                { printf "%s%s", $0, RT }
+RT=="\0" && var { printf "[<STREAMCMD:SETVAR:%s>]", var }
+RT=="\0"        { fflush() }'
+}
+setvar_unwrap () {
+    gawk '
+BEGIN           { RS="\0|\n"; }
+                { gsub(/\[<STREAMCMD:SETVAR:[^>]*>]/, ""); printf "%s%s", $0, RT }
+RT=="\0"        { fflush() }'
+}
+
 run_mode_wblank () {
-    bash <(apertium-wblank-mode "${NULL_FLUSH[@]}" "$DATADIR/modes/$PAIR.mode") \
-         "$OPTION" \
-         "$OPTION_TAGGER"
+    setvar_wrap \
+        | bash <(apertium-wblank-mode "${NULL_FLUSH[@]}" "$DATADIR/modes/$PAIR.mode") \
+               "$OPTION" \
+               "$OPTION_TAGGER" \
+        | setvar_unwrap
 }
 
 run_mode_wblank_force_flush () {
