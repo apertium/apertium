@@ -87,9 +87,11 @@ RT=="\0" && var { printf "[<STREAMCMD:SETVAR:%s>]", var }
 RT=="\0"        { fflush() }'
 }
 setvar_unwrap () {
-    gawk '
+    # Only strip SETVAR if *we* inserted it, allow keeping it if it was manually inserted (for debugs)
+    gawk -v var="${AP_SETVAR}" '
 BEGIN           { RS="\0|\n"; }
-                { gsub(/\[<STREAMCMD:SETVAR:[^>]*>]/, ""); printf "%s%s", $0, RT }
+            var { gsub(/\[<STREAMCMD:SETVAR:[^>]*>]/, "") }
+                { printf "%s%s", $0, RT }
 RT=="\0"        { fflush() }'
 }
 
