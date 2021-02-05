@@ -171,6 +171,7 @@ bin_PROGRAMS = apertium-cleanstream \
 	       apertium-desxlsx \
 	       apertium-desxpresstag \
 	       apertium-filter-ambiguity \
+	       apertium-gen-modes2 \
 	       apertium-interchunk \
 	       apertium-multiple-translations \
 	       apertium-perceptron-trace \
@@ -294,6 +295,8 @@ apertium_wblank_mode_SOURCES = wblank-mode.cc
 apertium_adapt_docx_SOURCES = adapt_docx.cc
 apertium_adapt_docx_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES) $(ICU_LIBS)
 
+apertium_gen_modes2_SOURCES = gen_modes.cc
+apertium_gen_modes2_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 if WINDOWS
 AM_CPPFLAGS = -I$(top_srcdir)/utf8 -I$(top_srcdir)/apertium/win32 -I$(top_srcdir) $(APERTIUM_CFLAGS) $(ICU_CFLAGS)
