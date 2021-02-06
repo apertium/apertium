@@ -52,7 +52,8 @@ void endProgram(char *name)
 struct program {
   string command;
   vector<string> debug_suffix;
-  vector<string> arguments;
+  // <argument, is_file>
+  vector<pair<string, bool>> arguments;
 };
 
 struct pipeline {
@@ -87,10 +88,8 @@ void read_program(xmlNode* node, pipeline& pipe)
     if(arg->type != XML_ELEMENT_NODE) continue;
     for(xmlAttr* a = arg->properties; a != NULL; a = a->next) {
       if(xmlEq(a->name, "name")) {
-	step.arguments.push_back(xml2str(a));
-	// TODO: some come from <arg> and some from <file>
-	// maybe mark <arg> ones somehow so we don't try to
-	// resolve them as pathnames
+	bool is_file = xmlEq(a->name, "file");
+	step.arguments.push_back(make_pair(xml2str(a), is_file));
 	break;
       }
     }
@@ -229,9 +228,9 @@ void gen_debug_modes(map<string, pipeline>& modes)
 	  untrimmed.steps = debug.steps;
 	  for(auto& step : untrimmed.steps) {
 	    for(auto& str : step.arguments) {
-	      size_t loc = str.rfind(".automorf.");
+	      size_t loc = str.first.rfind(".automorf.");
 	      if(loc != string::npos) {
-		str.replace(loc, 10, ".automorf-untrimmed.");
+		str.first.replace(loc, 10, ".automorf-untrimmed.");
 	      }
 	    }
 	  }
@@ -255,8 +254,11 @@ void gen_mode(pipeline& mode, path& file_dir, path& write_dir)
     program& p = mode.steps[i];
     f << p.command;
     for(auto& arg : p.arguments) {
-      f << " '" << absolute(file_dir / arg).c_str() << "'";
-      // TODO <arg> vs <file>
+      if(arg.second) {
+	f << " '" << absolute(file_dir / arg.first).c_str() << "'";
+      } else {
+	f << " " << arg.first;
+      }
     }
   }
   f.close();
