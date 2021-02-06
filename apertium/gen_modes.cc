@@ -184,6 +184,21 @@ void set_debug_suffixes(pipeline& prog)
   }
 }
 
+void set_trace_opt(pipeline& mode)
+{
+  string& cmd = mode.steps.back().command;
+  if(startswith(cmd, "cg-proc") || startswith(cmd, "lrx-proc") ||
+     startswith(cmd, "apertium-transfer") ||
+     startswith(cmd, "apertium-interchunk") ||
+     startswith(cmd, "apertium-postchunk")) {
+    cmd += " -t";
+  } else if(startswith(cmd, "rtx-proc")) {
+    cmd += " -r";
+  } else if(startswith(cmd, "apertium-anaphora")) {
+    cmd += " -d";
+  }
+}
+
 void gen_debug_modes(map<string, pipeline>& modes)
 {
   vector<string> todo;
@@ -203,6 +218,7 @@ void gen_debug_modes(map<string, pipeline>& modes)
 	debug.debug = false;
 	if(modes.find(debug.name) == modes.end()) {
 	  debug.steps.assign(mode.steps.begin(),mode.steps.begin()+i+1);
+	  set_trace_opt(debug);
 	  modes[debug.name] = debug;
 	}
 	pipeline untrimmed;
@@ -211,12 +227,15 @@ void gen_debug_modes(map<string, pipeline>& modes)
 	untrimmed.debug = false;
 	if(modes.find(untrimmed.name) == modes.end()) {
 	  untrimmed.steps = debug.steps;
-	  for(auto& s : untrimmed.steps) {
-	    size_t loc = s.command.rfind(".automorf.");
-	    if(loc != string::npos) {
-	      s.command.replace(loc, 10, ".automorf-untrimmed.");
+	  for(auto& step : untrimmed.steps) {
+	    for(auto& str : step.arguments) {
+	      size_t loc = str.rfind(".automorf.");
+	      if(loc != string::npos) {
+		str.replace(loc, 10, ".automorf-untrimmed.");
+	      }
 	    }
 	  }
+	  set_trace_opt(untrimmed);
 	  modes[untrimmed.name] = untrimmed;
 	}
       }
