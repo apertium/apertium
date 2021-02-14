@@ -151,7 +151,7 @@ GENERATEDSCRIPTS = apertium-gen-deformat apertium-gen-reformat \
                    apertium-validate-modes \
                    apertium-validate-interchunk \
                    apertium-validate-postchunk apertium apertium-unformat \
-                   apertium-gen-modes apertium-validate-acx \
+                   apertium-validate-acx \
                    apertium-utils-fixlatex
 
 lib_LTLIBRARIES = libapertium3.la
@@ -171,7 +171,7 @@ bin_PROGRAMS = apertium-cleanstream \
 	       apertium-desxlsx \
 	       apertium-desxpresstag \
 	       apertium-filter-ambiguity \
-	       apertium-gen-modes2 \
+	       apertium-gen-modes \
 	       apertium-interchunk \
 	       apertium-multiple-translations \
 	       apertium-perceptron-trace \
@@ -216,9 +216,7 @@ apertiumsysconf = $(prefix)/etc/apertium
 apertium_DATA = deformat.xsl reformat.xsl new2old.xsl lexchoice.xsl \
                 lexchoicebil.xsl \
 				tagger.dtd interchunk.dtd format.dtd  transfer.dtd postchunk.dtd modes.dtd \
-				tagger.rnc interchunk.rnc format.rnc  transfer.rnc postchunk.rnc modes.rnc \
-				modes2bash.xsl modes2debugmodes.xsl \
-                apertium-createmodes.awk
+				tagger.rnc interchunk.rnc format.rnc  transfer.rnc postchunk.rnc modes.rnc
 
 apertium_cleanstream_SOURCES = apertium_cleanstream.cc
 apertium_pretransfer_SOURCES = apertium_pretransfer.cc
@@ -295,8 +293,8 @@ apertium_wblank_mode_SOURCES = wblank-mode.cc
 apertium_adapt_docx_SOURCES = adapt_docx.cc
 apertium_adapt_docx_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES) $(ICU_LIBS)
 
-apertium_gen_modes2_SOURCES = gen_modes.cc
-apertium_gen_modes2_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
+apertium_gen_modes_SOURCES = gen_modes.cc
+apertium_gen_modes_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 if WINDOWS
 AM_CPPFLAGS = -I$(top_srcdir)/utf8 -I$(top_srcdir)/apertium/win32 -I$(top_srcdir) $(APERTIUM_CFLAGS) $(ICU_CFLAGS)
@@ -515,14 +513,6 @@ apertium-gen-reformat: Makefile.am gen-header.sh
 	@echo "rm /tmp/\$$\$$.reformat.l /tmp/\$$\$$.lex.cc" >> $@
 	@chmod a+x $@
 
-apertium-gen-modes: apertium-gen-modes.in Makefile.am
-	@echo "#!/usr/bin/env bash" > $@
-	@echo "APERTIUMDIR=$(apertiumdir)" >> $@
-	@echo "XMLLINT=xmllint" >> $@
-	@echo "XSLTPROC=xsltproc" >> $@
-	@cat $< >> $@
-	@chmod a+x $@
-
 apertium-utils-fixlatex: Makefile.am utils-fixlatex-header.sh
 	@echo "Creating apertium-utils-fixlatex script"
 	@echo "#!/usr/bin/env bash" > $@
@@ -576,5 +566,4 @@ EXTRA_DIST = gen-header.sh deformat-header.sh \
              validate-header.sh transformdic-header.sh transformdicbil-header.sh \
 			 tagger.dtd interchunk.dtd format.dtd  transfer.dtd postchunk.dtd modes.dtd \
 			 tagger.rnc interchunk.rnc format.rnc  transfer.rnc postchunk.rnc modes.rnc \
-             utils-fixlatex-header.sh \
-             apertium-gen-modes.in apertium-createmodes.awk modes2bash.xsl modes2debugmodes.xsl
+             utils-fixlatex-header.sh

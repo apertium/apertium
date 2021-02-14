@@ -36,14 +36,11 @@ using namespace Apertium;
 using namespace std;
 using namespace std::filesystem;
 
-// TODO TODO TODO - properly get this from Makefile.am
-const char* APERTIUMDIR = "/usr/local/share/apertium";
-
 void endProgram(char *name)
 {
   cout << basename(name) << ": " << endl;
   cout << "USAGE: " << basename(name) << " [-fvh] modes.xml [install_path]" << endl;
-  cout << "  -f, --full:      treat install_path as absolute (defaults to " << APERTIUMDIR << "/{install_path}" << endl;
+  cout << "  -f, --full:      expect absolute installation path" << endl;
   cout << "  -v, --verbose:   print more detailed messages" << endl;
   cout << "  -h, --help:      display this help" << endl;
   exit(EXIT_FAILURE);
@@ -329,19 +326,17 @@ int main(int argc, char* argv[])
   if((argc - optind > 2) || (argc - optind == 0)) {
     endProgram(argv[0]);
   }
+  if((argc - optind == 2) && !full) {
+    endProgram(argv[0]);
+  }
 
-  path apertium_path = APERTIUMDIR;
   path xml_path = argv[optind];
   path dev_dir = xml_path.parent_path();
   path install_dir;
   if(argc - optind == 1) {
     install_dir = dev_dir;
   } else {
-    if(full) {
-      install_dir = argv[optind+1];
-    } else {
-      install_dir = apertium_path / path(argv[optind+1]);
-    }
+    install_dir = argv[optind+1];
     if(install_dir == dev_dir) {
       cerr << basename(argv[0]) << " ERROR: Installation prefix is the same directory as modes.xml; give a different INSTALLDIR." << endl;
       exit(EXIT_FAILURE);
