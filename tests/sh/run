@@ -6,7 +6,6 @@ cd "$(dirname "$0")"
 if command -v shellcheck >/dev/null; then
     shellcheck ../../apertium/apertium
     shellcheck ../../apertium/apertium-gen-deformat
-    shellcheck ../../apertium/apertium-gen-modes
     shellcheck ../../apertium/apertium-gen-reformat
     shellcheck ../../apertium/apertium-unformat
     shellcheck ../../apertium/apertium-utils-fixlatex
