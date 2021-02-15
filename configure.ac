@@ -117,7 +117,8 @@ fi
 # Checks for header files.
 AC_LANG(C++)
 AC_HEADER_STDC
-AC_CHECK_HEADERS([stdlib.h string.h unistd.h stddef.h])
+AC_CHECK_HEADERS([stdlib.h string.h unistd.h stddef.h filesystem string_view])
+AC_CHECK_LIB([stdc++fs], [_ZNSt12experimental10filesystem2v112current_pathEv])
 
 # Checks for ICU
 AC_CHECK_ICU(50)

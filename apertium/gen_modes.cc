@@ -26,7 +26,7 @@
 #include <libgen.h>
 #include <getopt.h>
 #include <libxml/xmlreader.h>
-#include <filesystem>
+#include "filesystem.h"
 #include <vector>
 #include <map>
 #include <string>
@@ -34,7 +34,6 @@
 
 using namespace Apertium;
 using namespace std;
-using namespace std::filesystem;
 
 void endProgram(char *name)
 {
@@ -74,20 +73,20 @@ string xml2str(const xmlAttr* a)
 void read_program(xmlNode* node, pipeline& pipe)
 {
   program step;
-  for(xmlAttr* a = node->properties; a != NULL; a = a->next) {
-    if(xmlEq(a->name, "name")) {
+  for (auto a = node->properties; a != nullptr; a = a->next) {
+    if (xmlEq(a->name, "name")) {
       step.command = xml2str(a);
-    } else if(xmlEq(a->name, "debug-suff")) {
+    } else if (xmlEq(a->name, "debug-suff")) {
       step.debug_suffix.push_back(xml2str(a));
     }
   }
-  for(xmlNode* arg = node->children; arg != NULL; arg = arg->next) {
-    if(arg->type != XML_ELEMENT_NODE) continue;
-    for(xmlAttr* a = arg->properties; a != NULL; a = a->next) {
-      if(xmlEq(a->name, "name")) {
-	bool is_file = xmlEq(a->name, "file");
-	step.arguments.push_back(make_pair(xml2str(a), is_file));
-	break;
+  for (auto arg = node->children; arg != nullptr; arg = arg->next) {
+    if (arg->type != XML_ELEMENT_NODE) continue;
+    for (auto a = arg->properties; a != nullptr; a = a->next) {
+      if (xmlEq(a->name, "name")) {
+        bool is_file = xmlEq(a->name, "file");
+        step.arguments.push_back(make_pair(xml2str(a), is_file));
+        break;
       }
     }
   }
@@ -96,83 +95,84 @@ void read_program(xmlNode* node, pipeline& pipe)
 
 void read_modes(xmlNode* doc, map<string, pipeline>& modes)
 {
-  for(xmlNode* mode = doc->children; mode != NULL; mode = mode->next) {
-    if(mode->type != XML_ELEMENT_NODE) continue;
+  for (auto mode = doc->children; mode != nullptr; mode = mode->next) {
+    if (mode->type != XML_ELEMENT_NODE) continue;
     pipeline pipe;
-    for(xmlAttr* a = mode->properties; a != NULL; a = a->next) {
-      if(xmlEq(a->name, "name")) {
-	pipe.name = xml2str(a);
-      } else if(xmlEq(a->name, "install")) {
-	pipe.install = xmlEq(a->children->content, "yes");
-      } else if(xmlEq(a->name, "gendebug")) {
-	pipe.debug = xmlEq(a->children->content, "yes");
+    for (auto a = mode->properties; a != nullptr; a = a->next) {
+      if (xmlEq(a->name, "name")) {
+        pipe.name = xml2str(a);
+      } else if (xmlEq(a->name, "install")) {
+        pipe.install = xmlEq(a->children->content, "yes");
+      } else if (xmlEq(a->name, "gendebug")) {
+        pipe.debug = xmlEq(a->children->content, "yes");
       }
     }
-    for(xmlNode* pipe_x = mode->children; pipe_x != NULL; pipe_x = pipe_x->next) {
-      if(pipe_x->type != XML_ELEMENT_NODE) continue;
-      for(xmlNode* prog = pipe_x->children; prog != NULL; prog = prog->next) {
-	if(prog->type != XML_ELEMENT_NODE) continue;
-	read_program(prog, pipe);
+    for (auto pipe_x = mode->children; pipe_x != nullptr; pipe_x = pipe_x->next) {
+      if (pipe_x->type != XML_ELEMENT_NODE) continue;
+      for (auto prog = pipe_x->children; prog != nullptr; prog = prog->next) {
+        if (prog->type != XML_ELEMENT_NODE) continue;
+        read_program(prog, pipe);
       }
     }
     modes[pipe.name] = pipe;
   }
 }
 
-bool startswith(const string& cmd, const string& prog)
+// ToDo: Replace with actual .starts_with() in C++20
+inline bool starts_with(string_view cmd, string_view prog)
 {
-  return (cmd.size() >= prog.size()) && (cmd.compare(0, prog.size(), prog) == 0);
+  return (cmd.substr(0, prog.size()) == prog);
 }
 
 void set_debug_suffixes(pipeline& prog)
 {
-  for(auto& cmd : prog.steps) {
-    if(!cmd.debug_suffix.empty()) continue;
+  for (auto& cmd : prog.steps) {
+    if (!cmd.debug_suffix.empty()) continue;
     const string& c = cmd.command;
-    if(startswith(c, "cg-proc")) {
+    if (starts_with(c, "cg-proc")) {
       cmd.debug_suffix.push_back("-disam");
-    } else if(startswith(c, "apertium-tagger")) {
+    } else if (starts_with(c, "apertium-tagger")) {
       cmd.debug_suffix.push_back("-tagger");
-    } else if(startswith(c, "apertium-pretransfer")) {
+    } else if (starts_with(c, "apertium-pretransfer")) {
       cmd.debug_suffix.push_back("-pretransfer");
-    } else if(startswith(c, "lrx-proc")) {
+    } else if (starts_with(c, "lrx-proc")) {
       cmd.debug_suffix.push_back("-lex");
       cmd.debug_suffix.push_back("-lextor");
-    } else if(startswith(c, "apertium-transfer")) {
-      if(c.rfind("-n") != string::npos) {
-	cmd.debug_suffix.push_back("-transfer2");
+    } else if (starts_with(c, "apertium-transfer")) {
+      if (c.rfind("-n") != string::npos) {
+        cmd.debug_suffix.push_back("-transfer2");
       } else {
-	cmd.debug_suffix.push_back("-chunker");
-	cmd.debug_suffix.push_back("-transfer");
+        cmd.debug_suffix.push_back("-chunker");
+        cmd.debug_suffix.push_back("-transfer");
       }
-    } else if(startswith(c, "apertium-interchunk")) {
+    } else if (starts_with(c, "apertium-interchunk")) {
       cmd.debug_suffix.push_back("-interchunk");
-    } else if(startswith(c, "apertium-postchunk")) {
+    } else if (starts_with(c, "apertium-postchunk")) {
       cmd.debug_suffix.push_back("-postchunk");
-    } else if(c.rfind("$1") != string::npos) {
+    } else if (c.rfind("$1") != string::npos) {
       cmd.debug_suffix.push_back("-dgen");
       cmd.debug_suffix.push_back("-generador");
-    } else if(startswith(c, "lt-proc")) {
-      if(c.rfind("-b") != string::npos) {
-	cmd.debug_suffix.push_back("-biltrans");
-      } else if(c.rfind("-p") != string::npos) {
-	cmd.debug_suffix.push_back("-pgen");
+    } else if (starts_with(c, "lt-proc")) {
+      if (c.rfind("-b") != string::npos) {
+        cmd.debug_suffix.push_back("-biltrans");
+      } else if (c.rfind("-p") != string::npos) {
+        cmd.debug_suffix.push_back("-pgen");
       } else {
-	cmd.debug_suffix.push_back("morph");
-	if(c.rfind("-g") == string::npos) {
-	  cmd.debug_suffix.push_back("anmor");
-	}
+        cmd.debug_suffix.push_back("morph");
+        if (c.rfind("-g") == string::npos) {
+          cmd.debug_suffix.push_back("anmor");
+        }
       }
-    } else if(startswith(c, "hfst-proc")) {
+    } else if (starts_with(c, "hfst-proc")) {
       cmd.debug_suffix.push_back("-morph");
-      if(c.rfind("-g") == string::npos) {
-	cmd.debug_suffix.push_back("anmor");
+      if (c.rfind("-g") == string::npos) {
+        cmd.debug_suffix.push_back("anmor");
       }
-    } else if(startswith(c, "lsx-proc")) {
+    } else if (starts_with(c, "lsx-proc")) {
       cmd.debug_suffix.push_back("-autoseq");
-    } else if(startswith(c, "rtx-proc")) {
+    } else if (starts_with(c, "rtx-proc")) {
       cmd.debug_suffix.push_back("-transfer");
-    } else if(startswith(c, "apertium-anaphora")) {
+    } else if (starts_with(c, "apertium-anaphora")) {
       cmd.debug_suffix.push_back("-anaph");
     } else {
       cmd.debug_suffix.push_back("-NAMEME");
@@ -182,15 +182,15 @@ void set_debug_suffixes(pipeline& prog)
 
 void set_trace_opt(pipeline& mode)
 {
-  string& cmd = mode.steps.back().command;
-  if(startswith(cmd, "cg-proc") || startswith(cmd, "lrx-proc") ||
-     startswith(cmd, "apertium-transfer") ||
-     startswith(cmd, "apertium-interchunk") ||
-     startswith(cmd, "apertium-postchunk")) {
+  auto& cmd = mode.steps.back().command;
+  if (starts_with(cmd, "cg-proc") || starts_with(cmd, "lrx-proc") ||
+     starts_with(cmd, "apertium-transfer") ||
+     starts_with(cmd, "apertium-interchunk") ||
+     starts_with(cmd, "apertium-postchunk")) {
     cmd += " -t";
-  } else if(startswith(cmd, "rtx-proc")) {
+  } else if (starts_with(cmd, "rtx-proc")) {
     cmd += " -r";
-  } else if(startswith(cmd, "apertium-anaphora")) {
+  } else if (starts_with(cmd, "apertium-anaphora")) {
     cmd += " -d";
   }
 }
@@ -198,83 +198,84 @@ void set_trace_opt(pipeline& mode)
 void gen_debug_modes(map<string, pipeline>& modes)
 {
   vector<string> todo;
-  for(auto& m : modes) {
-    if(m.second.debug) {
+  for (auto& m : modes) {
+    if (m.second.debug) {
       todo.push_back(m.first);
       set_debug_suffixes(m.second);
     }
   }
-  for(auto& mode_name : todo) {
+
+  for (auto& mode_name : todo) {
     pipeline& mode = modes[mode_name];
-    for(size_t i = 0; i < mode.steps.size(); i++) {
-      for(auto& suff : mode.steps[i].debug_suffix) {
-	pipeline debug;
-	debug.name = mode_name + suff;
-	debug.install = false;
-	debug.debug = false;
-	if(modes.find(debug.name) == modes.end()) {
-	  debug.steps.assign(mode.steps.begin(),mode.steps.begin()+i+1);
-	  set_trace_opt(debug);
-	  modes[debug.name] = debug;
-	}
-	pipeline untrimmed;
-	untrimmed.name = "@" + debug.name;
-	untrimmed.install = false;
-	untrimmed.debug = false;
-	if(modes.find(untrimmed.name) == modes.end()) {
-	  untrimmed.steps = debug.steps;
-	  for(auto& step : untrimmed.steps) {
-	    for(auto& str : step.arguments) {
-	      size_t loc = str.first.rfind(".automorf.");
-	      if(loc != string::npos) {
-		str.first.replace(loc, 10, ".automorf-untrimmed.");
-	      }
-	    }
-	  }
-	  set_trace_opt(untrimmed);
-	  modes[untrimmed.name] = untrimmed;
-	}
+    for (size_t i = 0; i < mode.steps.size(); ++i) {
+      for (auto& suff : mode.steps[i].debug_suffix) {
+        pipeline debug;
+        debug.name = mode_name + suff;
+        debug.install = false;
+        debug.debug = false;
+
+        if (modes.find(debug.name) == modes.end()) {
+          debug.steps.assign(mode.steps.begin(), mode.steps.begin()+i+1);
+          set_trace_opt(debug);
+          modes[debug.name] = debug;
+        }
+
+        pipeline untrimmed;
+        untrimmed.name = "@" + debug.name;
+        untrimmed.install = false;
+        untrimmed.debug = false;
+
+        if (modes.find(untrimmed.name) == modes.end()) {
+          untrimmed.steps = debug.steps;
+          for (auto& step : untrimmed.steps) {
+            for (auto& str : step.arguments) {
+              auto loc = str.first.rfind(".automorf.");
+              if (loc != string::npos) {
+                str.first.replace(loc, 10, ".automorf-untrimmed.");
+              }
+            }
+          }
+          set_trace_opt(untrimmed);
+          modes[untrimmed.name] = untrimmed;
+        }
       }
     }
   }
 }
 
-void gen_mode(pipeline& mode, path& file_dir, path& write_dir)
+void gen_mode(pipeline& mode, fs::path& file_dir, fs::path& write_dir)
 {
-  path modefile = write_dir / (mode.name + ".mode");
-  ofstream f;
-  f.open(modefile);
-  for(size_t i = 0; i < mode.steps.size(); i++) {
-    if(i != 0) {
+  fs::path modefile = write_dir / (mode.name + ".mode");
+  ofstream f(modefile, std::ios::binary);
+  for (size_t i = 0; i < mode.steps.size(); ++i) {
+    if (i != 0) {
       f << " | ";
     }
     program& p = mode.steps[i];
     f << p.command;
-    for(auto& arg : p.arguments) {
-      if(arg.second) {
-	f << " '" << absolute(file_dir / arg.first).c_str() << "'";
+    for (auto& arg : p.arguments) {
+      if (arg.second) {
+        f << " '" << fs::absolute(file_dir / arg.first).c_str() << "'";
       } else {
-	f << " " << arg.first;
+        f << " " << arg.first;
       }
     }
   }
-  f.close();
 }
 
-void gen_modes(map<string, pipeline>& modes, path& install_dir, path& dev_dir)
+void gen_modes(map<string, pipeline>& modes, fs::path& install_dir, fs::path& dev_dir)
 {
   bool installing = (install_dir != dev_dir);
-  path file_dir;
-  path write_dir;
-  if(installing) {
-    file_dir = install_dir;
-    write_dir = install_dir;
-  } else {
+  fs::path file_dir{ install_dir };
+  fs::path write_dir{ install_dir };
+
+  if (!installing) {
     file_dir = dev_dir;
     write_dir = dev_dir / "modes";
   }
-  for(auto& mode : modes) {
-    if(installing && !mode.second.install) continue;
+
+  for (auto& mode : modes) {
+    if (installing && !mode.second.install) continue;
     gen_mode(mode.second, file_dir, write_dir);
   }
 }
@@ -303,7 +304,7 @@ int main(int argc, char* argv[])
     int c = getopt(argc, argv, "fvh");
 #endif
 
-    if(c == -1) {
+    if (c == -1) {
       break;
     }
 
@@ -323,32 +324,28 @@ int main(int argc, char* argv[])
     }
   }
 
-  if((argc - optind > 2) || (argc - optind == 0)) {
+  if ((argc - optind > 2) || (argc - optind == 0)) {
     endProgram(argv[0]);
   }
-  if((argc - optind == 2) && !full) {
+  if ((argc - optind == 2) && !full) {
     endProgram(argv[0]);
   }
 
-  path xml_path = argv[optind];
-  path dev_dir = xml_path.parent_path();
-  path install_dir;
-  if(argc - optind == 1) {
-    install_dir = dev_dir;
-  } else {
+  fs::path xml_path = argv[optind];
+  fs::path dev_dir = xml_path.parent_path();
+  fs::path install_dir{ dev_dir };
+  if (argc - optind != 1) {
     install_dir = argv[optind+1];
-    if(install_dir == dev_dir) {
+    if (install_dir == dev_dir) {
       cerr << basename(argv[0]) << " ERROR: Installation prefix is the same directory as modes.xml; give a different INSTALLDIR." << endl;
       exit(EXIT_FAILURE);
     }
   }
 
-  if(!exists(dev_dir / "modes")) {
-    create_directory(dev_dir / "modes");
-  }
+  fs::create_directories(dev_dir / "modes");
 
-  xmlDoc* doc = xmlReadFile(xml_path.c_str(), NULL, 0);
-  if(doc == NULL) {
+  xmlDoc* doc = xmlReadFile(xml_path.c_str(), nullptr, 0);
+  if (doc == nullptr) {
     cerr << "Error: Could not parse file '" << xml_path << "'." << endl;
     exit(EXIT_FAILURE);
   }
