@@ -148,8 +148,8 @@ langs:
 
 
 .deps/%.autobil.prefixes: %.autobil.bin .deps/.d
-	lt-print $< | sed 's/ /@_SPACE_@/g' > .deps/\@S|@*.autobil.att
-	hfst-txt2fst -e ε <  .deps/\@S|@*.autobil.att > .deps/\@S|@*.autobil.hfst
+	lt-print -H $< > .deps/\@S|@*.autobil.att
+	hfst-txt2fst <  .deps/\@S|@*.autobil.att > .deps/\@S|@*.autobil.hfst
 	hfst-project -p upper .deps/\@S|@*.autobil.hfst > .deps/\@S|@*.autobil.upper                                   # bidix
 	echo ' @<:@ ? - %+ @:>@* ' | hfst-regexp2fst > .deps/\@S|@*.any-nonplus.hfst                                                        # [^+]*
 	hfst-concatenate -1 .deps/\@S|@*.autobil.upper -2 .deps/\@S|@*.any-nonplus.hfst -o .deps/\@S|@*.autobil.nonplussed    # bidix [^+]*
@@ -157,6 +157,31 @@ langs:
 	hfst-concatenate -1 .deps/\@S|@*.single-plus.hfst -2 .deps/\@S|@*.autobil.nonplussed -o .deps/\@S|@*.autobil.postplus # + bidix [^+]*
 	hfst-repeat -f0 -t3 -i .deps/\@S|@*.autobil.postplus -o .deps/\@S|@*.autobil.postplus.0,3                      # (+ bidix [^+]*){0,3} -- gives at most three +
 	hfst-concatenate -1 .deps/\@S|@*.autobil.nonplussed -2 .deps/\@S|@*.autobil.postplus.0,3 -o \@S|@@                 # bidix [^+]* (+ bidix [^+]*){0,3}
+
+%.rlx.bin: \@S|@(BASENAME).%.rlx
+	cg-comp \@S|@< \@S|@@
+
+%.autolex.bin: \@S|@(BASENAME).%.lrx
+	lrx-comp \@S|@< \@S|@@
+
+%.autoseq.bin: \@S|@(BASENAME).%.lsx
+	lsx-comp lr \@S|@< \@S|@@
+
+%.revautoseq.bin: \@S|@(BASENAME).%.lsx
+	lsx-comp rl \@S|@< \@S|@@
+
+%.t1x.bin: \@S|@(BASENAME).%.t1x
+	apertium-validate-transfer \@S|@<
+	apertium-preprocess-transfer \@S|@< \@S|@@
+%.t2x.bin: \@S|@(BASENAME).%.t2x
+	apertium-validate-interchunk \@S|@<
+	apertium-preprocess-transfer \@S|@< \@S|@@
+%.t3x.bin: \@S|@(BASENAME).%.t3x
+	apertium-validate-postchunk \@S|@<
+	apertium-preprocess-transfer \@S|@< \@S|@@
+
+%.rtx.bin: \@S|@(BASENAME).%.rtx
+	rtx-comp \@S|@< \@S|@@
 
 EOF
 
