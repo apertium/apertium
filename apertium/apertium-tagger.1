@@ -1,4 +1,4 @@
-.Dd August 30, 2006
+.Dd February 22, 2021
 .Dt APERTIUM-TAGGER 1
 .Os Apertium
 .Sh NAME
@@ -34,13 +34,17 @@ This command only reads from the standard input if the option
 or
 .Fl g
 is used.
-.Sh OPTIONS
+.Sh MODES
 .Bl -tag -width Ds
-.It Fl t Ar n , Fl Fl train Ar n
-Initializes parameters through Kupiec's method (unsupervised),
-then performs
+.It Fl g , Fl Fl tagger
+Tags input text by means of Viterbi algorithm.
+.It Fl r Ar n , Fl Fl retrain Ar n
+Retrains the model with
 .Ar n
-iterations of the Baum-Welch training algorithm (unsupervised).
+additional Baum-Welch iterations (unsupervised).
+This option is incompatible with
+.Fl u
+.Pq Fl Fl unigram
 .It Fl s Ar n , Fl Fl supervised Ar n
 Initializes parameters against a hand-tagged text (supervised) through
 the maximum likelihood estimate method, then performs
@@ -49,41 +53,47 @@ iterations of the Baum-Welch training algorithm (unsupervised).
 The CRP argument can be omitted only when
 .Ar n
 = 0.
-.It Fl r Ar n , Fl Fl retrain n
-Retrains the model with
+.It Fl t Ar n , Fl Fl train Ar n
+Initializes parameters through Kupiec's method (unsupervised),
+then performs
 .Ar n
-additional Baum-Welch iterations (unsupervised).
-.It Fl g , Fl Fl tagger
-Tags input text by means of Viterbi algorithm.
-.It Fl p , Fl Fl show-superficial
-Prints the superficial form of the word along side the lexical form
-in the output stream.
-.It Fl f , Fl Fl first
-Used in conjunction with
-.Fl g
-.Pq Fl Fl tagger
-makes the tagger give all lexical forms of each word,
-with the chosen one in the first place (after the lemma)
-.It Fl d , Fl Fl debug
-Print error (if any) or debug messages while operating.
-.It Fl m , Fl Fl mark
-Mark disambiguated words.
-.It Fl h , Fl Fl help
-Display a help message.
-.It Fl z , Fl Fl null-flush        
-Used in conjunction with
- .Fl g 
-to flush the output after getting each null character.
+iterations of the Baum-Welch training algorithm (unsupervised).
+
+.Sh MODELS
+.Bl -tag -width Ds
 .It Fl u , Fl Fl unigram=MODEL  
 use unigram algorithm MODEL from <http://coltekin.net/cagri/papers/trmorph-tools.pdf>
 .It Fl w , Fl Fl sliding-window 
 use the Light Sliding Window algorithm  
 .It Fl x , Fl Fl perceptron      
 use the averaged perceptron algorithm
+
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl d , Fl Fl debug
+Print error (if any) or debug messages while operating.
 .It Fl e, Fl Fl skip-on-error  
 Used with 
-Fl xs 
+.Fl xs 
 to ignore certain types of errors with the training corpus
+.It Fl f , Fl Fl first
+Used in conjunction with
+.Fl g
+.Pq Fl Fl tagger
+makes the tagger give all lexical forms of each word,
+with the chosen one in the first place (after the lemma)
+.It Fl m , Fl Fl mark
+Mark disambiguated words.
+.It Fl p , Fl Fl show-superficial
+Prints the superficial form of the word along side the lexical form
+in the output stream.
+.It Fl z , Fl Fl null-flush
+Used in conjunction with
+.Fl g
+.Pq Fl Fl tagger
+to flush the output after getting each null character.
+.It Fl Fl help
+Display a help message.
 
 .El
 .Sh FILES
