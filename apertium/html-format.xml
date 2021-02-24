@@ -15,7 +15,12 @@
       <begin regexp='"&lt;!--"'/>
       <end regexp='"--&gt;"'/>
     </format-rule>
-
+    
+    <format-rule type="comment" eos="no" priority="1">
+      <begin regexp='"{{"'/>
+      <end regexp='"}}"'/>
+    </format-rule>
+    
     <format-rule type="comment" eos="no" priority="2">
       <begin regexp='"&lt;script"(" "[^&gt;]*)?"&gt;"'/>
       <end regexp='"&lt;/script"(" "[^&gt;]*)?"&gt;"'/>

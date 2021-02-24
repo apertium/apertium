@@ -161,6 +161,7 @@ libapertium3_la_LDFLAGS = -version-info $(SOVERSION) -release $(VERSION_API)
 bin_PROGRAMS = apertium-cleanstream \
 	       apertium-deshtml \
 	       apertium-deshtml-alt \
+	       apertium-deshtml-noent \
 	       apertium-deslatex \
 	       apertium-desmediawiki \
 	       apertium-desodt \
@@ -183,6 +184,7 @@ bin_PROGRAMS = apertium-cleanstream \
 	       apertium-posttransfer \
 	       apertium-rehtml \
 	       apertium-rehtml-noent \
+	       apertium-rehtml-alt \
 	       apertium-relatex \
 	       apertium-remediawiki \
 	       apertium-reodt \
@@ -230,8 +232,10 @@ apertium_destxt_SOURCES = apertium_destxt.cc
 apertium_retxt_SOURCES = apertium_retxt.cc
 apertium_deshtml_SOURCES = apertium_deshtml.cc
 apertium_deshtml_alt_SOURCES = apertium_deshtml_alt.cc
+apertium_deshtml_noent_SOURCES = apertium_deshtml_noent.cc
 apertium_rehtml_SOURCES = apertium_rehtml.cc
 apertium_rehtml_noent_SOURCES = apertium_rehtml_noent.cc
+apertium_rehtml_alt_SOURCES = apertium_rehtml_alt.cc
 apertium_desxpresstag_SOURCES = apertium_desxpresstag.cc
 apertium_rexpresstag_SOURCES = apertium_rexpresstag.cc
 apertium_desodt_SOURCES = apertium_desodt.cc
@@ -303,7 +307,9 @@ endif
 CLEANFILES = *~ apertium_destxt.cc apertium_retxt.cc apertium_deshtml.cc \
              apertium_rehtml.cc apertium_desrtf.cc apertium_rertf.cc \
              apertium_rehtml_noent.cc \
+             apertium_rehtml_alt.cc \
              apertium_deshtml_alt.cc \
+             apertium_deshtml_noent.cc \
              apertium_deswxml.cc apertium_rewxml.cc \
              apertium_deslatex.cc apertium_relatex.cc \
              apertium_desxlsx.cc apertium_rexlsx.cc \
@@ -344,6 +350,11 @@ apertium_deshtml_alt.cc: html-alt-format.xml Makefile.am deformat.xsl
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
+apertium_deshtml_noent.cc: html-noent-format.xml Makefile.am deformat.xsl
+	xsltproc deformat.xsl $< >$@tmp
+	$(FLEX) -Cfer -o$@ $@tmp
+	rm $@tmp
+
 apertium_rehtml.cc: html-format.xml Makefile.am reformat.xsl
 	xsltproc reformat.xsl html-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
@@ -351,6 +362,11 @@ apertium_rehtml.cc: html-format.xml Makefile.am reformat.xsl
 
 apertium_rehtml_noent.cc: html-noent-format.xml Makefile.am reformat.xsl
 	xsltproc reformat.xsl html-noent-format.xml >$@tmp
+	$(FLEX) -Cfer -o$@ $@tmp
+	rm $@tmp
+
+apertium_rehtml_alt.cc: html-alt-format.xml Makefile.am reformat.xsl
+	xsltproc reformat.xsl html-alt-format.xml >$@tmp
 	$(FLEX) -Cfer -o$@ $@tmp
 	rm $@tmp
 
