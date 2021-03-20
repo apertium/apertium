@@ -125,3 +125,5 @@ Makefile.in
 /python/build*
 *.egg-info/
 *.egg
+/apertium/apertium_deshtml_noent.cc
+/apertium/apertium_rehtml_alt.cc
