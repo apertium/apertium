@@ -77,7 +77,7 @@ void read_program(xmlNode* node, pipeline& pipe)
     if (xmlEq(a->name, "name")) {
       step.command = xml2str(a);
     } else if (xmlEq(a->name, "debug-suff")) {
-      step.debug_suffix.push_back(xml2str(a));
+      step.debug_suffix.push_back("-" + xml2str(a));
     }
   }
   for (auto arg = node->children; arg != nullptr; arg = arg->next) {
