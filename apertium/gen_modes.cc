@@ -247,6 +247,12 @@ void gen_mode(pipeline& mode, fs::path& file_dir, fs::path& write_dir)
 {
   fs::path modefile = write_dir / (mode.name + ".mode");
   ofstream f(modefile, std::ios::binary);
+
+  if (!f) {
+    cerr << "ERROR: Could not write to " << modefile << endl;
+    exit(EXIT_FAILURE);
+  }
+
   for (size_t i = 0; i < mode.steps.size(); ++i) {
     if (i != 0) {
       f << " | ";
@@ -267,7 +273,7 @@ void gen_modes(map<string, pipeline>& modes, fs::path& install_dir, fs::path& de
 {
   bool installing = (install_dir != dev_dir);
   fs::path file_dir{ install_dir };
-  fs::path write_dir{ install_dir };
+  fs::path write_dir{ dev_dir };
 
   if (!installing) {
     file_dir = dev_dir;
@@ -275,7 +281,9 @@ void gen_modes(map<string, pipeline>& modes, fs::path& install_dir, fs::path& de
   }
 
   for (auto& mode : modes) {
-    if (installing && !mode.second.install) continue;
+    if (installing && !mode.second.install) {
+      continue;
+    }
     gen_mode(mode.second, file_dir, write_dir);
   }
 }
