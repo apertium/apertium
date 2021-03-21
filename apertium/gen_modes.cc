@@ -84,7 +84,7 @@ void read_program(xmlNode* node, pipeline& pipe)
     if (arg->type != XML_ELEMENT_NODE) continue;
     for (auto a = arg->properties; a != nullptr; a = a->next) {
       if (xmlEq(a->name, "name")) {
-        bool is_file = xmlEq(a->name, "file");
+        bool is_file = xmlEq(arg->name, "file");
         step.arguments.push_back(make_pair(xml2str(a), is_file));
         break;
       }
@@ -267,6 +267,7 @@ void gen_mode(pipeline& mode, fs::path& file_dir, fs::path& write_dir)
       }
     }
   }
+  f << "\n";
 }
 
 void gen_modes(map<string, pipeline>& modes, fs::path& install_dir, fs::path& dev_dir)
