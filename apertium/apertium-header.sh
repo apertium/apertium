@@ -511,14 +511,16 @@ if [[ ! -d "$DATADIR/modes" ]]; then
 fi
 
 if [[ ! -e "$DATADIR/modes/$PAIR.mode" ]]; then
-  echo -n "Error: Mode $PAIR does not exist"
-  c=$(find "$DATADIR/modes" -name '*.mode' | wc -l)
-  if [[ "$c" -le 1 ]]; then
-    echo "."
-  else
-    echo ". Try one of:"
-    list_directions
-  fi
+  {
+    echo -n "Error: Mode $PAIR does not exist"
+    c=$(find "$DATADIR/modes" -name '*.mode' | wc -l)
+    if [[ "$c" -le 1 ]]; then
+      echo "."
+    else
+      echo ". Try one of:"
+      list_directions
+    fi
+  } >&2
   exit 1
 fi
 
