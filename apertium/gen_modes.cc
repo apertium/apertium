@@ -139,7 +139,7 @@ void set_debug_suffixes(pipeline& prog)
       cmd.debug_suffix.push_back("-lex");
       cmd.debug_suffix.push_back("-lextor");
     } else if (starts_with(c, "apertium-transfer")) {
-      if (c.rfind("-n") != string::npos) {
+      if (c.rfind(" -n") != string::npos) {
         cmd.debug_suffix.push_back("-transfer2");
       } else {
         cmd.debug_suffix.push_back("-chunker");
@@ -153,20 +153,20 @@ void set_debug_suffixes(pipeline& prog)
       cmd.debug_suffix.push_back("-dgen");
       cmd.debug_suffix.push_back("-generador");
     } else if (starts_with(c, "lt-proc")) {
-      if (c.rfind("-b") != string::npos) {
+      if (c.rfind(" -b") != string::npos) {
         cmd.debug_suffix.push_back("-biltrans");
-      } else if (c.rfind("-p") != string::npos) {
+      } else if (c.rfind(" -p") != string::npos) {
         cmd.debug_suffix.push_back("-pgen");
       } else {
-        cmd.debug_suffix.push_back("morph");
-        if (c.rfind("-g") == string::npos) {
-          cmd.debug_suffix.push_back("anmor");
+        cmd.debug_suffix.push_back("-morph");
+        if (c.rfind(" -g") == string::npos) {
+          cmd.debug_suffix.push_back("-anmor");
         }
       }
     } else if (starts_with(c, "hfst-proc")) {
       cmd.debug_suffix.push_back("-morph");
-      if (c.rfind("-g") == string::npos) {
-        cmd.debug_suffix.push_back("anmor");
+      if (c.rfind(" -g") == string::npos) {
+        cmd.debug_suffix.push_back("-anmor");
       }
     } else if (starts_with(c, "lsx-proc")) {
       cmd.debug_suffix.push_back("-autoseq");
