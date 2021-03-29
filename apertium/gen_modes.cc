@@ -90,7 +90,7 @@ void read_program(xmlNode* node, pipeline& pipe)
       }
     }
   }
-  pipe.steps.push_back(step);
+  pipe.steps.push_back(move(step));
 }
 
 void read_modes(xmlNode* doc, map<string, pipeline>& modes)
@@ -182,6 +182,9 @@ void set_debug_suffixes(pipeline& prog)
 
 void set_trace_opt(pipeline& mode)
 {
+  if (mode.steps.empty()) {
+    return;
+  }
   auto& cmd = mode.steps.back().command;
   if (starts_with(cmd, "cg-proc") || starts_with(cmd, "lrx-proc") ||
      starts_with(cmd, "apertium-transfer") ||
@@ -234,6 +237,9 @@ void gen_debug_modes(map<string, pipeline>& modes)
                 str.first.replace(loc, 10, ".automorf-untrimmed.");
               }
             }
+          }
+          if (untrimmed.steps.empty()) {
+            cerr << "Untrimmed " << untrimmed.name << " was empty" << endl;
           }
           set_trace_opt(untrimmed);
           modes[untrimmed.name] = untrimmed;
