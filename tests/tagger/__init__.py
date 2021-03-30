@@ -23,6 +23,7 @@ def rel(fn):
 
 DEBUG = False
 APERTIUM_TAGGER = rel("../../apertium/apertium-tagger")
+APERTIUM_FILTER_AMBIGUITY = rel("../../apertium/apertium-filter-ambiguity")
 
 
 def check_output(*popenargs, **kwargs):
@@ -332,3 +333,15 @@ class AmbiguityClassTest(unittest.TestCase):
             acceptable,
             "'cat' must be output and tagged as an adjective or a noun.\n" +
             "Actual output:\n{}".format(subst_stdout))
+
+
+class FilterAmbiguityTest(unittest.TestCase):
+    def test_unicode_tsx(self):
+        stderrpath = tmp('')
+        inputpath = tmp('^아/아<noun>$\n')
+        output = check_output(
+            [APERTIUM_FILTER_AMBIGUITY, rel('unicode.tsx'), inputpath],
+            stderr=open(stderrpath, 'w'))
+        self.assertEqual('^아/아<noun>$\n', output)
+        stderr = open(stderrpath, 'r').read().strip()
+        self.assertEqual('', stderr)
