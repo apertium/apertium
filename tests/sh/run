@@ -4,18 +4,18 @@ set -e -u
 cd "$(dirname "$0")"
 
 if command -v shellcheck >/dev/null; then
-    shellcheck ../../apertium/apertium
-    shellcheck ../../apertium/apertium-gen-deformat
-    shellcheck ../../apertium/apertium-gen-reformat
-    shellcheck ../../apertium/apertium-unformat
-    shellcheck ../../apertium/apertium-utils-fixlatex
-    shellcheck ../../apertium/apertium-validate-acx
-    shellcheck ../../apertium/apertium-validate-dictionary
-    shellcheck ../../apertium/apertium-validate-interchunk
-    shellcheck ../../apertium/apertium-validate-modes
-    shellcheck ../../apertium/apertium-validate-postchunk
-    shellcheck ../../apertium/apertium-validate-tagger
-    shellcheck ../../apertium/apertium-validate-transfer
+    shellcheck --norc ../../apertium/apertium
+    shellcheck --norc ../../apertium/apertium-gen-deformat
+    shellcheck --norc ../../apertium/apertium-gen-reformat
+    shellcheck --norc ../../apertium/apertium-unformat
+    shellcheck --norc ../../apertium/apertium-utils-fixlatex
+    shellcheck --norc ../../apertium/apertium-validate-acx
+    shellcheck --norc ../../apertium/apertium-validate-dictionary
+    shellcheck --norc ../../apertium/apertium-validate-interchunk
+    shellcheck --norc ../../apertium/apertium-validate-modes
+    shellcheck --norc ../../apertium/apertium-validate-postchunk
+    shellcheck --norc ../../apertium/apertium-validate-tagger
+    shellcheck --norc ../../apertium/apertium-validate-transfer
 else
     echo "shellcheck not installed, skipping shellcheck tests" >&2
     exit 77
