@@ -460,7 +460,7 @@ while getopts ":uahlzf:d:m:o:n" opt; do
     z) NULL_FLUSH+=(-z) ;;
     h) message ;;
     \?) echo "ERROR: Unknown option $OPTARG" >&2; message >&2 ;;
-    :) echo "ERROR: $OPTARG requires an argument" >&2; message >&2 ;;
+    *) echo "ERROR: $OPTARG requires an argument" >&2; message >&2 ;;
   esac
 done
 shift $(( OPTIND-1 ))
