@@ -98,6 +98,8 @@ void read_modes(xmlNode* doc, map<string, pipeline>& modes)
   for (auto mode = doc->children; mode != nullptr; mode = mode->next) {
     if (mode->type != XML_ELEMENT_NODE) continue;
     pipeline pipe;
+    pipe.install = false;
+    pipe.debug = false;
     for (auto a = mode->properties; a != nullptr; a = a->next) {
       if (xmlEq(a->name, "name")) {
         pipe.name = xml2str(a);
@@ -221,6 +223,9 @@ void gen_debug_modes(map<string, pipeline>& modes)
           debug.steps.assign(mode.steps.begin(), mode.steps.begin()+i+1);
           set_trace_opt(debug);
           modes[debug.name] = debug;
+        } else {
+          cerr << "Debug mode name " << debug.name << " generated multiple times, disregarding result from " << mode_name << " step " << (i+1) << endl;
+          continue;
         }
 
         pipeline untrimmed;
@@ -237,9 +242,6 @@ void gen_debug_modes(map<string, pipeline>& modes)
                 str.first.replace(loc, 10, ".automorf-untrimmed.");
               }
             }
-          }
-          if (untrimmed.steps.empty()) {
-            cerr << "Untrimmed " << untrimmed.name << " was empty" << endl;
           }
           set_trace_opt(untrimmed);
           modes[untrimmed.name] = untrimmed;
