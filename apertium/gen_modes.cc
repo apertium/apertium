@@ -111,6 +111,7 @@ void read_modes(xmlNode* doc, map<string, pipeline>& modes)
     }
     for (auto pipe_x = mode->children; pipe_x != nullptr; pipe_x = pipe_x->next) {
       if (pipe_x->type != XML_ELEMENT_NODE) continue;
+      if (!xmlEq(pipe_x->name, "pipeline")) continue;
       for (auto prog = pipe_x->children; prog != nullptr; prog = prog->next) {
         if (prog->type != XML_ELEMENT_NODE) continue;
         read_program(prog, pipe);

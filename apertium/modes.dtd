@@ -20,7 +20,7 @@
 
 <!ELEMENT modes (mode+)>
 
-<!ELEMENT mode (pipeline)>
+<!ELEMENT mode (pipeline,preferences?)>
 <!ATTLIST mode name ID #REQUIRED>
 <!ATTLIST mode install CDATA #IMPLIED>
 <!ATTLIST mode gendebug CDATA #IMPLIED>
@@ -36,3 +36,7 @@
 
 <!ELEMENT arg EMPTY>
 <!ATTLIST arg name CDATA #REQUIRED>
+
+<!ELEMENT preferences (pref+)>
+<!ELEMENT pref EMPTY>
+<!ATTLIST pref path CDATA #REQUIRED>
