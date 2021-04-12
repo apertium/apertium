@@ -13,7 +13,7 @@
  * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, see <http://www.gnu.org/licenses/>.
+ * along with this program; if not, see <https://www.gnu.org/licenses/>.
  */
 
 #include <fstream>
@@ -107,7 +107,7 @@ int main(int argc, char* argv[]) {
 	  <<"   General Public License for more details.\n"
 	  <<"\n"
 	  <<"   You should have received a copy of the GNU General Public License\n"
-	  <<"   along with this program; if not, see <http://www.gnu.org/licenses/>.\n";
+	  <<"   along with this program; if not, see <https://www.gnu.org/licenses/>.\n";
       exit(EXIT_SUCCESS);
       break;
     default:

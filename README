@@ -7,7 +7,7 @@ Requirements
 * This package needs the package [lttoolbox-3.5][1] installed in the
 system, as well as `libxml` and `libpcre`.
 
-See http://www.apertium.org and http://wiki.apertium.org for more information
+See https://apertium.org and https://wiki.apertium.org for more information
 on installing.
 
 Description
@@ -25,6 +25,12 @@ modules:
 
 Quick Start
 -------------------------------------------------------------------------------
+
+There are binaries available for Debian, Ubuntu, Fedora, CentOS, OpenSUSE,
+Windows, and macOS. We package both nightly builds and releases.
+See https://wiki.apertium.org/wiki/Installation for more information.
+Only build from source if you either want to change this tool's behavior,
+or are on a platform we don't yet package for.
 
 1) Download the packages for `lttoolbox-VERSION.tar.gz` and
    `apertium-VERSION.tar.gz` and linguistic data

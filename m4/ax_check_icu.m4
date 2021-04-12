@@ -36,7 +36,7 @@ AC_DEFUN([AX_CHECK_ICU], [
   if test "$ICU_CONFIG" = "no" && test "$PKG_CONFIG" = "no" ; then
     echo "*** Neither icu-config nor pkg-config could not be found. Make sure either is"
     echo "*** in your path, and that taglib is properly installed."
-    echo "*** Or see http://ibm.com/software/globalization/icu/"
+    echo "*** Or see https://ibm.com/software/globalization/icu/"
   fi
 
   if test "$ICU_CONFIG" != "no" ; then

@@ -2,7 +2,7 @@
 
 #include "libgen.h"
 
-// http://www.opengroup.org/onlinepubs/007908775/xsh/basename.html
+// https://www.opengroup.org/onlinepubs/007908775/xsh/basename.html
 
 char* basename(char *path) {
 	if (path != NULL) {

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   Copyright (C) 2005 Universitat d'Alacant / Universidad de Alicante
 
@@ -13,11 +13,11 @@
   General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with this program; if not, see <http://www.gnu.org/licenses/>.
+  along with this program; if not, see <https://www.gnu.org/licenses/>.
 
    Draft of DTD for the structural transfer rule files
 
-   Sergio Ortiz, Gema Ramírez-Sánchez, Mireia Ginestí, Mikel L. Forcada,
+   Sergio Ortiz, Gema RamÃ­rez-SÃ¡nchez, Mireia GinestÃ­, Mikel L. Forcada,
    2005.07.29.
 -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
@@ -888,7 +888,7 @@
     <attribute name="pos"/>
   </define>
   <!--
-    Atención, falta modificar todos los comentarios donde intervenga
+    AtenciÃ³n, falta modificar todos los comentarios donde intervenga
     get-case-from
   -->
   <define name="case-of">

@@ -11,7 +11,7 @@
 // General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with this program; if not, see <http://www.gnu.org/licenses/>.
+// along with this program; if not, see <https://www.gnu.org/licenses/>.
 
 #include <apertium/tagger.h>
 
@@ -341,7 +341,7 @@ void apertium_tagger::help() {
   align::align_(options_description_);
   std::wcerr << '\n';
   options_description_.clear();
-  options_description_.push_back(std::make_pair("-u, --unigram=MODEL", "use unigram algorithm MODEL from <http://coltekin.net/cagri/papers/trmorph-tools.pdf>"));
+  options_description_.push_back(std::make_pair("-u, --unigram=MODEL", "use unigram algorithm MODEL from <https://coltekin.net/cagri/papers/trmorph-tools.pdf>"));
   align::align_(options_description_);
   std::wcerr << '\n';
   options_description_.clear();

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?> <!-- -*- nxml -*- -->
+<?xml version="1.0" encoding="UTF-8"?> <!-- -*- nxml -*- -->
 <!--
  Copyright (C) 2005 Universitat d'Alacant / Universidad de Alicante
 
@@ -13,7 +13,7 @@
  General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program; if not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, see <https://www.gnu.org/licenses/>.
 -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:output method="xml" encoding="ISO-8859-1"/>

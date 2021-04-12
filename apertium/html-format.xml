@@ -359,7 +359,7 @@
       <replace source="&amp;rsquo;" target="'"/>
 
 
-      <!-- For Esperanto characters. Named entities like &circ; doesent work in browsers, so follow scheme of http://bertilow.com/html/esperantaj/html_uni.html -->
+      <!-- For Esperanto characters. Named entities like &circ; doesent work in browsers, so follow scheme of https://bertilow.com/html/esperantaj/html_uni.html -->
       <replace source="&amp;#264;" target="Ĉ" prefer="yes"/>
       <replace source="&amp;#265;" target="ĉ" prefer="yes"/>
       <replace source="&amp;#284;" target="Ĝ" prefer="yes"/>

@@ -7,7 +7,7 @@
 %include <apertium/transfer.h>
 
 // Wrapper on char ** for char **argv
-// Modified for python 3 from http://www.swig.org/Doc1.3/Python.html#Python_nn59
+// Modified for python 3 from https://www.swig.org/Doc1.3/Python.html#Python_nn59
 
 %typemap(in) (int argc, char **argv) {
   if (PyTuple_Check($input)) {

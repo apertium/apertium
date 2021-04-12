@@ -11,7 +11,7 @@
 // General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with this program; if not, see <http://www.gnu.org/licenses/>.
+// along with this program; if not, see <https://www.gnu.org/licenses/>.
 
 #ifndef UNIGRAM_TAGGER_H
 #define UNIGRAM_TAGGER_H
@@ -51,7 +51,7 @@ protected:
 
   UnigramTaggerModel model;
 
-  // Models are described in http://coltekin.net/cagri/papers/trmorph-tools.pdf
+  // Models are described in https://coltekin.net/cagri/papers/trmorph-tools.pdf
   // section 5.3
 
   // dar<v><inf>+se<prn>+lo<prn>

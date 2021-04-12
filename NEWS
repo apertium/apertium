@@ -28,7 +28,7 @@ Version 3.4.2, 2016-05-15 (-r68437)
 * fix a crash when apertium-tagger is compiled with with clang
 
 * new option -n to deformatters turns off dot-insertion
-  http://sourceforge.net/p/apertium/tickets/68
+  https://sourceforge.net/p/apertium/tickets/68
 
 * new transfer instruction <reject-current-rule shifting="yes|no"/>;
   see transfer.dtd for details (not implemented for
@@ -39,7 +39,7 @@ Version 3.4.2, 2016-05-15 (-r68437)
   corpus-generated transfer rules
 
 * apertium-tagger: supervised training and tagging for unigram models
-  based on http://coltekin.net/cagri/papers/trmorph-tools.pdf
+  based on https://coltekin.net/cagri/papers/trmorph-tools.pdf
 
 * fix some off-by-one/out-of-bounds segfaults in transfer
   https://sourceforge.net/p/apertium/tickets/89/

@@ -109,7 +109,7 @@
  * of allocated memory to some sane value.
  *
  * AVAILABILITY
- *   http://www.ijs.si/software/snprintf/
+ *   https://www.ijs.si/software/snprintf/
  *
  * REVISION HISTORY
  * 1999-04	V0.9  Mark Martinec
@@ -412,7 +412,7 @@ int portable_vsnprintf(char *str, size_t str_m, const char *fmt, va_list ap);
 static char credits[] = "\n\
 @(#)snprintf.c, v2.2: Mark Martinec, <mark.martinec@ijs.si>\n\
 @(#)snprintf.c, v2.2: Copyright 1999, Mark Martinec. Frontier Artistic License applies.\n\
-@(#)snprintf.c, v2.2: http://www.ijs.si/software/snprintf/\n";
+@(#)snprintf.c, v2.2: https://www.ijs.si/software/snprintf/\n";
 
 #if defined(NEED_ASPRINTF)
 int asprintf(char **ptr, const char *fmt, /*args*/ ...) {
