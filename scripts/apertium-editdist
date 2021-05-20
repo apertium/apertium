@@ -1,6 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
-# see editdist.py --help for usage
+# see apertium-editdist --help for usage
 
 
 import sys
@@ -64,7 +64,7 @@ with d for distance and S for size of alphabet plus one
 
 class Header:
     """Read and provide interface to header"""
-    
+
     def __init__(self, file):
         bytes = file.read(5) # "HFST\0"
         if str(struct.unpack_from("<5s", bytes, 0)) == "('HFST\\x00',)":
@@ -106,7 +106,7 @@ class Alphabet:
             while True:
                 byte = file.read(1)
                 if byte == '\0': # a symbol has ended
-                    symbol = unicode(symbol, "utf-8")
+                    symbol = str(symbol, "utf-8")
                     if len(symbol) != 1:
                         stderr_u8.write("Ignored symbol " + symbol + "\n")
                     else:
@@ -150,26 +150,26 @@ exclusions = set()
 
 if options.inputfile == None and options.alphabetfile == None \
         and len(args) == 0:
-    print "Specify at least one of INPUT, ALPHABET or alphabet string"
+    print("Specify at least one of INPUT, ALPHABET or alphabet string")
     sys.exit()
 if len(args) > 1:
-    print "Too many options!"
+    print("Too many options!")
     sys.exit()
 
 if options.inputfile != None:
     try:
         inputfile = open(options.inputfile)
     except IOError:
-        print "Couldn't open " + options.inputfile
+        print("Couldn't open " + options.inputfile)
         sys.exit()
     while True:
-        line = unicode(inputfile.readline(), 'utf-8')
+        line = str(inputfile.readline(), 'utf-8')
         if line in ("@@\n", ""):
             break
         if line.strip() != "":
-            if line.startswith(u'##'):
+            if line.startswith('##'):
                 continue
-            if len(line) > 1 and line.startswith(u'~'):
+            if len(line) > 1 and line.startswith('~'):
                 exclusions.add(line[1:].strip())
                 continue
             if '\t' in line:
@@ -181,18 +181,18 @@ if options.inputfile != None:
             alphabet[symbol] = weight
 
 if len(args) == 1:
-    for c in unicode(args[0], 'utf-8'):
-        if c not in alphabet.keys() and c not in exclusions:
+    for c in str(args[0], 'utf-8'):
+        if c not in list(alphabet.keys()) and c not in exclusions:
             alphabet[c] = 0.0
 if options.alphabetfile != None:
     afile = open(options.alphabetfile, "rb")
     ol_header = Header(afile)
     ol_alphabet = Alphabet(afile, ol_header.number_of_symbols)
-    for c in filter(lambda x: x.strip() != '', ol_alphabet.keyTable[:]):
-        if c not in alphabet.keys() and c not in exclusions:
+    for c in [x for x in ol_alphabet.keyTable[:] if x.strip() != '']:
+        if c not in list(alphabet.keys()) and c not in exclusions:
             alphabet[c] = 0.0
-epsilon = unicode(options.epsilon, 'utf-8')
-OTHER = u'@_UNKNOWN_SYMBOL_@'
+epsilon = str(options.epsilon, 'utf-8')
+OTHER = '@_UNKNOWN_SYMBOL_@'
 
 def p(string): # stupid python, or possibly stupid me
     return string.encode('utf-8')
@@ -234,14 +234,14 @@ class Transducer:
         # generate standard subs and swaps
         if (self.other, self.epsilon) not in self.substitutions:
             self.substitutions[(self.other, self.epsilon)] = 1.0
-        for symbol in self.alphabet.keys():
+        for symbol in list(self.alphabet.keys()):
             if (self.other, symbol) not in self.substitutions:
                 self.substitutions[(self.other, symbol)] = 1.0 + alphabet[symbol]
             if (self.epsilon, symbol) not in self.substitutions:
                 self.substitutions[(self.epsilon, symbol)] = 1.0 + alphabet[symbol]
             if (symbol, self.epsilon) not in self.substitutions:
                 self.substitutions[(symbol, self.epsilon)] = 1.0 + alphabet[symbol]
-            for symbol2 in self.alphabet.keys():
+            for symbol2 in list(self.alphabet.keys()):
                 if symbol == symbol2: continue
                 if ((symbol, symbol2), (symbol2, symbol)) not in self.swaps:
                     if ((symbol2, symbol), (symbol, symbol2)) in self.swaps:
@@ -270,7 +270,7 @@ class Transducer:
         if nextstate is None:
             nextstate = state
         ret = []
-        for symbol in self.alphabet.keys():
+        for symbol in list(self.alphabet.keys()):
             if symbol not in (self.epsilon, self.other):
                 ret.append(maketrans(state, nextstate, symbol, symbol, 0.0))
         return ret
@@ -336,12 +336,12 @@ if options.inputfile != None:
             continue
         if line == "":
             break
-        transducer.process(unicode(line, "utf-8"))
+        transducer.process(str(line, "utf-8"))
 
 transducer.generate()
 transducer.make_transitions()
 for transition in transducer.transitions:
-    print transition
+    print(transition)
 
 stderr_u8 = codecs.getwriter('utf-8')(sys.stderr)
 
@@ -349,7 +349,7 @@ if options.verbose:
     stderr_u8.write("\n" + str(max(transducer.skipstate, transducer.swapstate)) + " states and " + str(len(transducer.transitions)) + " transitions written for\n"+
                      "distance " + str(options.distance) + " and base alphabet size " + str(len(transducer.alphabet)) +"\n\n")
     stderr_u8.write("The alphabet was:\n")
-    for symbol, weight in alphabet.iteritems():
+    for symbol, weight in alphabet.items():
         stderr_u8.write(symbol + "\t" + str(weight) + "\n")
     if len(exclusions) != 0:
         stderr_u8.write("The exclusions were:\n")
