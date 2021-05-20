@@ -11,6 +11,7 @@ apertium-translate-to-default-equivalent: apertium-translate-to-default-equivale
 	$(SED) -e 's|[@]datarootdir@|$(datarootdir)|g' < "$<" > "$@" && chmod +x "$@"
 
 dist_bin_SCRIPTS = \
+	apertium-editdist \
 	apertium-filter-dix \
 	apertium-filter-rules \
 	apertium-genvdix \
