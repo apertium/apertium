@@ -65,7 +65,7 @@ class Transducer:
     def read_input_file(self, fname):
         def parse_error(err, line):
             nonlocal fname
-            sys.stderr.write('Syntax error on line %s of %s: %s.' % (fname, line, err))
+            sys.stderr.write('Syntax error on line %s of %s: %s.\n' % (fname, line, err))
             sys.exit(1)
         with open(fname) as fin:
             in_alpha = True
