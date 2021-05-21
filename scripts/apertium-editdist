@@ -101,8 +101,8 @@ class Transducer:
                     except:
                         parse_error('Unable to parse weight', i)
                     if ',' in line:
-                        frompair = l.split(',')
-                        topair = r.split(',')
+                        frompair = tuple(l.split(','))
+                        topair = tuple(r.split(','))
                         if not (len(frompair) == len(topair) == 2):
                             parse_error('Swap-specification has wrong number of comma separators', i)
                         self.swaps.setdefault((frompair, topair), weight)
