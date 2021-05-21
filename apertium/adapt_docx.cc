@@ -30,14 +30,8 @@
 #include <fcntl.h>
 #endif
 
-#ifdef _WIN32
-#include "utf8.h"
-#include <utf8_fwrap.h>
-#include <icu.h>
-#else
 #include "utf8/utf8.h"
 #include "unicode/uchar.h"
-#endif
 
 using namespace std;
 

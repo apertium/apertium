@@ -270,7 +270,7 @@ void gen_mode(pipeline& mode, fs::path& file_dir, fs::path& write_dir)
     f << p.command;
     for (auto& arg : p.arguments) {
       if (arg.second) {
-        f << " '" << fs::absolute(file_dir / arg.first).c_str() << "'";
+        f << " '" << fs::absolute(file_dir / arg.first).string().c_str() << "'";
       } else {
         f << " " << arg.first;
       }
@@ -362,7 +362,7 @@ int main(int argc, char* argv[])
 
   fs::create_directories(dev_dir / "modes");
 
-  xmlDoc* doc = xmlReadFile(xml_path.c_str(), nullptr, 0);
+  xmlDoc* doc = xmlReadFile(xml_path.string().c_str(), nullptr, 0);
   if (doc == nullptr) {
     cerr << "Error: Could not parse file '" << xml_path << "'." << endl;
     exit(EXIT_FAILURE);
