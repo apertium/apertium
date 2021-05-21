@@ -243,8 +243,8 @@ The alphabet was:
 The exclusions were:
 {excl}
 '''
-        alpha = ''.join('%s\t%s\n' % (s, w) for s, w in self.alphabet.items())
-        excl = '\n'.join(self.exclusions)
+        alpha = ' '.join('%s:%s' % (s, w) for s, w in self.alphabet.items())
+        excl = ' '.join(self.exclusions)
         report = template.format(states=max(self.skipstate, self.swapstate),
                                  trans=len(self.transitions),
                                  dist=self.distance,
