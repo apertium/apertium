@@ -61,30 +61,25 @@ int main(int argc, char *argv[])
     }
   }
 
-  FILE *input = stdin, *output = stdout;
+  InputFile input;
+  UFILE* output = u_finit(stdout, NULL, NULL);
   if(argc >= 4)
   {
-    input = fopen(argv[3], "r");
-    if(!input)
-    {
+    if (!input.open(argv[3])) {
       cerr << "Error: can't open input file '" << argv[3] << "'." << endl;
       exit(EXIT_FAILURE);
     }
     if(argc == 5)
     {
-      output = fopen(argv[4], "w");
+      output = u_fopen(argv[4], "w", NULL, NULL);
       if(!output)
       {
-	cerr << "Error: can't open output file '";
-	cerr << argv[4] << "'." << endl;
-	exit(EXIT_FAILURE);
+        cerr << "Error: can't open output file '";
+        cerr << argv[4] << "'." << endl;
+        exit(EXIT_FAILURE);
       }
     }
   }
-#ifdef _MSC_VER
-  _setmode(_fileno(input), _O_U8TEXT);
-  _setmode(_fileno(output), _O_U8TEXT);
-#endif
 
   TransferMult t;
   t.read(argv[1], argv[2]);

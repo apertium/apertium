@@ -24,16 +24,16 @@ using namespace Apertium;
 
 bool TaggerWord::generate_marks=false;
 
-vector<wstring> TaggerWord::array_tags;
+vector<UString> TaggerWord::array_tags;
 
 bool TaggerWord::show_ignored_string=true;
 
-map<wstring, ApertiumRE, Ltstr> TaggerWord::patterns;
+map<UString, ApertiumRE> TaggerWord::patterns;
 
 TaggerWord::TaggerWord(bool prev_plus_cut) :
 show_sf(false)
 {
-   ignored_string = L"";
+   ignored_string = "";
    plus_cut=false;
    previous_plus_cut=prev_plus_cut;
 }
@@ -62,19 +62,19 @@ TaggerWord::get_show_sf(){
 }
 
 void
-TaggerWord::set_superficial_form(const wstring &sf){
+TaggerWord::set_superficial_form(const UString &sf){
   superficial_form = sf;
 }
 
-wstring&
+UString&
 TaggerWord::get_superficial_form() {
   return superficial_form;
 }
 
 bool
-TaggerWord::match(wstring const &s, wstring const &pattern)
+TaggerWord::match(UString const &s, UString const &pattern)
 {
-  map<wstring, ApertiumRE, Ltstr>::iterator it = patterns.find(pattern);
+  map<UString, ApertiumRE>::iterator it = patterns.find(pattern);
   string const utfs = UtfConverter::toUtf8(s);
 
   if(it == patterns.end())
@@ -101,7 +101,7 @@ TaggerWord::match(wstring const &s, wstring const &pattern)
 }
 
 void
-TaggerWord::add_tag(TTag &t, const wstring &lf, vector<wstring> const &prefer_rules){
+TaggerWord::add_tag(TTag &t, const UString &lf, vector<UString> const &prefer_rules){
 
   //Tag is added only is it is not present yet
   //Sometime one word can have more than one lexical form assigned to the same tag
@@ -132,12 +132,12 @@ TaggerWord::isAmbiguous() const
   return tags.size() > 1;
 }
 
-wstring
+UString
 TaggerWord::get_string_tags() {
-  wstring st;
+  UString st;
   set<TTag>::iterator itag = tags.begin();
 
-  st=L"{";
+  st="{";
   for(itag=tags.begin(); itag!=tags.end(); itag++) {
     if (itag!=tags.begin())
       st+=L',';
@@ -148,9 +148,9 @@ TaggerWord::get_string_tags() {
   return st;
 }
 
-wstring
+UString
 TaggerWord::get_lexical_form(TTag &t, int const TAG_kEOF) {
-  wstring ret= L"";
+  UString ret= "";
 
   if (show_ignored_string)
     ret.append(ignored_string);
@@ -161,7 +161,7 @@ TaggerWord::get_lexical_form(TTag &t, int const TAG_kEOF) {
   if (!previous_plus_cut){
     if(TaggerWord::generate_marks && isAmbiguous())
     {
-      ret.append(L"^=");
+      ret.append("^=");
     }
     else
     {
@@ -207,9 +207,9 @@ TaggerWord::get_lexical_form(TTag &t, int const TAG_kEOF) {
   return ret;
 }
 
-wstring
+UString
 TaggerWord::get_all_chosen_tag_first(TTag &t, int const TAG_kEOF) {
-  wstring ret=L"";
+  UString ret="";
 
   if (show_ignored_string)
     ret.append(ignored_string);
@@ -221,7 +221,7 @@ TaggerWord::get_all_chosen_tag_first(TTag &t, int const TAG_kEOF) {
   {
     if(TaggerWord::generate_marks && isAmbiguous())
     {
-      ret.append(L"^=");
+      ret.append("^=");
     }
     else
     {
@@ -232,16 +232,16 @@ TaggerWord::get_all_chosen_tag_first(TTag &t, int const TAG_kEOF) {
   ret.append(superficial_form);
 
   if (lexical_forms.size()==0) { // This is an UNKNOWN WORD
-    ret+=L"/*";
+    ret+="/*";
     ret.append(superficial_form);
   } else {
-    ret+=L"/";
+    ret+="/";
     ret.append(lexical_forms[t]);
     if (lexical_forms.size()>1) {
       set<TTag>::iterator it;
       for (it=tags.begin(); it!=tags.end(); it++) {
 	if (*it != t) {
-	  ret+=L"/";
+	  ret+="/";
           ret.append(lexical_forms[*it]);
 	}
       }
@@ -250,9 +250,9 @@ TaggerWord::get_all_chosen_tag_first(TTag &t, int const TAG_kEOF) {
 
   if (ret != ignored_string) {
     if (plus_cut)
-      ret+=L"+";
+      ret+="+";
     else {
-      ret+=L"$";
+      ret+="$";
     }
   }
 
@@ -260,18 +260,18 @@ TaggerWord::get_all_chosen_tag_first(TTag &t, int const TAG_kEOF) {
 }
 
 //OBSOLETE
-wstring
+UString
 TaggerWord::get_lexical_form_without_ignored_string(TTag &t, int const TAG_kEOF) {
-  wstring ret;
+  UString ret;
 
   if(t==TAG_kEOF)
      return ret;
 
   if (lexical_forms.size()==0) { //This is an unknown word
-      ret.append(L"*^");
+      ret.append("*^");
       ret.append(superficial_form);
   } else if ((*lexical_forms.begin()).second[0]=='*') {  //This is an unknown word that has been guessed
-    ret.append(L"*^");
+    ret.append("*^");
     ret.append(superficial_form);
   } else {
     ret += L'^';
@@ -290,7 +290,7 @@ TaggerWord::get_lexical_form_without_ignored_string(TTag &t, int const TAG_kEOF)
 }
 
 void
-TaggerWord::add_ignored_string(wstring const &s) {
+TaggerWord::add_ignored_string(UString const &s) {
   ignored_string.append(s);
 }
 
@@ -304,14 +304,14 @@ TaggerWord::get_plus_cut() {
   return plus_cut;
 }
 
-wostream&
-operator<< (wostream& os, TaggerWord &w) {
-  os<<w.get_string_tags()<< L" \t Word: " << w.get_superficial_form();
+ostream&
+operator<< (ostream& os, TaggerWord &w) {
+  os<<w.get_string_tags()<< " \t Word: " << w.get_superficial_form();
   return os;
 }
 
 void
-TaggerWord::setArrayTags(vector<wstring> const &at)
+TaggerWord::setArrayTags(vector<UString> const &at)
 {
   array_tags = at;
 }
@@ -319,42 +319,37 @@ TaggerWord::setArrayTags(vector<wstring> const &at)
 void
 TaggerWord::print()
 {
-  wcout << L"[#" << superficial_form << L"# ";
+  cout << "[#" << superficial_form << "# ";
   for(set<TTag>::iterator it=tags.begin(), limit = tags.end(); it != limit; it++)
   {
-    wcout << L"(" << *it << L" " << lexical_forms[*it] << L") ";
+    cout << "(" << *it << " " << lexical_forms[*it] << ") ";
   }
-  wcout << L"\b]\n";
+  cout << "\b]\n";
 }
 
 void
 TaggerWord::outputOriginal(FILE *output) {
 
-  wstring s=superficial_form;
+  UString s=superficial_form;
 
-  map<TTag, wstring>::iterator it;
-  for(it=lexical_forms.begin(); it!=lexical_forms.end(); it++) {
-    if (it->second.length()>0)
-    {
-      s+=L'/';
-      s.append(it->second);
+  for (auto& it : lexical_forms) {
+    if (!it.second.empty()) {
+      s += '/';
+      s.append(it.second);
     }
   }
 
-  if (s.length()>0)
-  {
-    s=L"^"+s+L"$\n";
+  if (!s.empty()) {
+    u_fprintf(output, "^%S$\n", s.c_str());
   }
-
-  fputws_unlocked(s.c_str(), output);
 }
 
 void
-TaggerWord::discardOnAmbiguity(wstring const &tags)
+TaggerWord::discardOnAmbiguity(UString const &tags)
 {
   if(isAmbiguous())
   {
-    map<TTag, wstring>::iterator it = lexical_forms.begin(),
+    map<TTag, UString>::iterator it = lexical_forms.begin(),
                               limit = lexical_forms.end();
     set<TTag> newsettag;
     while(it != limit)

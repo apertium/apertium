@@ -90,13 +90,13 @@ i Deserialiser<i>::deserialise(std::istream &Stream_) {
 
 Lemma Deserialiser<Lemma>::deserialise(std::istream &Stream_) {
   Lemma StreamedType_;
-  StreamedType_.TheLemma = Deserialiser<std::wstring>::deserialise(Stream_);
+  StreamedType_.TheLemma = Deserialiser<UString>::deserialise(Stream_);
   return StreamedType_;
 }
 
 Morpheme Deserialiser<Morpheme>::deserialise(std::istream &Stream_) {
   Morpheme SerialisedType_;
-  SerialisedType_.TheLemma = Deserialiser<std::wstring>::deserialise(Stream_);
+  SerialisedType_.TheLemma = Deserialiser<UString>::deserialise(Stream_);
   SerialisedType_.TheTags =
       Deserialiser<std::vector<Tag> >::deserialise(Stream_);
   return SerialisedType_;
@@ -104,7 +104,7 @@ Morpheme Deserialiser<Morpheme>::deserialise(std::istream &Stream_) {
 
 Tag Deserialiser<Tag>::deserialise(std::istream &Stream_) {
   Tag SerialisedType_;
-  SerialisedType_.TheTag = Deserialiser<std::wstring>::deserialise(Stream_);
+  SerialisedType_.TheTag = Deserialiser<UString>::deserialise(Stream_);
   return SerialisedType_;
 }
 

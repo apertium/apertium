@@ -62,7 +62,7 @@ namespace UtfConverter
 
   void conversionError()
   {
-    wcerr << L"Error: conversion error" << endl;
+    cerr << "Error: conversion error" << endl;
     exit(EXIT_FAILURE);
   }
 

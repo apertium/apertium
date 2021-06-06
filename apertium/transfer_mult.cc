@@ -97,9 +97,9 @@ TransferMult::readData(FILE *in)
   bool recompile_attrs = Compression::string_read(in) != pcre_version_endian();
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
   {
-    string const cad_k = UtfConverter::toUtf8(Compression::wstring_read(in));
+    string const cad_k = UtfConverter::toUtf8(Compression::string_read(in));
     attr_items[cad_k].read(in);
-    wstring fallback = Compression::wstring_read(in);
+    UString fallback = Compression::string_read(in);
     if(recompile_attrs) {
       attr_items[cad_k].compile(UtfConverter::toUtf8(fallback));
     }
@@ -108,25 +108,25 @@ TransferMult::readData(FILE *in)
   // variables
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
   {
-    string const cad_k = UtfConverter::toUtf8(Compression::wstring_read(in));
-    variables[cad_k] = UtfConverter::toUtf8(Compression::wstring_read(in));
+    string const cad_k = UtfConverter::toUtf8(Compression::string_read(in));
+    variables[cad_k] = UtfConverter::toUtf8(Compression::string_read(in));
   }
 
   // macros
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
   {
-    string const cad_k = UtfConverter::toUtf8(Compression::wstring_read(in));
+    string const cad_k = UtfConverter::toUtf8(Compression::string_read(in));
     macros[cad_k] = Compression::multibyte_read(in);
   }
 
   // lists
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
   {
-    string const cad_k = UtfConverter::toUtf8(Compression::wstring_read(in));
+    string const cad_k = UtfConverter::toUtf8(Compression::string_read(in));
 
     for(int j = 0, limit2 = Compression::multibyte_read(in); j != limit2; j++)
     {
-      wstring const cad_v = Compression::wstring_read(in);
+      UString const cad_v = Compression::string_read(in);
       lists[cad_k].insert(UtfConverter::toUtf8(cad_v));
       listslow[cad_k].insert(UtfConverter::toUtf8(StringUtils::tolower(cad_v)));
     }
@@ -139,7 +139,7 @@ TransferMult::readBil(string const &fstfile)
   FILE *in = fopen(fstfile.c_str(), "r");
   if(!in)
   {
-    wcerr << "Error: Could not open file '" << fstfile << "'." << endl;
+    cerr << "Error: Could not open file '" << fstfile << "'." << endl;
     exit(EXIT_FAILURE);
   }
   fstp.load(in);
@@ -154,7 +154,7 @@ TransferMult::read(string const &datafile, string const &fstfile)
   FILE *in = fopen(datafile.c_str(), "r");
   if(!in)
   {
-    wcerr << "Error: Could not open file '" << datafile << "'." << endl;
+    cerr << "Error: Could not open file '" << datafile << "'." << endl;
     exit(EXIT_FAILURE);
   }
   readData(in);
@@ -164,14 +164,14 @@ TransferMult::read(string const &datafile, string const &fstfile)
 }
 
 TransferToken &
-TransferMult::readToken(FILE *in)
+TransferMult::readToken(InputFile& in)
 {
   if(!input_buffer.isEmpty())
   {
     return input_buffer.next();
   }
 
-  wstring content = L"";
+  UString content = "";
   while(true)
   {
     int val = fgetwc_unlocked(in);
@@ -222,7 +222,7 @@ TransferMult::readToken(FILE *in)
 }
 
 void
-TransferMult::transfer(FILE *in, FILE *out)
+TransferMult::transfer(InputFile& in, UFILE* out)
 {
   int last = 0;
 
@@ -243,28 +243,25 @@ TransferMult::transfer(FILE *in, FILE *out)
       {
 	if(tmpword.size() != 0)
 	{
-	  pair<wstring, int> tr = fstp.biltransWithQueue(*tmpword[0], false);
+	  pair<UString, int> tr = fstp.biltransWithQueue(*tmpword[0], false);
 	  if(tr.first.size() != 0)
 	  {
-	    vector<wstring> multiword = acceptions(tr.first);
-	    if(multiword.size() > 1)
-	    {
-	      fputws_unlocked(L"[{]", output);
+	    vector<UString> multiword = acceptions(tr.first);
+	    if(multiword.size() > 1) {
+          write("[{]"_u, output);
 	    }
 	    for(unsigned int i = 0, limit = multiword.size(); i != limit; i++)
 	    {
 	      if(i > 0)
 	      {
-	        fputws_unlocked(L"[|]", output);
+	        write("[|]"_u, output);
 	      }
-	      fputwc_unlocked(L'^', output);
-	      fputws_unlocked(multiword[i].c_str(), output);
-	      fputwc_unlocked(L'$', output);
+          u_fprintf(output, "^%S$", multiwords[i].c_str());
 	    }
 	    if(multiword.size() > 1)
 	    {
-	      fputws_unlocked(L".[][}]", output);
-            }
+	      write(".[][}]"_u, output);
+        }
 	  }
 	  tmpword.clear();
 	  isRule = false;
@@ -275,7 +272,7 @@ TransferMult::transfer(FILE *in, FILE *out)
 	}
 	else if(tmpblank.size() != 0)
 	{
-	  fputws_unlocked(tmpblank[0]->c_str(), output);
+	  write(*tmpblank[0], output);
 	  tmpblank.clear();
 	  last = input_buffer.getPos();
 	  ms.init(me->getInitial());
@@ -312,28 +309,28 @@ TransferMult::transfer(FILE *in, FILE *out)
 	}
 	else
 	{
-	  fputws_unlocked(current.getContent().c_str(), output);
+	  write(current.getContent(), output);
 	  return;
 	}
 	break;
 
       default:
-	wcerr << L"Error: Unknown input token." << endl;
+	cerr << "Error: Unknown input token." << endl;
 	return;
     }
   }
 }
 
 bool
-TransferMult::isDefaultWord(wstring const &str)
+TransferMult::isDefaultWord(UString const &str)
 {
-  return str.find(L" D<");
+  return str.find(" D<");
 }
 
-vector<wstring>
-TransferMult::acceptions(wstring str)
+vector<UString>
+TransferMult::acceptions(UString str)
 {
-  vector<wstring> result;
+  vector<UString> result;
   int low = 0;
 
   // removing '@'
@@ -350,7 +347,7 @@ TransferMult::acceptions(wstring str)
      }
      else if(str[i] == L'/')
      {
-       wstring new_word = str.substr(low, i-low);
+       UString new_word = str.substr(low, i-low);
 
        if(result.size() > 1 && isDefaultWord(new_word))
        {
@@ -365,7 +362,7 @@ TransferMult::acceptions(wstring str)
      }
   }
 
-  wstring otherword = str.substr(low);
+  UString otherword = str.substr(low);
   if(result.size() > 0 && isDefaultWord(otherword))
   {
     result.push_back(result[0]);
@@ -379,10 +376,10 @@ TransferMult::acceptions(wstring str)
   // eliminar las acepciones sin sentido marcado
   if(result.size() >= 2)
   {
-    vector<wstring> result2;
+    vector<UString> result2;
     for(unsigned int i = 0, limit = result.size(); i != limit; i++)
     {
-      if(result[i].find(L"__") != wstring::npos)
+      if(result[i].find("__") != UString::npos)
       {
         result2.push_back(result[i]);
       }
@@ -397,22 +394,22 @@ TransferMult::acceptions(wstring str)
 }
 
 void
-TransferMult::writeMultiple(list<vector<wstring> >::iterator itwords,
-                            list<wstring>::iterator itblanks,
-                            list<vector<wstring> >::const_iterator limitwords,
-                            wstring acum , bool multiple)
+TransferMult::writeMultiple(list<vector<UString> >::iterator itwords,
+                            list<UString>::iterator itblanks,
+                            list<vector<UString> >::const_iterator limitwords,
+                            UString acum , bool multiple)
 {
   if(itwords == limitwords)
   {
     if(multiple)
     {
-      output_string.append(L"[|]");
+      output_string.append("[|]");
     }
     output_string.append(acum);
   }
   else
   {
-    vector<wstring> &refword = *itwords;
+    vector<UString> &refword = *itwords;
 
     itwords++;
 
@@ -421,18 +418,18 @@ TransferMult::writeMultiple(list<vector<wstring> >::iterator itwords,
       for(unsigned int i = 0, limit = refword.size(); i != limit; i++)
       {
         writeMultiple(itwords, itblanks, limitwords,
-                      acum + L"^" + refword[i] + L"$", multiple || (i > 0));
+                      acum + "^" + refword[i] + "$", multiple || (i > 0));
       }
     }
     else
     {
-      wstring &refblank = *itblanks;
+      UString &refblank = *itblanks;
       itblanks++;
 
       for(unsigned int i = 0, limit = refword.size(); i != limit; i++)
       {
         writeMultiple(itwords, itblanks, limitwords,
-                      acum + L"^" + refword[i] + L"$" + refblank,
+                      acum + "^" + refword[i] + "$" + refblank,
                       multiple || (i > 0));
       }
     }
@@ -442,31 +439,26 @@ TransferMult::writeMultiple(list<vector<wstring> >::iterator itwords,
 void
 TransferMult::applyRule()
 {
-  list<wstring> blanks;
-  list<vector<wstring> > words;
+  list<UString> blanks;
+  list<vector<UString> > words;
 
-  pair<wstring, int> tr = fstp.biltransWithQueue(*tmpword[0], false);
+  pair<UString, int> tr = fstp.biltransWithQueue(*tmpword[0], false);
   words.push_back(acceptions(tr.first));
 
   for(unsigned int i = 1; i != numwords; i++)
   {
     blanks.push_back(*tmpblank[i-1]);
-    pair<wstring, int> tr = fstp.biltransWithQueue(*tmpword[i], false);
+    pair<UString, int> tr = fstp.biltransWithQueue(*tmpword[i], false);
     words.push_back(acceptions(tr.first));
   }
 
-  output_string = L"";
+  output_string = "";
   writeMultiple(words.begin(), blanks.begin(), words.end());
 
-  if(output_string.find(L"[|]") != wstring::npos)
-  {
-    fputws_unlocked(L"[{]", output);
-    fputws_unlocked(output_string.c_str(), output);
-    fputws_unlocked(L".[][}]", output);
-  }
-  else
-  {
-    fputws_unlocked(output_string.c_str(), output);
+  if(output_string.find("[|]"_u) != UString::npos) {
+    u_fprintf(output, "[{]%S.[][}]", output_string.c_str());
+  } else {
+    write(output_string, output);
   }
 
   ms.init(me->getInitial());
@@ -477,7 +469,7 @@ TransferMult::applyRule()
 }
 
 void
-TransferMult::applyWord(wstring const &word_str)
+TransferMult::applyWord(UString const &word_str)
 {
   ms.step(L'^');
   for(unsigned int i = 0, limit = word_str.size(); i < limit; i++)

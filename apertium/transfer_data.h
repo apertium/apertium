@@ -32,10 +32,10 @@ private:
   void copy(TransferData const &o);
   void destroy();
 
-  map<wstring, wstring, Ltstr> attr_items;
-  map<wstring, int, Ltstr> macros;
-  map<wstring, set<wstring, Ltstr>, Ltstr> lists;
-  map<wstring, wstring, Ltstr> variables;
+  map<UString, UString> attr_items;
+  map<UString, int> macros;
+  map<UString, set<UString>> lists;
+  map<UString, UString> variables;
   set<int> final_symbols;
 
   Alphabet alphabet;
@@ -50,13 +50,13 @@ private:
 
   Alphabet & getAlphabet();
   Transducer & getTransducer();
-  map<wstring, wstring, Ltstr> & getAttrItems();
+  map<UString, UString> & getAttrItems();
 
   map<int, int> seen_rules;
 
-  map<wstring, int, Ltstr> & getMacros();
-  map<wstring, set<wstring, Ltstr>, Ltstr> & getLists();
-  map<wstring, wstring, Ltstr> & getVariables();
+  map<UString, int> & getMacros();
+  map<UString, set<UString>> & getLists();
+  map<UString, UString> & getVariables();
 
   /**
    * Encode the rule count in an arc label/symbol (later extracted by

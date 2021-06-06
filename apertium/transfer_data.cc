@@ -46,14 +46,14 @@ TransferData::destroy()
 TransferData::TransferData()
 {
   // adding fixed attr_items
-  attr_items[L"lem"] = L"^(([^<]|\"\\<\")+)";
-  attr_items[L"lemq"] = L"\\#[- _][^<]+";
-  attr_items[L"lemh"] = L"^(([^<#]|\"\\<\"|\"\\#\")+)";
-  attr_items[L"whole"] = L"(.+)";
-  attr_items[L"tags"] = L"((<[^>]+>)+)";
-  attr_items[L"chname"] = L"({([^/]+)\\/)"; // includes delimiters { and / !!!
-  attr_items[L"chcontent"] = L"(\\{.+)";
-  attr_items[L"content"] = L"(\\{.+)";
+  attr_items["lem"] = "^(([^<]|\"\\<\")+)";
+  attr_items["lemq"] = "\\#[- _][^<]+";
+  attr_items["lemh"] = "^(([^<#]|\"\\<\"|\"\\#\")+)";
+  attr_items["whole"] = "(.+)";
+  attr_items["tags"] = "((<[^>]+>)+)";
+  attr_items["chname"] = "({([^/]+)\\/)"; // includes delimiters { and / !!!
+  attr_items["chcontent"] = "(\\{.+)";
+  attr_items["content"] = "(\\{.+)";
 }
 
 TransferData::~TransferData()
@@ -89,25 +89,25 @@ TransferData::getTransducer()
   return transducer;
 }
 
-map<wstring, wstring, Ltstr> &
+map<UString, UString> &
 TransferData::getAttrItems()
 {
   return attr_items;
 }
 
-map<wstring, int, Ltstr> &
+map<UString, int> &
 TransferData::getMacros()
 {
   return macros;
 }
 
-map<wstring, set<wstring, Ltstr>, Ltstr> &
+map<UString, set<UString>> &
 TransferData::getLists()
 {
   return lists;
 }
 
-map<wstring, wstring, Ltstr> &
+map<UString, UString> &
 TransferData::getVariables()
 {
   return variables;
@@ -115,7 +115,7 @@ TransferData::getVariables()
 
 int
 TransferData::countToFinalSymbol(const int count) {
-  const wstring count_sym = L"<RULE_NUMBER:" + to_wstring(count) + L">";
+  const UString count_sym = "<RULE_NUMBER:" + to_wstring(count) + ">";
   alphabet.includeSymbol(count_sym);
   const int symbol = alphabet(count_sym);
   final_symbols.insert(symbol);
@@ -134,7 +134,7 @@ TransferData::write(FILE *output)
   // Find all arcs with "final_symbols" in the transitions, let their source node instead be final,
   // and extract the rule number from the arc. Record relation between source node and rule number
   // in finals_rules. It is now no longer safe to minimize -- but we already did that.
-  const wstring rule_sym_pre = L"<RULE_NUMBER:"; // see countToFinalSymbol()
+  const UString rule_sym_pre = "<RULE_NUMBER:"; // see countToFinalSymbol()
   for(map<int, multimap<int, pair<int, double> > >::const_iterator it = transitions.begin(),
         limit = transitions.end(); it != limit; ++it)
   {
@@ -152,7 +152,7 @@ TransferData::write(FILE *output)
         continue;
       }
       // Extract the rule number encoded by countToFinalSymbol():
-      wstring s;
+      UString s;
       alphabet.getSymbol(s, symbol);
       if(s.compare(0, rule_sym_pre.size(), rule_sym_pre) != 0) {
         continue;
@@ -188,34 +188,34 @@ TransferData::write(FILE *output)
 
   // variables
   Compression::multibyte_write(variables.size(), output);
-  for(map<wstring, wstring, Ltstr>::const_iterator it = variables.begin(), limit = variables.end();
+  for(map<UString, UString>::const_iterator it = variables.begin(), limit = variables.end();
       it != limit; it++)
   {
-    Compression::wstring_write(it->first, output);
-    Compression::wstring_write(it->second, output);
+    Compression::string_write(it->first, output);
+    Compression::string_write(it->second, output);
   }
 
   // macros
   Compression::multibyte_write(macros.size(), output);
-  for(map<wstring, int, Ltstr>::const_iterator it = macros.begin(), limit = macros.end();
+  for(map<UString, int>::const_iterator it = macros.begin(), limit = macros.end();
       it != limit; it++)
   {
-    Compression::wstring_write(it->first, output);
+    Compression::string_write(it->first, output);
     Compression::multibyte_write(it->second, output);
   }
 
   // lists
   Compression::multibyte_write(lists.size(), output);
-  for(map<wstring, set<wstring, Ltstr>, Ltstr>::const_iterator it = lists.begin(), limit = lists.end();
+  for(map<UString, set<UString>>::const_iterator it = lists.begin(), limit = lists.end();
       it != limit; it++)
   {
-    Compression::wstring_write(it->first, output);
+    Compression::string_write(it->first, output);
     Compression::multibyte_write(it->second.size(), output);
 
-    for(set<wstring, Ltstr>::const_iterator it2 = it->second.begin(), limit2 = it->second.end();
+    for(set<UString>::const_iterator it2 = it->second.begin(), limit2 = it->second.end();
 	it2 != limit2; it2++)
     {
-      Compression::wstring_write(*it2, output);
+      Compression::string_write(*it2, output);
     }
   }
 
@@ -227,13 +227,11 @@ TransferData::writeRegexps(FILE *output)
   Compression::string_write(pcre_version_endian(), output);
   Compression::multibyte_write(attr_items.size(), output);
 
-  map<wstring, wstring, Ltstr>::iterator it, limit;
-  for(it = attr_items.begin(), limit = attr_items.end(); it != limit; it++)
-  {
-    Compression::wstring_write(it->first, output);
+  for (auto& it : attr_items) {
+    Compression::string_write(it.first, output);
     ApertiumRE my_re;
-    my_re.compile(UtfConverter::toUtf8(it->second));
+    my_re.compile(UtfConverter::toUtf8(it.second));
     my_re.write(output);
-    Compression::wstring_write(it->second, output);
+    Compression::string_write(it.second, output);
   }
 }

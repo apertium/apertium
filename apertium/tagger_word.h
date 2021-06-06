@@ -36,12 +36,12 @@ using namespace std;
  */
 class TaggerWord{
 private:
-  wstring superficial_form;
+  UString superficial_form;
 
   set<TTag> tags;  //Set of all possible tags
-  map<TTag, wstring> lexical_forms;  //For a given coarse tag it stores the fine tag
+  map<TTag, UString> lexical_forms;  //For a given coarse tag it stores the fine tag
                                     //delevered by the morphological analyzer
-  wstring ignored_string;
+  UString ignored_string;
 
   bool plus_cut; //Flag to distinguish the way in which the word was ended.
                   //If it was done by '$' its value should be false
@@ -50,12 +50,12 @@ private:
 			  //previous word was ended. It has the same
 			  //plus_cut meaning
   bool show_sf; // Show the superficial form in the output
-  static map<wstring, ApertiumRE, Ltstr> patterns;
+  static map<UString, ApertiumRE> patterns;
 
-  bool match(wstring const &s, wstring const &pattern);
+  bool match(UString const &s, UString const &pattern);
 public:
   static bool generate_marks;
-  static vector<wstring> array_tags;
+  static vector<UString> array_tags;
 
   static bool show_ignored_string;
 
@@ -77,47 +77,47 @@ public:
    /** Set the superficial form of the word.
     *  @param s the superficial form
     */
-   void set_superficial_form(const wstring &s);
+   void set_superficial_form(const UString &s);
 
    /** Get the superficial form of the word
     *
     */
-   wstring& get_superficial_form();
+   UString& get_superficial_form();
 
    /** Add a new tag to the set of all possible tags of the word.
     *  @param t the coarse tag
     *  @param lf the lexical form (fine tag)
     */
-   virtual void add_tag(TTag &t, const wstring &lf, vector<wstring> const &prefer_rules);
+   virtual void add_tag(TTag &t, const UString &lf, vector<UString> const &prefer_rules);
 
    /** Get the set of tags of this word.
     *  @return  set of tags.
     */
    virtual set<TTag>& get_tags();
 
-   /** Get a wstring with the set of tags
+   /** Get a UString with the set of tags
     */
-   virtual wstring get_string_tags();
+   virtual UString get_string_tags();
 
   /** Get the lexical form (fine tag) for a given tag (coarse one)
    *  @param  t the tag
    *  @return the lexical form of tag t
    */
-  virtual wstring get_lexical_form(TTag &t, int const TAG_kEOF);
+  virtual UString get_lexical_form(TTag &t, int const TAG_kEOF);
 
-  wstring get_all_chosen_tag_first(TTag &t, int const TAG_kEOF);
+  UString get_all_chosen_tag_first(TTag &t, int const TAG_kEOF);
 
   /** Get the lexical form (fine tag) for a given tag (coarse one)
    *  @param  t the tag
    *  @return the lexical form of tag t without other text that
    *          is ignored.
    */
-  wstring get_lexical_form_without_ignored_string(TTag &t, int const TAG_kEOF);
+  UString get_lexical_form_without_ignored_string(TTag &t, int const TAG_kEOF);
 
   /** Add text to the ignored string
    *
    */
-  void add_ignored_string(wstring const &s);
+  void add_ignored_string(UString const &s);
 
   /** Set the flag plus_cut to a certain value. If this flag is set to true means
    *  that there were a '+' between this word and the next one
@@ -135,18 +135,18 @@ public:
 
   /** Output operator
    */
-  friend wostream& operator<< (wostream& os, TaggerWord &w);
+  friend ostream& operator<< (ostream& os, TaggerWord &w);
 
-  static void setArrayTags(vector<wstring> const &at);
+  static void setArrayTags(vector<UString> const &at);
 
   void print();
 
-  void outputOriginal(FILE *output);
+  void outputOriginal(UFILE *output);
 
   bool isAmbiguous() const;  // CAUTION: unknown words are not considered to
                              // be ambiguous by this method
 
-  void discardOnAmbiguity(wstring const &tags);
+  void discardOnAmbiguity(UString const &tags);
 };
 
 #endif

@@ -100,7 +100,7 @@ void AccentsMap::init_camap() {
 
 }
 
-wstring AccentsMap::get(wstring input){
+UString AccentsMap::get(UString input){
 	it = map.find(input);
 	if(it == map.end())
 		return L"";

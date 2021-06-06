@@ -18,10 +18,11 @@
 
 #include <iostream>
 #include <lttoolbox/lt_locale.h>
+#include <lttoolbox/input_file.h>
 
-wstring storeAndWriteWblank(FILE *input, FILE *output);
-void readAndWriteUntil(FILE *input, FILE *output, int const charcode);
-void procWord(FILE *input, FILE *output, bool surface_forms, bool compound_sep, wstring wblank);
-void processStream(FILE *input, FILE *output, bool null_flush, bool surface_forms, bool compound_sep);
+UString storeAndWriteWblank(InputFile& input, UFILE *output);
+void readAndWriteUntil(InputFile& input, UFILE *output, int const charcode);
+void procWord(InputFile& input, UFILE *output, bool surface_forms, bool compound_sep, UString wblank);
+void processStream(InputFile& input, UFILE *output, bool null_flush, bool surface_forms, bool compound_sep);
 
 #endif

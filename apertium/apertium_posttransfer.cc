@@ -27,6 +27,7 @@
 #endif
 #include <apertium/string_utils.h>
 #include <lttoolbox/lt_locale.h>
+#include <lttoolbox/input_file.h>
 
 
 using namespace Apertium;
@@ -34,16 +35,16 @@ using namespace std;
 
 void usage(char *progname)
 {
-  wcerr << L"USAGE: " << basename(progname) << L" [input_file [output_file]]" << endl;
-  wcerr << L"  -z         null-flushing output on '\0'" << endl;
-  wcerr << L"  -h         shows this message" << endl;
+  cerr << "USAGE: " << basename(progname) << " [input_file [output_file]]" << endl;
+  cerr << "  -z         null-flushing output on '\0'" << endl;
+  cerr << "  -h         shows this message" << endl;
   exit(EXIT_FAILURE);
 }
 
-void processStream(FILE *in, FILE *out, bool null_flush)
+void processStream(InputFile& in, UFILE* out, bool null_flush)
 {
   int prev = -1;
-  int c = fgetc(in);
+  UChar32 c = in.get();
   while (c != EOF)
   {
     if (!((c == ' ') && (prev == ' ')))
@@ -98,44 +99,33 @@ int main(int argc, char *argv[])
     usage(argv[0]);
   }
 
-  FILE *input, *output;
+  InputFile input;
+  UFILE* output;
 
   if((argc-optind+1) == 1)
   {
-    input = stdin;
-    output = stdout;
+    output = u_finit(stdout, NULL, NULL);
   }
   else if ((argc-optind+1) == 2)
   {
-    input = fopen(argv[argc-1], "r");
-    if(!input)
-    {
+    if (!input.open(argv[argc-1])) {
       usage(argv[0]);
     }
-    output = stdout;
+    output = u_finit(stdout, NULL, NULL);
   }
   else
   {
-    input = fopen(argv[argc-2], "r");
-    output = fopen(argv[argc-1], "w");
-
-    if(!input || !output)
-    {
+    output = u_fopen(argv[argc-1], "w", NULL, NULL);
+    if (!output || !input.open(argv[argc-2])) {
       usage(argv[0]);
     }
   }
 
-  if(feof(input))
+  if(input.eof())
   {
-    wcerr << L"ERROR: Can't read file '" << argv[1] << L"'" << endl;
+    cerr << "ERROR: Can't read file '" << argv[1] << "'" << endl;
     exit(EXIT_FAILURE);
   }
 
   processStream(input, output, null_flush);
-
-#ifdef _MSC_VER
-    _setmode(_fileno(input), _O_U8TEXT);
-    _setmode(_fileno(output), _O_U8TEXT);
-#endif
-
 }

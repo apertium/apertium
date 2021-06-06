@@ -17,7 +17,8 @@
 #ifndef _TRANSFERINSTR_
 #define _TRANSFERINSTR_
 
-#include<string>
+#include <string>
+#include <lttoolbox/ustring.h>
 
 using namespace std;
 
@@ -44,7 +45,7 @@ class TransferInstr
 {
 private:
   TransferInstrType type;
-  string content;
+  UString content;
   int pos;
   void *pointer;
   bool condition;
@@ -58,7 +59,7 @@ public:
   pointer(0),
   condition(false)
   {}
-  TransferInstr(TransferInstrType t, string const &c, int const p,
+  TransferInstr(TransferInstrType t, UString const &c, int const p,
                 void *ptr=NULL, bool cond = true);
   ~TransferInstr();
   TransferInstr(TransferInstr const &o);
@@ -66,7 +67,7 @@ public:
 
 
   TransferInstrType getType();
-  string const & getContent();
+  UString const & getContent();
   int getPos();
   void * getPointer();
   bool getCondition();

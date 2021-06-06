@@ -44,11 +44,11 @@ private:
   Alphabet alphabet;
   MatchExe *me;
   MatchState ms;
-  map<string, ApertiumRE, Ltstr> attr_items;
-  map<string, string, Ltstr> variables;
-  map<string, int, Ltstr> macros;
-  map<string, set<string, Ltstr>, Ltstr> lists;
-  map<string, set<string, Ltstr>, Ltstr> listslow;
+  map<string, ApertiumRE> attr_items;
+  map<string, string> variables;
+  map<string, int> macros;
+  map<string, set<string>> lists;
+  map<string, set<string>> listslow;
   vector<xmlNode *> macro_map;
   vector<xmlNode *> rule_map;
   vector<size_t> rule_lines;
@@ -58,8 +58,8 @@ private:
   queue <string> blank_queue;
   int lword;
   Buffer<TransferToken> input_buffer;
-  vector<wstring *> tmpword;
-  vector<wstring *> tmpblank;
+  vector<UString *> tmpword;
+  vector<UString *> tmpblank;
   
   bool in_out;
   bool in_lu;
@@ -69,7 +69,7 @@ private:
   string out_wblank;
   map <string, string> var_out_wblank;
 
-  FILE *output;
+  UFILE *output;
   int any_char;
   int any_tag;
 
@@ -89,7 +89,7 @@ private:
   void collectMacros(xmlNode *localroot);
   void collectRules(xmlNode *localroot);
   static string caseOf(string const &str);
-  static wstring caseOf(wstring const &str);
+  static UString caseOf(UString const &str);
   string copycase(string const &source_word, string const &target_word);
 
   void processLet(xmlNode *localroot);
@@ -118,23 +118,23 @@ private:
   bool endsWith(string const &str1, string const &str2) const;
   string tolower(string const &str) const;
   string tags(string const &str) const;
-  string readWord(FILE *in);
-  string readBlank(FILE *in);
-  string readUntil(FILE *in, int const symbol) const;
-  void applyWord(wstring const &word_str);
+  string readWord(InputFile& in);
+  string readBlank(InputFile& in);
+  string readUntil(InputFile& in, int const symbol) const;
+  void applyWord(UString const &word_str);
   void applyRule();
-  TransferToken & readToken(FILE *in);
-  static void unchunk(wstring const &chunk, FILE *output);
-  static vector<wstring> getVecTags(wstring const &chunk);
-  static int beginChunk(wstring const &chunk);
-  static int endChunk(wstring const &chunk);
-  static void splitWordsAndBlanks(wstring const &chunk,
-				  vector<wstring *> &words,
-				  vector<wstring *> &blanks);
-  static wstring pseudolemma(wstring const &chunk);
-  static wstring wordzero(wstring const &chunk);
+  TransferToken & readToken(InputFile& in);
+  static void unchunk(UString const &chunk, UFILE *output);
+  static vector<UString> getVecTags(UString const &chunk);
+  static int beginChunk(UString const &chunk);
+  static int endChunk(UString const &chunk);
+  static void splitWordsAndBlanks(UString const &chunk,
+				  vector<UString *> &words,
+				  vector<UString *> &blanks);
+  static UString pseudolemma(UString const &chunk);
+  static UString wordzero(UString const &chunk);
   bool checkIndex(xmlNode *element, int index, int limit);
-  void postchunk_wrapper_null_flush(FILE *in, FILE *out);
+  void postchunk_wrapper_null_flush(InputFile& in, UFILE* out);
   bool gettingLemmaFromWord(string attr);
   string combineWblanks(string wblank_current, string wblank_to_add);
 
@@ -143,7 +143,7 @@ public:
   ~Postchunk();
 
   void read(string const &transferfile, string const &datafile);
-  void postchunk(FILE *in, FILE *out);
+  void postchunk(InputFile& in, UFILE* out);
   bool getNullFlush(void);
   void setNullFlush(bool null_flush);
   void setTrace(bool trace);

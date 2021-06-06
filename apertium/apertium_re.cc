@@ -58,7 +58,7 @@ ApertiumRE::read(FILE *input)
   re = static_cast<pcre *>(pcre_malloc(size));
   if(size != fread(re, 1, size, input))
   {
-    wcerr << L"Error reading regexp" << endl;
+    cerr << "Error reading regexp" << endl;
     exit(EXIT_FAILURE);
   }
 
@@ -74,8 +74,8 @@ ApertiumRE::compile(string const &str)
 	            &error, &erroroffset, NULL);
   if(re == NULL)
   {
-    wcerr << L"Error: pcre_compile ";
-    wcerr << error << endl;
+    cerr << "Error: pcre_compile ";
+    cerr << error << endl;
     exit(EXIT_FAILURE);
   }
 
@@ -87,7 +87,7 @@ ApertiumRE::write(FILE *output) const
 {
   if(empty)
   {
-    wcerr << L"Error, cannot write empty regexp" << endl;
+    cerr << "Error, cannot write empty regexp" << endl;
     exit(EXIT_FAILURE);
   }
 
@@ -95,7 +95,7 @@ ApertiumRE::write(FILE *output) const
   int rc = pcre_fullinfo(re, NULL, PCRE_INFO_SIZE, &size);
   if(rc < 0)
   {
-    wcerr << L"Error calling pcre_fullinfo()\n" << endl;
+    cerr << "Error calling pcre_fullinfo()\n" << endl;
     exit(EXIT_FAILURE);
   }
 
@@ -104,7 +104,7 @@ ApertiumRE::write(FILE *output) const
   size_t rc2 = fwrite(re, 1, size, output);
   if(rc2 != size)
   {
-    wcerr << L"Error writing precompiled regex\n" << endl;
+    cerr << "Error writing precompiled regex\n" << endl;
     exit(EXIT_FAILURE);
   }
 }
@@ -130,7 +130,7 @@ ApertiumRE::match(string const &str) const
 	return "";
 
       default:
-	wcerr << L"Error: Unknown error matching regexp (code " << rc << L")" << endl;
+	cerr << "Error: Unknown error matching regexp (code " << rc << ")" << endl;
 	exit(EXIT_FAILURE);
     }
   }
@@ -159,7 +159,7 @@ ApertiumRE::replace(string &str, string const &value) const
 	return false;
 
       default:
-	wcerr << L"Error: Unknown error matching regexp (code " << rc << L")" << endl;
+	cerr << "Error: Unknown error matching regexp (code " << rc << ")" << endl;
 	exit(EXIT_FAILURE);
     }
   }

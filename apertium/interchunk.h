@@ -23,9 +23,10 @@
 #include <apertium/apertium_re.h>
 #include <lttoolbox/alphabet.h>
 #include <lttoolbox/buffer.h>
-#include <lttoolbox/ltstr.h>
+#include <lttoolbox/input_file.h>
 #include <lttoolbox/match_exe.h>
 #include <lttoolbox/match_state.h>
+#include <lttoolbox/ustring.h>
 
 #include <cstring>
 #include <cstdio>
@@ -45,25 +46,25 @@ private:
   Alphabet alphabet;
   MatchExe *me;
   MatchState ms;
-  map<string, ApertiumRE, Ltstr> attr_items;
-  map<string, string, Ltstr> variables;
-  map<string, int, Ltstr> macros;
-  map<string, set<string, Ltstr>, Ltstr> lists;
-  map<string, set<string, Ltstr>, Ltstr> listslow;
+  map<UString, ApertiumRE> attr_items;
+  map<UString, UString> variables;
+  map<UString, int> macros;
+  map<UString, set<UString>> lists;
+  map<UString, set<UString>> listslow;
   vector<xmlNode *> macro_map;
   vector<xmlNode *> rule_map;
   vector<size_t> rule_lines;
   xmlDoc *doc;
   xmlNode *root_element;
   InterchunkWord **word;
-  queue <string> blank_queue;
+  queue <UString> blank_queue;
   int lword;
   int last_lword;
   Buffer<TransferToken> input_buffer;
-  vector<wstring *> tmpword;
-  vector<wstring *> tmpblank;
+  vector<UString *> tmpword;
+  vector<UString *> tmpblank;
 
-  FILE *output;
+  UFILE* output;
   int any_char;
   int any_tag;
 
@@ -79,11 +80,11 @@ private:
 
   void destroy();
   void readData(FILE *input);
-  void readInterchunk(string const &input);
+  void readInterchunk(const char* input);
   void collectMacros(xmlNode *localroot);
   void collectRules(xmlNode *localroot);
-  string caseOf(string const &str);
-  string copycase(string const &source_word, string const &target_word);
+  UString caseOf(UString const &str);
+  UString copycase(UString const &source_word, UString const &target_word);
 
   void processLet(xmlNode *localroot);
   void processAppend(xmlNode *localroot);
@@ -103,30 +104,30 @@ private:
   bool processNot(xmlNode *localroot);
   bool processIn(xmlNode *localroot);
   void processRule(xmlNode *localroot);
-  string evalString(xmlNode *localroot);
+  UString evalString(xmlNode *localroot);
   void processInstruction(xmlNode *localroot);
   void processChoose(xmlNode *localroot);
-  string processChunk(xmlNode *localroot);
+  UString processChunk(xmlNode *localroot);
 
-  bool beginsWith(string const &str1, string const &str2) const;
-  bool endsWith(string const &str1, string const &str2) const;
-  string tolower(string const &str) const;
-  string tags(string const &str) const;
-  string readWord(FILE *in);
-  string readBlank(FILE *in);
-  string readUntil(FILE *in, int const symbol) const;
-  void applyWord(wstring const &word_str);
+  bool beginsWith(UString const &str1, UString const &str2) const;
+  bool endsWith(UString const &str1, UString const &str2) const;
+  UString tolower(UString const &str) const;
+  UString tags(UString const &str) const;
+  UString readWord(InputFile& in);
+  UString readBlank(InputFile& in);
+  UString readUntil(InputFile& in, int const symbol) const;
+  void applyWord(UString const &word_str);
   void applyRule();
-  TransferToken & readToken(FILE *in);
+  TransferToken & readToken(InputFile& in);
   bool checkIndex(xmlNode *element, int index, int limit);
-  void interchunk_wrapper_null_flush(FILE *in, FILE *out);
+  void interchunk_wrapper_null_flush(InputFile& in, UFILE* out);
 
 public:
   Interchunk();
   ~Interchunk();
 
-  void read(string const &transferfile, string const &datafile);
-  void interchunk(FILE *in, FILE *out);
+  void read(const char* transferfile, const char* datafile);
+  void interchunk(InputFile& in, UFILE* out);
   bool getNullFlush(void);
   void setNullFlush(bool null_flush);
   void setTrace(bool trace);

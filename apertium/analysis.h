@@ -21,15 +21,16 @@
 #include <ostream>
 #include <string>
 #include <vector>
+#include <lttoolbox/ustring.h>
 
 namespace Apertium {
 class Analysis {
 public:
-  friend std::wostream &operator<<(std::wostream &Stream_,
-                                   const Analysis &Analysis_);
+  friend std::ostream &operator<<(std::ostream &Stream_,
+                                  const Analysis &Analysis_);
   friend bool operator==(const Analysis &a, const Analysis &b);
   friend bool operator<(const Analysis &a, const Analysis &b);
-  operator std::wstring() const;
+  operator UString() const;
   std::vector<Morpheme> TheMorphemes;
 };
 }

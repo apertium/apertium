@@ -21,17 +21,17 @@ int perceptron_trace(int argc, char* argv[])
     std::ifstream tagger_model;
     try_open_fstream("MODEL", argv[2], tagger_model);
     pt.deserialise(tagger_model);
-    std::wcout << pt;
+    std::cout << pt;
   }
   else if (argc == 3 && std::string(argv[1]) == "mtx")
   {
     PerceptronSpec spec;
     MTXReader mtx_reader(spec);
     mtx_reader.read(argv[2]);
-    std::wcout << "== Macro definitions ==\n";
+    std::cout << "== Macro definitions ==\n";
     mtx_reader.printTmplDefns();
-    std::wcout << "== Spec ==\n";
-    std::wcout << spec;
+    std::cout << "== Spec ==\n";
+    std::cout << spec;
   }
   else if (argc == 5 && std::string(argv[1]) == "path")
   {
@@ -67,7 +67,7 @@ int perceptron_trace(int argc, char* argv[])
         {
           Optional<Analysis> saved_token = tagged_sent[token_idx];
           tagged_sent[token_idx] = lu.TheAnalyses[analy_idx];
-          std::wcout << L"LU:" << tagged_sent[token_idx] << std::endl ;
+          std::cout << "LU:" << tagged_sent[token_idx] << std::endl ;
           std::vector<Morpheme> &wordoids = lu.TheAnalyses[analy_idx].TheMorphemes;
           for (wrd_idx=0; wrd_idx<wordoids.size(); wrd_idx++)
           {
@@ -76,14 +76,14 @@ int perceptron_trace(int argc, char* argv[])
               tagged_sent, untagged_sent,
               token_idx, wrd_idx,
               feat_vec);
-            std::wcout << "Sentence " << sent_idx << " of " << tc.sentences.size() << "\t\t"
+            std::cout << "Sentence " << sent_idx << " of " << tc.sentences.size() << "\t\t"
                        << "Token " << token_idx << " of " << untagged_sent.size() << "\t\t"
                        << "Analysis " << analy_idx << " of " << lu.TheAnalyses.size() << "\t\t"
                        << "Wordoid " << wrd_idx << " of " << wordoids.size() << "\n";
-            std::wcout << "" << wordoids[wrd_idx] << "\n";
+            std::cout << "" << wordoids[wrd_idx] << "\n";
             FeatureVec fv(feat_vec);
-            std::wcout << fv;
-            std::wcout << "\n\n";
+            std::cout << fv;
+            std::cout << "\n\n";
           }
           tagged_sent[token_idx] = saved_token;
         }
@@ -92,13 +92,13 @@ int perceptron_trace(int argc, char* argv[])
   }
   else
   {
-    std::wcout << "Run with one of:\n";
-    std::wcout << argv[0] << " model <binary model file>\n";
-    std::wcout << "Output features and weights from a model file.\n";
-    std::wcout << argv[0] << " mtx <mtx file>\n";
-    std::wcout << "Output macros and features from an mtx file.\n";
-    std::wcout << argv[0] << " path <mtx file> <untagged> <tagged>\n";
-    std::wcout << "Trace a particular path through giving which features fire "
+    std::cout << "Run with one of:\n";
+    std::cout << argv[0] << " model <binary model file>\n";
+    std::cout << "Output features and weights from a model file.\n";
+    std::cout << argv[0] << " mtx <mtx file>\n";
+    std::cout << "Output macros and features from an mtx file.\n";
+    std::cout << argv[0] << " path <mtx file> <untagged> <tagged>\n";
+    std::cout << "Trace a particular path through giving which features fire "
                << "and the resulting score. Useful for interactively "
                << "designing feature sets.\n";
   }

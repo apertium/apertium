@@ -35,14 +35,14 @@ class TaggerData
 protected:
   set<TTag> open_class;
   vector<TForbidRule> forbid_rules;
-  map<wstring, TTag, Ltstr> tag_index;
-  vector<wstring> array_tags;
+  map<UString, TTag> tag_index;
+  vector<UString> array_tags;
   vector<TEnforceAfterRule> enforce_rules;
-  vector<wstring> prefer_rules;
+  vector<UString> prefer_rules;
   ConstantManager constants;
   Collection output;
   PatternList plist;
-  vector<wstring> discard;
+  vector<UString> discard;
 
   void copy(TaggerData const &o);
 public:
@@ -59,25 +59,25 @@ public:
   const vector<TForbidRule> & getForbidRules() const;
   void setForbidRules(vector<TForbidRule> &fr);
 
-  map<wstring, TTag, Ltstr> & getTagIndex();
-  const map<wstring, TTag, Ltstr> & getTagIndex() const;
-  void setTagIndex(map<wstring, TTag, Ltstr> const &ti);
+  map<UString, TTag> & getTagIndex();
+  const map<UString, TTag> & getTagIndex() const;
+  void setTagIndex(map<UString, TTag> const &ti);
 
-  vector<wstring> & getArrayTags();
-  const vector<wstring> & getArrayTags() const;
-  void setArrayTags(vector<wstring> const &at);
+  vector<UString> & getArrayTags();
+  const vector<UString> & getArrayTags() const;
+  void setArrayTags(vector<UString> const &at);
 
   vector<TEnforceAfterRule> & getEnforceRules();
   const vector<TEnforceAfterRule> & getEnforceRules() const;
   void setEnforceRules(vector<TEnforceAfterRule> const &tear);
 
-  vector<wstring> & getPreferRules();
-  const vector<wstring> & getPreferRules() const;
-  void setPreferRules(vector<wstring> const &pr);
+  vector<UString> & getPreferRules();
+  const vector<UString> & getPreferRules() const;
+  void setPreferRules(vector<UString> const &pr);
 
-  vector<wstring> & getDiscardRules();
-  const vector<wstring> & getDiscardRules() const;
-  void setDiscardRules(vector<wstring> const &dr);
+  vector<UString> & getDiscardRules();
+  const vector<UString> & getDiscardRules() const;
+  void setDiscardRules(vector<UString> const &dr);
 
   ConstantManager & getConstants();
   const ConstantManager & getConstants() const;
@@ -91,7 +91,7 @@ public:
   PatternList & getPatternList();
   const PatternList & getPatternList() const;
 
-  void addDiscard(wstring const &tags);
+  void addDiscard(UString const &tags);
 };
 
 #endif

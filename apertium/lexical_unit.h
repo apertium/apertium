@@ -24,7 +24,7 @@
 namespace Apertium {
 class LexicalUnit {
 public:
-  std::wstring TheSurfaceForm;
+  UString TheSurfaceForm;
   std::vector<Analysis> TheAnalyses;
 };
 }

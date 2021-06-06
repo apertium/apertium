@@ -36,7 +36,7 @@ InterchunkWord::InterchunkWord()
 {
 }
 
-InterchunkWord::InterchunkWord(string const &chunk)
+InterchunkWord::InterchunkWord(UString const &chunk)
 {
   init(chunk);
 }
@@ -63,7 +63,7 @@ InterchunkWord::operator =(InterchunkWord const &o)
 }
 
 void
-InterchunkWord::init(string const &chunk)
+InterchunkWord::init(UString const &chunk)
 {
   size_t b_end = 0;
   for(size_t i = 0; i < chunk.size(); i++)
@@ -96,13 +96,13 @@ InterchunkWord::init(string const &chunk)
   {
     this->chunk = chunk;
   }
-  this->queue = "";
+  this->queue.clear();
 }
 
-string
+UString
 InterchunkWord::chunkPart(ApertiumRE const &part)
 {
-  string result = part.match(chunk);
+  UString result = part.match(chunk);
   if(result.size() == 0)
   {
     result = part.match(queue);
@@ -125,14 +125,14 @@ InterchunkWord::chunkPart(ApertiumRE const &part)
   }
 }
 
-string
+UString
 InterchunkWord::getWblank()
 {
   return wblank;
 }
 
 bool
-InterchunkWord::setChunkPart(ApertiumRE const &part, string const &value)
+InterchunkWord::setChunkPart(ApertiumRE const &part, UString const &value)
 {
   return part.replace(chunk, value);
 }

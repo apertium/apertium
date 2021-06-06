@@ -44,7 +44,7 @@ class MTXReader : public XMLReader
   };
 
   typedef PerceptronSpec VM;
-  typedef std::map<std::wstring, size_t> VarNVMap;
+  typedef std::map<UString, size_t> VarNVMap;
   typedef std::vector<std::pair<size_t, ExprType> > TemplateReplacements;
   typedef std::map<std::pair<size_t, std::vector<VM::FeatureDefn> >, size_t> InstanciationMap;
   typedef std::pair<VM::FeatureDefn, TemplateReplacements> TemplateDefn;
@@ -59,8 +59,8 @@ protected:
 private:
   size_t pushSetConst(std::string &val);
   size_t pushStrConst(std::string &val);
-  size_t getConstRef(const std::wstring &ref_attr, const std::string &lit_attr,
-                     const std::wstring &what, VarNVMap &const_map,
+  size_t getConstRef(const UString &ref_attr, const std::string &lit_attr,
+                     const UString &what, VarNVMap &const_map,
                      size_t (MTXReader::*push_new)(std::string&), bool& exists);
   size_t getSetRef(bool& exists);
   size_t getSetRef();
@@ -109,7 +109,7 @@ private:
   void procForEach(ExprType type);
   void procPred();
   template<typename GetT, typename EmitT> void emitAttr(
-      std::wstring what, GetT (MTXReader::*getter)(bool&),
+      UString what, GetT (MTXReader::*getter)(bool&),
       void (MTXReader::*emitter)(EmitT));
   void getAndEmitStrRef();
   void getAndEmitSetRef();

@@ -39,13 +39,13 @@ wchar_t *_wcstok(wchar_t *wcs, const wchar_t *delim, wchar_t **ptr) {
 using namespace Apertium;
 
 
-void tagger_utils::fatal_error (wstring const &s) {
-  wcerr<<L"Error: "<<s<<L"\n";
+void tagger_utils::fatal_error (UString const &s) {
+  cerr<<"Error: "<<s<<"\n";
   exit(1);
 }
 
 void tagger_utils::file_name_error (string const &s) {
-  wcerr << "Error: " << s << endl;
+  cerr << "Error: " << s << endl;
   exit(1);
 }
 
@@ -65,14 +65,14 @@ void tagger_utils::clear_array_vector(vector<TTag> v[], int l) {
     v[i].clear();
 }
 
-int tagger_utils::ntokens_multiword(wstring const &s)
+int tagger_utils::ntokens_multiword(UString const &s)
 {
    wchar_t *news = new wchar_t[s.size()+1];
    wcscpy(news, s.c_str());
    news[s.size()] = 0;
-   wcerr << news << endl;
+   cerr << news << endl;
 
-   wchar_t const *delim = L"_";
+   wchar_t const *delim = "_";
    wchar_t *ptr;
    int n=0;
 
@@ -86,12 +86,12 @@ int tagger_utils::ntokens_multiword(wstring const &s)
    return n;
 }
 
-int tagger_utils::nguiones_fs(wstring const & s) {
+int tagger_utils::nguiones_fs(UString const & s) {
    wchar_t *news = new wchar_t[s.size()+1];
    wcscpy(news, s.c_str());
    news[s.size()] = 0;
-   wcerr << news << endl;
-   wchar_t const *delim = L"-";
+   cerr << news << endl;
+   wchar_t const *delim = "-";
    wchar_t *ptr;
    int n=0;
 
@@ -105,10 +105,10 @@ int tagger_utils::nguiones_fs(wstring const & s) {
    return n;
 }
 
-wstring tagger_utils::trim(wstring s)
+UString tagger_utils::trim(UString s)
 {
   if (s.length()==0)
-    return L"";
+    return "";
 
   for (unsigned int i=0; i<(s.length()-1); i++) {
     if ((s.at(i)==L' ')&&(s.at(i+1)==L' ')) {
@@ -142,7 +142,7 @@ void tagger_utils::scan_for_ambg_classes(Collection &output, MorphoStream &morph
 
   while (word) {
     if (++nw % 10000 == 0)
-      wcerr << L'.' << flush;
+      cerr << L'.' << flush;
 
     tags = word->get_tags();
 
@@ -152,7 +152,7 @@ void tagger_utils::scan_for_ambg_classes(Collection &output, MorphoStream &morph
     delete word;
     word = morpho_stream.get_next_word();
   }
-  wcerr << L"\n";
+  cerr << "\n";
 }
 
 void
@@ -198,27 +198,27 @@ tagger_utils::find_similar_ambiguity_class(TaggerData &td, set<TTag> &c) {
 void
 tagger_utils::require_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, int nw) {
   if (td.getOutput().has_not(tags)) {
-    wstring errors;
-    errors = L"A new ambiguity class was found. I cannot continue.\n";
-    errors+= L"Word '" + word.get_superficial_form() + L"' not found in the dictionary.\n";
-    errors+= L"New ambiguity class: " + word.get_string_tags() + L"\n";
+    UString errors;
+    errors = "A new ambiguity class was found. I cannot continue.\n";
+    errors+= "Word '" + word.get_superficial_form() + "' not found in the dictionary.\n";
+    errors+= "New ambiguity class: " + word.get_string_tags() + "\n";
     if (nw >= 0) {
       std::wostringstream ws;
       ws << (nw + 1);
-      errors+= L"Line number: " + ws.str() + L"\n";
+      errors+= "Line number: " + ws.str() + "\n";
     }
-    errors+= L"Take a look at the dictionary, then retrain.";
+    errors+= "Take a look at the dictionary, then retrain.";
     fatal_error(errors);
   }
 }
 
 static void _warn_absent_ambiguity_class(TaggerWord &word) {
-  wstring errors;
-  errors = L"A new ambiguity class was found. \n";
-  errors += L"Retraining the tagger is necessary so as to take it into account.\n";
-  errors += L"Word '" + word.get_superficial_form() + L"'.\n";
-  errors += L"New ambiguity class: " + word.get_string_tags() + L"\n";
-  wcerr << L"Error: " << errors;
+  UString errors;
+  errors = "A new ambiguity class was found. \n";
+  errors += "Retraining the tagger is necessary so as to take it into account.\n";
+  errors += "Word '" + word.get_superficial_form() + "'.\n";
+  errors += "New ambiguity class: " + word.get_string_tags() + "\n";
+  cerr << "Error: " << errors;
 }
 
 set<TTag> &
@@ -265,7 +265,7 @@ istream& operator>> (istream& is, map <int, T> & f) {
     is>>i;     // warning: does not work if both
     is>>f[i];  // lines merged in a single one
   }
-  if (is.bad()) tagger_utils::fatal_error(L"reading map");
+  if (is.bad()) tagger_utils::fatal_error("reading map");
   return is;
 }
 

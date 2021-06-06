@@ -29,35 +29,31 @@ bool operator<(const Morpheme &a, const Morpheme &b) {
   return a.TheTags < b.TheTags;
 }
 
-std::wostream& operator<<(std::wostream& out, const Morpheme &morph) {
+std::ostream& operator<<(std::ostream& out, const Morpheme &morph) {
   out << morph.TheLemma;
-  const std::vector<Tag> &tags = morph.TheTags;
-  std::vector<Tag>::const_iterator it = tags.begin();
-  for (; it != tags.end(); it++) {
-    out << L"<" << it->TheTag << L">";
+  for (auto& it : morph.TheTags) {
+    out << "<" << it.TheTag << ">";
   }
   return out;
 }
 
-Morpheme::operator std::wstring() const {
+Morpheme::operator UString() const {
   if (TheTags.empty())
     throw Exception::Morpheme::TheTags_empty("can't convert Morpheme "
                                              "comprising empty Tag std::vector "
-                                             "to std::wstring");
+                                             "to UString");
 
   if (TheLemma.empty())
     throw Exception::Morpheme::TheLemma_empty("can't convert Morpheme "
                                               "comprising empty TheLemma "
-                                              "std::wstring to std::wstring");
+                                              "UString to UString");
 
-  std::wstring wstring_ = TheLemma;
+  UString ustring_ = TheLemma;
 
-  for (std::vector<Tag>::const_iterator Tag_ = TheTags.begin();
-       // Call .end() each iteration to save memory.
-       Tag_ != TheTags.end(); ++Tag_) {
-    wstring_ += static_cast<std::wstring>(*Tag_);
+  for (auto& Tag_ : TheTags) {
+    ustring_ += static_cast<UString>(Tag_);
   }
 
-  return wstring_;
+  return ustring_;
 }
 }

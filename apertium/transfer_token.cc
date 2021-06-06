@@ -36,7 +36,7 @@ type(tt_eof)
 {
 }
 
-TransferToken::TransferToken(wstring const &content,
+TransferToken::TransferToken(UString const &content,
 			     TransferTokenType type)
 {
   this->content = content;
@@ -70,7 +70,7 @@ TransferToken::getType()
   return type;
 }
 
-wstring &
+UString &
 TransferToken::getContent()
 {
   return content;
@@ -83,7 +83,7 @@ TransferToken::setType(TransferTokenType type)
 }
 
 void
-TransferToken::setContent(wstring const &content)
+TransferToken::setContent(UString const &content)
 {
   this->content = content;
 }

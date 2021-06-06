@@ -34,13 +34,13 @@ protected:
   XMLReader();
   xmlTextReaderPtr reader;
   int type;
-  wstring name;
-  wstring attrib(wstring const &name);
+  UString name;
+  UString attrib(UString const &name);
   string attrib(string const &name);
-  void parseError(wstring const &message);
+  void parseError(UString const &message);
   void unexpectedTag();
   void stepToTag();
-  void stepPastSelfClosingTag(wstring const &tag);
+  void stepPastSelfClosingTag(UString const &tag);
   void stepToNextTag();
   void step();
   virtual void parse() = 0;

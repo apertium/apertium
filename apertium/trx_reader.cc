@@ -23,11 +23,11 @@
 #include <apertium/string_utils.h>
 
 using namespace Apertium;
-wstring const
-TRXReader::ANY_TAG = L"<ANY_TAG>";
+UString const
+TRXReader::ANY_TAG = "<ANY_TAG>";
 
-wstring const
-TRXReader::ANY_CHAR = L"<ANY_CHAR>";
+UString const
+TRXReader::ANY_CHAR = "<ANY_CHAR>";
 
 TRXReader::TRXReader()
 {
@@ -36,11 +36,11 @@ TRXReader::TRXReader()
 }
 
 int
-TRXReader::insertLemma(int const base, wstring const &lemma)
+TRXReader::insertLemma(int const base, UString const &lemma)
 {
   int retval = base;
   static int const any_char = td.getAlphabet()(ANY_CHAR);
-  if(lemma == L"")
+  if(lemma == "")
   {
     retval = td.getTransducer().insertSingleTransduction(any_char, retval);
     td.getTransducer().linkStates(retval, retval, any_char);
@@ -75,7 +75,7 @@ TRXReader::insertLemma(int const base, wstring const &lemma)
 }
 
 int
-TRXReader::insertTags(int const base, wstring const &tags)
+TRXReader::insertTags(int const base, UString const &tags)
 {
   int retval = base;
   static int const any_tag = td.getAlphabet()(ANY_TAG);
@@ -91,7 +91,7 @@ TRXReader::insertTags(int const base, wstring const &tags)
       }
       else
       {
-        wstring symbol = L"<";
+        UString symbol = "<";
         for(unsigned int j = i; j != limit; j++)
         {
           if(tags[j] == L'.')
@@ -102,7 +102,7 @@ TRXReader::insertTags(int const base, wstring const &tags)
           }
         }
 
-        if(symbol == L"<")
+        if(symbol == "<")
         {
           symbol.append(tags.substr(i));
           i = limit;
@@ -126,56 +126,56 @@ TRXReader::parse()
 {
   procDefCats();
   step();
-  while(name == L"#text" || name == L"#comment")
+  while(name == "#text" || name == "#comment")
   {
     step();
   }
 
-  if(name == L"section-def-attrs")
+  if(name == "section-def-attrs")
   {
     procDefAttrs();
     step();
-    while(name == L"#text" || name == L"#comment")
+    while(name == "#text" || name == "#comment")
     {
       step();
     }
   }
 
-  if(name == L"section-def-vars")
+  if(name == "section-def-vars")
   {
     procDefVars();
     step();
-    while(name == L"#text" || name == L"#comment")
+    while(name == "#text" || name == "#comment")
     {
       step();
     }
   }
 
-  if(name == L"section-def-lists")
+  if(name == "section-def-lists")
   {
     procDefLists();
     step();
-    while(name == L"#text" || name == L"#comment")
+    while(name == "#text" || name == "#comment")
     {
       step();
     }
   }
 
-  if(name == L"section-def-macros")
+  if(name == "section-def-macros")
   {
     procDefMacros();
     step();
-    while(name == L"#text" || name == L"#comment")
+    while(name == "#text" || name == "#comment")
     {
       step();
     }
   }
 
-  if(name == L"section-rules")
+  if(name == "section-rules")
   {
     procRules();
     step();
-    while(name == L"#text" || name == L"#comment")
+    while(name == "#text" || name == "#comment")
     {
       step();
     }
@@ -189,17 +189,17 @@ TRXReader::procRules()
   set<int> alive_states;
 
   while(type != XML_READER_TYPE_END_ELEMENT ||
-	name != L"section-rules")
+	name != "section-rules")
   {
     step();
-    if(name == L"rule")
+    if(name == "rule")
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
         count++;
       }
     }
-    else if(name == L"pattern")
+    else if(name == "pattern")
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
@@ -220,27 +220,27 @@ TRXReader::procRules()
           }
           else
           {
-            wcerr << L"Warning (" << xmlTextReaderGetParserLineNumber(reader);
-            wcerr << L"): "
-              << L"Paths to rule " << count << " blocked by rule " << td.seen_rules[*it]
-              << L"." << endl;
+            cerr << "Warning (" << xmlTextReaderGetParserLineNumber(reader);
+            cerr << "): "
+              << "Paths to rule " << count << " blocked by rule " << td.seen_rules[*it]
+              << "." << endl;
 
           }
         }
       }
     }
-    else if(name == L"pattern-item")
+    else if(name == "pattern-item")
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
-        pair<multimap<wstring, LemmaTags, Ltstr>::iterator,
-             multimap<wstring, LemmaTags, Ltstr>::iterator> range;
+        pair<multimap<UString, LemmaTags>::iterator,
+             multimap<UString, LemmaTags>::iterator> range;
 
-        range = cat_items.equal_range(attrib(L"n"));
+        range = cat_items.equal_range(attrib("n"));
 
         if(range.first == range.second)
         {
-          parseError(L"Undefined cat-item '" + attrib(L"n"));
+          parseError("Undefined cat-item '" + attrib("n"));
         }
 
 // new code
@@ -277,21 +277,21 @@ TRXReader::procRules()
         alive_states = alive_states_new;
       }
     }
-    else if(name == L"let")
+    else if(name == "let")
     {
       int count = 0;
       int lineno = xmlTextReaderGetParserLineNumber(reader);
-      while(name != L"let" || type != XML_READER_TYPE_END_ELEMENT)
+      while(name != "let" || type != XML_READER_TYPE_END_ELEMENT)
       {
         step();
         if(type == XML_ELEMENT_NODE)
         {
           count++;
 
-          if(name == L"clip" && attrib(L"side") == L"sl")
+          if(name == "clip" && attrib("side") == "sl")
           {
-            wcerr << L"Warning (" << lineno;
-            wcerr << L"): assignment to 'sl' side has no effect." << endl;
+            cerr << "Warning (" << lineno;
+            cerr << "): assignment to 'sl' side has no effect." << endl;
           }
         }
 
@@ -311,8 +311,8 @@ TRXReader::write(string const &filename)
   FILE *out = fopen(filename.c_str(), "wb");
   if(!out)
   {
-    wcerr << "Error: cannot open '" << filename;
-    wcerr << "' for writing" << endl;
+    cerr << "Error: cannot open '" << filename;
+    cerr << "' for writing" << endl;
     exit(EXIT_FAILURE);
   }
 
@@ -324,41 +324,41 @@ TRXReader::write(string const &filename)
 void
 TRXReader::procDefAttrs()
 {
-  wstring attrname;
+  UString attrname;
 
   while(type != XML_READER_TYPE_END_ELEMENT ||
-        name != L"section-def-attrs")
+        name != "section-def-attrs")
   {
     step();
-    if(name == L"attr-item")
+    if(name == "attr-item")
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
-        insertAttrItem(attrname, attrib(L"tags"));
+        insertAttrItem(attrname, attrib("tags"));
       }
     }
-    else if(name == L"def-attr")
+    else if(name == "def-attr")
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
-        attrname = attrib(L"n");
+        attrname = attrib("n");
       }
       else
       {
-        wstring all = td.getAttrItems()[attrname];
-        td.getAttrItems()[attrname] = L"(" + all + L")";
-        attrname = L"";
+        UString all = td.getAttrItems()[attrname];
+        td.getAttrItems()[attrname] = "(" + all + ")";
+        attrname = "";
       }
     }
-    else if(name == L"#text")
+    else if(name == "#text")
     {
       // do nothing
     }
-    else if(name == L"#comment")
+    else if(name == "#comment")
     {
       // do nothing
     }
-    else if(name == L"section-def-attrs")
+    else if(name == "section-def-attrs")
     {
       // do nothing
     }
@@ -372,56 +372,56 @@ TRXReader::procDefAttrs()
 void
 TRXReader::procDefCats()
 {
-  while(type == XML_READER_TYPE_END_ELEMENT || !(name == L"transfer" || name == L"interchunk" || name == L"postchunk"))
+  while(type == XML_READER_TYPE_END_ELEMENT || !(name == "transfer" || name == "interchunk" || name == "postchunk"))
   {
     step();
-    if(name != L"#text" && name != L"transfer" &&  name != L"interchunk" &&
-       name != L"postchunk" && name != L"section-def-cats" && name != L"#comment")
+    if(name != "#text" && name != "transfer" &&  name != "interchunk" &&
+       name != "postchunk" && name != "section-def-cats" && name != "#comment")
     {
       unexpectedTag();
     }
   }
 
-  wstring catname;
+  UString catname;
 
   while(type != XML_READER_TYPE_END_ELEMENT ||
-        name != L"section-def-cats")
+        name != "section-def-cats")
   {
     step();
-    if(name == L"cat-item")
+    if(name == "cat-item")
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
-        if(attrib(L"tags") != L"")
+        if(attrib("tags") != "")
         {
-          insertCatItem(catname, attrib(L"lemma"), attrib(L"tags"));
+          insertCatItem(catname, attrib("lemma"), attrib("tags"));
         }
         else
         {
-          insertCatItem(catname, attrib(L"name"), L"");
+          insertCatItem(catname, attrib("name"), "");
         }
       }
     }
-    else if(name == L"def-cat")
+    else if(name == "def-cat")
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
-        catname = attrib(L"n");
+        catname = attrib("n");
       }
       else
       {
-        catname = L"";
+        catname = "";
       }
     }
-    else if(name == L"#text")
+    else if(name == "#text")
     {
       // do nothing
     }
-    else if(name == L"#comment")
+    else if(name == "#comment")
     {
       // do nothing
     }
-    else if(name == L"section-def-cats")
+    else if(name == "section-def-cats")
     {
       // do nothing
     }
@@ -436,25 +436,25 @@ void
 TRXReader::procDefVars()
 {
   while(type != XML_READER_TYPE_END_ELEMENT ||
-        name != L"section-def-vars")
+        name != "section-def-vars")
   {
     step();
-    if(name == L"def-var")
+    if(name == "def-var")
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
-        createVar(attrib(L"n"), attrib(L"v"));
+        createVar(attrib("n"), attrib("v"));
       }
     }
-    else if(name == L"#text")
+    else if(name == "#text")
     {
       // do nothing
     }
-    else if(name == L"#comment")
+    else if(name == "#comment")
     {
       // do nothing
     }
-    else if(name == L"section-def-vars")
+    else if(name == "section-def-vars")
     {
       // do nothing
     }
@@ -468,39 +468,39 @@ TRXReader::procDefVars()
 void
 TRXReader::procDefLists()
 {
-  wstring listname;
+  UString listname;
 
   while(type != XML_READER_TYPE_END_ELEMENT ||
-	name != L"section-def-lists")
+	name != "section-def-lists")
   {
     step();
-    if(name == L"list-item")
+    if(name == "list-item")
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
-        insertListItem(listname, attrib(L"v"));
+        insertListItem(listname, attrib("v"));
       }
     }
-    else if(name == L"def-list")
+    else if(name == "def-list")
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
-        listname = attrib(L"n");
+        listname = attrib("n");
       }
       else
       {
-        listname = L"";
+        listname = "";
       }
     }
-    else if(name == L"#text")
+    else if(name == "#text")
     {
       // do nothing
     }
-    else if(name == L"#comment")
+    else if(name == "#comment")
     {
       // do nothing
     }
-    else if(name == L"section-def-lists")
+    else if(name == "section-def-lists")
     {
       // do nothing
     }
@@ -516,53 +516,53 @@ TRXReader::procDefMacros()
 {
   int count = 0;
   while(type != XML_READER_TYPE_END_ELEMENT ||
-	name != L"section-def-macros")
+	name != "section-def-macros")
   {
     step();
-    if(name == L"def-macro")
+    if(name == "def-macro")
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
-        createMacro(attrib(L"n"), count++);
+        createMacro(attrib("n"), count++);
       }
     }
   }
 }
 
 void
-TRXReader::createMacro(wstring const &name, int const value)
+TRXReader::createMacro(UString const &name, int const value)
 {
   if(td.getMacros().find(name) != td.getMacros().end())
   {
-    parseError(L"Macro '" + name + L"' defined at least twice");
+    parseError("Macro '" + name + "' defined at least twice");
   }
   td.getMacros()[name] = value;
 }
 
 void
-TRXReader::insertListItem(wstring const &name, wstring const &value)
+TRXReader::insertListItem(UString const &name, UString const &value)
 {
   td.getLists()[name].insert(value);
 }
 
 void
-TRXReader::createVar(wstring const &name, wstring const &initial_value)
+TRXReader::createVar(UString const &name, UString const &initial_value)
 {
   td.getVariables()[name] = initial_value;
 }
 
 void
-TRXReader::insertCatItem(wstring const &name, wstring const &lemma,
-                         wstring const &tags)
+TRXReader::insertCatItem(UString const &name, UString const &lemma,
+                         UString const &tags)
 {
   LemmaTags lt;
   lt.lemma = lemma;
   lt.tags = tags;
-  cat_items.insert(pair<wstring, LemmaTags>(name, lt));
+  cat_items.insert(pair<UString, LemmaTags>(name, lt));
 }
 
 void
-TRXReader::insertAttrItem(wstring const &name, wstring const &tags)
+TRXReader::insertAttrItem(UString const &name, UString const &tags)
 {
   if(td.getAttrItems()[name].size() != 0)
   {
@@ -575,7 +575,7 @@ TRXReader::insertAttrItem(wstring const &name, wstring const &tags)
   {
     if(tags[i] == L'.')
     {
-      td.getAttrItems()[name].append(L"><");
+      td.getAttrItems()[name].append("><");
     }
     else
     {

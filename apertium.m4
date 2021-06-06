@@ -109,18 +109,24 @@ AC_DEFUN([AP_MKINCLUDE],
   cat >$srcdir/ap_include.am <<EOF
 
 modes/%.mode: modes.xml
-	apertium-validate-modes modes.xml
-	apertium-gen-modes modes.xml
+	apertium-validate-modes \@S|@<
+	apertium-gen-modes \@S|@<
 
 apertium_modesdir=\$(prefix)/share/apertium/modes/
-install-modes:
-	apertium-gen-modes -f modes.xml \$(prefix)/share/apertium/\$(BASENAME)
+install-modes: modes.xml
+	apertium-gen-modes -f \@S|@< \$(prefix)/share/apertium/\$(BASENAME)
 	\$(MKDIR_P) \$(DESTDIR)\$(apertium_modesdir)
-	modes=\`xmllint --xpath '//mode@<:@@install="yes"@:>@/@name' modes.xml | sed 's/ *name="\(@<:@^"@:>@*\)"/\1.mode /g'\`; \\
+	modes=\`xmllint --xpath '//mode@<:@@install="yes"@:>@/@name' \@S|@< | sed 's/ *name="\(@<:@^"@:>@*\)"/\1.mode /g'\`; \\
 		if test -n "\$\$modes"; then \\
 			\$(INSTALL_DATA) \$\$modes \$(DESTDIR)\$(apertium_modesdir); \\
 			rm \$\$modes; \\
 		fi
+
+uninstall-modes: modes.xml
+	files=\`xmllint --xpath '//mode@<:@@install="yes"@:>@/@name' \@S|@< | sed 's/ *name="\(@<:@^"@:>@*\)"/\1.mode /g'\`; \\
+	if test -n "\$\$files"; then \\
+		dir=\$(DESTDIR)\$(apertium_modesdir); \$(am__uninstall_files_from_dir)
+	fi
 
 .deps/.d:
 	\$(MKDIR_P) .deps

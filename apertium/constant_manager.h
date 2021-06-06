@@ -20,13 +20,14 @@
 #include <cstdio>
 #include <map>
 #include <string>
+#include <lttoolbox/ustring.h>
 
 using namespace std;
 
 class ConstantManager
 {
 private:
-  map<wstring, int> constants;
+  map<UString, int> constants;
 
   void copy(ConstantManager const &o);
   void destroy();
@@ -36,8 +37,8 @@ public:
   ConstantManager(ConstantManager const &o);
   ConstantManager & operator =(ConstantManager const &o);
 
-  void setConstant(wstring const &constant, int const value);
-  int getConstant(wstring const &constant);
+  void setConstant(UString const &constant, int const value);
+  int getConstant(UString const &constant);
   void write(FILE *output);
   void read(FILE *input);
   void serialise(std::ostream &serialised) const;

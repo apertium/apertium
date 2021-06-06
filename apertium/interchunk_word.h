@@ -21,6 +21,7 @@
 #include <apertium/apertium_re.h>
 #include <map>
 #include <string>
+#include <lttoolbox/ustring.h>
 
 using namespace std;
 
@@ -33,17 +34,17 @@ private:
   /**
    * Target language chunk name and tags
    */
-  string chunk;
+  UString chunk;
 
   /**
    * Target language chunk content
    */
-  string queue;
+  UString queue;
   
   /**
    * Wordbound blank (for postchunk)
    */
-  string wblank;
+  UString wblank;
 
   /**
    * Copy method
@@ -76,7 +77,7 @@ public:
    * Parametric constructor calling init()
    * @param chunk the chunk
    */
-  InterchunkWord(string const &chunk);
+  InterchunkWord(UString const &chunk);
 
   /**
    * Assignment operator
@@ -89,20 +90,20 @@ public:
    * Sets a chunk
    * @param chunk the chunk
    */
-  void init(string const &chunk);
+  void init(UString const &chunk);
 
   /**
    * Reference a chunk part
    * @param part regular expression to match
    * @returns reference to the part of string matched
    */
-  string chunkPart(ApertiumRE const &part);
+  UString chunkPart(ApertiumRE const &part);
   
   /**
    * Reference the wordbound blank (for postchunk)
    * @returns reference to the wblank string
    */
-  string getWblank();
+  UString getWblank();
 
   /**
    * Sets a value for a chunk part
@@ -110,7 +111,7 @@ public:
    * @param value the new value for the given part
    * @returns whether part matched
    */
-  bool setChunkPart(ApertiumRE const &part, string const &value);
+  bool setChunkPart(ApertiumRE const &part, UString const &value);
 
 };
 

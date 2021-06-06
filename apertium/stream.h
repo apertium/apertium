@@ -54,19 +54,19 @@ private:
     bool isPreviousCharacter : 1;
   };
   bool is_eof_throw_if_not_TheCharacterStream_good() const;
-  std::wstring Message_what(const std::wstringstream &Message) const;
+  UString Message_what(const std::stringstream &Message) const;
   bool is_eof_throw_if_not_TheCharacterStream_good(StreamedType &StreamedType_,
-                                                   std::wstring &Lemma,
+                                                   UString &Lemma,
                                                    const wchar_t &Character_);
   bool isTheCharacterStream_eof(StreamedType &StreamedType_,
-                                std::wstring &Lemma, const wchar_t &Character_);
-  void push_back_Character(StreamedType &StreamedType_, std::wstring &Lemma,
+                                UString &Lemma, const wchar_t &Character_);
+  void push_back_Character(StreamedType &StreamedType_, UString &Lemma,
                            const wchar_t &Character_);
-  void case_0x5c(StreamedType &StreamedType_, std::wstring &Lemma,
+  void case_0x5c(StreamedType &StreamedType_, UString &Lemma,
                  const wchar_t &Character_);
   std::wistream &TheCharacterStream;
   Optional<std::string> TheFilename;
-  std::wstring TheLine;
+  UString TheLine;
   TaggerFlags &TheFlags;
   bool private_flush_ : 1;
   Optional<PreviousCaseType> ThePreviousCase;

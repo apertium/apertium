@@ -73,9 +73,9 @@ PerceptronTagger::tagSentence(const Sentence &untagged_sent) {
                             token_idx, wordoid_idx, feat_vec_delta);
           if (TheFlags.getDebug()) {
             FeatureVec fv(feat_vec_delta);
-            std::wcerr << "Token " << token_idx << "\t\tWordoid " << wordoid_idx << "\n";
-            std::wcerr << fv;
-            std::wcerr << "Score: " << weights * feat_vec_delta << "\n";
+            std::cerr << "Token " << token_idx << "\t\tWordoid " << wordoid_idx << "\n";
+            std::cerr << fv;
+            std::cerr << "Score: " << weights * feat_vec_delta << "\n";
           }
           new_agenda_item.score += weights * feat_vec_delta;
         }
@@ -83,14 +83,14 @@ PerceptronTagger::tagSentence(const Sentence &untagged_sent) {
     }
     // Apply the beam
     if (TheFlags.getDebug()) {
-      std::wcerr << "-- Before beam: --\n" << new_agenda;
+      std::cerr << "-- Before beam: --\n" << new_agenda;
     }
     size_t new_agenda_size = std::min((size_t)spec.beam_width, new_agenda.size());
     agenda.resize(new_agenda_size);
     std::partial_sort_copy(new_agenda.begin(), new_agenda.end(),
                            agenda.begin(), agenda.end());
     if (TheFlags.getDebug()) {
-      std::wcerr << "-- After beam: --\n" << agenda;
+      std::cerr << "-- After beam: --\n" << agenda;
     }
   }
 
@@ -129,7 +129,7 @@ bool PerceptronTagger::trainSentence(
   std::vector<Morpheme>::const_iterator wordoid_it;
 
   for (size_t token_idx = 0; token_idx < sent_len; token_idx++) {
-    //std::wcerr << "Token idx: " << token_idx << "\n";
+    //std::cerr << "Token idx: " << token_idx << "\n";
     const TaggedToken &tagged_tok(tagged_sent[token_idx]);
     const StreamedType &untagged_tok(untagged_sent[token_idx]);
     correct_sentence.tagged.push_back(tagged_tok);
@@ -156,7 +156,7 @@ bool PerceptronTagger::trainSentence(
 
     bool correct_available = false;
     for (agenda_it = agenda.begin(); agenda_it != agenda.end(); agenda_it++) {
-      //std::wcerr << *agenda_it;
+      //std::cerr << *agenda_it;
       for (analys_it = analyses.begin(); analys_it != analyses.end(); analys_it++) {
         const std::vector<Morpheme> &wordoids = analys_it->TheMorphemes;
 
@@ -182,24 +182,24 @@ bool PerceptronTagger::trainSentence(
       if (TheFlags.getSkipErrors()) {
         return true;
       } else {
-        std::wstringstream what_;
-        what_ << L"Tagged analysis unavailable in untagged/ambigous input.\n";
-        what_ << L"Available:\n";
+        std::stringstream what_;
+        what_ << "Tagged analysis unavailable in untagged/ambigous input.\n";
+        what_ << "Available:\n";
         for (analys_it = analyses.begin(); analys_it != analyses.end(); analys_it++) {
-          what_ << *analys_it << L"\n";
+          what_ << *analys_it << "\n";
         }
-        what_ << L"Required: " << *tagged_tok << L"\n";
-        what_ << L"Rerun with --skip-on-error to skip this sentence.";
+        what_ << "Required: " << *tagged_tok << "\n";
+        what_ << "Rerun with --skip-on-error to skip this sentence.";
         throw Apertium::Exception::PerceptronTagger::CorrectAnalysisUnavailable(what_);
       }
     }
     // Apply the beam
-    //std::wcerr << "-- Before beam: --\n" << new_agenda;
+    //std::cerr << "-- Before beam: --\n" << new_agenda;
     size_t new_agenda_size = std::min((size_t)spec.beam_width, new_agenda.size());
     agenda.resize(new_agenda_size);
     std::partial_sort_copy(new_agenda.begin(), new_agenda.end(),
                            agenda.begin(), agenda.end());
-    //std::wcerr << "-- After beam: --\n" << agenda;
+    //std::cerr << "-- After beam: --\n" << agenda;
 
     // Early update "fallen off the beam"
     bool any_match = false;
@@ -211,29 +211,29 @@ bool PerceptronTagger::trainSentence(
       }
     }
     if (!any_match) {
-      /*std::wcerr << "Early update time!\n";
-      std::wcerr << "Before:\n" << weights << "\n";
-      std::wcerr << "Incorrect:\n" << agenda.front().vec << "\n";
-      std::wcerr << "Correct:\n" << correct_sentence.vec << "\n";*/
+      /*std::cerr << "Early update time!\n";
+      std::cerr << "Before:\n" << weights << "\n";
+      std::cerr << "Incorrect:\n" << agenda.front().vec << "\n";
+      std::cerr << "Correct:\n" << correct_sentence.vec << "\n";*/
       avg_weights -= agenda.front().vec;
       avg_weights += correct_sentence.vec;
       avg_weights.incIteration();
-      //std::wcerr << "After:\n" << weights << "\n";
+      //std::cerr << "After:\n" << weights << "\n";
       return false;
     }
   }
   // Normal update
-  /*std::wcerr << "Best match:\n" << agenda.front().tagged << "\n\n";
-  std::wcerr << "Correct:\n" << correct_sentence.tagged << "\n\n";*/
+  /*std::cerr << "Best match:\n" << agenda.front().tagged << "\n\n";
+  std::cerr << "Correct:\n" << correct_sentence.tagged << "\n\n";*/
   if (agenda.front().tagged != correct_sentence.tagged) {
-    /*std::wcerr << "Normal update time!\n";
-    std::wcerr << "Before:\n" << weights << "\n";
-    std::wcerr << "Incorrect:\n" << agenda.front().vec << "\n";
-    std::wcerr << "Correct:\n" << correct_sentence.vec << "\n";*/
+    /*std::cerr << "Normal update time!\n";
+    std::cerr << "Before:\n" << weights << "\n";
+    std::cerr << "Incorrect:\n" << agenda.front().vec << "\n";
+    std::cerr << "Correct:\n" << correct_sentence.vec << "\n";*/
     avg_weights -= agenda.front().vec;
     avg_weights += correct_sentence.vec;
     avg_weights.incIteration();
-    //std::wcerr << "After:\n" << weights << "\n";
+    //std::cerr << "After:\n" << weights << "\n";
   }
   return false;
 }
@@ -248,7 +248,7 @@ void PerceptronTagger::train(
   TrainingCorpus tc(tagged, untagged, TheFlags.getSkipErrors(), TheFlags.getSentSeg());
   size_t avail_skipped;
   for (int i = 0; i < iterations; i++) {
-    std::wcerr << "Iteration " << i + 1 << " of " << iterations << "\n";
+    std::cerr << "Iteration " << i + 1 << " of " << iterations << "\n";
     avail_skipped = 0;
     tc.shuffle();
     std::vector<TrainingSentence>::const_iterator si;
@@ -259,12 +259,12 @@ void PerceptronTagger::train(
   }
   avg_weights.average();
   if (avail_skipped) {
-    std::wcerr << "Skipped " << tc.skipped << " sentences due to token "
+    std::cerr << "Skipped " << tc.skipped << " sentences due to token "
                << "misalignment and " << avail_skipped << " sentences due to "
                << "tagged token being unavailable in untagged file out of "
                << tc.sentences.size() << " total sentences.\n";
   }
-  //std::wcerr << *this;
+  //std::cerr << *this;
 }
 
 void PerceptronTagger::serialise(std::ostream &serialised) const

@@ -57,13 +57,13 @@ ConstantManager::operator =(ConstantManager const &o)
   return *this;
 }
 void
-ConstantManager::setConstant(wstring const &constant, int const value)
+ConstantManager::setConstant(UString const &constant, int const value)
 {
   constants[constant] = value;
 }
 
 int
-ConstantManager::getConstant(wstring const &constant)
+ConstantManager::getConstant(UString const &constant)
 {
   return constants[constant];
 }
@@ -73,10 +73,10 @@ ConstantManager::write(FILE *output)
 {
   Compression::multibyte_write(constants.size(), output);
 
-  for(map<wstring, int>::const_iterator it = constants.begin(), limit = constants.end();
+  for(map<UString, int>::const_iterator it = constants.begin(), limit = constants.end();
       it != limit; it++)
   {
-    Compression::wstring_write(it->first, output);
+    Compression::string_write(it->first, output);
     Compression::multibyte_write(it->second, output);
   }
 }
@@ -88,7 +88,7 @@ ConstantManager::read(FILE *input)
   int size = Compression::multibyte_read(input);
   for(int i = 0; i != size; i++)
   {
-    wstring mystr = Compression::wstring_read(input);
+    UString mystr = Compression::string_read(input);
     constants[mystr] = Compression::multibyte_read(input);
   }
 }
@@ -96,11 +96,11 @@ ConstantManager::read(FILE *input)
 void
 ConstantManager::serialise(std::ostream &serialised) const
 {
-  Serialiser<map<wstring, int> >::serialise(constants, serialised);
+  Serialiser<map<UString, int> >::serialise(constants, serialised);
 }
 
 void
 ConstantManager::deserialise(std::istream &serialised)
 {
-  constants = Deserialiser<map<wstring, int> >::deserialise(serialised);
+  constants = Deserialiser<map<UString, int> >::deserialise(serialised);
 }

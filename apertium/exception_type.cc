@@ -20,29 +20,27 @@
 #include <string>
 
 namespace Apertium {
-ExceptionType::ExceptionType(const char *const what_) : what_(what_) {}
+ExceptionType::ExceptionType(const char *const what_)
+  : what_(to_ustring(what_)) {}
 
-ExceptionType::ExceptionType(const std::string &what_) : what_(what_) {}
+ExceptionType::ExceptionType(const std::string &what_)
+  : what_(to_ustring(what_.c_str())) {}
 
 ExceptionType::ExceptionType(const std::stringstream &what_)
-    : what_(what_.str()) {}
+  : what_(to_ustring(what_.str().c_str())) {}
 
-ExceptionType::ExceptionType(const wchar_t *const what_)
-{
-  this->what_ = UtfConverter::toUtf8(what_);
-}
+ExceptionType::ExceptionType(const UChar *const what_)
+  : what_(what_) {}
 
-ExceptionType::ExceptionType(const std::wstring &what_)
-{
-  this->what_ = UtfConverter::toUtf8(what_);
-}
-
-ExceptionType::ExceptionType(const std::wstringstream &what_)
-{
-  this->what_ = UtfConverter::toUtf8(what_.str());
-}
+ExceptionType::ExceptionType(const UString &what_)
+  : what_(what_) {}
 
 ExceptionType::~ExceptionType() throw() {}
 
-const char *ExceptionType::what() const throw() { return what_.c_str(); }
+const char *ExceptionType::what() const throw()
+{
+  std::string res;
+  utf8::utf16to8(what_.begin(), what_.end(), std::back_inserter(res));
+  return res.c_str();
+}
 }

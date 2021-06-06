@@ -55,8 +55,8 @@ const std::string PerceptronSpec::type_names[] = {
 };
 
 static Morpheme make_sentinel_wordoid(
-    const std::wstring &lemma_str,
-    const std::wstring &tag_str) {
+    const UString &lemma_str,
+    const UString &tag_str) {
   Morpheme morpheme;
   morpheme.TheLemma = lemma_str;
   Tag tag;
@@ -66,17 +66,17 @@ static Morpheme make_sentinel_wordoid(
 }
 
 static std::vector<Morpheme> make_sentinel_wordoids(
-    const std::wstring &lemma_str,
-    const std::wstring &tag_str) {
+    const UString &lemma_str,
+    const UString &tag_str) {
   std::vector<Morpheme> morphemes;
   morphemes.push_back(make_sentinel_wordoid(lemma_str, tag_str));
   return morphemes;
 }
 
 static LexicalUnit make_sentinel_token(
-    const std::wstring &surf,
-    const std::wstring &lemma_str,
-    const std::wstring &tag_str) {
+    const UString &surf,
+    const UString &lemma_str,
+    const UString &tag_str) {
   Analysis analy;
   analy.TheMorphemes = make_sentinel_wordoids(lemma_str, tag_str);
   LexicalUnit lu;
@@ -92,9 +92,9 @@ PerceptronSpec::PerceptronSpec() {
       opcode_values[opcode_names[i]] = (Opcode)i;
     }
 
-    untagged_sentinel = make_sentinel_wordoids(L"!UNTAGGED!", L"!UT!");
-    token_wordoids_underflow = make_sentinel_token(L"!SURF_UNDERFLOW!", L"!TOK_UNDERFLOW!", L"!TUF!");
-    token_wordoids_overflow = make_sentinel_token(L"!SURF_OVERFLOW!", L"!TOK_OVERFLOW!", L"!TOF!");
+    untagged_sentinel = make_sentinel_wordoids("!UNTAGGED!", "!UT!");
+    token_wordoids_underflow = make_sentinel_token("!SURF_UNDERFLOW!", "!TOK_UNDERFLOW!", "!TUF!");
+    token_wordoids_overflow = make_sentinel_token("!SURF_OVERFLOW!", "!TOK_OVERFLOW!", "!TOF!");
 
     static_constructed = true;
   }
@@ -289,14 +289,14 @@ subscript(std::vector<T> vec, int idx) {
 void
 PerceptronSpec::Machine::traceMachineState()
 {
-  std::wcerr << "pc: " << bytecode_iter - feat.begin() << "\n";
-  std::wcerr << "peek: ";
-  std::wcerr << *bytecode_iter;
+  std::cerr << "pc: " << bytecode_iter - feat.begin() << "\n";
+  std::cerr << "peek: ";
+  std::cerr << *bytecode_iter;
   if (*bytecode_iter < num_opcodes) {
-    std::wcerr << " (" << opcode_names[*bytecode_iter].c_str() << ")";
+    std::cerr << " (" << opcode_names[*bytecode_iter].c_str() << ")";
   }
-  std::wcerr << "\n";
-  std::wcerr << "stack: " << stack << "\n";
+  std::cerr << "\n";
+  std::cerr << "stack: " << stack << "\n";
 }
 
 bool
@@ -367,12 +367,12 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
           .accumulator=StackValue(0)});
     } break;
     case FOREACH: {
-      //std::wcerr << "size: " << loop_stack.back().iterable.size()
+      //std::cerr << "size: " << loop_stack.back().iterable.size()
                  //<< " iteration: " << loop_stack.back().iteration << "\n";
-      //std::wcerr << "foreach pc: " << bytecode_iter - feat.begin() << "\n";
+      //std::cerr << "foreach pc: " << bytecode_iter - feat.begin() << "\n";
       size_t slot = get_uint_operand();
       size_t end_offset = get_uint_operand();
-      //std::wcerr << "after foreach pc: " << bytecode_iter - feat.begin() << "\n";
+      //std::cerr << "after foreach pc: " << bytecode_iter - feat.begin() << "\n";
       if (loop_stack.back().iteration == loop_stack.back().iterable.size()) {
         stack.push(loop_stack.back().accumulator);
         loop_stack.pop_back();
@@ -392,10 +392,10 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
         if (loop_state.iteration == 0) {
           if (stack.top().type == WRDVAL) {
             loop_state.accumulator = StackValue(std::vector<Morpheme>());
-            //std::wcerr << "Wordoid array size " << loop_state.iterable.size() << "\n";
+            //std::cerr << "Wordoid array size " << loop_state.iterable.size() << "\n";
           } else if (stack.top().type == STRVAL) {
             loop_state.accumulator = StackValue(std::vector<std::string>());
-            //std::wcerr << "String array size " << loop_state.iterable.size() << "\n";
+            //std::cerr << "String array size " << loop_state.iterable.size() << "\n";
           } else {
             throw 1;
           }
@@ -403,7 +403,7 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
         if (stack.top().type == WRDVAL) {
           loop_state.accumulator.wrdArr().push_back(stack.top().wrd());
         } else if (stack.top().type == STRVAL) {
-          //std::wcerr << "String array size " << loop_state.accumulator.size() << "\n";
+          //std::cerr << "String array size " << loop_state.accumulator.size() << "\n";
           loop_state.accumulator.strArr().push_back(stack.top().str());
         } else {
           throw 1;
@@ -416,7 +416,7 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
     } break;
     case GETGVAR: {
       int slot = get_uint_operand();
-      //std::wcerr << "GETGVAR " << slot << " " << spec.global_results[slot] << "\n";
+      //std::cerr << "GETGVAR " << slot << " " << spec.global_results[slot] << "\n";
       stack.push(spec.global_results[slot]);
     } break;
     case GETVAR: {
@@ -476,16 +476,16 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
       stack.push(clamp(0, (int)untagged.size() - 1, stack.pop_off().intVal()));
       break;
     case GETWRD: {
-      //std::wcerr << "GETWRD start\n";
+      //std::cerr << "GETWRD start\n";
       stack.push(get_wordoid(tagged));
-      //std::wcerr << "GETWRD done\n";
+      //std::cerr << "GETWRD done\n";
     } break;
     case EXTOKSURF: {
-      std::wstring surf = get_token(untagged).TheSurfaceForm;
+      UString surf = get_token(untagged).TheSurfaceForm;
       stack.push(new std::string(UtfConverter::toUtf8(surf)));
     } break;
     case EXWRDLEMMA: {
-      std::wstring lemma = stack.pop_off().wrd().TheLemma;
+      UString lemma = stack.pop_off().wrd().TheLemma;
       stack.push(new std::string(UtfConverter::toUtf8(lemma)));
     } break;
     case EXWRDCOARSETAG: {
@@ -519,11 +519,11 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
     case EXTAGS: {
       const std::vector<Tag> &tags = stack.top().wrd().TheTags;
       /*std::vector<Tag>::const_iterator it = tags.begin();
-      std::wcerr << "tags: ";
+      std::cerr << "tags: ";
       for (;it != tags.end(); it++) {
-        std::wcerr << &(*it) << " " << it->TheTag << ", ";
+        std::cerr << &(*it) << " " << it->TheTag << ", ";
       }
-      std::wcerr << "\n";*/
+      std::cerr << "\n";*/
       std::vector<std::string> *tags_str = new std::vector<std::string>;
       tags_str->resize(tags.size());
       transform(tags.begin(), tags.end(), tags_str->begin(), get_tag);

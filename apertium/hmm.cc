@@ -58,10 +58,10 @@ TaggerData& HMM::get_tagger_data() {
 
 void HMM::deserialise(FILE *Serialised_FILE_Tagger) {
   tdhmm.read(Serialised_FILE_Tagger);
-  eos = (tdhmm.getTagIndex())[L"TAG_SENT"];
+  eos = (tdhmm.getTagIndex())["TAG_SENT"_u];
 }
 
-std::vector<std::wstring> &HMM::getArrayTags() {
+std::vector<UString> &HMM::getArrayTags() {
   return tdhmm.getArrayTags();
 }
 
@@ -69,7 +69,7 @@ void HMM::serialise(FILE *Stream_) { tdhmm.write(Stream_); }
 
 void HMM::deserialise(const TaggerData &Deserialised_FILE_Tagger) {
   tdhmm = TaggerDataHMM(Deserialised_FILE_Tagger);
-  eos = (tdhmm.getTagIndex())[L"TAG_SENT"];
+  eos = (tdhmm.getTagIndex())["TAG_SENT"_u];
 }
 
 void HMM::init_probabilities_from_tagged_text_(MorphoStream &stream_tagged,
@@ -99,7 +99,7 @@ HMM::HMM(TaggerFlags& Flags_) : FILE_Tagger(Flags_) {}
 HMM::HMM(TaggerDataHMM _tdhmm)
   : tdhmm(_tdhmm)
 {
-  eos = (tdhmm.getTagIndex())[L"TAG_SENT"];
+  eos = (tdhmm.getTagIndex())["TAG_SENT"_u];
 }
 
 HMM::HMM(TaggerDataHMM *tdhmm) : tdhmm(*tdhmm) {}
@@ -193,7 +193,7 @@ HMM::init_probabilities_kupiec(MorphoStream &lexmorfo)
   //We count for each ambiguity class the number of ocurrences
   word = lexmorfo.get_next_word();
   while((word)) {
-    if (++nw%10000==0) wcerr<<L'.'<<flush;
+    if (++nw%10000==0) cerr<<L'.'<<flush;
 
     tags=word->get_tags();
 
@@ -265,7 +265,7 @@ HMM::init_probabilities_kupiec(MorphoStream &lexmorfo)
       }
     }
   }
-  wcerr<<L"\n";
+  cerr<<"\n";
 }
 
 
@@ -291,30 +291,30 @@ HMM::init_probabilities_from_tagged_text(MorphoStream &stream_tagged,
   word_tagged = stream_tagged.get_next_word();
   word_untagged = stream_untagged.get_next_word();
   while(word_tagged) {
-    wcerr<<*word_tagged;
-    wcerr<<L" -- "<<*word_untagged<<L"\n";
+    cerr<<*word_tagged;
+    cerr<<" -- "<<*word_untagged<<"\n";
 
     if (word_tagged->get_superficial_form()!=word_untagged->get_superficial_form()) {
-      wcerr<<L"\nTagged text (.tagged) and analyzed text (.untagged) streams are not aligned.\n";
-      wcerr<<L"Take a look at tagged text (.tagged).\n";
-      wcerr<<L"Perhaps this is caused by a multiword unit that is not a multiword unit in one of the two files.\n";
-      wcerr<<*word_tagged<<L" -- "<<*word_untagged<<L"\n";
+      cerr<<"\nTagged text (.tagged) and analyzed text (.untagged) streams are not aligned.\n";
+      cerr<<"Take a look at tagged text (.tagged).\n";
+      cerr<<"Perhaps this is caused by a multiword unit that is not a multiword unit in one of the two files.\n";
+      cerr<<*word_tagged<<" -- "<<*word_untagged<<"\n";
       exit(1);
     }
 
-    if (++nw%100==0) wcerr<<L'.'<<flush;
+    if (++nw%100==0) cerr<<L'.'<<flush;
 
     tag2 = tag1;
 
     if (word_untagged==NULL) {
-      wcerr<<L"word_untagged==NULL\n";
+      cerr<<"word_untagged==NULL\n";
       exit(1);
     }
 
     if (word_tagged->get_tags().size()==0) // Unknown word
       tag1 = -1;
     else if (word_tagged->get_tags().size()>1) // Ambiguous word
-      wcerr<<L"Error in tagged text. An ambiguous word was found: "<<word_tagged->get_superficial_form()<<L"\n";
+      cerr<<"Error in tagged text. An ambiguous word was found: "<<word_tagged->get_superficial_form()<<"\n";
     else
       tag1 = *(word_tagged->get_tags()).begin();
 
@@ -368,7 +368,7 @@ HMM::init_probabilities_from_tagged_text(MorphoStream &stream_tagged,
     }
    }
 
-  wcerr<<L"\n";
+  cerr<<"\n";
 }
 
 void
@@ -416,15 +416,15 @@ void
 HMM::post_ambg_class_scan() {
   int N = (tdhmm.getTagIndex()).size();
   int M = (tdhmm.getOutput()).size();
-  wcerr << N << L" states and " << M <<L" ambiguity classes\n";
+  cerr << N << " states and " << M <<" ambiguity classes\n";
 
   tdhmm.setProbabilities(N, M);
 }
 
 void
-HMM::filter_ambiguity_classes(FILE *in, FILE *out) {
+HMM::filter_ambiguity_classes(const char* input_file, UFILE* out) {
   set<set<TTag> > ambiguity_classes;
-  FileMorphoStream morpho_stream(in, true, &tdhmm);
+  FileMorphoStream morpho_stream(input_file, true, &tdhmm);
 
   TaggerWord *word = morpho_stream.get_next_word();
 
@@ -434,7 +434,7 @@ HMM::filter_ambiguity_classes(FILE *in, FILE *out) {
       if(ambiguity_classes.find(tags) == ambiguity_classes.end()) {
 	    ambiguity_classes.insert(tags);
 	    word->outputOriginal(out);
-	    //wcerr<<word->get_string_tags()<<L"\n";
+	    //cerr<<word->get_string_tags()<<"\n";
       }
     }
     delete word;
@@ -474,12 +474,12 @@ HMM::train(MorphoStream &morpho_stream) {
 
   while (word) {
 
-    //wcerr<<L"Enter para continuar\n";
+    //cerr<<"Enter para continuar\n";
     //getchar();
 
-    if (++nw%10000==0) wcerr<<L'.'<<flush;
+    if (++nw%10000==0) cerr<<L'.'<<flush;
 
-    //wcerr<<*word<<L"\n";
+    //cerr<<*word<<"\n";
 
     pretags = pending.back();
 
@@ -501,15 +501,15 @@ HMM::train(MorphoStream &morpho_stream) {
       i=*itag;
       for (jtag=pretags.begin(); jtag!=pretags.end(); jtag++) {
          j=*jtag;
-         //wcerr<<"previous alpha["<<len<<"]["<<i<<"]="<<alpha[len][i]<<"\n";
-	 //wcerr<<"alpha["<<len-1<<"]["<<j<<"]="<<alpha[len-1][j]<<"\n";
-         //wcerr<<"a["<<j<<"]["<<i<<"]="<<a[j][i]<<"\n";
-         //wcerr<<"b["<<i<<"]["<<k<<"]="<<b[i][k]<<"\n";
+         //cerr<<"previous alpha["<<len<<"]["<<i<<"]="<<alpha[len][i]<<"\n";
+	 //cerr<<"alpha["<<len-1<<"]["<<j<<"]="<<alpha[len-1][j]<<"\n";
+         //cerr<<"a["<<j<<"]["<<i<<"]="<<a[j][i]<<"\n";
+         //cerr<<"b["<<i<<"]["<<k<<"]="<<b[i][k]<<"\n";
 	 alpha[len][i] += alpha[len-1][j]*(tdhmm.getA())[j][i]*(tdhmm.getB())[i][k];
       }
       if (alpha[len][i]==0)
         alpha[len][i]=DBL_MIN;
-      //wcerr<<"alpha["<<len<<"]["<<i<<"]="<<alpha[len][i]<<"\n--------\n";
+      //cerr<<"alpha["<<len<<"]["<<i<<"]="<<alpha[len][i]<<"\n--------\n";
     }
 
     if (tags.size()>1) {
@@ -521,8 +521,8 @@ HMM::train(MorphoStream &morpho_stream) {
 
       prob = alpha[len][tag];
 
-      //wcerr<<"prob="<<prob<<"\n";
-      //wcerr<<"alpha["<<len<<"]["<<tag<<"]="<<alpha[len][tag]<<"\n";
+      //cerr<<"prob="<<prob<<"\n";
+      //cerr<<"alpha["<<len<<"]["<<tag<<"]="<<alpha[len][tag]<<"\n";
       loli -= log(prob);
 
       for (t=0; t<len; t++) {  // loop from T-1 to 0
@@ -541,13 +541,13 @@ HMM::train(MorphoStream &morpho_stream) {
 
 	       gamma[i] +=  alpha[len-t][i]*beta[t%2][i]/prob;
 	       if (p_isnan(gamma[i])) {
-	          wcerr<<L"NAN(3) gamma["<<i<<L"] = "<<gamma[i]<<L" alpha["<<len-t<<L"]["<<i<<L"]= "<<alpha[len-t][i]
-	               <<L" beta["<<t%2<<L"]["<<i<<L"] = "<<beta[t%2][i]<<L" prob = "<<prob<<L" previous gamma = "<<previous_value<<L"\n";
+	          cerr<<"NAN(3) gamma["<<i<<"] = "<<gamma[i]<<" alpha["<<len-t<<"]["<<i<<"]= "<<alpha[len-t][i]
+	               <<" beta["<<t%2<<"]["<<i<<"] = "<<beta[t%2][i]<<" prob = "<<prob<<" previous gamma = "<<previous_value<<"\n";
 	          exit(1);
 	       }
 	       if (p_isinf(gamma[i])) {
-	          wcerr<<L"INF(3) gamma["<<i<<L"] = "<<gamma[i]<<L" alpha["<<len-t<<L"]["<<i<<L"]= "<<alpha[len-t][i]
-	               <<L" beta["<<t%2<<L"]["<<i<<L"] = "<<beta[t%2][i]<<L" prob = "<<prob<<L" previous gamma = "<<previous_value<<L"\n";
+	          cerr<<"INF(3) gamma["<<i<<"] = "<<gamma[i]<<" alpha["<<len-t<<"]["<<i<<"]= "<<alpha[len-t][i]
+	               <<" beta["<<t%2<<"]["<<i<<"] = "<<beta[t%2][i]<<" prob = "<<prob<<" previous gamma = "<<previous_value<<"\n";
 	          exit(1);
 	       }
 	       if (gamma[i]==0) {
@@ -572,11 +572,11 @@ HMM::train(MorphoStream &morpho_stream) {
     word = morpho_stream.get_next_word();
   }
 
-  if ((pending.size()>1) || ((tag!=eos)&&(tag != (tdhmm.getTagIndex())[L"TAG_kEOF"]))) {
-    wcerr << L"Warning: The last tag is not the end-of-sentence-tag "
-          << L"but rather " << tdhmm.getArrayTags()[tag] << L". Line: " << nw
-	  << L". Pending: " << pending.size() << ". Tags: ";
-    wcerr << "\n";
+  if ((pending.size()>1) || ((tag!=eos)&&(tag != (tdhmm.getTagIndex())["TAG_kEOF"_u]))) {
+    cerr << "Warning: The last tag is not the end-of-sentence-tag "
+          << "but rather " << tdhmm.getArrayTags()[tag] << ". Line: " << nw
+	  << ". Pending: " << pending.size() << ". Tags: ";
+    cerr << "\n";
   }
 
   int N = tdhmm.getN();
@@ -597,24 +597,24 @@ HMM::train(MorphoStream &morpho_stream) {
       j = jt->first;
       if (xsi[i][j]>0) {
         if (gamma[i]==0) {
-          wcerr<<L"Warning: gamma["<<i<<L"]=0\n";
+          cerr<<"Warning: gamma["<<i<<"]=0\n";
           gamma[i]=DBL_MIN;
         }
 
         (tdhmm.getA())[i][j] = xsi[i][j]/gamma[i];
 
         if (p_isnan((tdhmm.getA())[i][j])) {
-          wcerr<<L"NAN\n";
-          wcerr <<L"Error: BW - NAN(1) a["<<i<<L"]["<<j<<L"]="<<(tdhmm.getA())[i][j]<<L"\txsi["<<i<<L"]["<<j<<L"]="<<xsi[i][j]<<L"\tgamma["<<i<<L"]="<<gamma[i]<<L"\n";
+          cerr<<"NAN\n";
+          cerr <<"Error: BW - NAN(1) a["<<i<<"]["<<j<<"]="<<(tdhmm.getA())[i][j]<<"\txsi["<<i<<"]["<<j<<"]="<<xsi[i][j]<<"\tgamma["<<i<<"]="<<gamma[i]<<"\n";
 	  exit(1);
         }
 	if (p_isinf((tdhmm.getA())[i][j])) {
-	  wcerr<<L"INF\n";
-          wcerr <<L"Error: BW - INF(1) a["<<i<<L"]["<<j<<L"]="<<(tdhmm.getA())[i][j]<<L"\txsi["<<i<<L"]["<<j<<L"]="<<xsi[i][j]<<L"\tgamma["<<i<<L"]="<<gamma[i]<<L"\n";
+	  cerr<<"INF\n";
+          cerr <<"Error: BW - INF(1) a["<<i<<"]["<<j<<"]="<<(tdhmm.getA())[i][j]<<"\txsi["<<i<<"]["<<j<<"]="<<xsi[i][j]<<"\tgamma["<<i<<"]="<<gamma[i]<<"\n";
           exit(1);
         }
 	if ((tdhmm.getA())[i][j]==0) {
-          //wcerr <<"Error: BW - ZERO(1) a["<<i<<"]["<<j<<"]="<<(tdhmm.getA())[i][j]<<"\txsi["<<i<<"]["<<j<<"]="<<xsi[i][j]<<"\tgamma["<<i<<"]="<<gamma[i]<<"\n";
+          //cerr <<"Error: BW - ZERO(1) a["<<i<<"]["<<j<<"]="<<(tdhmm.getA())[i][j]<<"\txsi["<<i<<"]["<<j<<"]="<<xsi[i][j]<<"\tgamma["<<i<<"]="<<gamma[i]<<"\n";
 	  //     exit(1);
         }
       }
@@ -629,15 +629,15 @@ HMM::train(MorphoStream &morpho_stream) {
         (tdhmm.getB())[i][k] = phi[i][k]/gamma[i];
 
 	if (p_isnan((tdhmm.getB())[i][k])) {
-          wcerr<<L"Error: BW - NAN(2) b["<<i<<L"]["<<k<<L"]="<<(tdhmm.getB())[i][k]<<L"\tphi["<<i<<L"]["<<k<<L"]="<<phi[i][k]<<L"\tgamma["<<i<<L"]="<<gamma[i]<<L"\n";
+          cerr<<"Error: BW - NAN(2) b["<<i<<"]["<<k<<"]="<<(tdhmm.getB())[i][k]<<"\tphi["<<i<<"]["<<k<<"]="<<phi[i][k]<<"\tgamma["<<i<<"]="<<gamma[i]<<"\n";
 	       exit(1);
         }
 	if (p_isinf((tdhmm.getB())[i][k])) {
-          wcerr<<L"Error: BW - INF(2) b["<<i<<L"]["<<k<<L"]="<<(tdhmm.getB())[i][k]<<L"\tphi["<<i<<L"]["<<k<<L"]="<<phi[i][k]<<L"\tgamma["<<i<<L"]="<<gamma[i]<<L"\n";
+          cerr<<"Error: BW - INF(2) b["<<i<<"]["<<k<<"]="<<(tdhmm.getB())[i][k]<<"\tphi["<<i<<"]["<<k<<"]="<<phi[i][k]<<"\tgamma["<<i<<"]="<<gamma[i]<<"\n";
 	       exit(1);
         }
 	if ((tdhmm.getB())[i][k]==0) {
-          //wcerr <<"Error: BW - ZERO(2) b["<<i<<"]["<<k<<"]="<<(tdhmm.getB())[i][k]<<"\tphi["<<i<<"]["<<k<<"]="<<phi[i][k]<<"\tgamma["<<i<<"]="<<gamma[i]<<"\n";
+          //cerr <<"Error: BW - ZERO(2) b["<<i<<"]["<<k<<"]="<<(tdhmm.getB())[i][k]<<"\tphi["<<i<<"]["<<k<<"]="<<phi[i][k]<<"\tgamma["<<i<<"]="<<gamma[i]<<"\n";
 	  //     exit(1);
         }
       }
@@ -666,11 +666,11 @@ HMM::train(MorphoStream &morpho_stream) {
     }
   }
 
-  wcerr<<L"Log="<<loli<<L"\n";
+  cerr<<"Log="<<loli<<"\n";
 }
 
 void
-HMM::tagger(MorphoStream &morpho_stream, FILE *Output) {
+HMM::tagger(MorphoStream &morpho_stream, UFILE* Output) {
   int i, j, k, nw;
   TaggerWord *word = NULL;
   TTag tag;
@@ -740,17 +740,17 @@ HMM::tagger(MorphoStream &morpho_stream, FILE *Output) {
 	loli -= log(prob);
       else {
         if (TheFlags.getDebug())
-	  wcerr<<L"Problem with word '"<<word->get_superficial_form()<<L"' "<<word->get_string_tags()<<L"\n";
+	  cerr<<"Problem with word '"<<word->get_superficial_form()<<"' "<<word->get_string_tags()<<"\n";
       }
       for (unsigned t=0; t<best[nwpend%2][tag].size(); t++) {
 	if (TheFlags.getFirst()) {
-	  wstring const &micad = wpend[t].get_all_chosen_tag_first(best[nwpend%2][tag][t], (tdhmm.getTagIndex())[L"TAG_kEOF"]);
-	  fputws_unlocked(micad.c_str(), Output);
+	  UString const &micad = wpend[t].get_all_chosen_tag_first(best[nwpend%2][tag][t], (tdhmm.getTagIndex())["TAG_kEOF"_u]);
+	  write(micad, Output);
 	} else {
 	  // print Output
 	  wpend[t].set_show_sf(TheFlags.getShowSuperficial());
-	  wstring const &micad = wpend[t].get_lexical_form(best[nwpend%2][tag][t], (tdhmm.getTagIndex())[L"TAG_kEOF"]);
-	  fputws_unlocked(micad.c_str(), Output);
+	  UString const &micad = wpend[t].get_lexical_form(best[nwpend%2][tag][t], (tdhmm.getTagIndex())["TAG_kEOF"_u]);
+	  write(micad, Output);
 	}
       }
 
@@ -765,23 +765,21 @@ HMM::tagger(MorphoStream &morpho_stream, FILE *Output) {
     {
       if(TheFlags.getNullFlush())
       {
-        fputwc_unlocked(L'\0', Output);
+        u_fputc('\0', Output);
         tags.clear();
         tags.insert(eos);
         alpha[0][eos] = 1;
       }
 
-      fflush(Output);
+      u_fflush(Output);
       morpho_stream.setEndOfFile(false);
     }
     word = morpho_stream.get_next_word();
   }
 
   if ((tags.size()>1)&&(TheFlags.getDebug())) {
-    wstring errors;
-    errors = L"The text to disambiguate has finished, but there are ambiguous words that has not been disambiguated.\n";
-    errors+= L"This message should never appears. If you are reading this ..... these are very bad news.\n";
-    wcerr<<L"Error: "<<errors;
+    cerr << "Error: The text to disambiguate has finished, but there are ambiguous words that has not been disambiguated.\n";
+    cerr << "This message should never appears. If you are reading this ..... these are very bad news.\n";
   }
 }
 

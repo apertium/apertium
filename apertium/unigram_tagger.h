@@ -46,7 +46,7 @@ class UnigramTagger : public StreamTagger {
 private:
   long double model3_score(const Analysis &Analysis_);
   void tag(const LexicalUnit &LexicalUnit_, std::wostream &Output);
-  std::wstringstream score_DEBUG;
+  std::stringstream score_DEBUG;
 protected:
 
   UnigramTaggerModel model;

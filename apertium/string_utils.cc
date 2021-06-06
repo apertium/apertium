@@ -26,12 +26,12 @@
 #endif
 
 //Delete white spaces from the end and the begining of the string
-wstring
-StringUtils::trim(wstring const &str)
+UString
+StringUtils::trim(UString const &str)
 {
-  if(str == L"")
+  if(str.empty())
   {
-    return L"";
+    return ""_u;
   }
 
   int begin = 0, end = str.size() - 1;
@@ -54,13 +54,13 @@ StringUtils::trim(wstring const &str)
   return str.substr(begin, end-begin);
 }
 
-vector<wstring>
-StringUtils::split_wstring(wstring const &input, wstring const &delimiter)
+vector<UString>
+StringUtils::split_UString(UString const &input, UString const &delimiter)
 {
   unsigned pos;
   int new_pos;
-  vector<wstring> result;
-  wstring s = L"";
+  vector<UString> result;
+  UString s = "";
   pos=0;
 
   while(pos<input.size())
@@ -70,8 +70,8 @@ StringUtils::split_wstring(wstring const &input, wstring const &delimiter)
       new_pos=input.size();
     s=input.substr(pos, new_pos-pos);
     if (s.length()==0) {
-      wcerr<<L"Warning in StringUtils::split_wstring: After splitting there is an empty string\n";
-      wcerr<<L"Skipping this empty string\n";
+      cerr<<"Warning in StringUtils::split_UString: After splitting there is an empty string\n";
+      cerr<<"Skipping this empty string\n";
     } else
       result.push_back(s);
     pos=new_pos+delimiter.size();
@@ -80,10 +80,10 @@ StringUtils::split_wstring(wstring const &input, wstring const &delimiter)
   return result;
 }
 
-wstring
-StringUtils::vector2wstring(vector<wstring> const &v)
+UString
+StringUtils::vector2UString(vector<UString> const &v)
 {
-  wstring s = L"";
+  UString s = "";
   for(unsigned i=0; i<v.size(); i++)
   {
     if (i>0)
@@ -93,12 +93,12 @@ StringUtils::vector2wstring(vector<wstring> const &v)
   return s;
 }
 
-wstring
-StringUtils::substitute(wstring const &source, wstring const &olds, wstring const &news) {
-  wstring s = source;
+UString
+StringUtils::substitute(UString const &source, UString const &olds, UString const &news) {
+  UString s = source;
 
   unsigned int p=s.find(olds , 0);
-  while (p!=static_cast<unsigned int>(wstring::npos))
+  while (p!=static_cast<unsigned int>(UString::npos))
   {
     s.replace(p, olds.length(), news);
     p+=news.length();
@@ -108,7 +108,7 @@ StringUtils::substitute(wstring const &source, wstring const &olds, wstring cons
   return s;
 }
 
-wstring
+UString
 StringUtils::itoa(int n)
 {
   return XMLParseUtil::stows(itoa_string(n));
@@ -122,7 +122,7 @@ StringUtils::itoa_string(int n)
   return str;
 }
 
-wstring
+UString
 StringUtils::ftoa(double f)
 {
   char str[256];
@@ -130,10 +130,10 @@ StringUtils::ftoa(double f)
   return XMLParseUtil::stows(str);
 }
 
-wstring
-StringUtils::tolower(wstring const &s)
+UString
+StringUtils::tolower(UString const &s)
 {
-  wstring l=s;
+  UString l=s;
   for(unsigned i=0; i<s.length(); i++)
   {
     l[i] = (wchar_t) towlower(s[i]);
@@ -141,9 +141,9 @@ StringUtils::tolower(wstring const &s)
   return l;
 }
 
-wstring
-StringUtils::toupper(wstring const &s) {
-  wstring l=s;
+UString
+StringUtils::toupper(UString const &s) {
+  UString l=s;
   for(unsigned i=0; i<s.length(); i++)
   {
     l[i]  = (wchar_t) towupper(s[i]);

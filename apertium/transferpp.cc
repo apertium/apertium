@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 
   if(argc != 3)
   {
-    wcerr << "USAGE: " << basename(argv[0]) << " rules_file transfer_file" << endl;
+    cerr << "USAGE: " << basename(argv[0]) << " rules_file transfer_file" << endl;
     exit(EXIT_FAILURE);
   }
 

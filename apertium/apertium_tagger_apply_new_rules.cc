@@ -38,17 +38,17 @@ TTag eos; //End-of-sentence tag
 
 void check_file(FILE *f, const string& path) {
   if (!f) {
-    wcerr<<"Error: cannot open file '"<<path.c_str()<<"'\n";
+    cerr<<"Error: cannot open file '"<<path.c_str()<<"'\n";
     exit(EXIT_FAILURE);
   }
 }
 
 void help(char *name) {
-  wcerr<<"Forbid and enforce rules are applied to the given HMM parameters\n\n";
-  wcerr<<"USAGE:\n";
-  wcerr<<name<<" --filein filein.prob --fileout fileout.prob --tsxfile file.tsx\n\n";
+  cerr<<"Forbid and enforce rules are applied to the given HMM parameters\n\n";
+  cerr<<"USAGE:\n";
+  cerr<<name<<" --filein filein.prob --fileout fileout.prob --tsxfile file.tsx\n\n";
 
-  wcerr<<"ARGUMENTS: \n"
+  cerr<<"ARGUMENTS: \n"
       <<"   --filein|-i: To specify the file with the HMM parameter to process\n\n"
       <<"   --fileout|-o: To specify the file to which the HMM will be written\n\n"
       <<"   --tsxfile|-x: File containing the rules to apply\n\n"
@@ -63,10 +63,10 @@ int main(int argc, char* argv[]) {
   int c;
   int option_index=0;
 
-  wcerr<<"Command line: ";
+  cerr<<"Command line: ";
   for(int i=0; i<argc; i++)
-    wcerr<<argv[i]<<" ";
-  wcerr<<"\n";
+    cerr<<argv[i]<<" ";
+  cerr<<"\n";
 
   while (true) {
     static struct option long_options[] =
@@ -95,7 +95,7 @@ int main(int argc, char* argv[]) {
       filetsx=optarg;
       break;
     case 'v':
-      wcerr<<"LICENSE:\n\n"
+      cerr<<"LICENSE:\n\n"
 	  <<"   Copyright (C) 2006 Felipe Sánchez Martínez\n\n"
 	  <<"   This program is free software; you can redistribute it and/or\n"
 	  <<"   modify it under the terms of the GNU General Public License as\n"
@@ -119,19 +119,19 @@ int main(int argc, char* argv[]) {
 
   //Now we check the command line arguments
   if (filein=="") {
-    wcerr<<"Error: You did not provide an input file (.prob). Use --filein to do that\n";
+    cerr<<"Error: You did not provide an input file (.prob). Use --filein to do that\n";
     help(argv[0]);
     exit(EXIT_FAILURE);
   }
 
   if (fileout=="") {
-    wcerr<<"Error: You did not provide an output file (.prob). Use --fileout to do that\n";
+    cerr<<"Error: You did not provide an output file (.prob). Use --fileout to do that\n";
     help(argv[0]);
     exit(EXIT_FAILURE);
   }
 
   if (filetsx=="") {
-    wcerr<<"Error: You did not provide a tagger definition file (.tsx). Use --filetsx to do that\n";
+    cerr<<"Error: You did not provide a tagger definition file (.tsx). Use --filetsx to do that\n";
     help(argv[0]);
     exit(EXIT_FAILURE);
   }
@@ -141,15 +141,15 @@ int main(int argc, char* argv[]) {
   fin=fopen(filein.c_str(), "rb");
   check_file(fin, filein);
 
-  wcerr<<"Reading apertium-tagger data from file '"<<filein<<"' ... "<<flush;
+  cerr<<"Reading apertium-tagger data from file '"<<filein<<"' ... "<<flush;
   tagger_data_hmm.read(fin);
   fclose(fin);
-  wcerr<<"done.\n";
+  cerr<<"done.\n";
 
-  wcerr<<"Reading apertium-tagger definition from file '"<<filetsx<<"' ... "<<flush;
+  cerr<<"Reading apertium-tagger definition from file '"<<filetsx<<"' ... "<<flush;
   TSXReader treader;
   treader.read(filetsx);
-  wcerr<<"done.\n";
+  cerr<<"done.\n";
 
   tagger_data_hmm.setForbidRules(treader.getTaggerData().getForbidRules());
   tagger_data_hmm.setEnforceRules(treader.getTaggerData().getEnforceRules());
@@ -160,8 +160,8 @@ int main(int argc, char* argv[]) {
 
   fout=fopen(fileout.c_str(), "wb");
   check_file(fout, fileout);
-  wcerr<<"Writing apertium-tagger data to file '"<<fileout<<"' ... "<<flush;
+  cerr<<"Writing apertium-tagger data to file '"<<fileout<<"' ... "<<flush;
   hmm.serialise(fout);
   fclose(fout);
-  wcerr<<"done.\n";
+  cerr<<"done.\n";
 }

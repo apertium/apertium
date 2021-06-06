@@ -24,7 +24,7 @@
 namespace Apertium {
 class StreamedType {
 public:
-  std::wstring TheString;
+  UString TheString;
   Optional<LexicalUnit> TheLexicalUnit;
 };
 }

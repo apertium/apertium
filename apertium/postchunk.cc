@@ -98,9 +98,9 @@ Postchunk::readData(FILE *in)
   bool recompile_attrs = Compression::string_read(in) != pcre_version_endian();
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
   {
-    string const cad_k = UtfConverter::toUtf8(Compression::wstring_read(in));
+    string const cad_k = UtfConverter::toUtf8(Compression::string_read(in));
     attr_items[cad_k].read(in);
-    wstring fallback = Compression::wstring_read(in);
+    UString fallback = Compression::string_read(in);
     if(recompile_attrs) {
       attr_items[cad_k].compile(UtfConverter::toUtf8(fallback));
     }
@@ -109,25 +109,25 @@ Postchunk::readData(FILE *in)
   // variables
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
   {
-    string const cad_k = UtfConverter::toUtf8(Compression::wstring_read(in));
-    variables[cad_k] = UtfConverter::toUtf8(Compression::wstring_read(in));
+    string const cad_k = UtfConverter::toUtf8(Compression::string_read(in));
+    variables[cad_k] = UtfConverter::toUtf8(Compression::string_read(in));
   }
 
   // macros
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
   {
-    string const cad_k = UtfConverter::toUtf8(Compression::wstring_read(in));
+    string const cad_k = UtfConverter::toUtf8(Compression::string_read(in));
     macros[cad_k] = Compression::multibyte_read(in);
   }
 
   // lists
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
   {
-    string const cad_k = UtfConverter::toUtf8(Compression::wstring_read(in));
+    string const cad_k = UtfConverter::toUtf8(Compression::string_read(in));
 
     for(int j = 0, limit2 = Compression::multibyte_read(in); j != limit2; j++)
     {
-      wstring const cad_v = Compression::wstring_read(in);
+      UString const cad_v = Compression::string_read(in);
       lists[cad_k].insert(UtfConverter::toUtf8(cad_v));
       listslow[cad_k].insert(UtfConverter::toUtf8(StringUtils::tolower(cad_v)));
     }
@@ -143,7 +143,7 @@ Postchunk::read(string const &transferfile, string const &datafile)
   FILE *in = fopen(datafile.c_str(), "rb");
   if(!in)
   {
-    wcerr << "Error: Could not open file '" << datafile << "'." << endl;
+    cerr << "Error: Could not open file '" << datafile << "'." << endl;
     exit(EXIT_FAILURE);
   }
   readData(in);
@@ -158,7 +158,7 @@ Postchunk::readPostchunk(string const &in)
 
   if(doc == NULL)
   {
-    wcerr << "Error: Could not parse file '" << in << "'." << endl;
+    cerr << "Error: Could not parse file '" << in << "'." << endl;
     exit(EXIT_FAILURE);
   }
 
@@ -219,16 +219,16 @@ Postchunk::checkIndex(xmlNode *element, int index, int limit)
 {
   if(index > limit) // Note: Unlike transfer/interchunk, we allow index==limit!
   {
-    wcerr << L"Error in " << UtfConverter::fromUtf8((char *) doc->URL) << L": line " << element->line << L": index > limit" << endl;
+    cerr << "Error in " << UtfConverter::fromUtf8((char *) doc->URL) << ": line " << element->line << ": index > limit" << endl;
     return false;
   }
   if(index < 0) {
-    wcerr << L"Error in " << UtfConverter::fromUtf8((char *) doc->URL) << L": line " << element->line << L": index < 0" << endl;
+    cerr << "Error in " << UtfConverter::fromUtf8((char *) doc->URL) << ": line " << element->line << ": index < 0" << endl;
     return false;
   }
   if(word[index] == 0)
   {
-    wcerr << L"Error in " << UtfConverter::fromUtf8((char *) doc->URL) << L": line " << element->line << L": Null access at word[index]" << endl;
+    cerr << "Error in " << UtfConverter::fromUtf8((char *) doc->URL) << ": line " << element->line << ": Null access at word[index]" << endl;
     return false;
   }
   return true;
@@ -571,7 +571,7 @@ Postchunk::evalString(xmlNode *element)
 
   else
   {
-    wcerr << "Error: unexpected rvalue expression '" << element->name << "'" << endl;
+    cerr << "Error: unexpected rvalue expression '" << element->name << "'" << endl;
     exit(EXIT_FAILURE);
   }
 
@@ -607,13 +607,9 @@ Postchunk::processOut(xmlNode *localroot)
         {
           out_wblank = word[1]->getWblank();
         }
-        
-        if(myword != "")
-        {
-          fputws_unlocked(UtfConverter::fromUtf8(out_wblank).c_str(), output);
-          fputwc_unlocked(L'^', output);
-          fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
-          fputwc_unlocked(L'$', output);
+
+        if (!myword.empty()) {
+          u_fprintf(output, "%S^%S$", out_wblank.c_str(), myword.c_str());
         }
       }
       else if(!xmlStrcmp(i->name, (const xmlChar *) "mlu"))
@@ -663,14 +659,11 @@ Postchunk::processOut(xmlNode *localroot)
           out_wblank = word[1]->getWblank();
         }
 
-        fputws_unlocked(UtfConverter::fromUtf8(out_wblank).c_str(), output);
-        fputwc_unlocked('^', output);
-        fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
-        fputwc_unlocked(L'$', output);
+        u_fprintf(output, "%S^%S$", out_wblank.c_str(), myword.c_str());
       }
       else // 'b'
       {
-        fputws_unlocked(UtfConverter::fromUtf8(evalString(i)).c_str(), output);
+        write(evalString(i), output);
       }
     }
   }
@@ -691,7 +684,7 @@ Postchunk::processTags(xmlNode *localroot)
         {
           if(j->type == XML_ELEMENT_NODE)
           {
-            fputws_unlocked(UtfConverter::fromUtf8(evalString(j)).c_str(), output);
+            write(evalString(j), output);
           }
         }
       }
@@ -770,7 +763,7 @@ Postchunk::processLet(xmlNode *localroot)
         bool match = word[ti.getPos()]->setChunkPart(attr_items[ti.getContent()], evalString(rightSide));
         if(!match && trace)
         {
-          wcerr << "apertium-postchunk warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+          cerr << "apertium-postchunk warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
         }
       }
         return;
@@ -815,7 +808,7 @@ Postchunk::processLet(xmlNode *localroot)
 					 evalString(rightSide));
     if(!match && trace)
     {
-      wcerr << "apertium-postchunk warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+      cerr << "apertium-postchunk warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
     }
     evalStringCache[leftSide] = TransferInstr(ti_clip_tl, (const char *) part,
 					      pos, NULL);
@@ -891,7 +884,7 @@ Postchunk::processModifyCase(xmlNode *localroot)
 
     if(!match && trace)
     {
-      wcerr << "apertium-postchunk warning: <modify-case> on line " << localroot->line << " sometimes discards its value." << endl;
+      cerr << "apertium-postchunk warning: <modify-case> on line " << localroot->line << " sometimes discards its value." << endl;
     }
   }
   else if(!xmlStrcmp(leftSide->name, (const xmlChar *) "var"))
@@ -960,7 +953,7 @@ Postchunk::processCallMacro(xmlNode *localroot)
     }
   }
   else {
-    wcerr << "Warning: Not calling macro \"" << n << "\" from line " << localroot->line << " (empty word?)" << endl;
+    cerr << "Warning: Not calling macro \"" << n << "\" from line " << localroot->line << " (empty word?)" << endl;
   }
 
   swap(myword, word);
@@ -1096,7 +1089,7 @@ Postchunk::processIn(xmlNode *localroot)
     if(!xmlStrcmp(localroot->properties->children->content,
 		  (const xmlChar *) "yes"))
     {
-      set<string, Ltstr> &myset = listslow[(const char *) idlist];
+      set<string> &myset = listslow[(const char *) idlist];
       if(myset.find(tolower(sval)) != myset.end())
       {
 	return true;
@@ -1108,7 +1101,7 @@ Postchunk::processIn(xmlNode *localroot)
     }
   }
 
-  set<string, Ltstr> &myset = lists[(const char *) idlist];
+  set<string> &myset = lists[(const char *) idlist];
   if(myset.find(sval) != myset.end())
   {
     return true;
@@ -1356,7 +1349,7 @@ Postchunk::processBeginsWithList(xmlNode *localroot)
 
   xmlChar *idlist = second->properties->children->content;
   string needle = evalString(first);
-  set<string, Ltstr>::iterator it, limit;
+  set<string>::iterator it, limit;
 
   if(localroot->properties == NULL ||
      xmlStrcmp(localroot->properties->children->content, (const xmlChar *) "yes"))
@@ -1404,7 +1397,7 @@ Postchunk::processEndsWithList(xmlNode *localroot)
 
   xmlChar *idlist = second->properties->children->content;
   string needle = evalString(first);
-  set<string, Ltstr>::iterator it, limit;
+  set<string>::iterator it, limit;
 
   if(localroot->properties == NULL ||
      xmlStrcmp(localroot->properties->children->content, (const xmlChar *) "yes"))
@@ -1472,9 +1465,9 @@ Postchunk::processContainsSubstring(xmlNode *localroot)
 string
 Postchunk::copycase(string const &source_word, string const &target_word)
 {
-  wstring result;
-  wstring const s_word = UtfConverter::fromUtf8(source_word);
-  wstring const t_word = UtfConverter::fromUtf8(target_word);
+  UString result;
+  UString const s_word = UtfConverter::fromUtf8(source_word);
+  UString const t_word = UtfConverter::fromUtf8(target_word);
 
   bool firstupper = iswupper(s_word[0]);
   bool uppercase = firstupper && iswupper(s_word[s_word.size()-1]);
@@ -1500,7 +1493,7 @@ Postchunk::copycase(string const &source_word, string const &target_word)
 string
 Postchunk::caseOf(string const &str)
 {
-  wstring const s = UtfConverter::fromUtf8(str);
+  UString const s = UtfConverter::fromUtf8(str);
 
   if(s.size() > 1)
   {
@@ -1534,38 +1527,38 @@ Postchunk::caseOf(string const &str)
   }
 }
 
-wstring
-Postchunk::caseOf(wstring const &str)
+UString
+Postchunk::caseOf(UString const &str)
 {
   if(str.size() > 1)
   {
     if(!iswupper(str[0]))
     {
-      return L"aa";
+      return "aa";
     }
     else if(!iswupper(str[str.size()-1]))
     {
-      return L"Aa";
+      return "Aa";
     }
     else
     {
-      return L"AA";
+      return "AA";
     }
   }
   else if(str.size() == 1)
   {
     if(!iswupper(str[0]))
     {
-      return L"aa";
+      return "aa";
     }
     else
     {
-      return L"Aa";
+      return "Aa";
     }
   }
   else
   {
-    return L"aa";
+    return "aa";
   }
 }
 
@@ -1613,21 +1606,21 @@ Postchunk::processRule(xmlNode *localroot)
   {
     if(blank_queue.front().compare(" ") != 0)
     {
-      fputws_unlocked(UtfConverter::fromUtf8(blank_queue.front()).c_str(), output);
+      write(blank_queue.front(), output);
     }
     blank_queue.pop();
   }
 }
 
 TransferToken &
-Postchunk::readToken(FILE *in)
+Postchunk::readToken(InputFile& in)
 {
   if(!input_buffer.isEmpty())
   {
     return input_buffer.next();
   }
 
-  wstring content;
+  UString content;
   while(true)
   {
     int val = fgetwc_unlocked(in);
@@ -1635,25 +1628,25 @@ Postchunk::readToken(FILE *in)
     {
       return input_buffer.add(TransferToken(content, tt_eof));
     }
-    if(val == L'\\')
+    if(val == '\\')
     {
-      content += L'\\';
+      content += '\\';
       content += wchar_t(fgetwc_unlocked(in));
     }
-    else if(val == L'[')
+    else if(val == '[')
     {
-      content += L'[';
+      content += '[';
       while(true)
       {
 	int val2 = fgetwc_unlocked(in);
-	if(val2 == L'\\')
+	if(val2 == '\\')
 	{
-	  content += L'\\';
+	  content += '\\';
 	  content += wchar_t(fgetwc_unlocked(in));
 	}
-	else if(val2 == L']')
+	else if(val2 == ']')
 	{
-	  content += L']';
+	  content += ']';
 	  break;
 	}
 	else
@@ -1662,24 +1655,24 @@ Postchunk::readToken(FILE *in)
 	}
       }
     }
-    else if(inword && val == L'{')
+    else if(inword && val == '{')
     {
-      content += L'{';
+      content += '{';
       while(true)
       {
 	int val2 = fgetwc_unlocked(in);
-	if(val2 == L'\\')
+	if(val2 == '\\')
 	{
-	  content += L'\\';
+	  content += '\\';
 	  content += wchar_t(fgetwc_unlocked(in));
 	}
-	else if(val2 == L'}')
+	else if(val2 == '}')
 	{
 	  int val3 = wchar_t(fgetwc_unlocked(in));
 	  ungetwc(val3, in);
 
-	  content += L'}';
-	  if(val3 == L'$')
+	  content += '}';
+	  if(val3 == '$')
 	  {
 	    break;
 	  }
@@ -1690,12 +1683,12 @@ Postchunk::readToken(FILE *in)
 	}
       }
     }
-    else if(inword && val == L'$')
+    else if(inword && val == '$')
     {
       inword = false;
       return input_buffer.add(TransferToken(content, tt_word));
     }
-    else if(val == L'^')
+    else if(val == '^')
     {
       inword = true;
       return input_buffer.add(TransferToken(content, tt_blank));
@@ -1726,7 +1719,7 @@ Postchunk::setTrace(bool trace)
 }
 
 void
-Postchunk::postchunk_wrapper_null_flush(FILE *in, FILE *out)
+Postchunk::postchunk_wrapper_null_flush(InputFile& in, UFILE* out)
 {
   null_flush = false;
   internal_null_flush = true;
@@ -1734,11 +1727,11 @@ Postchunk::postchunk_wrapper_null_flush(FILE *in, FILE *out)
   while(!feof(in))
   {
     postchunk(in, out);
-    fputwc_unlocked(L'\0', out);
+    u_fputc('\0', out);
     int code = fflush(out);
     if(code != 0)
     {
-      wcerr << L"Could not flush output " << errno << endl;
+      cerr << "Could not flush output " << errno << endl;
     }
   }
 
@@ -1747,7 +1740,7 @@ Postchunk::postchunk_wrapper_null_flush(FILE *in, FILE *out)
 }
 
 void
-Postchunk::postchunk(FILE *in, FILE *out)
+Postchunk::postchunk(InputFile& in, UFILE* out)
 {
   if(getNullFlush())
   {
@@ -1781,7 +1774,7 @@ Postchunk::postchunk(FILE *in, FILE *out)
 	}
 	else if(tmpblank.size() != 0)
 	{
-	  fputws_unlocked(tmpblank[0]->c_str(), output);
+      write(*tmpblank[0], output);
 	  tmpblank.clear();
 	  last = input_buffer.getPos();
 	  ms.init(me->getInitial());
@@ -1797,16 +1790,11 @@ Postchunk::postchunk(FILE *in, FILE *out)
 
       if(trace)
       {
-        wcerr << endl << L"apertium-postchunk: Rule " << val << L" line " << lastrule_line << L" ";
-        for (unsigned int ind = 0; ind < tmpword.size(); ind++)
-        {
-          if (ind != 0)
-          {
-            wcerr << L" ";
-          }
-          fputws_unlocked(tmpword[ind]->c_str(), stderr);
+        cerr << endl << "apertium-postchunk: Rule " << val << " line " << lastrule_line;
+        for (auto& it : tmpword) {
+          cerr << " " << *it;
         }
-        wcerr << endl;
+        cerr << endl;
       }
     }
 
@@ -1820,7 +1808,7 @@ Postchunk::postchunk(FILE *in, FILE *out)
 	break;
 
       case tt_blank:
-	ms.step(L' ');
+	ms.step(' ');
 	tmpblank.push_back(&current.getContent());
 	break;
 
@@ -1832,13 +1820,13 @@ Postchunk::postchunk(FILE *in, FILE *out)
 	}
 	else
 	{
-	  fputws_unlocked(current.getContent().c_str(), output);
+      write(current.getContent(), output);
 	  return;
 	}
 	break;
 
       default:
-	wcerr << "Error: Unknown input token." << endl;
+	cerr << "Error: Unknown input token." << endl;
 	return;
     }
   }
@@ -1847,7 +1835,7 @@ Postchunk::postchunk(FILE *in, FILE *out)
 void
 Postchunk::applyRule()
 {
-  wstring const chunk = *tmpword[0];
+  UString const chunk = *tmpword[0];
   tmpword.clear();
   splitWordsAndBlanks(chunk, tmpword, tmpblank);
 
@@ -1893,19 +1881,19 @@ Postchunk::applyRule()
 }
 
 void
-Postchunk::applyWord(wstring const &word_str)
+Postchunk::applyWord(UString const &word_str)
 {
-  ms.step(L'^');
+  ms.step('^');
   for(unsigned int i = 0, limit = word_str.size(); i < limit; i++)
   {
     switch(word_str[i])
     {
-      case L'\\':
+      case '\\':
         i++;
 	ms.step(towlower(word_str[i]), any_char);
 	break;
 
-      case L'<':
+      case '<':
 /*	for(unsigned int j = i+1; j != limit; j++)
 	{
 	  if(word_str[j] == '>')
@@ -1925,8 +1913,8 @@ Postchunk::applyWord(wstring const &word_str)
 	}
 	break;*/
 
-      case L'{':  // ignore the unmodifiable part of the chunk
-        ms.step(L'$');
+      case '{':  // ignore the unmodifiable part of the chunk
+        ms.step('$');
         return;
 
       default:
@@ -1934,31 +1922,31 @@ Postchunk::applyWord(wstring const &word_str)
 	break;
     }
   }
-  ms.step(L'$');
+  ms.step('$');
 }
 
-vector<wstring>
-Postchunk::getVecTags(wstring const &chunk)
+vector<UString>
+Postchunk::getVecTags(UString const &chunk)
 {
-  vector<wstring> vectags;
+  vector<UString> vectags;
 
   for(int i = 0, limit = chunk.size(); i != limit; i++)
   {
-    if(chunk[i] == L'\\')
+    if(chunk[i] == '\\')
     {
       i++;
     }
-    else if(chunk[i] == L'<')
+    else if(chunk[i] == '<')
     {
-      wstring mytag;
+      UString mytag;
       do
       {
         mytag += chunk[i++];
       }
-      while(chunk[i] != L'>');
-      vectags.push_back(mytag + L'>');
+      while(chunk[i] != '>');
+      vectags.push_back(mytag + '>');
     }
-    else if(chunk[i] == L'{')
+    else if(chunk[i] == '{')
     {
       break;
     }
@@ -1967,15 +1955,15 @@ Postchunk::getVecTags(wstring const &chunk)
 }
 
 int
-Postchunk::beginChunk(wstring const &chunk)
+Postchunk::beginChunk(UString const &chunk)
 {
   for(int i = 0, limit = chunk.size(); i != limit; i++)
   {
-    if(chunk[i] == L'\\')
+    if(chunk[i] == '\\')
     {
       i++;
     }
-    else if(chunk[i] == L'{')
+    else if(chunk[i] == '{')
     {
       return i + 1;
     }
@@ -1984,82 +1972,79 @@ Postchunk::beginChunk(wstring const &chunk)
 }
 
 int
-Postchunk::endChunk(wstring const &chunk)
+Postchunk::endChunk(UString const &chunk)
 {
   return chunk.size()-2;
 }
 
-wstring
-Postchunk::wordzero(wstring const &chunk)
+UString
+Postchunk::wordzero(UString const &chunk)
 {
   for(unsigned int i = 0, limit = chunk.size(); i != limit ;i++)
   {
-    if(chunk[i] == L'\\')
+    if(chunk[i] == '\\')
     {
       i++;
     }
-    else if(chunk[i] == L'{')
+    else if(chunk[i] == '{')
     {
       return chunk.substr(0, i);
     }
   }
 
-  return L"";
+  return "";
 }
 
-wstring
-Postchunk::pseudolemma(wstring const &chunk)
+UString
+Postchunk::pseudolemma(UString const &chunk)
 {
   for(unsigned int i = 0, limit = chunk.size(); i != limit ;i++)
   {
-    if(chunk[i] == L'\\')
+    if(chunk[i] == '\\')
     {
       i++;
     }
-    else if(chunk[i] == L'<' || chunk[i] == L'{')
+    else if(chunk[i] == '<' || chunk[i] == '{')
     {
       return chunk.substr(0, i);
     }
   }
 
-  return L"";
+  return "";
 }
 
 void
-Postchunk::unchunk(wstring const &chunk, FILE *output)
+Postchunk::unchunk(UString const &chunk, UFILE* output)
 {
-  vector<wstring> vectags = getVecTags(chunk);
-  wstring case_info = caseOf(pseudolemma(chunk));
+  vector<UString> vectags = getVecTags(chunk);
+  UString case_info = caseOf(pseudolemma(chunk));
   bool uppercase_all = false;
   bool uppercase_first = false;
 
-  if(case_info == L"AA")
+  if(case_info == "AA")
   {
     uppercase_all = true;
   }
-  else if(case_info == L"Aa")
+  else if(case_info == "Aa")
   {
     uppercase_first = true;
   }
 
   for(int i = beginChunk(chunk), limit = endChunk(chunk); i < limit; i++)
   {
-    if(chunk[i] == L'\\')
-    {
-      fputwc_unlocked(L'\\', output);
-      fputwc_unlocked(chunk[++i], output);
-    }
-    else if(chunk[i] == L'^')
-    {
-      fputwc_unlocked(L'^', output);
-      while(chunk[++i] != L'$')
+    if(chunk[i] == '\\') {
+      u_fputc('\\', output);
+      u_fputc(chunk[++i], output);
+    } else if(chunk[i] == '^') {
+      u_fputc('^', output);
+      while(chunk[++i] != '$')
       {
-        if(chunk[i] == L'\\')
+        if(chunk[i] == '\\')
         {
-          fputwc_unlocked(L'\\', output);
-          fputwc_unlocked(chunk[++i], output);
+          u_fputc('\\', output);
+          u_fputc(chunk[++i], output);
         }
-        else if(chunk[i] == L'<')
+        else if(chunk[i] == '<')
         {
           if(iswdigit(chunk[i+1]))
           {
@@ -2069,107 +2054,107 @@ Postchunk::unchunk(wstring const &chunk, FILE *output)
             //atoi(chunk.c_str()+i+1)-1;
             if(vectags.size() > value)
             {
-              fputws_unlocked(vectags[value].c_str(), output);
+              write(vectags[value], output);
             }
-            while(chunk[++i] != L'>');
+            while(chunk[++i] != '>');
           }
           else
           {
-            fputwc_unlocked(L'<', output);
-	    while(chunk[++i] != L'>') fputwc_unlocked(chunk[i], output);
-            fputwc_unlocked(L'>', output);
+            u_fputc('<', output);
+            while(chunk[++i] != '>') u_fputc(chunk[i], output);
+            u_fputc('>', output);
           }
         }
         else
         {
           if(uppercase_all)
           {
-            fputwc_unlocked(towupper(chunk[i]), output);
+            u_fputc(towupper(chunk[i]), output);
           }
           else if(uppercase_first)
           {
 	    if(iswalnum(chunk[i]))
 	    {
-	      fputwc_unlocked(towupper(chunk[i]), output);
+	      u_fputc(towupper(chunk[i]), output);
 	      uppercase_first = false;
 	    }
             else
 	    {
-	      fputwc_unlocked(chunk[i], output);
+	      u_fputc(chunk[i], output);
 	    }
           }
           else
           {
-            fputwc_unlocked(chunk[i], output);
+            u_fputc(chunk[i], output);
           }
         }
       }
-      fputwc_unlocked(L'$', output);
+      u_fputc('$', output);
     }
-    else if(chunk[i] == L'[')
+    else if(chunk[i] == '[')
     {
-      fputwc_unlocked(L'[', output);
-      while(chunk[++i] != L']')
+      u_fputc('[', output);
+      while(chunk[++i] != ']')
       {
-        if(chunk[i] == L'\\')
+        if(chunk[i] == '\\')
         {
-          fputwc_unlocked(L'\\', output);
-          fputwc_unlocked(chunk[++i], output);
+          u_fputc('\\', output);
+          u_fputc(chunk[++i], output);
         }
         else
         {
-          fputwc_unlocked(chunk[i], output);
+          u_fputc(chunk[i], output);
         }
       }
-      fputwc_unlocked(L']', output);
+      u_fputc(']', output);
     }
     else
     {
-      fputwc_unlocked(chunk[i], output);
+      u_fputc(chunk[i], output);
     }
   }
 }
 
 
 void
-Postchunk::splitWordsAndBlanks(wstring const &chunk, vector<wstring *> &words,
-                               vector<wstring *> &blanks)
+Postchunk::splitWordsAndBlanks(UString const &chunk, vector<UString *> &words,
+                               vector<UString *> &blanks)
 {
-  vector<wstring> vectags = getVecTags(chunk);
-  wstring case_info = caseOf(pseudolemma(chunk));
+  vector<UString> vectags = getVecTags(chunk);
+  UString case_info = caseOf(pseudolemma(chunk));
   bool uppercase_all = false;
   bool uppercase_first = false;
   bool lastblank = true;
 
-  if(case_info == L"AA")
+  if(case_info == "AA")
   {
     uppercase_all = true;
   }
-  else if(case_info == L"Aa")
+  else if(case_info == "Aa")
   {
     uppercase_first = true;
   }
 
   for(int i = beginChunk(chunk), limit = endChunk(chunk); i < limit; i++)
   {
-    if(chunk[i] == L'^')
+    if(chunk[i] == '^')
     {
       if(!lastblank)
       {
-        blanks.push_back(new wstring(L""));
+        blanks.push_back(new UString(""));
       }
       lastblank = false;
-      wstring *myword = new wstring();
-      wstring &ref = *myword;
+      UString *myword = new UString();
+      UString &ref = *myword;
 
-      while(chunk[++i] != L'$')
+      while(chunk[++i] != '$')
       {
-        if(chunk[i] == L'\\')
+        if(chunk[i] == '\\')
         {
-          ref += L'\\';
+          ref += '\\';
           ref += chunk[++i];
         }
-        else if(chunk[i] == L'<')
+        else if(chunk[i] == '<')
         {
           if(iswdigit(chunk[i+1]))
           {
@@ -2180,13 +2165,13 @@ Postchunk::splitWordsAndBlanks(wstring const &chunk, vector<wstring *> &words,
             {
               ref.append(vectags[value]);
             }
-            while(chunk[++i] != L'>');
+            while(chunk[++i] != '>');
           }
           else
           {
-            ref += L'<';
-            while(chunk[++i] != L'>') ref += chunk[i];
-            ref += L'>';
+            ref += '<';
+            while(chunk[++i] != '>') ref += chunk[i];
+            ref += '>';
           }
         }
         else
@@ -2216,26 +2201,26 @@ Postchunk::splitWordsAndBlanks(wstring const &chunk, vector<wstring *> &words,
 
       words.push_back(myword);
     }
-    else if(chunk[i] == L'[')
+    else if(chunk[i] == '[')
     {
-      if(chunk[i+1] == L'[') //wordbound blank
+      if(chunk[i+1] == '[') //wordbound blank
       {
         if(!lastblank)
         {
-          blanks.push_back(new wstring(L""));
+          blanks.push_back(new UString(""));
         }
         lastblank = false;
-        wstring *myword = new wstring();
-        wstring &ref = *myword;
+        UString *myword = new UString();
+        UString &ref = *myword;
 
         while(true)
         {
-          if(chunk[i] == L'\\')
+          if(chunk[i] == '\\')
           {
-            ref += L'\\';
+            ref += '\\';
             ref += chunk[++i];
           }
-          else if(chunk[i] == L']' && chunk[i-1] == L']')
+          else if(chunk[i] == ']' && chunk[i-1] == ']')
           {
             ref += chunk[i];
             i++; //i->"^"
@@ -2249,14 +2234,14 @@ Postchunk::splitWordsAndBlanks(wstring const &chunk, vector<wstring *> &words,
           i++;
         }
         
-        while(chunk[++i] != L'$')
+        while(chunk[++i] != '$')
         {
-          if(chunk[i] == L'\\')
+          if(chunk[i] == '\\')
           {
-            ref += L'\\';
+            ref += '\\';
             ref += chunk[++i];
           }
-          else if(chunk[i] == L'<')
+          else if(chunk[i] == '<')
           {
             if(iswdigit(chunk[i+1]))
             {
@@ -2267,13 +2252,13 @@ Postchunk::splitWordsAndBlanks(wstring const &chunk, vector<wstring *> &words,
               {
                 ref.append(vectags[value]);
               }
-              while(chunk[++i] != L'>');
+              while(chunk[++i] != '>');
             }
             else
             {
-              ref += L'<';
-              while(chunk[++i] != L'>') ref += chunk[i];
-              ref += L'>';
+              ref += '<';
+              while(chunk[++i] != '>') ref += chunk[i];
+              ref += '>';
             }
           }
           else
@@ -2307,15 +2292,15 @@ Postchunk::splitWordsAndBlanks(wstring const &chunk, vector<wstring *> &words,
       {
         if (!(lastblank && blanks.back()))
         {
-          blanks.push_back(new wstring());
+          blanks.push_back(new UString());
         }
-        wstring &ref = *(blanks.back());
-        ref += L'[';
-        while(chunk[++i] != L']')
+        UString &ref = *(blanks.back());
+        ref += '[';
+        while(chunk[++i] != ']')
         {
-          if(chunk[i] == L'\\')
+          if(chunk[i] == '\\')
           {
-            ref += L'\\';
+            ref += '\\';
             ref += chunk[++i];
           }
           else
@@ -2332,13 +2317,13 @@ Postchunk::splitWordsAndBlanks(wstring const &chunk, vector<wstring *> &words,
     {
       if (!lastblank)
       {
-        wstring *myblank = new wstring(L"");
+        UString *myblank = new UString("");
         blanks.push_back(myblank);
       }
-      wstring &ref = *(blanks.back());
-      if(chunk[i] == L'\\')
+      UString &ref = *(blanks.back());
+      if(chunk[i] == '\\')
       {
-        ref += L'\\';
+        ref += '\\';
         ref += chunk[++i];
       }
       else

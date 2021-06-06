@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
   try {
     Apertium::apertium_tagger(argc, argv);
   } catch (const Apertium::Exception::apertium_tagger::err_Exception &err_Exception_) {
-    std::wcerr << "Try 'apertium-tagger --help' for more information." << std::endl;
+    std::cerr << "Try 'apertium-tagger --help' for more information." << std::endl;
     return 1;
   } catch (...) {
     throw;

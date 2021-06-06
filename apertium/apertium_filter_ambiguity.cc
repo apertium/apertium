@@ -21,6 +21,7 @@
 #include <apertium/tagger_data_hmm.h>
 #include <apertium/tagger_word.h>
 #include <apertium/string_utils.h>
+#include <lttoolbox/input_file.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -36,49 +37,29 @@
 using namespace Apertium;
 using namespace std;
 
-FILE * open_file(char const *filename, char const *mode)
-{
-  FILE *retval;
-
-  struct stat var;
-  if(stat(filename, &var))
-  {
-    wcerr << "Can't stat '" << filename << "'" << endl;
-    exit(EXIT_FAILURE);
-  }
-
-  retval = fopen(filename, mode);
-
-  if(!retval)
-  {
-    wcerr << "Can't open '" << filename << "'" << endl;
-    exit(EXIT_FAILURE);
-  }
-#ifdef _MSC_VER
-  _setmode(_fileno(retval), _O_U8TEXT);
-#endif
-
-  return retval;
-}
-
 int main(int argc, char *argv[])
 {
   LtLocale::tryToSetLocale();
 
   if(argc < 2 || argc > 4)
   {
-    wcerr << "USAGE: " << basename(argv[0]) << " tsx_file [input [output]" << endl;
+    cerr << "USAGE: " << basename(argv[0]) << " tsx_file [input [output]" << endl;
     exit(EXIT_FAILURE);
   }
 
-  FILE *input = stdin, *output = stdout;
+  char* input = NULL;
+  UFILE* output = u_finit(stdout, NULL, NULL);
   switch(argc)
   {
     case 4:
-      output = open_file(argv[3], "w");
+      output = u_fopen(argv[3], "w", NULL, NULL);
+      if (!output) {
+        cerr << "Error: Unable to open '" << argv[3] << "' for writing." << endl;
+        exit(EXIT_FAILURE);
+      }
       // no break
     case 3:
-      input = open_file(argv[2], "r");
+      input = argv[2];
       // no break
     case 2:
     default:

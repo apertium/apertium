@@ -34,7 +34,7 @@ void buildDumbDictionary( const DictionaryItems& dictionary, DumbDictionary& dum
     if (hu.size()==1)
     {
       dumbDictionary[ hu[0] ] = en ;
-      // std::wcerr << hu[0] << "\t" << en << std::endl;
+      // std::cerr << hu[0] << "\t" << en << std::endl;
     }
   }
 }
@@ -98,7 +98,7 @@ void buildDumbDictionary( TMXAligner::DumbDictionary& dumbDictionary,
   {
     std::ifstream is( dictionaryFilename.c_str() );
     dictionary.read( is );
-    std::wcerr << dictionary.size() << " dictionary items read." << std::endl;
+    std::cerr << dictionary.size() << " dictionary items read." << std::endl;
   }
 
   if (!enSentenceList.empty())
@@ -267,7 +267,7 @@ void naiveTranslate(
     {
       subsetLookup.add( dictionary[i].second, i+1 ); // !!! i+1
     }
-    std::wcerr << "Index tree built." << std::endl;
+    std::cerr << "Index tree built." << std::endl;
   }
 
   for ( size_t i=0; i<sentenceList.size(); ++i )
@@ -292,7 +292,7 @@ void naiveTranslate(
     translatedSentenceList.push_back(sentence);
   }
 
-  std::wcerr << "Analysis ready." << std::endl;
+  std::cerr << "Analysis ready." << std::endl;
 }
 
 
@@ -345,13 +345,13 @@ void normalizeTextsForIdentity( const DictionaryItems& dictionary,
   enFreq.build(enSentenceListPretty);
   buildDumbDictionaryUsingFrequencies( dictionary, enFreq, dumbDictionary );
 
-//  std::wcerr << "Simplified dictionary ready." << std::endl;
+//  std::cerr << "Simplified dictionary ready." << std::endl;
 
   SentenceList huSentenceList;
 
   trivialTranslateSentenceList( dumbDictionary, huSentenceListPretty, huSentenceListGarbled );
 
-//  std::wcerr << "Rough translation ready." << std::endl;
+//  std::cerr << "Rough translation ready." << std::endl;
 
   sortNormalizeSentences(huSentenceListGarbled);
 

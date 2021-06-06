@@ -21,6 +21,7 @@
 #include <string>
 #include <cstring>
 #include <vector>
+#include <lttoolbox/ustring.h>
 
 using namespace std;
 
@@ -37,24 +38,24 @@ namespace Apertium
 class StringUtils {
   public:
 
-  static wstring trim(wstring const &str);
+  static UString trim(UString const &str);
 
-  static vector<wstring> split_wstring(wstring const &input, wstring const &delimiter);
+  static vector<UString> split_UString(UString const &input, UString const &delimiter);
 
-  static wstring vector2wstring(vector<wstring> const &v);
+  static UString vector2UString(vector<UString> const &v);
 
   //Replace each ocurrence of the string 'olds' by the string 'news' in string 'source'
-  static wstring substitute(const wstring &source, const wstring &olds, const wstring &news);
+  static UString substitute(const UString &source, const UString &olds, const UString &news);
 
-  static wstring itoa(int n);
+  static UString itoa(int n);
 
   static string itoa_string(int n);
 
-  static wstring ftoa(double f);
+  static UString ftoa(double f);
 
-  static wstring tolower(wstring const &s);
+  static UString tolower(UString const &s);
 
-  static wstring toupper(wstring const &s);
+  static UString toupper(UString const &s);
 };
 
 std::wostream & operator<< (std::wostream & ostr, std::string const & str);

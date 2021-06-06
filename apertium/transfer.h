@@ -45,11 +45,11 @@ private:
   Alphabet alphabet;
   MatchExe *me;
   MatchState ms;
-  map<string, ApertiumRE, Ltstr> attr_items;
-  map<string, string, Ltstr> variables;
-  map<string, int, Ltstr> macros;
-  map<string, set<string, Ltstr>, Ltstr> lists;
-  map<string, set<string, Ltstr>, Ltstr> listslow;
+  map<string, ApertiumRE> attr_items;
+  map<string, string> variables;
+  map<string, int> macros;
+  map<string, set<string>> lists;
+  map<string, set<string>> listslow;
   vector<xmlNode *> macro_map;
   vector<xmlNode *> rule_map;
   vector<size_t> rule_lines;
@@ -60,8 +60,8 @@ private:
   int lword;
   int last_lword;
   Buffer<TransferToken> input_buffer;
-  vector<wstring *> tmpword;
-  vector<wstring *> tmpblank;
+  vector<UString *> tmpword;
+  vector<UString *> tmpblank;
   
   bool in_out;
   bool in_lu;
@@ -78,7 +78,7 @@ private:
   FSTProcessor fstp;
   FSTProcessor extended;
   bool isExtended;
-  FILE *output;
+  UFILE *output;
   int any_char;
   int any_tag;
 
@@ -136,14 +136,14 @@ private:
   bool endsWith(string const &str1, string const &str2) const;
   string tolower(string const &str) const;
   string tags(string const &str) const;
-  wstring readWord(FILE *in);
-  wstring readBlank(FILE *in);
-  wstring readUntil(FILE *in, int const symbol) const;
-  void applyWord(wstring const &word_str);
+  UString readWord(InputFile& in);
+  UString readBlank(InputFile& in);
+  UString readUntil(InputFile& in, int const symbol) const;
+  void applyWord(UString const &word_str);
   int applyRule();
-  TransferToken & readToken(FILE *in);
+  TransferToken & readToken(InputFile& in);
   bool checkIndex(xmlNode *element, int index, int limit);
-  void transfer_wrapper_null_flush(FILE *in, FILE *out);
+  void transfer_wrapper_null_flush(InputFile& in, UFILE* out);
   void tmp_clear();
 public:
   Transfer();
@@ -151,7 +151,7 @@ public:
 
   void read(string const &transferfile, string const &datafile,
 	    string const &fstfile = "");
-  void transfer(FILE *in, FILE *out);
+  void transfer(InputFile& in, UFILE* out);
   void setUseBilingual(bool value);
   bool getUseBilingual(void) const;
   void setPreBilingual(bool value);

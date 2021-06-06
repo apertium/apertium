@@ -22,6 +22,9 @@
 #include <iostream>
 #include <cstdio>
 #include <list>
+#include <lttoolbox/ustring.h>
+#include <lttoolbox/lt_locale.h>
+#include <lttoolbox/input_file.h>
 
 #ifdef __MINGW32__
 #include <windows.h>
@@ -29,67 +32,28 @@
 
 using namespace std;
 
-#ifndef fputwc_unlocked
-#define fputwc_unlocked fputwc
-#endif
-
-#ifndef fputws_unlocked
-#define fputws_unlocked fputws
-#endif
-
-#ifndef fgetwc_unlocked
-#define fgetwc_unlocked getwc
-#endif
-
-
-void
-tryToSetLocale()
+UString
+readFullBlock(InputFile& input, UChar32 const delim1, UChar32 const delim2)
 {
-#if !defined(__CYGWIN__) && !defined (__MINGW32__)
-  if(setlocale(LC_CTYPE, "") != NULL)
-  {
-    return;
-  }
-
-  wcerr << "Warning: unsupported locale, fallback to \"C\"" << endl;
-
-  setlocale(LC_ALL, "C");
-#endif
-#ifdef __CYGWIN__
-  setlocale(LC_ALL, "C.UTF-8");
-#endif
-#ifdef __MINGW32__
-  //SetConsoleInputCP(65001);
-  SetConsoleOutputCP(65001);
-#endif
-}
-
-wstring
-readFullBlock(FILE *input, wchar_t const delim1, wchar_t const delim2)
-{
-  wstring result = L"";
+  UString result;
   result += delim1;
-  wchar_t c = delim1;
+  UChar32 c = delim1;
 
-  while(!feof(input) && c != delim2)
-  {
-    c = static_cast<wchar_t>(fgetwc_unlocked(input));
+  while(!input.eof() && c != delim2) {
+    c = input.get();
     result += c;
-    if(c != L'\\')
-    {
+    if(c != '\\') {
       continue;
-    }
-    else
-    {
-      result += L'\\';
-      c = static_cast<wchar_t>(fgetwc(input));
+    } else {
+      result += '\\';
+      c = input.get();
       result += c;
     }
   }
 
   if(c != delim2)
   {
-    wcerr << "Error: expected: " << delim2 << ", saw: " << c << endl;
+    cerr << "Error: expected: " << delim2 << ", saw: " << c << endl;
   }
 
   return result;
@@ -98,85 +62,70 @@ readFullBlock(FILE *input, wchar_t const delim1, wchar_t const delim2)
 int
 main (int argc, char** argv)
 {
-  wstring buf = L"";
-  wstring blanktmp = L"";
+  UString buf;
+  UString blanktmp;
   bool keepblank = false;
 
   bool spaced = true;
   bool intoken = false;
 
-  wchar_t ws = L' ';
+  UChar32 ws = ' ';
 
   for(int i=1; i<argc; i++) {
     if (strcmp(argv[i], "-n") == 0) {
       spaced = false;
-      ws = L'\n';
+      ws = '\n';
     }
     else if (strcmp(argv[i], "-b") == 0) {
       keepblank = true;
     }
   }
 
-  tryToSetLocale();
+  LtLocale::tryToSetLocale();
 
-  wint_t c;
-  while ((c = fgetwc(stdin)) != WEOF)
-  {
-    if (c == (wint_t) '^')
-    {
-      if (intoken)
-      {
-        wcerr << L"Error: unescaped '^': " << buf << "^" << endl;
-        buf += L"\\^";
-      }
-      else
-      {
+  InputFile input;
+  UFILE* output = u_finit(stdout, NULL, NULL);
+  UChar32 c;
+  while (input.eof()) {
+    c = input.get();
+    if (c == '^') {
+      if (intoken) {
+        cerr << "Error: unescaped '^': " << buf << "^" << endl;
+        buf += "\\^"_u;
+      } else {
         intoken = true;
-        if (buf != L"" || ((buf == L"") && !spaced))
-        {
-          fputwc_unlocked(ws, stdout);
+        if (!buf.empty() || (buf.empty() && !spaced)) {
+          u_fputc(ws, output);
         }
-        buf = L"^";
+        buf = "^"_u;
       }
-    }
-    else if(c == (wint_t) '$')
-    {
-      if (intoken)
-      {
+    } else if(c == '$') {
+      if (intoken) {
         intoken = false;
         buf += c;
-        fputws_unlocked(buf.c_str(), stdout);
-        buf = L"";
+        write(buf, output);
+        buf.clear();
+      } else {
+        cerr << "Error: stray '$'" << endl;
       }
-      else
-      {
-        wcerr << "Error: stray '$'" << endl;
-      }
-    }
-    else if(c == (wint_t) '\\')
-    {
-      c = fgetwc_unlocked(stdin);
-      buf += L'\\';
+    } else if(c == '\\') {
+      c = input.get();
+      buf += '\\';
       buf += c;
-    }
-    else if(!intoken && c == (wint_t) '[')
-    {
-      fputwc_unlocked(ws, stdout);
-      blanktmp = readFullBlock(stdin, L'[', L']');
+    } else if(!intoken && c == '[') {
+      u_fputc(ws, output);
+      blanktmp = readFullBlock(input, L'[', L']');
       if(keepblank) {
-        fputws_unlocked(blanktmp.c_str(), stdout);
+        write(blanktmp, output);
       }
-      blanktmp = L"";
-    }
-    else
-    {
+      blanktmp.clear();
+    } else {
       buf += c;
     }
   }
 
   // If not in space mode, make sure there's a final newline
-  if (!spaced)
-  {
-    fputwc_unlocked(L'\n', stdout);
+  if (!spaced) {
+    u_fputc('\n', output);
   }
 }

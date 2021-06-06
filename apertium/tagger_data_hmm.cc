@@ -191,13 +191,13 @@ TaggerDataHMM::read(FILE *in)
   // array_tags
   for(int i = Compression::multibyte_read(in); i != 0; i--)
   {
-    array_tags.push_back(Compression::wstring_read(in));
+    array_tags.push_back(Compression::string_read(in));
   }
 
   // tag_index
   for(int i = Compression::multibyte_read(in); i != 0; i--)
   {
-    wstring tmp = Compression::wstring_read(in);
+    UString tmp = Compression::string_read(in);
     tag_index[tmp] = Compression::multibyte_read(in);
   }
 
@@ -216,7 +216,7 @@ TaggerDataHMM::read(FILE *in)
   // prefer_rules
   for(int i = Compression::multibyte_read(in); i != 0; i--)
   {
-    prefer_rules.push_back(Compression::wstring_read(in));
+    prefer_rules.push_back(Compression::string_read(in));
   }
 
   // constants
@@ -280,7 +280,7 @@ TaggerDataHMM::read(FILE *in)
 
   for(unsigned int i = 0; i < limit; i++)
   {
-    discard.push_back(Compression::wstring_read(in));
+    discard.push_back(Compression::string_read(in));
   }
 }
 
@@ -310,16 +310,14 @@ TaggerDataHMM::write(FILE *out)
   Compression::multibyte_write(array_tags.size(), out);
   for(unsigned int i = 0, limit = array_tags.size(); i != limit; i++)
   {
-    Compression::wstring_write(array_tags[i], out);
+    Compression::string_write(array_tags[i], out);
   }
 
   // tag_index
   Compression::multibyte_write(tag_index.size(), out);
-  for(map<wstring, int, Ltstr>::iterator it = tag_index.begin(), limit = tag_index.end();
-      it != limit; it++)
-  {
-    Compression::wstring_write(it->first, out);
-    Compression::multibyte_write(it->second, out);
+  for (auto& it : tag_index) {
+    Compression::string_write(it.first, out);
+    Compression::multibyte_write(it.second, out);
   }
 
   // enforce_rules
@@ -338,7 +336,7 @@ TaggerDataHMM::write(FILE *out)
   Compression::multibyte_write(prefer_rules.size(), out);
   for(unsigned int i = 0, limit = prefer_rules.size(); i != limit; i++)
   {
-    Compression::wstring_write(prefer_rules[i], out);
+    Compression::string_write(prefer_rules[i], out);
   }
 
   // constants
@@ -396,7 +394,7 @@ TaggerDataHMM::write(FILE *out)
     Compression::multibyte_write(discard.size(), out);
     for(unsigned int i = 0, limit = discard.size(); i != limit; i++)
     {
-      Compression::wstring_write(discard[i], out);
+      Compression::string_write(discard[i], out);
     }
   }
 }

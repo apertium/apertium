@@ -40,24 +40,6 @@
 #define fread_unlocked fread
 #endif
 
-#if !HAVE_DECL_FGETWC_UNLOCKED
-#define fgetwc_unlocked fgetwc
-#endif
-
-#if !HAVE_DECL_FPUTWC_UNLOCKED
-#define fputwc_unlocked fputwc
-#endif
-
-#if !HAVE_DECL_FPUTWS_UNLOCKED
-#define fputws_unlocked fputws
-#endif
-
-#if !HAVE_MBTOWC
-#include <cwchar>
-inline int wctomb(char *s, wchar_t wc) { return wcrtomb(s,wc,NULL); }
-inline int mbtowc(wchar_t *pwc, const char *s, size_t n) { return mbrtowc(pwc, s, n, NULL); }
-#endif
-
 #ifdef _WIN32
 #include <utf8_fwrap.h>
 #endif

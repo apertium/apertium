@@ -226,7 +226,7 @@ public:
     StackValue(const StackValue &other) {
       // C++11: Probably reference counting with shared_ptr would be better
       // than all this copying if it were available
-      //std::wcerr << "StackValue init\n";
+      //std::cerr << "StackValue init\n";
       type = other.type;
       switch (type) {
         case STRVAL:
@@ -248,7 +248,7 @@ public:
       }
     }
     StackValue& operator=(StackValue other) {
-      //std::wcerr << "StackValue assign\n";
+      //std::cerr << "StackValue assign\n";
       swap(*this, other);
       return *this;
     }
@@ -269,21 +269,21 @@ public:
       type = STRARRVAL;
     }
     StackValue(const Morpheme &wordoid) {
-      /*std::wcerr << L"Before ";
+      /*std::cerr << "Before ";
       std::vector<Tag>::const_iterator it = wordoid.TheTags.begin();
       for (;it != wordoid.TheTags.end(); it++) {
-        std::wcerr << &(*it) << " ";
+        std::cerr << &(*it) << " ";
       }
-      std::wcerr << L"\n";
-      std::wcerr << L"Copy morpheme " << &wordoid;*/
+      std::cerr << "\n";
+      std::cerr << "Copy morpheme " << &wordoid;*/
       payload.wrdval = new Morpheme(wordoid);
-      /*std::wcerr << L" to " << payload.wrdval << "\n";
-      std::wcerr << L"After ";
+      /*std::cerr << " to " << payload.wrdval << "\n";
+      std::cerr << "After ";
       it = payload.wrdval->TheTags.begin();
       for (;it != payload.wrdval->TheTags.end(); it++) {
-        std::wcerr << &(*it) << " ";
+        std::cerr << &(*it) << " ";
       }
-      std::wcerr << L"\n";*/
+      std::cerr << "\n";*/
       type = WRDVAL;
     }
     StackValue(const std::vector<Morpheme> &wordoids) {
@@ -410,20 +410,20 @@ private:
       data.pop_back();
     }
     /*void push(StackValue val) {
-      std::wcerr << "before copy push\n";
+      std::cerr << "before copy push\n";
       data.push_back(val);
-      std::wcerr << "after copy push\n";
+      std::cerr << "after copy push\n";
     }*/
     void push(const StackValue &val) {
-      //std::wcerr << "before push\n";
+      //std::cerr << "before push\n";
       data.push_back(val);
-      //std::wcerr << "after push\n";
+      //std::cerr << "after push\n";
     }
     StackValue& top() {
       return data.back();
     }
     StackValue pop_off() {
-      //std::wcerr << L"Top value: " << top().payload.intval << "\n";
+      //std::cerr << "Top value: " << top().payload.intval << "\n";
       StackValue ret = top();
       pop();
       return ret;

@@ -21,7 +21,7 @@
 #include <algorithm>
 
 // Copypaste-elve. TODO Elhelyezni.
-#define massert(e) if (!(e)) { std::wcerr << #e << " failed" << std::endl; throw "assert"; }
+#define massert(e) if (!(e)) { std::cerr << #e << " failed" << std::endl; throw "assert"; }
 
 std::ostream& operator<<( std::ostream& os, std::pair<int,int> p )
 {
@@ -241,7 +241,7 @@ void trelliToLadder( const TrelliMatrix& trellis, Trail& bestTrail )
 
   bool logging = false;
 
-  if (logging) std::wcerr << std::endl;
+  if (logging) std::cerr << std::endl;
 
   bool over = false;
   bool hopelesslyBadTrail = false;
@@ -304,7 +304,7 @@ void trelliToLadder( const TrelliMatrix& trellis, Trail& bestTrail )
 
     if (logging)
     {
-      std::wcerr << huPos << " \t" << enPos << std::endl;
+      std::cerr << huPos << " \t" << enPos << std::endl;
     }
 
   }
@@ -314,7 +314,7 @@ void trelliToLadder( const TrelliMatrix& trellis, Trail& bestTrail )
     bestTrail.clear();
     bestTrail.push_back(std::make_pair(huBookSize,enBookSize));
     bestTrail.push_back(std::make_pair(0,0));
-    std::wcerr << "Error: hopelessly bad trail." << std::endl;
+    std::cerr << "Error: hopelessly bad trail." << std::endl;
   }
 
   std::reverse(bestTrail.begin(),  bestTrail.end()  );
@@ -335,11 +335,11 @@ void align( const AlignMatrix& w, const SentenceValues& huLength, const Sentence
 
   buildDynProgMatrix( w, huLength, enLength, v, trellis );
 
-//  std::wcerr << "Matrix built." << std::endl;
+//  std::cerr << "Matrix built." << std::endl;
 
   trelliToLadder( trellis, bestTrail );
 
-//  std::wcerr << "Trail found." << std::endl;
+//  std::cerr << "Trail found." << std::endl;
 }
 
 
@@ -383,10 +383,10 @@ double scoreTrailOrBisentenceList( const Trail& trailAuto, const Trail& trailHan
 {
   int score = countIntersectionOfTrails( trailAuto, trailHand );
 
-  std::wcerr << trailAuto.size()-score << " misaligned out of " << trailHand.size() << " correct items, "
+  std::cerr << trailAuto.size()-score << " misaligned out of " << trailHand.size() << " correct items, "
     << trailAuto.size() << " bets." << std::endl;
 
-  std::wcerr << "Precision: " << 1.0*score/trailAuto.size()
+  std::cerr << "Precision: " << 1.0*score/trailAuto.size()
     << ", Recall: " << 1.0*score/trailHand.size() << std::endl;
 
   double ratio = 1.0*(trailAuto.size()-score)/trailAuto.size();
@@ -494,7 +494,7 @@ bool borderDetailedAlignMatrix( AlignMatrix& alignMatrix, const Trail& trail, in
       }
     }
 
-    std::wcerr << numberOfEvaluatedItems << " items inside the border." << std::endl;
+    std::cerr << numberOfEvaluatedItems << " items inside the border." << std::endl;
   }
 
   return true;

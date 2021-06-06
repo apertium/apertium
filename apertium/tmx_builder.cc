@@ -40,7 +40,7 @@
 using namespace Apertium;
 using namespace std;
 
-TMXBuilder::TMXBuilder(wstring const &l1, wstring const &l2):
+TMXBuilder::TMXBuilder(UString const &l1, UString const &l2):
 low_limit(0)
 {
   lang1 = l1;
@@ -62,17 +62,17 @@ TMXBuilder::~TMXBuilder()
 {
 }
 
-wstring
-TMXBuilder::restOfBlank(FILE *input)
+UString
+TMXBuilder::restOfBlank(InputFile& input)
 {
-  wstring result = L"[";
+  UString result = "[";
 
   while(true)
   {
     wint_t val = fgetwc(input);
     if(feof(input))
     {
-      return L"";
+      return "";
     }
     switch(val)
     {
@@ -81,7 +81,7 @@ TMXBuilder::restOfBlank(FILE *input)
         val = fgetwc(input);
         if(feof(input))
         {
-          return L"";
+          return "";
         }
         result += static_cast<wchar_t>(val);
         break;
@@ -96,20 +96,20 @@ TMXBuilder::restOfBlank(FILE *input)
     }
   }
 
-  return L"";
+  return "";
 }
 
-wstring
-TMXBuilder::nextBlank(FILE *input)
+UString
+TMXBuilder::nextBlank(InputFile& input)
 {
-  wstring result = L"";
+  UString result = "";
 
   while(true)
   {
     wint_t val = fgetwc(input);
     if(feof(input))
     {
-      return L"";
+      return "";
     }
     switch(val)
     {
@@ -125,9 +125,9 @@ TMXBuilder::nextBlank(FILE *input)
 }
 
 bool
-TMXBuilder::compatible(FILE *f1, FILE *f2, bool lazy)
+TMXBuilder::compatible(InputFile& f1, InputFile& f2, bool lazy)
 {
-  wstring s1 = nextBlank(f1), s2 = nextBlank(f2);
+  UString s1 = nextBlank(f1), s2 = nextBlank(f2);
   if(!lazy)
   {
     while(!feof(f1) && !feof(f2))
@@ -158,52 +158,45 @@ TMXBuilder::compatible(FILE *f1, FILE *f2, bool lazy)
 bool
 TMXBuilder::check(string const &file1, string const &file2, bool lazy)
 {
-  FILE *f1 = fopen(file1.c_str(), "rb");
-  FILE *f2 = fopen(file2.c_str(), "rb");
-  if(!f1 && !f2)
+  InputFile f1, f2;
+  bool bf1 = f1.open(file1.c_str());
+  bool bf2 = f2.open(file2.c_str());
+  if(!bf1 && !bf2)
   {
-    wcerr << L"Error: Cannot access files '" << UtfConverter::fromUtf8(file1);
-    wcerr << L"' and '" << UtfConverter::fromUtf8(file2) << "'" << endl;
+    cerr << "Error: Cannot access files '" << file1;
+    cerr << "' and '" << file2 << "'" << endl;
     return false;
   }
-  else if(!f1)
+  else if(!bf1)
   {
-    wcerr << L"Error: Cannot access file '";
-    wcerr << UtfConverter::fromUtf8(file2);
-    wcerr << "'" << endl;
-    fclose(f2);
+    cerr << "Error: Cannot access file '" << file1 << "'" << endl;
     return false;
   }
-  else if(!f2)
+  else if(!bf2)
   {
-    wcerr << L"Error: Cannot access file '";
-    wcerr << UtfConverter::fromUtf8(file2);
-    wcerr << "'" << endl;
-    fclose(f1);
+    cerr << "Error: Cannot access file '" << file2 << "'" << endl;
     return false;
   }
 
   bool retval = compatible(f1, f2, lazy);
 
-  fclose(f1);
-  fclose(f2);
   return retval;
 }
 
-wstring
-TMXBuilder::nextTU(FILE *input)
+UString
+TMXBuilder::nextTU(InputFile& input)
 {
-  wstring current_tu = L"";
-  wstring tmp;
+  UString current_tu = "";
+  UString tmp;
 
   while(true)
   {
     wint_t symbol = fgetwc_unlocked(input);
     if(feof(input))
     {
-      if(current_tu == L"")
+      if(current_tu == "")
       {
-        return L"";
+        return "";
       }
       else
       {
@@ -216,9 +209,9 @@ TMXBuilder::nextTU(FILE *input)
         symbol = fgetwc_unlocked(input);
         if(feof(input))
         {
-          if(current_tu == L"")
+          if(current_tu == "")
           {
-            return L"";
+            return "";
           }
           else
           {
@@ -232,14 +225,14 @@ TMXBuilder::nextTU(FILE *input)
 
       case L'[':
         tmp = restOfBlank(input);
-        if(tmp.substr(0,2) == L"[ ")
+        if(tmp.substr(0,2) == "[ ")
         {
-          current_tu.append(L" ");
+          current_tu.append(" ");
         }
-        current_tu.append(L"<ph/>");
-        if(tmp.substr(tmp.size()-2, 2) == L" ]")
+        current_tu.append("<ph/>");
+        if(tmp.substr(tmp.size()-2, 2) == " ]")
         {
-          current_tu.append(L" ");
+          current_tu.append(" ");
         }
         break;
 
@@ -281,34 +274,34 @@ TMXBuilder::nextTU(FILE *input)
   return current_tu;
 }
 
-wstring
-TMXBuilder::xmlize(wstring const &str)
+UString
+TMXBuilder::xmlize(UString const &str)
 {
-  wstring result = L"";
+  UString result = "";
 
   for(size_t i = 0, limit = str.size(); i < limit; i++)
   {
     switch(str[i])
     {
       case L'<':
-        if(i + 5 <= limit && str.substr(i,5)==L"<ph/>")
+        if(i + 5 <= limit && str.substr(i,5)=="<ph/>")
         {
-          result.append(L"<ph/>");
+          result.append("<ph/>");
           i += 4;
           break;
         }
         else
         {
-          result.append(L"&lt;");
+          result.append("&lt;");
         }
         break;
 
       case L'>':
-        result.append(L"&gt;");
+        result.append("&gt;");
         break;
 
       case L'&':
-        result.append(L"&amp;");
+        result.append("&amp;");
         break;
 
       default:
@@ -323,7 +316,7 @@ TMXBuilder::xmlize(wstring const &str)
   while(cambio == true)
   {
     cambio = false;
-    while(result.size() >= 5 && result.substr(0,5) == L"<ph/>")
+    while(result.size() >= 5 && result.substr(0,5) == "<ph/>")
     {
       result = result.substr(5);
       cambio = true;
@@ -340,7 +333,7 @@ TMXBuilder::xmlize(wstring const &str)
   while(cambio == true)
   {
     cambio = false;
-    while(result.size() > 5 && result.substr(result.size()-5) == L"<ph/>")
+    while(result.size() > 5 && result.substr(result.size()-5) == "<ph/>")
     {
       result = result.substr(0, result.size()-5);
       cambio = true;
@@ -376,50 +369,40 @@ void
 TMXBuilder::generate(string const &file1, string const &file2,
                      string const &outfile)
 {
-  FILE *output = stdout;
+  UFILE* output = u_finit(stdout, NULL, NULL);
 
-  if(outfile != "")
+  if(!outfile.empty())
   {
-    output = fopen(outfile.c_str(), "w");
+    output = u_fopen(outfile.c_str(), "w", NULL, NULL);
     if(!output)
     {
-      wcerr << L"Error: file '" << UtfConverter::fromUtf8(outfile);
-      wcerr << L"' cannot be opened for writing" << endl;
+      cerr << "Error: file '" << outfile;
+      cerr << "' cannot be opened for writing" << endl;
       exit(EXIT_FAILURE);
     }
   }
-#ifdef _MSC_VER
-  _setmode(_fileno(output), _O_U8TEXT);
-#endif
 
-  FILE *f1 = fopen(file1.c_str(), "r");
-  if(!f1)
-  {
-    wcerr << L"Error: file '" << UtfConverter::fromUtf8(file1);
-    wcerr << L"' cannot be opened for reading" << endl;
+  InputFile f1;
+  if (!f1.open(file1.c_str())) {
+    cerr << "Error: file '" << file1;
+    cerr << "' cannot be opened for reading" << endl;
     exit(EXIT_FAILURE);
   }
 
-  FILE *f2 = fopen(file2.c_str(), "r");
-  if(!f2)
-  {
-    wcerr << L"Error: file '" << UtfConverter::fromUtf8(file2);
-    wcerr << L"' cannot be opened for reading" << endl;
+  InputFile f2;
+  if (!f2.open(file2.c_str())) {
+    cerr << "Error: file '" << file2;
+    cerr << "' cannot be opened for reading" << endl;
     exit(EXIT_FAILURE);
   }
-
-#ifdef _MSC_VER
-  _setmode(_fileno(f1), _O_U8TEXT);
-  _setmode(_fileno(f2), _O_U8TEXT);
-#endif
 
   generateTMX(f1, f2, output);
 }
 
-vector<wstring>
-TMXBuilder::reverseList(vector<wstring> const &v)
+vector<UString>
+TMXBuilder::reverseList(vector<UString> const &v)
 {
-  vector<wstring> retval(v.size());
+  vector<UString> retval(v.size());
 
   for(int j = v.size() - 1, i = 0; j >=0; j--, i++)
   {
@@ -429,14 +412,14 @@ TMXBuilder::reverseList(vector<wstring> const &v)
   return retval;
 }
 
-vector<wstring>
-TMXBuilder::sentenceList(FILE *file)
+vector<UString>
+TMXBuilder::sentenceList(InputFile& file)
 {
-  vector<wstring> retval;
+  vector<UString> retval;
 
   while(true)
   {
-    wstring f = nextTU(file);
+    UString f = nextTU(file);
     if(feof(file))
     {
       break;
@@ -447,10 +430,10 @@ TMXBuilder::sentenceList(FILE *file)
   return retval;
 }
 
-vector<wstring>
-TMXBuilder::extractFragment(vector<wstring> const &text, unsigned int base, unsigned int width)
+vector<UString>
+TMXBuilder::extractFragment(vector<UString> const &text, unsigned int base, unsigned int width)
 {
-  vector<wstring> result;
+  vector<UString> result;
 
   for(unsigned int i = base; i < (base + width) && i < text.size(); i++)
   {
@@ -485,7 +468,7 @@ TMXBuilder::argmin(int nw, int n, int w)
 }
 
 void
-TMXBuilder::generateTMX(FILE *f1, FILE *f2, FILE *output)
+TMXBuilder::generateTMX(InputFile& f1, InputFile& f2, UFILE* output)
 {
   fprintf(output, "<?xml version=\"1.0\"?>\n");
   fprintf(output, "<tmx version=\"1.4\">\n");
@@ -512,17 +495,17 @@ TMXBuilder::printTable(int *table, unsigned int nrows, unsigned int ncols)
     {
       if(j != 0)
       {
-        wcerr << L" ";
+        cerr << " ";
       }
-      wcerr << setw(10) << table[i*ncols + j];
+      cerr << setw(10) << table[i*ncols + j];
     }
-    wcerr << endl;
+    cerr << endl;
   }
 }
 
 
 void
-TMXBuilder::printTUCond(FILE *output, wstring const &tu1, wstring const &tu2, bool secure_zone)
+TMXBuilder::printTUCond(UFILE *output, UString const &tu1, UString const &tu2, bool secure_zone)
 {
   if(secure_zone && similar(tu1, tu2))
   {
@@ -531,20 +514,18 @@ TMXBuilder::printTUCond(FILE *output, wstring const &tu1, wstring const &tu2, bo
 }
 
 void
-TMXBuilder::splitAndMove(FILE *f1, string const &filename)
+TMXBuilder::splitAndMove(InputFile& f1, string const &filename)
 {
-  FILE *stream = fopen(filename.c_str(), "w");
-  vector<wstring> fichero_por_cadenas = sentenceList(f1);
-  for(size_t i = 0; i < fichero_por_cadenas.size(); i++)
-  {
-    fputws_unlocked(fichero_por_cadenas[i].c_str(), stream);
-    fputws_unlocked(L"\n", stream);
+  UFILE* stream = u_fopen(file.c_str(), "w", NULL, NULL);
+  vector<UString> fichero_por_cadenas = sentenceList(f1);
+  for (auto& it : fichero_por_cadenas) {
+    u_fprintf(stream, "%S\n", it.c_str());
   }
-  fclose(stream);
+  u_fclose(stream);
 }
 
 void
-TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
+TMXBuilder::outputTU(InputFile& f1, InputFile& f2, UFILE* output)
 {
   string left = tmpnam(NULL);
   string right = tmpnam(NULL);
@@ -565,29 +546,25 @@ TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
 
   TMXAligner::alignerToolWithFilenames(dict, left, right, ap, out);
 
-  FILE *stream = fopen(out.c_str(), "r");
+  InputFile stream;
+  stream.open(out.c_str());
   int conta = 0;
-  wstring partes[2];
-  while(true)
+  UString partes[2];
+  while(!stream.eof())
   {
-    wchar_t val = fgetwc(stream);
-    if(feof(stream))
-    {
-      break;
-    }
+    UChar32 val = stream.get();
 
-    if(val == L'\t')
+    if(val == '\t')
     {
       conta++;
     }
-    else if(val == L'\n')
+    else if(val == '\n')
     {
-      if(partes[0] != L"" && partes[1] != L"")
-      {
+      if (!partes[0].empty() && !partes[1].empty()) {
         printTU(output, partes[0], partes[1]);
       }
-      partes[0] = L"";
-      partes[1] = L"";
+      partes[0].clear();
+      partes[1].clear();
       conta = 0;
     }
     if(conta < 2)
@@ -605,7 +582,7 @@ TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
 
   int base_i = 0, base_j = 0;
 
-  vector<wstring> lista1 = reverseList(sentenceList(f1)),
+  vector<UString> lista1 = reverseList(sentenceList(f1)),
                   lista2 = reverseList(sentenceList(f2)), lista3;
 
   if(freference != NULL)
@@ -615,8 +592,8 @@ TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
 
   while(true)
   {
-    vector<wstring> l1 = extractFragment(lista1, base_i, window_size);
-    vector<wstring> l2 = extractFragment(lista2, base_j, window_size) , l3;
+    vector<UString> l1 = extractFragment(lista1, base_i, window_size);
+    vector<UString> l2 = extractFragment(lista2, base_j, window_size) , l3;
 
     if(lista3.size() != 0)
     {
@@ -696,7 +673,7 @@ TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
 		}
 	    }
 
-	  //          wcerr << L"[" << i << L" " << j << L"]" << endl;
+	  //          cerr << "[" << i << " " << j << "]" << endl;
          break;
 
         case 3:
@@ -755,13 +732,13 @@ TMXBuilder::outputTU(FILE *f1, FILE *f2, FILE *output)
 }
 
 int
-TMXBuilder::weight(wstring const &s)
+TMXBuilder::weight(UString const &s)
 {
   return s.size()*2;  // just the size of the string
 }
 
 int *
-TMXBuilder::levenshteinTable(vector<wstring> &l1, vector<wstring> &l2,
+TMXBuilder::levenshteinTable(vector<UString> &l1, vector<UString> &l2,
 			     unsigned int diagonal_width, unsigned int max_edit)
 {
   unsigned int const nrows = l1.size() + 1;
@@ -809,8 +786,8 @@ TMXBuilder::levenshteinTable(vector<wstring> &l1, vector<wstring> &l2,
   return table;
 }
 
-wstring
-TMXBuilder::filter(wstring const &tu)
+UString
+TMXBuilder::filter(UString const &tu)
 {
   bool has_text = false;
   unsigned int count_blank = 0;
@@ -829,19 +806,19 @@ TMXBuilder::filter(wstring const &tu)
 
   if(!has_text || count_blank <= 2 || tu.size() == 0)
   {
-    return L"";
+    return "";
   }
 
   return xmlize(tu);
 }
 
 void
-TMXBuilder::printTU(FILE *output, wstring const &tu1, wstring const &tu2) const
+TMXBuilder::printTU(UFILE* output, UString const &tu1, UString const &tu2) const
 {
-  wstring tu1_filtered = filter(tu1);
-  wstring tu2_filtered = filter(tu2);
+  UString tu1_filtered = filter(tu1);
+  UString tu2_filtered = filter(tu2);
 
-  if(tu1_filtered != L"" && tu2_filtered != L"")
+  if(tu1_filtered != "" && tu2_filtered != "")
   {
 
     fprintf(output, "<tu>\n  <tuv xml:lang=\"%s\"><seg>%s</seg></tuv>\n",
@@ -892,7 +869,7 @@ TMXBuilder::min2(int i1, int i2)
 }
 
 int
-TMXBuilder::editDistance(wstring const &s1, wstring const &s2, unsigned int max_edit)
+TMXBuilder::editDistance(UString const &s1, UString const &s2, unsigned int max_edit)
 {
   int const nrows = min2(s1.size() + 1, max_edit);
   int const ncols = min2(s2.size() + 1, max_edit);
@@ -980,7 +957,7 @@ TMXBuilder::isRemovablePunct(wchar_t const &c)
 }
 
 bool
-TMXBuilder::similar(wstring const &s1, wstring const &s2)
+TMXBuilder::similar(UString const &s1, UString const &s2)
 {
   unsigned int l1 = s1.size();
   unsigned int l2 = s2.size();
@@ -1012,8 +989,8 @@ TMXBuilder::setTranslation(string const &filename)
   freference = fopen(filename.c_str(), "r");
   if(!freference)
   {
-    wcerr << L"Error: file '" << UtfConverter::fromUtf8(filename);
-    wcerr << L"' cannot be opened for reading" << endl;
+    cerr << "Error: file '" << UtfConverter::fromUtf8(filename);
+    cerr << "' cannot be opened for reading" << endl;
     freference = NULL;
   }
 

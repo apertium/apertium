@@ -16,15 +16,15 @@
 #ifndef TAG_H
 #define TAG_H
 
-#include <string>
+#include <lttoolbox/ustring.h>
 
 namespace Apertium {
 class Tag {
 public:
   friend bool operator==(const Tag &a, const Tag &b);
   friend bool operator<(const Tag &a, const Tag &b);
-  operator std::wstring() const;
-  std::wstring TheTag;
+  operator UString() const;
+  UString TheTag;
 };
 }
 

@@ -14,7 +14,7 @@ public:
   virtual ~TaggerDataPercepCoarseTags();
   void serialise(std::ostream &serialised) const;
   void deserialise(std::istream &serialised);
-  const wstring& coarsen(const Apertium::Morpheme &wrd) const;
+  const UString& coarsen(const Apertium::Morpheme &wrd) const;
 };
 
 #endif

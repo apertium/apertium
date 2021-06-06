@@ -22,8 +22,10 @@
 #include <vector>
 
 namespace Apertium {
-std::wostream &operator<<(std::wostream &Stream_, const Analysis &Analysis_) {
-  Stream_ << static_cast<std::wstring>(Analysis_);
+std::ostream &operator<<(std::ostream &Stream_, const Analysis &Analysis_) {
+  //Stream_ << static_cast<UString>(Analysis_);
+  // this line is giving a type error that I can't make sense of
+  // wstring wcerr TODO L""
   return Stream_;
 }
 
@@ -35,21 +37,22 @@ bool operator<(const Analysis &a, const Analysis &b) {
   return a.TheMorphemes < b.TheMorphemes;
 }
 
-Analysis::operator std::wstring() const {
+Analysis::operator UString() const {
   if (TheMorphemes.empty())
     throw Exception::Analysis::TheMorphemes_empty(
         "can't convert Analysis comprising empty Morpheme std::vector to "
-        "std::wstring");
+        "UString");
 
   std::vector<Morpheme>::const_iterator Morpheme_ = TheMorphemes.begin();
-  std::wstring wstring_ = *Morpheme_;
+  UString UString_ = *Morpheme_;
   ++Morpheme_;
 
   // Call .end() each iteration to save memory.
   for (; Morpheme_ != TheMorphemes.end(); ++Morpheme_) {
-    wstring_ += L"+" + static_cast<std::wstring>(*Morpheme_);
+    UString_ += '+';
+    UString_ += static_cast<UString>(*Morpheme_);
   }
 
-  return wstring_;
+  return UString_;
 }
 }

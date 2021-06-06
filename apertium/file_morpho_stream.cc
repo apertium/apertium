@@ -26,29 +26,29 @@
 #include <apertium/unlocked_cstdio.h>
 
 using namespace Apertium;
-FileMorphoStream::FileMorphoStream(FILE *ftxt, bool d, TaggerData *t) :
+FileMorphoStream::FileMorphoStream(const char* ftxt, bool d, TaggerData *t) :
     ms() {
   foundEOF = false;
   debug=d;
   td = t;
   me = td->getPatternList().newMatchExe();
   alphabet = td->getPatternList().getAlphabet();
-  input = ftxt;
+  input.open(ftxt);
   ca_any_char = alphabet(PatternList::ANY_CHAR);
   ca_any_tag = alphabet(PatternList::ANY_TAG);
 
   ConstantManager &constants = td->getConstants();
-  ca_kignorar = constants.getConstant(L"kIGNORAR");
-  ca_kbarra = constants.getConstant(L"kBARRA");
-  ca_kdollar = constants.getConstant(L"kDOLLAR");
-  ca_kbegin = constants.getConstant(L"kBEGIN");
-  ca_kmot = constants.getConstant(L"kMOT");
-  ca_kmas = constants.getConstant(L"kMAS");
-  ca_kunknown = constants.getConstant(L"kUNKNOWN");
+  ca_kignorar = constants.getConstant("kIGNORAR");
+  ca_kbarra = constants.getConstant("kBARRA");
+  ca_kdollar = constants.getConstant("kDOLLAR");
+  ca_kbegin = constants.getConstant("kBEGIN");
+  ca_kmot = constants.getConstant("kMOT");
+  ca_kmas = constants.getConstant("kMAS");
+  ca_kunknown = constants.getConstant("kUNKNOWN");
 
-  map<wstring, int, Ltstr> &tag_index = td->getTagIndex();
-  ca_tag_keof = tag_index[L"TAG_kEOF"];
-  ca_tag_kundef = tag_index[L"TAG_kUNDEF"];
+  map<UString, int> &tag_index = td->getTagIndex();
+  ca_tag_keof = tag_index["TAG_kEOF"];
+  ca_tag_kundef = tag_index["TAG_kUNDEF"];
 
   end_of_file = false;
   null_flush = false;
@@ -69,7 +69,7 @@ FileMorphoStream::get_next_word()
 
     if(word->isAmbiguous())
     {
-      vector<wstring> &ref = td->getDiscardRules();
+      vector<UString> &ref = td->getDiscardRules();
       for(unsigned int i = 0; i < ref.size(); i++)
       {
         word->discardOnAmbiguity(ref[i]);
@@ -93,7 +93,7 @@ FileMorphoStream::get_next_word()
     if(feof(input) || (null_flush && symbol == L'\0'))
     {
       end_of_file = true;
-      vwords[ivwords]->add_tag(ca_tag_keof, L"", td->getPreferRules());
+      vwords[ivwords]->add_tag(ca_tag_keof, "", td->getPreferRules());
       return get_next_word();
     }
     if(symbol == L'^')
@@ -103,7 +103,7 @@ FileMorphoStream::get_next_word()
     }
     else
     {
-      wstring str = L"";
+      UString str = "";
       if(symbol == L'\\')
       {
         symbol = fgetwc_unlocked(input);
@@ -123,7 +123,7 @@ FileMorphoStream::get_next_word()
 	{
 	  end_of_file = true;
 	  vwords[ivwords]->add_ignored_string(str);
-          vwords[ivwords]->add_tag(ca_tag_keof, L"", td->getPreferRules());
+          vwords[ivwords]->add_tag(ca_tag_keof, "", td->getPreferRules());
 	  return get_next_word();
 	}
 	else if(symbol == L'\\')
@@ -134,7 +134,7 @@ FileMorphoStream::get_next_word()
 	  {
 	    end_of_file = true;
 	    vwords[ivwords]->add_ignored_string(str);
-            vwords[ivwords]->add_tag(ca_tag_keof, L"", td->getPreferRules());
+            vwords[ivwords]->add_tag(ca_tag_keof, "", td->getPreferRules());
 	    return get_next_word();
 	  }
 	  str += static_cast<wchar_t>(symbol);
@@ -159,7 +159,7 @@ FileMorphoStream::get_next_word()
 }
 
 void
-FileMorphoStream::lrlmClassify(wstring const &str, int &ivwords)
+FileMorphoStream::lrlmClassify(UString const &str, int &ivwords)
 {
   int floor = 0;
   int last_type = -1;
@@ -183,7 +183,7 @@ FileMorphoStream::lrlmClassify(wstring const &str, int &ivwords)
     }
     else
     {
-      wstring tag = L"";
+      UString tag = "";
       for(int j = i+1; j != limit; j++)
       {
         if(str[j] == L'\\')
@@ -232,8 +232,8 @@ FileMorphoStream::lrlmClassify(wstring const &str, int &ivwords)
       {
         if (debug)
         {
-	  wcerr<<L"Warning: There is not coarse tag for the fine tag '"<< str.substr(floor) <<L"'\n";
-          wcerr<<L"         This is because of an incomplete tagset definition or a dictionary error\n";
+	  cerr<<"Warning: There is not coarse tag for the fine tag '"<< str.substr(floor) <<"'\n";
+          cerr<<"         This is because of an incomplete tagset definition or a dictionary error\n";
 	}
         vwords[ivwords]->add_tag(ca_tag_kundef, str.substr(floor) , td->getPreferRules());
 	return;
@@ -264,8 +264,8 @@ FileMorphoStream::lrlmClassify(wstring const &str, int &ivwords)
         {
           if (debug)
           {
-	    wcerr<<L"Warning: There is not coarse tag for the fine tag '"<< str.substr(floor) <<L"'\n";
-            wcerr<<L"         This is because of an incomplete tagset definition or a dictionary error\n";
+	    cerr<<"Warning: There is not coarse tag for the fine tag '"<< str.substr(floor) <<"'\n";
+            cerr<<"         This is because of an incomplete tagset definition or a dictionary error\n";
 	  }
           vwords[ivwords]->add_tag(ca_tag_kundef, str.substr(floor) , td->getPreferRules());
 	  return;
@@ -280,8 +280,8 @@ FileMorphoStream::lrlmClassify(wstring const &str, int &ivwords)
     val = ca_tag_kundef;
     if (debug)
     {
-      wcerr<<L"Warning: There is not coarse tag for the fine tag '"<< str.substr(floor) <<L"'\n";
-      wcerr<<L"         This is because of an incomplete tagset definition or a dictionary error\n";
+      cerr<<"Warning: There is not coarse tag for the fine tag '"<< str.substr(floor) <<"'\n";
+      cerr<<"         This is because of an incomplete tagset definition or a dictionary error\n";
     }
 
   }
@@ -292,7 +292,7 @@ void
 FileMorphoStream::readRestOfWord(int &ivwords)
 {
   // first we have the superficial form
-  wstring  str = L"";
+  UString str = "";
 
   while(true)
   {
@@ -303,11 +303,11 @@ FileMorphoStream::readRestOfWord(int &ivwords)
       if(str.size() > 0)
       {
         vwords[ivwords]->add_ignored_string(str);
-        wcerr<<L"Warning (internal): kIGNORE was returned while reading a word\n";
-        wcerr<<L"Word being read: "<<vwords[ivwords]->get_superficial_form()<<L"\n";
-        wcerr<<L"Debug: "<< str <<L"\n";
+        cerr<<"Warning (internal): kIGNORE was returned while reading a word\n";
+        cerr<<"Word being read: "<<vwords[ivwords]->get_superficial_form()<<"\n";
+        cerr<<"Debug: "<< str <<"\n";
       }
-      vwords[ivwords]->add_tag(ca_tag_keof, L"", td->getPreferRules());
+      vwords[ivwords]->add_tag(ca_tag_keof, "", td->getPreferRules());
       return;
     }
     else if(symbol == L'\\')
@@ -319,13 +319,13 @@ FileMorphoStream::readRestOfWord(int &ivwords)
     else if(symbol == L'/')
     {
       vwords[ivwords]->set_superficial_form(str);
-      str = L"";
+      str = "";
       break;
     }
     else if(symbol == L'$')
     {
       vwords[ivwords]->set_superficial_form(str);
-      vwords[ivwords]->add_ignored_string(L"$");
+      vwords[ivwords]->add_ignored_string("$");
       break;
     }
     else
@@ -345,11 +345,11 @@ FileMorphoStream::readRestOfWord(int &ivwords)
       if(str.size() > 0)
       {
         vwords[ivwords]->add_ignored_string(str);
-        wcerr<<L"Warning (internal): kIGNORE was returned while reading a word\n";
-        wcerr<<L"Word being read: "<<vwords[ivwords]->get_superficial_form()<<L"\n";
-        wcerr<<L"Debug: "<< str <<L"\n";
+        cerr<<"Warning (internal): kIGNORE was returned while reading a word\n";
+        cerr<<"Word being read: "<<vwords[ivwords]->get_superficial_form()<<"\n";
+        cerr<<"Debug: "<< str <<"\n";
       }
-      vwords[ivwords]->add_tag(ca_tag_keof, L"", td->getPreferRules());
+      vwords[ivwords]->add_tag(ca_tag_keof, "", td->getPreferRules());
       return;
     }
     else if(symbol == L'\\')
@@ -362,7 +362,7 @@ FileMorphoStream::readRestOfWord(int &ivwords)
     else if(symbol == L'/')
     {
       lrlmClassify(str, ivwords);
-      str = L"";
+      str = "";
       ivwords = 0;
       continue;
     }

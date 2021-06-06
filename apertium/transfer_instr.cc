@@ -33,7 +33,7 @@ TransferInstr::destroy()
 {
 }
 
-TransferInstr::TransferInstr(TransferInstrType t, string const &c,
+TransferInstr::TransferInstr(TransferInstrType t, UString const &c,
                              int const p, void *ptr, bool cond)
 {
   type = t;
@@ -70,7 +70,7 @@ TransferInstr::getType()
   return type;
 }
 
-string const &
+UString const &
 TransferInstr::getContent()
 {
   return content;

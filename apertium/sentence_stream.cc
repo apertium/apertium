@@ -21,7 +21,7 @@ bool isSentenceEnd(StreamedType &token) {
     return false;
   }
   Tag &tag = *tags.begin();
-  if (tag.TheTag != L"sent") {
+  if (tag.TheTag != "sent") {
     return false;
   }
   return true;
@@ -103,17 +103,17 @@ TrainingCorpus::TrainingCorpus(Stream &tagged, Stream &untagged,
     untagged_line++;
     if (!tagged_token.TheLexicalUnit || !untagged_token.TheLexicalUnit) {
       if (tagged_token.TheLexicalUnit || untagged_token.TheLexicalUnit) {
-        std::wcerr << "Normal perm\n";
-        std::wcerr << "tagged: " << tagged_line << " " << (!!tagged_token.TheLexicalUnit) << "\n";
-        std::wcerr << "untagged: " << untagged_line << " " << (!!untagged_token.TheLexicalUnit) << "\n";
+        std::cerr << "Normal perm\n";
+        std::cerr << "tagged: " << tagged_line << " " << (!!tagged_token.TheLexicalUnit) << "\n";
+        std::cerr << "untagged: " << untagged_line << " " << (!!untagged_token.TheLexicalUnit) << "\n";
         prematureEnd();
       }
       break;
     }
-    //std::wcerr << tagged_token.TheLexicalUnit->TheSurfaceForm << " || " << untagged_token.TheLexicalUnit->TheSurfaceForm << "\n";
+    //std::cerr << tagged_token.TheLexicalUnit->TheSurfaceForm << " || " << untagged_token.TheLexicalUnit->TheSurfaceForm << "\n";
     if (untagged_token.TheLexicalUnit->TheSurfaceForm != tagged_token.TheLexicalUnit->TheSurfaceForm) {
       if (!skip_on_error) {
-        std::wstringstream what_;
+        std::stringstream what_;
         what_ << "Streams diverged at line " << tagged_line << "\n";
         what_ << "Untagged token: "
               << untagged_token.TheLexicalUnit->TheSurfaceForm << "\n";
@@ -127,18 +127,18 @@ TrainingCorpus::TrainingCorpus(Stream &tagged, Stream &untagged,
       training_sentence->first.clear();
       training_sentence->second.clear();
 
-      std::wcerr << "fast forward\n";
+      std::cerr << "fast forward\n";
       bool tagged_ended = contToEndOfSent(tagged, tagged_token, tagged_line);
       bool untagged_ended = contToEndOfSent(untagged, untagged_token, untagged_line);
       if (tagged_ended || untagged_ended) {
         if (!tagged_ended || !untagged_ended) {
-          std::wcerr << "fast forward prem\n";
+          std::cerr << "fast forward prem\n";
           prematureEnd();
         }
-        std::wcerr << "fast forward finish\n";
+        std::cerr << "fast forward finish\n";
         break;
       }
-      std::wcerr << "fast forwarded\n";
+      std::cerr << "fast forwarded\n";
       continue;
     }
     if (was_sentence_end) {
@@ -169,7 +169,7 @@ bool TrainingCorpus::contToEndOfSent(Stream &stream, StreamedType token,
     if (isSentenceEnd(token, stream, sent_seg)) {
       return false;
     }
-    std::wcerr << "Skip " << token.TheLexicalUnit->TheSurfaceForm << "\n";
+    std::cerr << "Skip " << token.TheLexicalUnit->TheSurfaceForm << "\n";
     token = stream.get();
     line++;
   }

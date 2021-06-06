@@ -91,55 +91,58 @@ Interchunk::readData(FILE *in)
   me = new MatchExe(t, finals);
 
   // attr_items
-  bool recompile_attrs = Compression::string_read(in) != pcre_version_endian();
+  //bool recompile_attrs = Compression::string_read(in) != pcre_version_endian();
+  Compression::string_read(in); // version
+  bool recompile_attrs = true;
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
   {
-    string const cad_k = UtfConverter::toUtf8(Compression::wstring_read(in));
+    UString const cad_k = Compression::string_read(in);
     attr_items[cad_k].read(in);
-    wstring fallback = Compression::wstring_read(in);
+    UString fallback = Compression::string_read(in);
     if(recompile_attrs) {
-      attr_items[cad_k].compile(UtfConverter::toUtf8(fallback));
+      //attr_items[cad_k].compile(UtfConverter::toUtf8(fallback));
+      // TODO regexs
     }
   }
 
   // variables
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
   {
-    string const cad_k = UtfConverter::toUtf8(Compression::wstring_read(in));
-    variables[cad_k] = UtfConverter::toUtf8(Compression::wstring_read(in));
+    UString const cad_k = Compression::string_read(in);
+    variables[cad_k] = Compression::string_read(in);
   }
 
   // macros
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
   {
-    string const cad_k = UtfConverter::toUtf8(Compression::wstring_read(in));
+    UString const cad_k = Compression::string_read(in);
     macros[cad_k] = Compression::multibyte_read(in);
   }
 
   // lists
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
   {
-    string const cad_k = UtfConverter::toUtf8(Compression::wstring_read(in));
+    UString const cad_k = Compression::string_read(in);
 
     for(int j = 0, limit2 = Compression::multibyte_read(in); j != limit2; j++)
     {
-      wstring const cad_v = Compression::wstring_read(in);
-      lists[cad_k].insert(UtfConverter::toUtf8(cad_v));
-      listslow[cad_k].insert(UtfConverter::toUtf8(StringUtils::tolower(cad_v)));
+      UString const cad_v = Compression::string_read(in);
+      lists[cad_k].insert(cad_v);
+      listslow[cad_k].insert(StringUtils::tolower(cad_v));
     }
   }
 }
 
 void
-Interchunk::read(string const &transferfile, string const &datafile)
+Interchunk::read(const char* transferfile, const char* datafile)
 {
   readInterchunk(transferfile);
 
   // datafile
-  FILE *in = fopen(datafile.c_str(), "rb");
+  FILE *in = fopen(datafile, "rb");
   if(!in)
   {
-    wcerr << "Error: Could not open file '" << datafile << "'." << endl;
+    cerr << "Error: Could not open file '" << datafile << "'." << endl;
     exit(EXIT_FAILURE);
   }
   readData(in);
@@ -148,13 +151,13 @@ Interchunk::read(string const &transferfile, string const &datafile)
 }
 
 void
-Interchunk::readInterchunk(string const &in)
+Interchunk::readInterchunk(const char* in)
 {
-  doc = xmlReadFile(in.c_str(), NULL, 0);
+  doc = xmlReadFile(in, NULL, 0);
 
   if(doc == NULL)
   {
-    wcerr << "Error: Could not parse file '" << in << "'." << endl;
+    cerr << "Error: Could not parse file '" << in << "'." << endl;
     exit(EXIT_FAILURE);
   }
 
@@ -215,23 +218,23 @@ Interchunk::checkIndex(xmlNode *element, int index, int limit)
 {
   if(index >= limit)
   {
-    wcerr << L"Error in " << UtfConverter::fromUtf8((char *) doc->URL) << L": line " << element->line << L": index >= limit" << endl;
+    cerr << "Error in " << (char *) doc->URL << ": line " << element->line << ": index >= limit" << endl;
     return false;
   }
   if(index < 0) {
-    wcerr << L"Error in " << UtfConverter::fromUtf8((char *) doc->URL) << L": line " << element->line << L": index < 0" << endl;
+    cerr << "Error in " << (char *) doc->URL << ": line " << element->line << ": index < 0" << endl;
     return false;
   }
   if(word[index] == 0)
   {
-    wcerr << L"Error in " << UtfConverter::fromUtf8((char *) doc->URL) << L": line " << element->line << L": Null access at word[index]" << endl;
+    cerr << "Error in " << (char *) doc->URL << ": line " << element->line << ": Null access at word[index]" << endl;
     return false;
   }
   return true;
 }
 
 
-string
+UString
 Interchunk::evalString(xmlNode *element)
 {
   if (element == 0)
@@ -249,9 +252,9 @@ Interchunk::evalString(xmlNode *element)
       case ti_clip_tl:
         if(checkIndex(element, ti.getPos(), lword))
         {
-          if(ti.getContent() == "content") // jacob's new 'part'
+          if(ti.getContent() == "content"_u) // jacob's new 'part'
           {
-            string wf = word[ti.getPos()]->chunkPart(attr_items[ti.getContent()]);
+            UString wf = word[ti.getPos()]->chunkPart(attr_items[ti.getContent()]);
             return wf.substr(1, wf.length()-2); // trim away the { and }
           }
           else
@@ -271,7 +274,7 @@ Interchunk::evalString(xmlNode *element)
       case ti_b:
         if(!blank_queue.empty())
         {
-          string retblank = blank_queue.front();
+          UString retblank = blank_queue.front();
           
           if(in_out)
           {
@@ -282,7 +285,7 @@ Interchunk::evalString(xmlNode *element)
         }
         else
         {
-          return " ";
+          return " "_u;
         }
         break;
 
@@ -302,21 +305,21 @@ Interchunk::evalString(xmlNode *element)
         break;
 
       default:
-        return "";
+        return ""_u;
     }
-    return "";
+    return ""_u;
   }
 
   if(!xmlStrcmp(element->name, (const xmlChar *) "clip"))
   {
     int pos = 0;
-    xmlChar *part = NULL;
+    UString part;
 
     for(xmlAttr *i = element->properties; i != NULL; i = i->next)
     {
       if(!xmlStrcmp(i->name, (const xmlChar *) "part"))
       {
-	part = i->children->content;
+        part = to_ustring((char*)i->children->content);
       }
       else if(!xmlStrcmp(i->name, (const xmlChar *) "pos"))
       {
@@ -324,27 +327,27 @@ Interchunk::evalString(xmlNode *element)
       }
     }
 
-    evalStringCache[element] = TransferInstr(ti_clip_tl, (const char *) part, pos, NULL);
+    evalStringCache[element] = TransferInstr(ti_clip_tl, part, pos, NULL);
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "lit-tag"))
   {
     evalStringCache[element] = TransferInstr(ti_lit_tag,
-                                             tags((const char *) element->properties->children->content), 0);
+                                             tags(to_ustring((const char *) element->properties->children->content)), 0);
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "lit"))
   {
-    evalStringCache[element] = TransferInstr(ti_lit, ((const char *) element->properties->children->content), 0);
+    evalStringCache[element] = TransferInstr(ti_lit, to_ustring((const char *) element->properties->children->content), 0);
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "b"))
   {
     if(element->properties == NULL)
     {
-      evalStringCache[element] = TransferInstr(ti_b, " ", -1);
+      evalStringCache[element] = TransferInstr(ti_b, " "_u, -1);
     }
     else
     {
       int pos = atoi((const char *) element->properties->children->content) - 1;
-      evalStringCache[element] = TransferInstr(ti_b, "", pos);
+      evalStringCache[element] = TransferInstr(ti_b, ""_u, pos);
     }
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "get-case-from"))
@@ -360,34 +363,34 @@ Interchunk::evalString(xmlNode *element)
       }
     }
 
-    evalStringCache[element] = TransferInstr(ti_get_case_from, "lem", pos, param);
+    evalStringCache[element] = TransferInstr(ti_get_case_from, "lem"_u, pos, param);
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "var"))
   {
-    evalStringCache[element] = TransferInstr(ti_var, (const char *) element->properties->children->content, 0);
+    evalStringCache[element] = TransferInstr(ti_var, to_ustring((const char *) element->properties->children->content), 0);
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "case-of"))
   {
     int pos = 0;
-    xmlChar *part = NULL;
+    UString part;
 
     for(xmlAttr *i = element->properties; i != NULL; i = i->next)
     {
       if(!xmlStrcmp(i->name, (const xmlChar *) "part"))
       {
-	part = i->children->content;
+        part = to_ustring((char*)i->children->content);
       }
       else if(!xmlStrcmp(i->name, (const xmlChar *) "pos"))
       {
-	pos = atoi((const char *) i->children->content) - 1;
+        pos = atoi((const char *) i->children->content) - 1;
       }
     }
 
-    evalStringCache[element] = TransferInstr(ti_case_of_tl, (const char *) part, pos);
+    evalStringCache[element] = TransferInstr(ti_case_of_tl, part, pos);
   }
   else if(!xmlStrcmp(element->name, (const xmlChar *) "concat"))
   {
-    string value;
+    UString value;
     for(xmlNode *i = element->children; i != NULL; i = i->next)
     {
       if(i->type == XML_ELEMENT_NODE)
@@ -403,7 +406,7 @@ Interchunk::evalString(xmlNode *element)
   }
   else
   {
-    wcerr << "Error: unexpected rvalue expression '" << element->name << "'" << endl;
+    cerr << "Error: unexpected rvalue expression '" << element->name << "'" << endl;
     exit(EXIT_FAILURE);
   }
 
@@ -421,11 +424,11 @@ Interchunk::processOut(xmlNode *localroot)
     {
       if(!xmlStrcmp(i->name, (const xmlChar *) "chunk"))
       {
-        fputws_unlocked(UtfConverter::fromUtf8(processChunk(i)).c_str(), output);
+        write(processChunk(i), output);
       }
       else // 'b'
       {
-        fputws_unlocked(UtfConverter::fromUtf8(evalString(i)).c_str(), output);
+        write(evalString(i), output);
       }
     }
   }
@@ -433,11 +436,11 @@ Interchunk::processOut(xmlNode *localroot)
   in_out = false;
 }
 
-string
+UString
 Interchunk::processChunk(xmlNode *localroot)
 {
-  string result;
-  result.append("^");
+  UString result;
+  result.append("^"_u);
 
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
@@ -447,7 +450,7 @@ Interchunk::processChunk(xmlNode *localroot)
     }
   }
 
-  result.append("$");
+  result.append("$"_u);
   return result;
 }
 
@@ -491,12 +494,12 @@ Interchunk::processLet(xmlNode *localroot)
     {
       if(leftSide == NULL)
       {
-	leftSide = i;
+        leftSide = i;
       }
       else
       {
-	rightSide = i;
-	break;
+        rightSide = i;
+        break;
       }
     }
   }
@@ -516,7 +519,7 @@ Interchunk::processLet(xmlNode *localroot)
         bool match = word[ti.getPos()]->setChunkPart(attr_items[ti.getContent()], evalString(rightSide));
         if(!match && trace)
         {
-          wcerr << "apertium-interchunk warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+          cerr << "apertium-interchunk warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
         }
       }
         return;
@@ -527,36 +530,36 @@ Interchunk::processLet(xmlNode *localroot)
   }
   if(!xmlStrcmp(leftSide->name, (const xmlChar *) "var"))
   {
-    string const val = (const char *) leftSide->properties->children->content;
+    UString const val = to_ustring((const char *) leftSide->properties->children->content);
     variables[val] = evalString(rightSide);
     evalStringCache[leftSide] = TransferInstr(ti_var, val, 0);
   }
   else if(!xmlStrcmp(leftSide->name, (const xmlChar *) "clip"))
   {
     int pos = 0;
-    xmlChar *part = NULL;
+    UString part;
 
     for(xmlAttr *i = leftSide->properties; i != NULL; i = i->next)
     {
       if(!xmlStrcmp(i->name, (const xmlChar *) "part"))
       {
-	part = i->children->content;
+        part = to_ustring((char*)i->children->content);
       }
       else if(!xmlStrcmp(i->name, (const xmlChar *) "pos"))
       {
-	pos = atoi((const char *) i->children->content) - 1;
+        pos = atoi((const char *) i->children->content) - 1;
       }
     }
 
 
-    bool match = word[pos]->setChunkPart(attr_items[(const char *) part],
+    bool match = word[pos]->setChunkPart(attr_items[part],
 					 evalString(rightSide));
     if(!match && trace)
     {
-      wcerr << "apertium-interchunk warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+      cerr << "apertium-interchunk warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
     }
     evalStringCache[leftSide] = TransferInstr(ti_clip_tl,
-					      (const char *) part,
+					      part,
 					      pos, NULL);
   }
 }
@@ -564,12 +567,12 @@ Interchunk::processLet(xmlNode *localroot)
 void
 Interchunk::processAppend(xmlNode *localroot)
 {
-  string name;
+  UString name;
   for(xmlAttr *i = localroot->properties; i != NULL; i = i->next)
   {
     if(!xmlStrcmp(i->name, (const xmlChar *) "n"))
     {
-      name = (char *) i->children->content;
+      name = to_ustring((char *) i->children->content);
       break;
     }
   }
@@ -607,31 +610,31 @@ Interchunk::processModifyCase(xmlNode *localroot)
   if(leftSide->name != NULL && !xmlStrcmp(leftSide->name, (const xmlChar *) "clip"))
   {
     int pos = 0;
-    xmlChar *part = NULL;
+    UString part;
 
     for(xmlAttr *i = leftSide->properties; i != NULL; i = i->next)
     {
       if(!xmlStrcmp(i->name, (const xmlChar *) "part"))
       {
-	part = i->children->content;
+        part = to_ustring((char*)i->children->content);
       }
       else if(!xmlStrcmp(i->name, (const xmlChar *) "pos"))
       {
-	pos = atoi((const char *) i->children->content) - 1;
+        pos = atoi((const char *) i->children->content) - 1;
       }
     }
 
-    string const result = copycase(evalString(rightSide),
-				   word[pos]->chunkPart(attr_items[(const char *) part]));
-    bool match = word[pos]->setChunkPart(attr_items[(const char *) part], result);
+    UString const result = copycase(evalString(rightSide),
+				   word[pos]->chunkPart(attr_items[part]));
+    bool match = word[pos]->setChunkPart(attr_items[part], result);
     if(!match && trace)
     {
-      wcerr << "apertium-interchunk warning: <modify-case> on line " << localroot->line << " sometimes discards its value." << endl;
+      cerr << "apertium-interchunk warning: <modify-case> on line " << localroot->line << " sometimes discards its value." << endl;
     }
   }
   else if(!xmlStrcmp(leftSide->name, (const xmlChar *) "var"))
   {
-    string const val = (const char *) leftSide->properties->children->content;
+    UString const val = to_ustring((const char *) leftSide->properties->children->content);
     variables[val] = copycase(evalString(rightSide), variables[val]);
   }
 }
@@ -639,7 +642,7 @@ Interchunk::processModifyCase(xmlNode *localroot)
 void
 Interchunk::processCallMacro(xmlNode *localroot)
 {
-  const char *n = (const char *) localroot->properties->children->content;
+  UString n = to_ustring((const char *) localroot->properties->children->content);
   int npar = 0;
 
   xmlNode *macro = macro_map[macros[n]];
@@ -791,7 +794,7 @@ bool
 Interchunk::processIn(xmlNode *localroot)
 {
   xmlNode *value = NULL;
-  xmlChar *idlist = NULL;
+  UString idlist;
 
   for(xmlNode *i = localroot->children; i != NULL; i = i->next)
   {
@@ -799,44 +802,30 @@ Interchunk::processIn(xmlNode *localroot)
     {
       if(value == NULL)
       {
-	value = i;
+        value = i;
       }
       else
       {
-	idlist = i->properties->children->content;
-	break;
+        idlist = to_ustring((char*)i->properties->children->content);
+        break;
       }
     }
   }
 
-  string sval = evalString(value);
+  UString sval = evalString(value);
 
   if(localroot->properties != NULL)
   {
     if(!xmlStrcmp(localroot->properties->children->content,
 		  (const xmlChar *) "yes"))
     {
-      set<string, Ltstr> &myset = listslow[(const char *) idlist];
-      if(myset.find(tolower(sval)) != myset.end())
-      {
-	return true;
-      }
-      else
-      {
-	return false;
-      }
+      set<UString> &myset = listslow[idlist];
+      return (myset.find(tolower(sval)) != myset.end());
     }
   }
 
-  set<string, Ltstr> &myset = lists[(const char *) idlist];
-  if(myset.find(sval) != myset.end())
-  {
-    return true;
-  }
-  else
-  {
-    return false;
-  }
+  set<UString> &myset = lists[idlist];
+  return (myset.find(sval) != myset.end());
 }
 
 bool
@@ -935,7 +924,7 @@ Interchunk::processEqual(xmlNode *localroot)
 }
 
 bool
-Interchunk::beginsWith(string const &s1, string const &s2) const
+Interchunk::beginsWith(UString const &s1, UString const &s2) const
 {
   int const limit = s2.size(), constraint = s1.size();
 
@@ -955,7 +944,7 @@ Interchunk::beginsWith(string const &s1, string const &s2) const
 }
 
 bool
-Interchunk::endsWith(string const &s1, string const &s2) const
+Interchunk::endsWith(UString const &s1, UString const &s2) const
 {
   int const limit = s2.size(), constraint = s1.size();
 
@@ -1074,21 +1063,21 @@ Interchunk::processBeginsWithList(xmlNode *localroot)
     }
   }
 
-  xmlChar *idlist = second->properties->children->content;
-  string needle = evalString(first);
-  set<string, Ltstr>::iterator it, limit;
+  UString idlist = to_ustring((char*)second->properties->children->content);
+  UString needle = evalString(first);
+  set<UString>::iterator it, limit;
 
   if(localroot->properties == NULL ||
      xmlStrcmp(localroot->properties->children->content, (const xmlChar *) "yes"))
   {
-    it = lists[(const char *) idlist].begin();
-    limit = lists[(const char *) idlist].end();
+    it = lists[idlist].begin();
+    limit = lists[idlist].end();
   }
   else
   {
     needle = tolower(needle);
-    it = listslow[(const char *) idlist].begin();
-    limit = listslow[(const char *) idlist].end();
+    it = listslow[idlist].begin();
+    limit = listslow[idlist].end();
   }
 
   for(; it != limit; it++)
@@ -1122,21 +1111,21 @@ Interchunk::processEndsWithList(xmlNode *localroot)
     }
   }
 
-  xmlChar *idlist = second->properties->children->content;
-  string needle = evalString(first);
-  set<string, Ltstr>::iterator it, limit;
+  UString idlist = to_ustring((char*)second->properties->children->content);
+  UString needle = evalString(first);
+  set<UString>::iterator it, limit;
 
   if(localroot->properties == NULL ||
      xmlStrcmp(localroot->properties->children->content, (const xmlChar *) "yes"))
   {
-    it = lists[(const char *) idlist].begin();
-    limit = lists[(const char *) idlist].end();
+    it = lists[idlist].begin();
+    limit = lists[idlist].end();
   }
   else
   {
     needle = tolower(needle);
-    it = listslow[(const char *) idlist].begin();
-    limit = listslow[(const char *) idlist].end();
+    it = listslow[idlist].begin();
+    limit = listslow[idlist].end();
   }
 
   for(; it != limit; it++)
@@ -1172,28 +1161,28 @@ Interchunk::processContainsSubstring(xmlNode *localroot)
 
   if(localroot->properties == NULL)
   {
-    return evalString(first).find(evalString(second)) != string::npos;
+    return evalString(first).find(evalString(second)) != UString::npos;
   }
   else
   {
     if(!xmlStrcmp(localroot->properties->children->content,
 		  (const xmlChar *) "yes"))
     {
-      return tolower(evalString(first)).find(tolower(evalString(second))) != string::npos;
+      return tolower(evalString(first)).find(tolower(evalString(second))) != UString::npos;
     }
     else
     {
-      return evalString(first).find(evalString(second)) != string::npos;
+      return evalString(first).find(evalString(second)) != UString::npos;
     }
   }
 }
 
-string
-Interchunk::copycase(string const &source_word, string const &target_word)
+UString
+Interchunk::copycase(UString const &source_word, UString const &target_word)
 {
-  wstring result;
-  wstring const s_word = UtfConverter::fromUtf8(source_word);
-  wstring const t_word = UtfConverter::fromUtf8(target_word);
+  UString result;
+  UString const s_word = source_word;
+  UString const t_word = target_word;
 
   bool firstupper = iswupper(s_word[0]);
   bool uppercase = firstupper && iswupper(s_word[s_word.size()-1]);
@@ -1213,62 +1202,60 @@ Interchunk::copycase(string const &source_word, string const &target_word)
     result[0] = towupper(result[0]);
   }
 
-  return UtfConverter::toUtf8(result);
+  return result;
 }
 
-string
-Interchunk::caseOf(string const &str)
+UString
+Interchunk::caseOf(UString const &s)
 {
-  wstring const s = UtfConverter::fromUtf8(str);
-
   if(s.size() > 1)
   {
     if(!iswupper(s[0]))
     {
-      return "aa";
+      return "aa"_u;
     }
     else if(!iswupper(s[s.size()-1]))
     {
-      return "Aa";
+      return "Aa"_u;
     }
     else
     {
-      return "AA";
+      return "AA"_u;
     }
   }
   else if(s.size() == 1)
   {
     if(!iswupper(s[0]))
     {
-      return "aa";
+      return "aa"_u;
     }
     else
     {
-      return "Aa";
+      return "Aa"_u;
     }
   }
   else
   {
-    return "aa";
+    return "aa"_u;
   }
 }
 
-string
-Interchunk::tolower(string const &str) const
+UString
+Interchunk::tolower(UString const &str) const
 {
-  return UtfConverter::toUtf8(StringUtils::tolower(UtfConverter::fromUtf8(str)));
+  return StringUtils::tolower(str);
 }
 
-string
-Interchunk::tags(string const &str) const
+UString
+Interchunk::tags(UString const &str) const
 {
-  string result = "<";
+  UString result = "<"_u;
 
   for(unsigned int i = 0, limit = str.size(); i != limit; i++)
   {
     if(str[i] == '.')
     {
-      result.append("><");
+      result.append("><"_u);
     }
     else
     {
@@ -1295,98 +1282,83 @@ Interchunk::processRule(xmlNode *localroot)
   
   while(!blank_queue.empty()) //flush remaining blanks that are not spaces
   {
-    if(blank_queue.front().compare(" ") != 0)
-    {
-      fputws_unlocked(UtfConverter::fromUtf8(blank_queue.front()).c_str(), output);
+    if(blank_queue.front().compare(" "_u) != 0) {
+      write(blank_queue.front(), output);
     }
     blank_queue.pop();
   }
 }
 
 TransferToken &
-Interchunk::readToken(FILE *in)
+Interchunk::readToken(InputFile& in)
 {
   if(!input_buffer.isEmpty())
   {
     return input_buffer.next();
   }
 
-  wstring content;
+  UString content;
   while(true)
   {
-    int val = fgetwc_unlocked(in);
-    if(feof(in) || (internal_null_flush && val == 0))
+    int val = in.get();
+    if(in.eof() || (internal_null_flush && val == 0))
     {
       return input_buffer.add(TransferToken(content, tt_eof));
     }
-    if(val == L'\\')
+    if(val == '\\')
     {
-      content += L'\\';
-      content += wchar_t(fgetwc_unlocked(in));
+      content += '\\';
+      content += in.get();
     }
-    else if(val == L'[')
+    else if(val == '[')
     {
-      content += L'[';
+      content += '[';
       while(true)
       {
-	int val2 = fgetwc_unlocked(in);
-	if(val2 == L'\\')
-	{
-	  content += L'\\';
-	  content += wchar_t(fgetwc_unlocked(in));
-	}
-	else if(val2 == L']')
-	{
-	  content += L']';
-	  break;
-	}
-	else
-	{
-	  content += wchar_t(val2);
-	}
+        UChar32 val2 = in.get();
+        if(val2 == '\\') {
+          content += '\\';
+          content += in.get();
+        } else if(val2 == ']') {
+          content += ']';
+          break;
+        } else {
+          content += val2;
+        }
       }
     }
-    else if(inword && val == L'{')
-    {
-      content += L'{';
-      while(true)
-      {
-	int val2 = fgetwc_unlocked(in);
-	if(val2 == L'\\')
-	{
-	  content += L'\\';
-	  content += wchar_t(fgetwc_unlocked(in));
-	}
-	else if(val2 == L'}')
-	{
-	  wint_t val3 = wchar_t(fgetwc_unlocked(in));
-	  ungetwc(val3, in);
-
-	  content += L'}';
-	  if(val3 == L'$')
-	  {
-	    break;
-	  }
-	}
-	else
-	{
-	  content += wchar_t(val2);
-	}
+    else if(inword && val == '{') {
+      content += '{';
+      while(true) {
+        UChar32 val2 = in.get();
+        if(val2 == '\\') {
+          content += '\\';
+          content += in.get();
+        } else if(val2 == '}') {
+          UChar32 val3 = in.peek();
+          
+          content += '}';
+          if(val3 == '$') {
+            break;
+          }
+        } else {
+          content += val2;
+        }
       }
     }
-    else if(inword && val == L'$')
+    else if(inword && val == '$')
     {
       inword = false;
       return input_buffer.add(TransferToken(content, tt_word));
     }
-    else if(val == L'^')
+    else if(val == '^')
     {
       inword = true;
       return input_buffer.add(TransferToken(content, tt_blank));
     }
     else
     {
-      content += wchar_t(val);
+      content += val;
     }
   }
 }
@@ -1410,20 +1382,15 @@ Interchunk::setTrace(bool trace)
 }
 
 void
-Interchunk::interchunk_wrapper_null_flush(FILE *in, FILE *out)
+Interchunk::interchunk_wrapper_null_flush(InputFile& in, UFILE* out)
 {
   null_flush = false;
   internal_null_flush = true;
 
-  while(!feof(in))
-  {
+  while(!in.eof()) {
     interchunk(in, out);
-    fputwc_unlocked(L'\0', out);
-    int code = fflush(out);
-    if(code != 0)
-    {
-      wcerr << L"Could not flush output " << errno << endl;
-    }
+    u_fputc('\0', out);
+    u_fflush(out);
   }
   internal_null_flush = false;
   null_flush = true;
@@ -1431,7 +1398,7 @@ Interchunk::interchunk_wrapper_null_flush(FILE *in, FILE *out)
 
 
 void
-Interchunk::interchunk(FILE *in, FILE *out)
+Interchunk::interchunk(InputFile& in, UFILE* out)
 {
   if(getNullFlush())
   {
@@ -1456,9 +1423,7 @@ Interchunk::interchunk(FILE *in, FILE *out)
       {
 	if(tmpword.size() != 0)
 	{
-          fputwc_unlocked(L'^', output);
-          fputws_unlocked(tmpword[0]->c_str(), output);
-          fputwc_unlocked(L'$', output);
+      u_fprintf(output, "^%S$", tmpword[0]->c_str());
 	  tmpword.clear();
 	  input_buffer.setPos(last);
 	  input_buffer.next();
@@ -1467,7 +1432,7 @@ Interchunk::interchunk(FILE *in, FILE *out)
 	}
 	else if(tmpblank.size() != 0)
 	{
-	  fputws_unlocked(tmpblank[0]->c_str(), output);
+      write(*tmpblank[0], output);
 	  tmpblank.clear();
 	  last = input_buffer.getPos();
 	  ms.init(me->getInitial());
@@ -1485,16 +1450,11 @@ Interchunk::interchunk(FILE *in, FILE *out)
 
       if(trace)
       {
-        wcerr << endl << L"apertium-interchunk: Rule " << val << L" line " << lastrule_line << L" ";
-        for (unsigned int ind = 0; ind < tmpword.size(); ind++)
-        {
-          if (ind != 0)
-          {
-            wcerr << L" ";
-          }
-          fputws_unlocked(tmpword[ind]->c_str(), stderr);
+        cerr << endl << "apertium-interchunk: Rule " << val << " line " << lastrule_line;
+        for (auto& it : tmpword) {
+          cerr << " " << *it;
         }
-        wcerr << endl;
+        cerr << endl;
       }
     }
 
@@ -1508,7 +1468,7 @@ Interchunk::interchunk(FILE *in, FILE *out)
 	break;
 
       case tt_blank:
-	ms.step(L' ');
+	ms.step(' ');
 	tmpblank.push_back(&current.getContent());
 	break;
 
@@ -1520,14 +1480,14 @@ Interchunk::interchunk(FILE *in, FILE *out)
 	}
 	else
 	{
-	  fputws_unlocked(current.getContent().c_str(), output);
+      write(current.getContent(), output);
 	  tmpblank.clear();
 	  return;
 	}
 	break;
 
       default:
-	wcerr << "Error: Unknown input token." << endl;
+	cerr << "Error: Unknown input token." << endl;
 	return;
     }
   }
@@ -1549,12 +1509,12 @@ Interchunk::applyRule()
     {
       if(int(blank_queue.size()) < last_lword - 1)
       {
-        string blank_to_add = string(UtfConverter::toUtf8(*tmpblank[i-1]));
+        UString blank_to_add = UString(*tmpblank[i-1]);
         blank_queue.push(blank_to_add);
       }
     }
 
-    word[i] = new InterchunkWord(UtfConverter::toUtf8(*tmpword[i]));
+    word[i] = new InterchunkWord(*tmpword[i]);
   }
 
   processRule(lastrule);
@@ -1576,22 +1536,22 @@ Interchunk::applyRule()
 }
 
 void
-Interchunk::applyWord(wstring const &word_str)
+Interchunk::applyWord(UString const &word_str)
 {
-  ms.step(L'^');
+  ms.step('^');
   for(unsigned int i = 0, limit = word_str.size(); i < limit; i++)
   {
     switch(word_str[i])
     {
-      case L'\\':
+      case '\\':
         i++;
 	ms.step(towlower(word_str[i]), any_char);
 	break;
 
-      case L'<':
+      case '<':
 	for(unsigned int j = i+1; j != limit; j++)
 	{
-	  if(word_str[j] == L'>')
+	  if(word_str[j] == '>')
 	  {
 	    int symbol = alphabet(word_str.substr(i, j-i+1));
 	    if(symbol)
@@ -1608,8 +1568,8 @@ Interchunk::applyWord(wstring const &word_str)
 	}
 	break;
 
-      case L'{':  // ignore the unmodifiable part of the chunk
-        ms.step(L'$');
+      case '{':  // ignore the unmodifiable part of the chunk
+        ms.step('$');
         return;
 
       default:
@@ -1617,5 +1577,5 @@ Interchunk::applyWord(wstring const &word_str)
 	break;
     }
   }
-  ms.step(L'$');
+  ms.step('$');
 }

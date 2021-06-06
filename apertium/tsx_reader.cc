@@ -61,13 +61,13 @@ TSXReader::clearTagIndex()
 {
   tag_index->clear();
   array_tags->clear();
-  newTagIndex(L"LPAR");
-  newTagIndex(L"RPAR");
-  newTagIndex(L"LQUEST");
-  newTagIndex(L"CM");
-  newTagIndex(L"SENT");
-  newTagIndex(L"kEOF");
-  newTagIndex(L"kUNDEF");
+  newTagIndex("LPAR");
+  newTagIndex("RPAR");
+  newTagIndex("LQUEST");
+  newTagIndex("CM");
+  newTagIndex("SENT");
+  newTagIndex("kEOF");
+  newTagIndex("kUNDEF");
 }
 
 TSXReader &
@@ -82,31 +82,31 @@ TSXReader::operator =(TSXReader const &o)
 }
 
 void
-TSXReader::newTagIndex(wstring const &tag)
+TSXReader::newTagIndex(UString const &tag)
 {
-  if(tag_index->find(L"TAG_" + tag) != tag_index->end())
+  if(tag_index->find("TAG_" + tag) != tag_index->end())
   {
-    parseError(L"'" + tag + L"' already defined");
+    parseError("'" + tag + "' already defined");
   }
 
-  array_tags->push_back(L"TAG_" + tag);
-  (*tag_index)[L"TAG_" + tag] = array_tags->size() - 1;
+  array_tags->push_back("TAG_" + tag);
+  (*tag_index)["TAG_" + tag] = array_tags->size() - 1;
 }
 
 void
-TSXReader::newDefTag(wstring const &tag)
+TSXReader::newDefTag(UString const &tag)
 {
-  if(tag_index->find(L"TAG_" + tag) != tag_index->end())
+  if(tag_index->find("TAG_" + tag) != tag_index->end())
   {
-    parseError(L"'" + tag + L"' already defined");
+    parseError("'" + tag + "' already defined");
   }
 
   array_tags->push_back(tag);
-  (*tag_index)[L"TAG_" + tag] = array_tags->size() - 1;
+  (*tag_index)["TAG_" + tag] = array_tags->size() - 1;
 }
 
 void
-TSXReader::newConstant(wstring const &constant)
+TSXReader::newConstant(UString const &constant)
 {
   constants->setConstant(constant, array_tags->size());
   array_tags->push_back(constant);
@@ -115,26 +115,26 @@ TSXReader::newConstant(wstring const &constant)
 void
 TSXReader::procDiscardOnAmbiguity()
 {
-  while(type != XML_READER_TYPE_END_ELEMENT || name != L"discard-on-ambiguity")
+  while(type != XML_READER_TYPE_END_ELEMENT || name != "discard-on-ambiguity")
   {
     step();
 
-    if(name == L"discard")
+    if(name == "discard")
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
-        tdata.addDiscard(L"<" + StringUtils::substitute(attrib(L"tags"), L".", L"><") + L">");
+        tdata.addDiscard("<" + StringUtils::substitute(attrib("tags"), ".", "><") + ">");
       }
     }
-    else if(name == L"#text")
+    else if(name == "#text")
     {
       // do nothing
     }
-    else if(name == L"#comment")
+    else if(name == "#comment")
     {
       // do nothing
     }
-    else if(name == L"discard-on-ambiguity")
+    else if(name == "discard-on-ambiguity")
     {
       if(type == XML_READER_TYPE_END_ELEMENT)
       {
@@ -142,7 +142,7 @@ TSXReader::procDiscardOnAmbiguity()
       }
       else
       {
-	parseError(L"Unexpected 'discard-on-ambiguity' open tag");
+	parseError("Unexpected 'discard-on-ambiguity' open tag");
       }
     }
     else
@@ -155,36 +155,36 @@ TSXReader::procDiscardOnAmbiguity()
 void
 TSXReader::procDefLabel()
 {
-  wstring name_attr = attrib(L"name");
-  wstring closed_attr = attrib(L"closed");
+  UString name_attr = attrib("name");
+  UString closed_attr = attrib("closed");
   newDefTag(name_attr);
 
-  if(closed_attr != L"true")
+  if(closed_attr != "true")
   {
-    open_class->insert((*tag_index)[L"TAG_"+name_attr]);
+    open_class->insert((*tag_index)["TAG_"+name_attr]);
   }
 
-  while(type != XML_READER_TYPE_END_ELEMENT || name != L"def-label")
+  while(type != XML_READER_TYPE_END_ELEMENT || name != "def-label")
   {
     step();
 
-    if(name == L"tags-item")
+    if(name == "tags-item")
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
-	plist->insert((*tag_index)[L"TAG_"+name_attr], attrib(L"lemma"),
-		     attrib(L"tags"));
+	plist->insert((*tag_index)["TAG_"+name_attr], attrib("lemma"),
+		     attrib("tags"));
       }
     }
-    else if(name == L"def-label")
+    else if(name == "def-label")
     {
       return;
     }
-    else if(name == L"#text")
+    else if(name == "#text")
     {
       // do nothing
     }
-    else if(name == L"#comment")
+    else if(name == "#comment")
     {
       // do nothing
     }
@@ -198,50 +198,50 @@ TSXReader::procDefLabel()
 void
 TSXReader::procDefMult()
 {
-  wstring name_attr = attrib(L"name");
-  wstring closed_attr = attrib(L"closed");
+  UString name_attr = attrib("name");
+  UString closed_attr = attrib("closed");
   newDefTag(name_attr);
-  if(closed_attr != L"true")
+  if(closed_attr != "true")
   {
-    open_class->insert((*tag_index)[L"TAG_"+name_attr]);
+    open_class->insert((*tag_index)["TAG_"+name_attr]);
   }
 
-  while(type != XML_READER_TYPE_END_ELEMENT || name != L"def-mult")
+  while(type != XML_READER_TYPE_END_ELEMENT || name != "def-mult")
   {
     step();
-    if(name == L"sequence")
+    if(name == "sequence")
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
 	plist->beginSequence();
-	while(type != XML_READER_TYPE_END_ELEMENT || name != L"sequence")
+	while(type != XML_READER_TYPE_END_ELEMENT || name != "sequence")
 	{
 	  step();
-	  if(name == L"label-item")
+	  if(name == "label-item")
 	  {
 	    if(type != XML_READER_TYPE_END_ELEMENT)
 	    {
-	      plist->insert((*tag_index)[L"TAG_"+name_attr],
-                            (*tag_index)[L"TAG_"+attrib(L"label")]);
+	      plist->insert((*tag_index)["TAG_"+name_attr],
+                            (*tag_index)["TAG_"+attrib("label")]);
 	    }
 	  }
-	  else if(name == L"tags-item")
+	  else if(name == "tags-item")
 	  {
 	    if(type != XML_READER_TYPE_END_ELEMENT)
 	    {
-	      plist->insert((*tag_index)[L"TAG_"+name_attr],
-			    attrib(L"lemma"), attrib(L"tags"));
+	      plist->insert((*tag_index)["TAG_"+name_attr],
+			    attrib("lemma"), attrib("tags"));
 	    }
 	  }
-	  else if(name == L"sequence")
+	  else if(name == "sequence")
 	  {
 	    break;
 	  }
-	  else if(name == L"#text")
+	  else if(name == "#text")
 	  {
 	    // do nothing
 	  }
-	  else if(name == L"#comment")
+	  else if(name == "#comment")
 	  {
 	    // do nothing
           }
@@ -249,15 +249,15 @@ TSXReader::procDefMult()
 	plist->endSequence();
       }
     }
-    else if(name == L"#text")
+    else if(name == "#text")
     {
       // do nothing
     }
-    else if(name == L"#comment")
+    else if(name == "#comment")
     {
       // do nothing
     }
-    else if(name == L"def-mult")
+    else if(name == "def-mult")
     {
       // do nothing
     }
@@ -271,41 +271,41 @@ TSXReader::procDefMult()
 void
 TSXReader::procTagset()
 {
-  while(type == XML_READER_TYPE_END_ELEMENT || name != L"tagset")
+  while(type == XML_READER_TYPE_END_ELEMENT || name != "tagset")
   {
     step();
-    if(name != L"#text" && name != L"tagger" && name != L"tagset")
+    if(name != "#text" && name != "tagger" && name != "tagset")
     {
       unexpectedTag();
     }
   }
 
-  while(type != XML_READER_TYPE_END_ELEMENT || name != L"tagset")
+  while(type != XML_READER_TYPE_END_ELEMENT || name != "tagset")
   {
     step();
-    if(name == L"def-label")
+    if(name == "def-label")
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
 	procDefLabel();
       }
     }
-    else if(name == L"def-mult")
+    else if(name == "def-mult")
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
         procDefMult();
       }
     }
-    else if(name == L"#text")
+    else if(name == "#text")
     {
       // do nothing
     }
-    else if(name == L"#comment")
+    else if(name == "#comment")
     {
       // do nothing
     }
-    else if(name == L"tagset")
+    else if(name == "tagset")
     {
       // do nothing
     }
@@ -323,27 +323,27 @@ TSXReader::procLabelSequence()
   TForbidRule forbid_rule;
 
   step();
-  while(name == L"#text" || name == L"#comment")
+  while(name == "#text" || name == "#comment")
   {
     step();
   }
-  if(name != L"label-item")
+  if(name != "label-item")
   {
-    parseError(L"<label-item> tag expected");
+    parseError("<label-item> tag expected");
   }
 
-  forbid_rule.tagi = (*tag_index)[L"TAG_" + attrib(L"label")];
+  forbid_rule.tagi = (*tag_index)["TAG_" + attrib("label")];
 
   step();
-  while(name == L"#text" || name == L"#comment")
+  while(name == "#text" || name == "#comment")
   {
     step();
   }
-  if(name != L"label-item")
+  if(name != "label-item")
   {
-    parseError(L"<label-item> tag expected");
+    parseError("<label-item> tag expected");
   }
-  forbid_rule.tagj = (*tag_index)[L"TAG_" + attrib(L"label")];
+  forbid_rule.tagj = (*tag_index)["TAG_" + attrib("label")];
 
   forbid_rules->push_back(forbid_rule);
 }
@@ -351,25 +351,25 @@ TSXReader::procLabelSequence()
 void
 TSXReader::procForbid()
 {
-  while(type != XML_READER_TYPE_END_ELEMENT || name != L"forbid")
+  while(type != XML_READER_TYPE_END_ELEMENT || name != "forbid")
   {
     step();
-    if(name == L"label-sequence")
+    if(name == "label-sequence")
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
 	procLabelSequence();
       }
     }
-    else if(name == L"#text")
+    else if(name == "#text")
     {
       // do nothing
     }
-    else if(name == L"#comment")
+    else if(name == "#comment")
     {
       // do nothing
     }
-    else if(name == L"forbid")
+    else if(name == "forbid")
     {
       if(type == XML_READER_TYPE_END_ELEMENT)
       {
@@ -377,12 +377,12 @@ TSXReader::procForbid()
       }
       else
       {
-	parseError(L"Unexpected '" + name + L"' open tag");
+	parseError("Unexpected '" + name + "' open tag");
       }
     }
     else
     {
-      parseError(L"Unexpected '" + name + L"' tag");
+      parseError("Unexpected '" + name + "' tag");
     }
   }
 }
@@ -391,14 +391,14 @@ void
 TSXReader::procEnforce()
 {
   TEnforceAfterRule aux;
-  while(type != XML_READER_TYPE_END_ELEMENT || name != L"enforce-rules")
+  while(type != XML_READER_TYPE_END_ELEMENT || name != "enforce-rules")
   {
     step();
-    if(name == L"enforce-after")
+    if(name == "enforce-after")
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
-	aux.tagi = (*tag_index)[L"TAG_" + attrib(L"label")];
+	aux.tagi = (*tag_index)["TAG_" + attrib("label")];
       }
       else
       {
@@ -406,26 +406,26 @@ TSXReader::procEnforce()
 	aux.tagsj.clear();
       }
     }
-    else if(name == L"label-set")
+    else if(name == "label-set")
     {
       // do nothing
     }
-    else if(name == L"label-item")
+    else if(name == "label-item")
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
-	aux.tagsj.push_back((*tag_index)[L"TAG_" + attrib(L"label")]);
+	aux.tagsj.push_back((*tag_index)["TAG_" + attrib("label")]);
       }
     }
-    else if(name == L"#text")
+    else if(name == "#text")
     {
       // do nothing
     }
-    else if(name == L"#comment")
+    else if(name == "#comment")
     {
       // do nothing
     }
-    else if(name == L"enforce-rules")
+    else if(name == "enforce-rules")
     {
       if(type == XML_READER_TYPE_END_ELEMENT)
       {
@@ -433,12 +433,12 @@ TSXReader::procEnforce()
       }
       else
       {
-	parseError(L"Unexpected 'enforce-rules' open tag");
+	parseError("Unexpected 'enforce-rules' open tag");
       }
     }
     else
     {
-      parseError(L"Unexpected '" + name + L"' tag");
+      parseError("Unexpected '" + name + "' tag");
     }
   }
 }
@@ -446,26 +446,26 @@ TSXReader::procEnforce()
 void
 TSXReader::procPreferences()
 {
-  while(type != XML_READER_TYPE_END_ELEMENT || name != L"preferences")
+  while(type != XML_READER_TYPE_END_ELEMENT || name != "preferences")
   {
     step();
-    if(name == L"prefer")
+    if(name == "prefer")
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
-        wstring const tags = L"<" + StringUtils::substitute(attrib(L"tags"), L".", L"><") + L">";
+        UString const tags = "<" + StringUtils::substitute(attrib("tags"), ".", "><") + ">";
 	prefer_rules->push_back(tags);
       }
     }
-    else if(name == L"#text")
+    else if(name == "#text")
     {
       //do nothing
     }
-    else if(name == L"#comment")
+    else if(name == "#comment")
     {
       // do nothing
     }
-    else if(name == L"preferences")
+    else if(name == "preferences")
     {
       if(type == XML_READER_TYPE_END_ELEMENT)
       {
@@ -473,12 +473,12 @@ TSXReader::procPreferences()
       }
       else
       {
-	parseError(L"Unexpected 'preferences' open tag");
+	parseError("Unexpected 'preferences' open tag");
       }
     }
     else
     {
-      parseError(L"Unexpected '" + name + L"' tag");
+      parseError("Unexpected '" + name + "' tag");
     }
   }
 }
@@ -494,38 +494,38 @@ TSXReader::parse()
   procTagset();
 
   step();
-  while(name == L"#text" || name == L"#comment")
+  while(name == "#text" || name == "#comment")
   {
     step();
   }
-  if(name == L"forbid")
+  if(name == "forbid")
   {
     procForbid();
     step();
-    while(name == L"#text" || name == L"#comment")
+    while(name == "#text" || name == "#comment")
     {
       step();
     }
   }
-  if(name == L"enforce-rules")
+  if(name == "enforce-rules")
   {
     procEnforce();
     step();
-    while(name == L"#text" || name == L"#comment")
+    while(name == "#text" || name == "#comment")
     {
       step();
     }
   }
-  if(name == L"preferences")
+  if(name == "preferences")
   {
     procPreferences();
     step();
-    while(name == L"#text" || name == L"#comment")
+    while(name == "#text" || name == "#comment")
     {
       step();
     }
   }
-  if(name == L"discard-on-ambiguity")
+  if(name == "discard-on-ambiguity")
   {
     if(type != XML_READER_TYPE_END_ELEMENT)
     {
@@ -533,20 +533,20 @@ TSXReader::parse()
     }
   }
 
-  newConstant(L"kMOT");
-  newConstant(L"kDOLLAR");
-  newConstant(L"kBARRA");
-  newConstant(L"kMAS");
-  newConstant(L"kIGNORAR");
-  newConstant(L"kBEGIN");
-  newConstant(L"kUNKNOWN");
+  newConstant("kMOT");
+  newConstant("kDOLLAR");
+  newConstant("kBARRA");
+  newConstant("kMAS");
+  newConstant("kIGNORAR");
+  newConstant("kBEGIN");
+  newConstant("kUNKNOWN");
 
-  plist->insert((*tag_index)[L"TAG_LPAR"], L"", L"lpar");
-  plist->insert((*tag_index)[L"TAG_RPAR"], L"", L"rpar");
-  plist->insert((*tag_index)[L"TAG_LQUEST"], L"", L"lquest");
-  plist->insert((*tag_index)[L"TAG_CM"], L"", L"cm");
-  plist->insert((*tag_index)[L"TAG_SENT"], L"", L"sent");
-//  plist->insert((*tag_index)[L"TAG_kMAS"], L"+", L"");
+  plist->insert((*tag_index)["TAG_LPAR"], "", "lpar");
+  plist->insert((*tag_index)["TAG_RPAR"], "", "rpar");
+  plist->insert((*tag_index)["TAG_LQUEST"], "", "lquest");
+  plist->insert((*tag_index)["TAG_CM"], "", "cm");
+  plist->insert((*tag_index)["TAG_SENT"], "", "sent");
+//  plist->insert((*tag_index)["TAG_kMAS"], "+", "");
   plist->buildTransducer();
 }
 
