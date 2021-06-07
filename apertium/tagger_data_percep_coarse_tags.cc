@@ -52,7 +52,7 @@ const UString& TaggerDataPercepCoarseTags::coarsen(const Apertium::Morpheme &wrd
   const Alphabet alphabet = plist.getAlphabet();
   int ca_any_char = alphabet(PatternList::ANY_CHAR);
   int ca_any_tag = alphabet(PatternList::ANY_TAG);
-  map<UString, int>::const_iterator undef_it = tag_index.find("TAG_kUNDEF");
+  map<UString, int>::const_iterator undef_it = tag_index.find("TAG_kUNDEF"_u);
   int ca_tag_kundef = undef_it->second;
   // Input lemma
   ms.init(me->getInitial());
@@ -61,7 +61,11 @@ const UString& TaggerDataPercepCoarseTags::coarsen(const Apertium::Morpheme &wrd
   }
   // Input fine tags
   for (size_t i = 0; i < wrd.TheTags.size(); i++) {
-    int symbol = alphabet("<" + wrd.TheTags[i].TheTag + ">");
+    UString tag;
+    tag += '<';
+    tag.append(wrd.TheTags[i].TheTag);
+    tag += '>';
+    int symbol = alphabet(tag);
     if (symbol) {
       ms.step(symbol, ca_any_tag);
     }

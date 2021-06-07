@@ -40,13 +40,13 @@ private:
   Alphabet alphabet;
   MatchExe *me;
   MatchState ms;
-  map<string, ApertiumRE> attr_items;
-  map<string, string> variables;
-  map<string, int> macros;
-  map<string, set<string>> lists;
-  map<string, set<string>> listslow;
+  map<UString, ApertiumRE> attr_items;
+  map<UString, UString> variables;
+  map<UString, int> macros;
+  map<UString, set<UString>> lists;
+  map<UString, set<UString>> listslow;
   TransferWord **word;
-  string **blank;
+  UString **blank;
   Buffer<TransferToken> input_buffer;
   vector<UString *> tmpword;
   vector<UString *> tmpblank;
@@ -66,15 +66,15 @@ private:
   OutputType defaultAttrs;
 
   void destroy();
-  void readData(InputFile& input);
+  void readData(FILE* input);
   void readBil(string const &filename);
-  string caseOf(string const &str);
-  string copycase(string const &source_word, string const &target_word);
+  UString caseOf(UString const &str);
+  UString copycase(UString const &source_word, UString const &target_word);
 
-  bool beginsWith(string const &str1, string const &str2) const;
-  bool endsWith(string const &str1, string const &str2) const;
-  string tolower(string const &str) const;
-  string tags(string const &str) const;
+  bool beginsWith(UString const &str1, UString const &str2) const;
+  bool endsWith(UString const &str1, UString const &str2) const;
+  UString tolower(UString const &str) const;
+  UString tags(UString const &str) const;
   UString readWord(InputFile& in);
   UString readBlank(InputFile& in);
   UString readUntil(InputFile& in, int const symbol) const;
@@ -84,7 +84,7 @@ private:
   void writeMultiple(list<vector<UString> >::iterator itwords,
                      list<UString>::iterator itblanks,
                      list<vector<UString> >::const_iterator limitwords,
-                     UString acum = "", bool multiple = false);
+                     UString acum = ""_u, bool multiple = false);
   vector<UString> acceptions(UString str);
   bool isDefaultWord(UString const &str);
 public:

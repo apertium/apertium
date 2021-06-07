@@ -29,6 +29,7 @@
 #include <apertium/tagger_data.h>
 #include <apertium/tagger_word.h>
 #include <apertium/morpho_stream.h>
+#include <lttoolbox/input_file.h>
 
 #include <cstdio>
 #include <deque>

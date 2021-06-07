@@ -22,19 +22,7 @@
 
 using namespace Apertium;
 using namespace std;
-
-std::string& pcre_version_endian() {
-  static std::string pve;
-  if (pve.empty()) {
-    pve = pcre_version();
-#ifdef WORDS_BIGENDIAN
-    pve += "-be";
-#else
-    pve += "-le";
-#endif
-  }
-  return pve;
-}
+using namespace icu;
 
 ApertiumRE::ApertiumRE() :
 re(0)
@@ -44,9 +32,8 @@ re(0)
 
 ApertiumRE::~ApertiumRE()
 {
-  if(!empty)
-  {
-    pcre_free(re);
+  if(!empty) {
+    delete re;
   }
   empty = true;
 }
@@ -55,27 +42,22 @@ void
 ApertiumRE::read(FILE *input)
 {
   unsigned int size = Compression::multibyte_read(input);
-  re = static_cast<pcre *>(pcre_malloc(size));
-  if(size != fread(re, 1, size, input))
-  {
+  if (fseek(input, size, SEEK_CUR) != 0) {
     cerr << "Error reading regexp" << endl;
     exit(EXIT_FAILURE);
   }
 
-  empty = false;
+  empty = true;
 }
 
 void
-ApertiumRE::compile(string const &str)
+ApertiumRE::compile(UString const &str)
 {
-  const char *error;
-  int erroroffset;
-  re = pcre_compile(str.c_str(), PCRE_DOTALL|PCRE_CASELESS|PCRE_EXTENDED|PCRE_UTF8,
-	            &error, &erroroffset, NULL);
-  if(re == NULL)
-  {
-    cerr << "Error: pcre_compile ";
-    cerr << error << endl;
+  UnicodeString s = str.c_str();
+  UErrorCode err = U_ZERO_ERROR;
+  re = RegexPattern::compile(s, UREGEX_DOTALL|UREGEX_CASE_INSENSITIVE, err);
+  if(err != U_ZERO_ERROR) {
+    cerr << "Error: unable to compile regular expression '" << str << "'." << endl;
     exit(EXIT_FAILURE);
   }
 
@@ -85,88 +67,68 @@ ApertiumRE::compile(string const &str)
 void
 ApertiumRE::write(FILE *output) const
 {
-  if(empty)
-  {
+  if(empty) {
     cerr << "Error, cannot write empty regexp" << endl;
     exit(EXIT_FAILURE);
   }
-
-  size_t size;
-  int rc = pcre_fullinfo(re, NULL, PCRE_INFO_SIZE, &size);
-  if(rc < 0)
-  {
-    cerr << "Error calling pcre_fullinfo()\n" << endl;
-    exit(EXIT_FAILURE);
-  }
-
-  Compression::multibyte_write(size, output);
-
-  size_t rc2 = fwrite(re, 1, size, output);
-  if(rc2 != size)
-  {
-    cerr << "Error writing precompiled regex\n" << endl;
-    exit(EXIT_FAILURE);
-  }
+  // for backwards compatibility, write empty binary form
+  Compression::multibyte_write(0, output);
 }
 
-string
-ApertiumRE::match(string const &str) const
+UString
+ApertiumRE::match(UString const &str) const
 {
-  if(empty)
-  {
-    return "";
+  if(empty) {
+    return ""_u;
   }
 
-  int result[3];
-  int workspace[4096];
-//  int rc = pcre_exec(re, NULL, str.c_str(), str.size(), 0, PCRE_NO_UTF8_CHECK, result, 3);
-  int rc = pcre_dfa_exec(re, NULL, str.c_str(), str.size(), 0, PCRE_NO_UTF8_CHECK, result, 3, workspace, 4096);
+  UnicodeString s = str.c_str();
+  UErrorCode err = U_ZERO_ERROR;
+  RegexMatcher* m = re->matcher(s, err);
 
-  if(rc < 0)
-  {
-    switch(rc)
-    {
-      case PCRE_ERROR_NOMATCH:
-	return "";
-
-      default:
-	cerr << "Error: Unknown error matching regexp (code " << rc << ")" << endl;
-	exit(EXIT_FAILURE);
-    }
+  if (err != U_ZERO_ERROR) {
+    cerr << "Error: Unable to apply regexp" << endl;
+    exit(EXIT_FAILURE);
   }
 
-  return str.substr(result[0], result[1]-result[0]);
+  if (!m->find()) {
+    return ""_u;
+  }
+
+  UString ret = m->group(err).getTerminatedBuffer();
+  if (err != U_ZERO_ERROR) {
+    cerr << "Error: Unable to extract substring from regexp match" << endl;
+    exit(EXIT_FAILURE);
+  }
+
+  return ret;
 }
 
 // Return true if something was replaced and false otherwise
 bool
-ApertiumRE::replace(string &str, string const &value) const
+ApertiumRE::replace(UString &str, UString const &value) const
 {
-  if(empty)
-  {
+  if(empty) {
     return false;
   }
 
-  int result[3];
-  int workspace[4096];
-  // int rc = pcre_exec(re, NULL, str.c_str(), str.size(), 0, PCRE_NO_UTF8_CHECK, result, 3);
-  int rc = pcre_dfa_exec(re, NULL, str.c_str(), str.size(), 0, PCRE_NO_UTF8_CHECK, result, 3, workspace, 4096);
-  if(rc < 0)
-  {
-    switch(rc)
-    {
-      case PCRE_ERROR_NOMATCH:
-	return false;
+  UnicodeString s = str.c_str();
+  UErrorCode err = U_ZERO_ERROR;
+  RegexMatcher* m = re->matcher(s, err);
 
-      default:
-	cerr << "Error: Unknown error matching regexp (code " << rc << ")" << endl;
-	exit(EXIT_FAILURE);
-    }
+  if (err != U_ZERO_ERROR) {
+    cerr << "Error: Unable to apply regexp" << endl;
+    exit(EXIT_FAILURE);
   }
 
-  string res = str.substr(0, result[0]);
+  // do this manually rather than call m->replaceFirst()
+  // because we want to know that a match happened
+  if (!m->find()) {
+    return false;
+  }
+  UString res = str.substr(0, m->start(err));
   res.append(value);
-  res.append(str.substr(result[1]));
-  str = res;
+  res.append(str.substr(m->end(err)));
+  res.swap(str);
   return true;
 }

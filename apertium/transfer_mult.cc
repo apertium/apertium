@@ -60,18 +60,6 @@ TransferMult::~TransferMult()
   destroy();
 }
 
-string
-TransferMult::tolower(string const &str) const
-{
-  string result = str;
-  for(unsigned int i = 0, limit = str.size(); i != limit; i++)
-  {
-    result[i] = ::tolower(result[i]);
-  }
-
-  return result;
-}
-
 void
 TransferMult::readData(FILE *in)
 {
@@ -94,41 +82,39 @@ TransferMult::readData(FILE *in)
   me = new MatchExe(t, finals);
 
   // attr_items
-  bool recompile_attrs = Compression::string_read(in) != pcre_version_endian();
+  Compression::string_read(in); // PCRE version placeholder
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
   {
-    string const cad_k = UtfConverter::toUtf8(Compression::string_read(in));
+    UString const cad_k = Compression::string_read(in);
     attr_items[cad_k].read(in);
     UString fallback = Compression::string_read(in);
-    if(recompile_attrs) {
-      attr_items[cad_k].compile(UtfConverter::toUtf8(fallback));
-    }
+    attr_items[cad_k].compile(fallback);
   }
 
   // variables
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
   {
-    string const cad_k = UtfConverter::toUtf8(Compression::string_read(in));
-    variables[cad_k] = UtfConverter::toUtf8(Compression::string_read(in));
+    UString const cad_k = Compression::string_read(in);
+    variables[cad_k] = Compression::string_read(in);
   }
 
   // macros
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
   {
-    string const cad_k = UtfConverter::toUtf8(Compression::string_read(in));
+    UString const cad_k = Compression::string_read(in);
     macros[cad_k] = Compression::multibyte_read(in);
   }
 
   // lists
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
   {
-    string const cad_k = UtfConverter::toUtf8(Compression::string_read(in));
+    UString const cad_k = Compression::string_read(in);
 
     for(int j = 0, limit2 = Compression::multibyte_read(in); j != limit2; j++)
     {
       UString const cad_v = Compression::string_read(in);
-      lists[cad_k].insert(UtfConverter::toUtf8(cad_v));
-      listslow[cad_k].insert(UtfConverter::toUtf8(StringUtils::tolower(cad_v)));
+      lists[cad_k].insert(cad_v);
+      listslow[cad_k].insert(StringUtils::tolower(cad_v));
     }
   }
 }
@@ -171,33 +157,33 @@ TransferMult::readToken(InputFile& in)
     return input_buffer.next();
   }
 
-  UString content = "";
+  UString content;
   while(true)
   {
-    int val = fgetwc_unlocked(in);
-    if(feof(in))
+    UChar32 val = in.get();
+    if(in.eof())
     {
       return input_buffer.add(TransferToken(content, tt_eof));
     }
-    if(val == L'\\')
+    if(val == '\\')
     {
-      content += L'\\';
-      content += wchar_t(fgetwc_unlocked(in));
+      content += '\\';
+      content += in.get();
     }
-    else if(val == L'[')
+    else if(val == '[')
     {
-      content += L'[';
+      content += '[';
       while(true)
       {
-	int val2 = fgetwc_unlocked(in);
-	if(val2 == L'\\')
+        UChar32 val2 = in.get();
+	if(val2 == '\\')
 	{
-	  content += L'\\';
-	  content += wchar_t(fgetwc_unlocked(in));
+	  content += '\\';
+      content += in.get();
 	}
-	else if(val2 == L']')
+	else if(val2 == ']')
 	{
-	  content += L']';
+	  content += ']';
 	  break;
 	}
 	else
@@ -206,11 +192,11 @@ TransferMult::readToken(InputFile& in)
 	}
       }
     }
-    else if(val == L'$')
+    else if(val == '$')
     {
       return input_buffer.add(TransferToken(content, tt_word));
     }
-    else if(val == L'^')
+    else if(val == '^')
     {
       return input_buffer.add(TransferToken(content, tt_blank));
     }
@@ -256,7 +242,7 @@ TransferMult::transfer(InputFile& in, UFILE* out)
 	      {
 	        write("[|]"_u, output);
 	      }
-          u_fprintf(output, "^%S$", multiwords[i].c_str());
+          u_fprintf(output, "^%S$", multiword[i].c_str());
 	    }
 	    if(multiword.size() > 1)
 	    {
@@ -297,7 +283,7 @@ TransferMult::transfer(InputFile& in, UFILE* out)
 	break;
 
       case tt_blank:
-	ms.step(L' ');
+	ms.step(' ');
 	tmpblank.push_back(&current.getContent());
 	break;
 
@@ -324,7 +310,7 @@ TransferMult::transfer(InputFile& in, UFILE* out)
 bool
 TransferMult::isDefaultWord(UString const &str)
 {
-  return str.find(" D<");
+  return str.find(" D<"_u) != UString::npos;
 }
 
 vector<UString>
@@ -334,18 +320,18 @@ TransferMult::acceptions(UString str)
   int low = 0;
 
   // removing '@'
-  if(str[0] == L'@')
+  if(str[0] == '@')
   {
     str = str.substr(1);
   }
 
   for(unsigned int i = 0, limit = str.size(); i != limit; i++)
   {
-     if(str[i] == L'\\')
+     if(str[i] == '\\')
      {
        i++;
      }
-     else if(str[i] == L'/')
+     else if(str[i] == '/')
      {
        UString new_word = str.substr(low, i-low);
 
@@ -379,7 +365,7 @@ TransferMult::acceptions(UString str)
     vector<UString> result2;
     for(unsigned int i = 0, limit = result.size(); i != limit; i++)
     {
-      if(result[i].find("__") != UString::npos)
+      if(result[i].find("__"_u) != UString::npos)
       {
         result2.push_back(result[i]);
       }
@@ -403,7 +389,7 @@ TransferMult::writeMultiple(list<vector<UString> >::iterator itwords,
   {
     if(multiple)
     {
-      output_string.append("[|]");
+      output_string.append("[|]"_u);
     }
     output_string.append(acum);
   }
@@ -417,8 +403,11 @@ TransferMult::writeMultiple(list<vector<UString> >::iterator itwords,
     {
       for(unsigned int i = 0, limit = refword.size(); i != limit; i++)
       {
-        writeMultiple(itwords, itblanks, limitwords,
-                      acum + "^" + refword[i] + "$", multiple || (i > 0));
+        UString temp = acum;
+        temp += '^';
+        temp += refword[i];
+        temp += '$';
+        writeMultiple(itwords, itblanks, limitwords, temp, multiple || (i > 0));
       }
     }
     else
@@ -428,8 +417,13 @@ TransferMult::writeMultiple(list<vector<UString> >::iterator itwords,
 
       for(unsigned int i = 0, limit = refword.size(); i != limit; i++)
       {
+        UString temp = acum;
+        temp += '^';
+        temp += refword[i];
+        temp += '$';
+        temp += refblank;
         writeMultiple(itwords, itblanks, limitwords,
-                      acum + "^" + refword[i] + "$" + refblank,
+                      temp,
                       multiple || (i > 0));
       }
     }
@@ -452,7 +446,7 @@ TransferMult::applyRule()
     words.push_back(acceptions(tr.first));
   }
 
-  output_string = "";
+  output_string.clear();
   writeMultiple(words.begin(), blanks.begin(), words.end());
 
   if(output_string.find("[|]"_u) != UString::npos) {
@@ -471,20 +465,20 @@ TransferMult::applyRule()
 void
 TransferMult::applyWord(UString const &word_str)
 {
-  ms.step(L'^');
+  ms.step('^');
   for(unsigned int i = 0, limit = word_str.size(); i < limit; i++)
   {
     switch(word_str[i])
     {
-      case L'\\':
+      case '\\':
         i++;
 	ms.step(towlower(word_str[i]), any_char);
 	break;
 
-      case L'<':
+      case '<':
 	for(unsigned int j = i+1; j != limit; j++)
 	{
-	  if(word_str[j] == L'>')
+	  if(word_str[j] == '>')
 	  {
 	    int symbol = alphabet(word_str.substr(i, j-i+1));
 	    if(symbol)
@@ -506,5 +500,5 @@ TransferMult::applyWord(UString const &word_str)
 	break;
     }
   }
-  ms.step(L'$');
+  ms.step('$');
 }

@@ -6,10 +6,11 @@
 #include <string>
 #include <utility>
 #include <iostream>
+#include <lttoolbox/ustring.h>
 
 namespace Apertium {
 
-typedef std::vector<std::string> FeatureKey;
+typedef std::vector<UString> FeatureKey;
 struct CompareFeatureKey {
   bool operator() (FeatureKey const& lhs, FeatureKey const& rhs) const;
 };

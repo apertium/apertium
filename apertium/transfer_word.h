@@ -22,6 +22,7 @@
 #include <apertium/apertium_re.h>
 #include <string>
 #include <cstdlib>
+#include <lttoolbox/ustring.h>
 
 using namespace std;
 
@@ -34,22 +35,22 @@ private:
   /**
    * Source language word
    */
-  string s_str;
+  UString s_str;
 
   /**
    * Target language word
    */
-  string t_str;
+  UString t_str;
 
   /**
    * Reference word
    */
-  string r_str;
+  UString r_str;
   
   /**
    * Wordbound blank
    */
-  string wb_str;
+  UString wb_str;
 
   /**
    * Queue length
@@ -73,7 +74,7 @@ private:
    * @param part regular expression to match/access
    * @return reference to matched/accessed string
    */
-  string access(string const &str, ApertiumRE const &part);
+  UString access(UString const &str, ApertiumRE const &part);
 
   /**
    * Assings a value to the source/target/reference side of a word using the
@@ -82,7 +83,7 @@ private:
    * @param part regular expression to match/access
    * @param value the string to be assigned
    */
-  void assign(string &str, ApertiumRE const &part, string const &value);
+  void assign(UString &str, ApertiumRE const &part, UString const &value);
 
 public:
   /**
@@ -108,7 +109,7 @@ public:
    * @param wblank wordbound blank
    * @param queue queue lenght
    */
-  TransferWord(string const &src, string const &tgt, string const &ref, string const &wblank, int queue = 0);
+  TransferWord(UString const &src, UString const &tgt, UString const &ref, UString const &wblank, int queue = 0);
 
   /**
    * Assignment operator
@@ -125,7 +126,7 @@ public:
    * @param ref reference word
    * @param wblank wordbound blank
    */
-  void init(string const &src, string const &tgt, string const &ref, string const &wblank);
+  void init(UString const &src, UString const &tgt, UString const &ref, UString const &wblank);
 
   /**
    * Reference a source language word part
@@ -133,7 +134,7 @@ public:
    * @param with_queue access taking into account the queue
    * @returns reference to the part of string matched
    */
-  string source(ApertiumRE const &part, bool with_queue = true);
+  UString source(ApertiumRE const &part, bool with_queue = true);
 
   /**
    * Reference a target language word part
@@ -141,7 +142,7 @@ public:
    * @param with_queue access taking into account the queue
    * @returns reference to the part of string matched
    */
-  string target(ApertiumRE const &part, bool with_queue = true);
+  UString target(ApertiumRE const &part, bool with_queue = true);
 
   /**
    * Reference the reference word part
@@ -149,13 +150,13 @@ public:
    * @param with_queue access taking into account the queue
    * @returns reference to the part of string matched
    */
-  string reference(ApertiumRE const &part, bool with_queue = true);
+  UString reference(ApertiumRE const &part, bool with_queue = true);
   
   /**
    * Reference the wordbound blank part
    * @returns reference to the wordbound blank
    */
-  string getWblank();
+  UString getWblank();
 
   /**
    * Sets a value for a source language word part
@@ -164,7 +165,7 @@ public:
    * @param with_queue access taking or not into account the queue
    * @returns whether part matched
    */
-  bool setSource(ApertiumRE const &part, string const &value,
+  bool setSource(ApertiumRE const &part, UString const &value,
 		 bool with_queue = true);
 
   /**
@@ -174,7 +175,7 @@ public:
    * @param with_queue access taking or not into account the queue
    * @returns whether part matched
    */
-  bool setTarget(ApertiumRE const &part, string const &value,
+  bool setTarget(ApertiumRE const &part, UString const &value,
 		 bool with_queue = true);
 
   /**
@@ -184,7 +185,7 @@ public:
    * @param with_queue access taking or not into account the queue
    * @returns whether part matched
    */
-  bool setReference(ApertiumRE const &part, string const &value,
+  bool setReference(ApertiumRE const &part, UString const &value,
      bool with_queue = true);
 };
 

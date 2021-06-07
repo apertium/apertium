@@ -33,7 +33,6 @@ map<UString, ApertiumRE> TaggerWord::patterns;
 TaggerWord::TaggerWord(bool prev_plus_cut) :
 show_sf(false)
 {
-   ignored_string = "";
    plus_cut=false;
    previous_plus_cut=prev_plus_cut;
 }
@@ -75,28 +74,27 @@ bool
 TaggerWord::match(UString const &s, UString const &pattern)
 {
   map<UString, ApertiumRE>::iterator it = patterns.find(pattern);
-  string const utfs = UtfConverter::toUtf8(s);
 
   if(it == patterns.end())
   {
-    string utfpattern = UtfConverter::toUtf8(pattern);
-    string regexp = "";
+    UString utfpattern = pattern;
+    UString regexp;
 
     while(true)
     {
-      size_t pos = utfpattern.find("<*>");
-      if(pos == string::npos)
+      size_t pos = utfpattern.find("<*>"_u);
+      if(pos == UString::npos)
       {
         break;
       }
-      utfpattern.replace(pos, 3, "(<[^>]+>)+");
+      utfpattern.replace(pos, 3, "(<[^>]+>)+"_u);
     }
     patterns[pattern].compile(utfpattern);
-    return patterns[pattern].match(utfs) != "";
+    return !patterns[pattern].match(s).empty();
   }
   else
   {
-    return it->second.match(utfs) != "";
+    return !it->second.match(s).empty();
   }
 }
 
@@ -137,20 +135,20 @@ TaggerWord::get_string_tags() {
   UString st;
   set<TTag>::iterator itag = tags.begin();
 
-  st="{";
+  st += '{';
   for(itag=tags.begin(); itag!=tags.end(); itag++) {
     if (itag!=tags.begin())
-      st+=L',';
+      st+=',';
     st+=array_tags[*itag];
   }
-  st += L'}';
+  st += '}';
 
   return st;
 }
 
 UString
 TaggerWord::get_lexical_form(TTag &t, int const TAG_kEOF) {
-  UString ret= "";
+  UString ret;
 
   if (show_ignored_string)
     ret.append(ignored_string);
@@ -158,30 +156,27 @@ TaggerWord::get_lexical_form(TTag &t, int const TAG_kEOF) {
   if(t==TAG_kEOF)
     return ret;
 
-  if (!previous_plus_cut){
-    if(TaggerWord::generate_marks && isAmbiguous())
-    {
-      ret.append("^=");
-    }
-    else
-    {
-      ret += L'^';
+  if (!previous_plus_cut) {
+    if(TaggerWord::generate_marks && isAmbiguous()) {
+      ret.append("^="_u);
+    } else {
+      ret += '^';
     }
 
-    if(get_show_sf()){   // append the superficial form
+    if(get_show_sf()) {   // append the superficial form
       ret.append(superficial_form);
-      ret+=L'/';
+      ret += '/';
     }
   }
 
   if (lexical_forms.size()==0) { // This is an UNKNOWN WORD
-    ret +=L'*';
+    ret += '*';
     ret.append(superficial_form);
-  } else if ((*lexical_forms.begin()).second[0]==L'*') { //This is an
+  } else if ((*lexical_forms.begin()).second[0]=='*') { //This is an
 							//unknown word
 							//that has
 							//been guessed
-    ret += L'*';
+    ret += '*';
     ret.append(superficial_form);
   } else if (lexical_forms.size()>1) {  //This is an ambiguous word
     ret.append(lexical_forms[t]);
@@ -191,9 +186,9 @@ TaggerWord::get_lexical_form(TTag &t, int const TAG_kEOF) {
 
   if (ret != ignored_string) {
     if (plus_cut)
-      ret+=L'+';
+      ret += '+';
     else {
-      ret += L'$';
+      ret += '$';
     }
   }
 
@@ -209,50 +204,47 @@ TaggerWord::get_lexical_form(TTag &t, int const TAG_kEOF) {
 
 UString
 TaggerWord::get_all_chosen_tag_first(TTag &t, int const TAG_kEOF) {
-  UString ret="";
+  UString ret;
 
-  if (show_ignored_string)
+  if (show_ignored_string) {
     ret.append(ignored_string);
+  }
 
-  if(t==TAG_kEOF)
+  if(t==TAG_kEOF) {
     return ret;
+  }
 
-  if (!previous_plus_cut)
-  {
-    if(TaggerWord::generate_marks && isAmbiguous())
-    {
-      ret.append("^=");
-    }
-    else
-    {
-      ret += L'^';
+  if (!previous_plus_cut) {
+    if(TaggerWord::generate_marks && isAmbiguous()) {
+      ret.append("^="_u);
+    } else {
+      ret += '^';
     }
   }
 
   ret.append(superficial_form);
 
   if (lexical_forms.size()==0) { // This is an UNKNOWN WORD
-    ret+="/*";
+    ret += "/*"_u;
     ret.append(superficial_form);
   } else {
-    ret+="/";
+    ret+="/"_u;
     ret.append(lexical_forms[t]);
     if (lexical_forms.size()>1) {
-      set<TTag>::iterator it;
-      for (it=tags.begin(); it!=tags.end(); it++) {
-	if (*it != t) {
-	  ret+="/";
-          ret.append(lexical_forms[*it]);
-	}
+      for (auto& it : tags) {
+        if (it != t) {
+          ret += '/';
+          ret.append(lexical_forms[it]);
+        }
       }
     }
   }
 
   if (ret != ignored_string) {
-    if (plus_cut)
-      ret+="+";
-    else {
-      ret+="$";
+    if (plus_cut) {
+      ret += '+';
+    } else {
+      ret += '$';
     }
   }
 
@@ -264,25 +256,26 @@ UString
 TaggerWord::get_lexical_form_without_ignored_string(TTag &t, int const TAG_kEOF) {
   UString ret;
 
-  if(t==TAG_kEOF)
+  if(t==TAG_kEOF) {
      return ret;
+  }
 
   if (lexical_forms.size()==0) { //This is an unknown word
-      ret.append("*^");
-      ret.append(superficial_form);
+    ret.append("*^"_u);
+    ret.append(superficial_form);
   } else if ((*lexical_forms.begin()).second[0]=='*') {  //This is an unknown word that has been guessed
-    ret.append("*^");
+    ret.append("*^"_u);
     ret.append(superficial_form);
   } else {
-    ret += L'^';
+    ret += '^';
     ret.append(lexical_forms[t]);
   }
 
   if (ret.length() != 0) {
     if (plus_cut)
-      ret+=L'+';
+      ret += '+';
     else {
-      ret +=L'$';
+      ret += '$';
     }
   }
 
@@ -328,7 +321,7 @@ TaggerWord::print()
 }
 
 void
-TaggerWord::outputOriginal(FILE *output) {
+TaggerWord::outputOriginal(UFILE *output) {
 
   UString s=superficial_form;
 

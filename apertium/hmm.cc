@@ -193,7 +193,7 @@ HMM::init_probabilities_kupiec(MorphoStream &lexmorfo)
   //We count for each ambiguity class the number of ocurrences
   word = lexmorfo.get_next_word();
   while((word)) {
-    if (++nw%10000==0) cerr<<L'.'<<flush;
+    if (++nw%10000==0) cerr<<'.'<<flush;
 
     tags=word->get_tags();
 
@@ -302,7 +302,7 @@ HMM::init_probabilities_from_tagged_text(MorphoStream &stream_tagged,
       exit(1);
     }
 
-    if (++nw%100==0) cerr<<L'.'<<flush;
+    if (++nw%100==0) cerr<<'.'<<flush;
 
     tag2 = tag1;
 
@@ -477,7 +477,7 @@ HMM::train(MorphoStream &morpho_stream) {
     //cerr<<"Enter para continuar\n";
     //getchar();
 
-    if (++nw%10000==0) cerr<<L'.'<<flush;
+    if (++nw%10000==0) cerr<<'.'<<flush;
 
     //cerr<<*word<<"\n";
 

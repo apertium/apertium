@@ -57,11 +57,11 @@ protected:
   virtual void parse();
 
 private:
-  size_t pushSetConst(std::string &val);
-  size_t pushStrConst(std::string &val);
-  size_t getConstRef(const UString &ref_attr, const std::string &lit_attr,
+  size_t pushSetConst(UString &val);
+  size_t pushStrConst(UString &val);
+  size_t getConstRef(const UString &ref_attr, const UString &lit_attr,
                      const UString &what, VarNVMap &const_map,
-                     size_t (MTXReader::*push_new)(std::string&), bool& exists);
+                     size_t (MTXReader::*push_new)(UString&), bool& exists);
   size_t getSetRef(bool& exists);
   size_t getSetRef();
   size_t getStrRef(bool& exists);
@@ -71,9 +71,9 @@ private:
   void pokeBytecode(size_t addr, VM::Bytecode bc);
   void emitInt(int val);
   void emitUInt(int val);
-  int getInt(std::string attr_name, bool& exists);
+  int getInt(UString attr_name, bool& exists);
   int getInt(bool& exists);
-  int getInt(std::string attr_name);
+  int getInt(UString attr_name);
   int getInt();
 
   void procCoarseTags();

@@ -17,46 +17,25 @@
 #ifndef _TRANSFER_
 #define _TRANSFER_
 
-#include <apertium/transfer_instr.h>
+#include <apertium/transfer_base.h>
+
 #include <apertium/transfer_token.h>
 #include <apertium/transfer_word.h>
-#include <apertium/apertium_re.h>
-#include <lttoolbox/alphabet.h>
 #include <lttoolbox/buffer.h>
 #include <lttoolbox/fst_processor.h>
-#include <lttoolbox/ltstr.h>
-#include <lttoolbox/match_exe.h>
-#include <lttoolbox/match_state.h>
 
 #include <cstdio>
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <map>
-#include <set>
 #include <vector>
 #include <queue>
 
 using namespace std;
 
-class Transfer
+class Transfer : TransferBase
 {
 private:
 
-  Alphabet alphabet;
-  MatchExe *me;
-  MatchState ms;
-  map<string, ApertiumRE> attr_items;
-  map<string, string> variables;
-  map<string, int> macros;
-  map<string, set<string>> lists;
-  map<string, set<string>> listslow;
-  vector<xmlNode *> macro_map;
-  vector<xmlNode *> rule_map;
-  vector<size_t> rule_lines;
-  xmlDoc *doc;
-  xmlNode *root_element;
   TransferWord **word;
-  queue <string> blank_queue;
+  queue <UString> blank_queue;
   int lword;
   int last_lword;
   Buffer<TransferToken> input_buffer;
@@ -65,51 +44,31 @@ private:
   
   bool in_out;
   bool in_lu;
-  bool in_let_var;
-  string var_val; //stores the name of the variable being processed (in let or append)
   
   bool in_wblank;
-  string out_wblank;
-  map <string, string> var_out_wblank;
+  UString out_wblank;
+  map <UString, UString> var_out_wblank;
   
-  bool gettingLemmaFromWord(string attr);
-  string combineWblanks(string wblank_current, string wblank_to_add);
-    
   FSTProcessor fstp;
   FSTProcessor extended;
   bool isExtended;
   UFILE *output;
-  int any_char;
-  int any_tag;
 
   xmlNode *lastrule;
   unsigned int nwords;
-
-  map<xmlNode *, TransferInstr> evalStringCache;
 
   enum OutputType{lu,chunk};
 
   OutputType defaultAttrs;
   bool preBilingual;
   bool useBilingual;
-  bool null_flush;
-  bool internal_null_flush;
-  bool trace;
   bool trace_att;
-  string emptyblank;
+  UString emptyblank;
 
-  void destroy();
-  void readData(FILE *input);
   void readBil(string const &filename);
-  void readTransfer(string const &input);
-  void collectMacros(xmlNode *localroot);
-  void collectRules(xmlNode *localroot);
-  string caseOf(string const &str);
-  string copycase(string const &source_word, string const &target_word);
 
   void processLet(xmlNode *localroot);
   void processAppend(xmlNode *localroot);
-  int processRejectCurrentRule(xmlNode *localroot);
   void processOut(xmlNode *localroot);
   void processCallMacro(xmlNode *localroot);
   void processModifyCase(xmlNode *localroot);
@@ -126,16 +85,12 @@ private:
   bool processNot(xmlNode *localroot);
   bool processIn(xmlNode *localroot);
   int processRule(xmlNode *localroot);
-  string evalString(xmlNode *localroot);
+  UString evalString(xmlNode *localroot);
   int processInstruction(xmlNode *localroot);
   int processChoose(xmlNode *localroot);
-  string processChunk(xmlNode *localroot);
-  string processTags(xmlNode *localroot);
+  UString processChunk(xmlNode *localroot);
+  UString processTags(xmlNode *localroot);
 
-  bool beginsWith(string const &str1, string const &str2) const;
-  bool endsWith(string const &str1, string const &str2) const;
-  string tolower(string const &str) const;
-  string tags(string const &str) const;
   UString readWord(InputFile& in);
   UString readBlank(InputFile& in);
   UString readUntil(InputFile& in, int const symbol) const;
@@ -158,9 +113,6 @@ public:
   bool getPreBilingual(void) const;
   void setExtendedDictionary(string const &fstfile);
   void setCaseSensitiveness(bool value);
-  bool getNullFlush(void);
-  void setNullFlush(bool null_flush);
-  void setTrace(bool trace);
   void setTraceATT(bool trace);
 };
 

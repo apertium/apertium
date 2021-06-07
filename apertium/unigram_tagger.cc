@@ -240,7 +240,7 @@ UnigramTagger::model3_score(const Analysis &Analysis_)
 }
 
 void
-UnigramTagger::tag(Stream &Input, std::wostream &Output)
+UnigramTagger::tag(Stream &Input, std::ostream &Output)
 {
   while (true) {
     StreamedType StreamedType_ = Input.get();
@@ -266,7 +266,7 @@ UnigramTagger::tag(Stream &Input, std::wostream &Output)
 }
 
 void
-UnigramTagger::tag(const LexicalUnit &LexicalUnit_, std::wostream &Output)
+UnigramTagger::tag(const LexicalUnit &LexicalUnit_, std::ostream &Output)
 {
   Optional<Analysis> TheAnalysis;
   long double max_score = 0;

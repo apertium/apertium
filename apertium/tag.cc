@@ -29,6 +29,11 @@ Tag::operator UString() const {
     throw Exception::Tag::TheTags_empty("can't convert Tag comprising empty "
                                         "TheTag UString to UString");
 
-  return "<" + TheTag + ">";
+  UString ret;
+  ret.reserve(TheTag.size() + 2);
+  ret += '<';
+  ret.append(TheTag);
+  ret += '>';
+  return ret;
 }
 }

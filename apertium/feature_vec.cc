@@ -79,9 +79,6 @@ operator<<(OStream & out, FeatureVec const &fv)
   return out;
 }
 
-template std::wostream&
-operator<<(std::wostream& out, FeatureVec const &fv);
-
 template std::ostream&
 operator<<(std::ostream& out, FeatureVec const &fv);
 

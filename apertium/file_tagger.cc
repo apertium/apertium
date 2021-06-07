@@ -80,7 +80,7 @@ void FILE_Tagger::init_probabilities_kupiec_(const char* corpus_file) {
   init_probabilities_kupiec_(lexmorfo);
 }
 
-void FILE_Tagger::read_dictionary(FILE *fdic) {
+void FILE_Tagger::read_dictionary(const char* fdic) {
   tagger_utils::scan_for_ambg_classes(fdic, get_tagger_data());
   tagger_utils::add_neccesary_ambg_classes(get_tagger_data());
   post_ambg_class_scan();

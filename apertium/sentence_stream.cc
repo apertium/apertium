@@ -21,7 +21,7 @@ bool isSentenceEnd(StreamedType &token) {
     return false;
   }
   Tag &tag = *tags.begin();
-  if (tag.TheTag != "sent") {
+  if (tag.TheTag != "sent"_u) {
     return false;
   }
   return true;
@@ -37,7 +37,7 @@ bool isSentenceEnd(StreamedType tok, Stream &in, bool sent_seg) {
 
 SentenceTagger::SentenceTagger() {}
 
-void SentenceTagger::tag(Stream &in, std::wostream &out, bool sent_seg) {
+void SentenceTagger::tag(Stream &in, std::ostream &out, bool sent_seg) {
   clearBuffers();
 
   while (true) {
@@ -67,7 +67,7 @@ void SentenceTagger::clearBuffers() const {
   flushes.clear();
 }
 
-void SentenceTagger::tagAndPutSentence(std::wostream &out) {
+void SentenceTagger::tagAndPutSentence(std::ostream &out) {
   TaggedSentence tagged_sent = tagSentence(lexical_sent);
   TaggedSentence::const_iterator ts_it = tagged_sent.begin();
 

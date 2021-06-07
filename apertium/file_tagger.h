@@ -56,9 +56,9 @@ public:
 
   /** It reads the expanded dictionary received as a parameter and calculates
    *  the set of ambiguity classes that the tagger will manage.
-   *  @param is the input stream with the expanded dictionary to read
+   *  @param is the filename of expanded dictionary to read (or NULL for stdin)
    */
-  void read_dictionary(FILE *is);
+  void read_dictionary(const char* is);
 
   virtual TaggerData& get_tagger_data() = 0;
 

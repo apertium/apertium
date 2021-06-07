@@ -38,17 +38,17 @@ FileMorphoStream::FileMorphoStream(const char* ftxt, bool d, TaggerData *t) :
   ca_any_tag = alphabet(PatternList::ANY_TAG);
 
   ConstantManager &constants = td->getConstants();
-  ca_kignorar = constants.getConstant("kIGNORAR");
-  ca_kbarra = constants.getConstant("kBARRA");
-  ca_kdollar = constants.getConstant("kDOLLAR");
-  ca_kbegin = constants.getConstant("kBEGIN");
-  ca_kmot = constants.getConstant("kMOT");
-  ca_kmas = constants.getConstant("kMAS");
-  ca_kunknown = constants.getConstant("kUNKNOWN");
+  ca_kignorar = constants.getConstant("kIGNORAR"_u);
+  ca_kbarra = constants.getConstant("kBARRA"_u);
+  ca_kdollar = constants.getConstant("kDOLLAR"_u);
+  ca_kbegin = constants.getConstant("kBEGIN"_u);
+  ca_kmot = constants.getConstant("kMOT"_u);
+  ca_kmas = constants.getConstant("kMAS"_u);
+  ca_kunknown = constants.getConstant("kUNKNOWN"_u);
 
   map<UString, int> &tag_index = td->getTagIndex();
-  ca_tag_keof = tag_index["TAG_kEOF"];
-  ca_tag_kundef = tag_index["TAG_kUNDEF"];
+  ca_tag_keof = tag_index["TAG_kEOF"_u];
+  ca_tag_kundef = tag_index["TAG_kUNDEF"_u];
 
   end_of_file = false;
   null_flush = false;
@@ -79,7 +79,7 @@ FileMorphoStream::get_next_word()
     return word;
   }
 
-  if(feof(input))
+  if(input.eof())
   {
     return NULL;
   }
@@ -89,70 +89,61 @@ FileMorphoStream::get_next_word()
 
   while(true)
   {
-    int symbol = fgetwc_unlocked(input);
-    if(feof(input) || (null_flush && symbol == L'\0'))
+    UChar32 symbol = input.get();
+    if(input.eof() || (null_flush && symbol == '\0'))
     {
       end_of_file = true;
-      vwords[ivwords]->add_tag(ca_tag_keof, "", td->getPreferRules());
+      vwords[ivwords]->add_tag(ca_tag_keof, ""_u, td->getPreferRules());
       return get_next_word();
     }
-    if(symbol == L'^')
+    if(symbol == '^')
     {
       readRestOfWord(ivwords);
       return get_next_word();
     }
     else
     {
-      UString str = "";
-      if(symbol == L'\\')
+      UString str = ""_u;
+      if(symbol == '\\')
       {
-        symbol = fgetwc_unlocked(input);
-        str += L'\\';
-        str += static_cast<wchar_t>(symbol);
-        symbol = L'\\';
+        symbol = input.get();
+        str += '\\';
+        str += symbol;
+        symbol = '\\';
       }
       else
       {
-        str += static_cast<wchar_t>(symbol);
+        str += symbol;
       }
 
-      while(symbol != L'^')
+      while(symbol != '^')
       {
-	symbol = fgetwc_unlocked(input);
-	if(feof(input) || (null_flush && symbol == L'\0'))
-	{
-	  end_of_file = true;
-	  vwords[ivwords]->add_ignored_string(str);
-          vwords[ivwords]->add_tag(ca_tag_keof, "", td->getPreferRules());
-	  return get_next_word();
-	}
-	else if(symbol == L'\\')
-	{
-	  str += L'\\';
-          symbol = fgetwc_unlocked(input);
-	  if(feof(input) || (null_flush && symbol == L'\0'))
-	  {
-	    end_of_file = true;
-	    vwords[ivwords]->add_ignored_string(str);
-            vwords[ivwords]->add_tag(ca_tag_keof, "", td->getPreferRules());
-	    return get_next_word();
-	  }
-	  str += static_cast<wchar_t>(symbol);
-	  symbol = L'\\';
-	}
-	else if(symbol == L'^')
-	{
-	  if(str.size() > 0)
-	  {
-	    vwords[ivwords]->add_ignored_string(str);
+        symbol = input.get();
+        if(input.eof() || (null_flush && symbol == '\0')) {
+          end_of_file = true;
+          vwords[ivwords]->add_ignored_string(str);
+          vwords[ivwords]->add_tag(ca_tag_keof, ""_u, td->getPreferRules());
+          return get_next_word();
+        } else if(symbol == '\\') {
+          str += '\\';
+          symbol = input.get();
+          if(input.eof() || (null_flush && symbol == '\0')) {
+            end_of_file = true;
+            vwords[ivwords]->add_ignored_string(str);
+            vwords[ivwords]->add_tag(ca_tag_keof, ""_u, td->getPreferRules());
+            return get_next_word();
           }
-	  readRestOfWord(ivwords);
-	  return get_next_word();
-	}
-        else
-	{
-	  str += static_cast<wchar_t>(symbol);
-	}
+          str += static_cast<wchar_t>(symbol);
+          symbol = '\\';
+        } else if(symbol == '^') {
+          if(str.size() > 0) {
+            vwords[ivwords]->add_ignored_string(str);
+          }
+          readRestOfWord(ivwords);
+          return get_next_word();
+        } else {
+          str += static_cast<wchar_t>(symbol);
+        }
       }
     }
   }
@@ -168,9 +159,9 @@ FileMorphoStream::lrlmClassify(UString const &str, int &ivwords)
   ms.init(me->getInitial());
   for(int i = 0, limit = str.size(); i != limit; i++)
   {
-    if(str[i] != L'<')
+    if(str[i] != '<')
     {
-      if(str[i] == L'+')
+      if(str[i] == '+')
       {
         int val = ms.classifyFinals(me->getFinals());
         if(val != -1)
@@ -183,14 +174,14 @@ FileMorphoStream::lrlmClassify(UString const &str, int &ivwords)
     }
     else
     {
-      UString tag = "";
+      UString tag;
       for(int j = i+1; j != limit; j++)
       {
-        if(str[j] == L'\\')
+        if(str[j] == '\\')
         {
  	  j++;
         }
-        else if(str[j] == L'>')
+        else if(str[j] == '>')
         {
  	  tag = str.substr(i, j-i+1);
 	  i = j;
@@ -216,7 +207,7 @@ FileMorphoStream::lrlmClassify(UString const &str, int &ivwords)
         vwords[ivwords]->add_tag(last_type,
                                  str.substr(floor, last_pos - floor + 1),
                                  td->getPreferRules());
-	if(str[last_pos+1] == L'+' && last_pos+1 < limit )
+	if(str[last_pos+1] == '+' && last_pos+1 < limit )
 	{
 	  floor = last_pos + 1;
 	  last_pos = floor + 1;
@@ -248,7 +239,7 @@ FileMorphoStream::lrlmClassify(UString const &str, int &ivwords)
 	  vwords[ivwords]->add_tag(last_type,
                                    str.substr(floor, last_pos - floor + 1),
                                    td->getPreferRules());
-          if(str[last_pos+1] == L'+' && last_pos+1 < limit )
+          if(str[last_pos+1] == '+' && last_pos+1 < limit )
           {
             floor = last_pos + 1;
 	    last_pos = floor;
@@ -292,12 +283,12 @@ void
 FileMorphoStream::readRestOfWord(int &ivwords)
 {
   // first we have the superficial form
-  UString str = "";
+  UString str;
 
   while(true)
   {
-    int symbol = fgetwc_unlocked(input);
-    if(feof(input) || (null_flush && symbol == L'\0'))
+    UChar32 symbol = input.get();
+    if(input.eof() || (null_flush && symbol == '\0'))
     {
       end_of_file = true;
       if(str.size() > 0)
@@ -307,25 +298,25 @@ FileMorphoStream::readRestOfWord(int &ivwords)
         cerr<<"Word being read: "<<vwords[ivwords]->get_superficial_form()<<"\n";
         cerr<<"Debug: "<< str <<"\n";
       }
-      vwords[ivwords]->add_tag(ca_tag_keof, "", td->getPreferRules());
+      vwords[ivwords]->add_tag(ca_tag_keof, ""_u, td->getPreferRules());
       return;
     }
-    else if(symbol == L'\\')
+    else if(symbol == '\\')
     {
-      symbol = fgetwc_unlocked(input);
-      str += L'\\';
-      str += static_cast<wchar_t>(symbol);
+      symbol = input.get();
+      str += '\\';
+      str += symbol;
     }
-    else if(symbol == L'/')
+    else if(symbol == '/')
     {
       vwords[ivwords]->set_superficial_form(str);
-      str = "";
+      str.clear();
       break;
     }
-    else if(symbol == L'$')
+    else if(symbol == '$')
     {
       vwords[ivwords]->set_superficial_form(str);
-      vwords[ivwords]->add_ignored_string("$");
+      vwords[ivwords]->add_ignored_string("$"_u);
       break;
     }
     else
@@ -338,8 +329,8 @@ FileMorphoStream::readRestOfWord(int &ivwords)
 
   while(true)
   {
-    int symbol = fgetwc_unlocked(input);
-    if(feof(input) || (null_flush && symbol == L'\0'))
+    UChar32 symbol = input.get();
+    if(input.eof() || (null_flush && symbol == '\0'))
     {
       end_of_file = true;
       if(str.size() > 0)
@@ -349,26 +340,26 @@ FileMorphoStream::readRestOfWord(int &ivwords)
         cerr<<"Word being read: "<<vwords[ivwords]->get_superficial_form()<<"\n";
         cerr<<"Debug: "<< str <<"\n";
       }
-      vwords[ivwords]->add_tag(ca_tag_keof, "", td->getPreferRules());
+      vwords[ivwords]->add_tag(ca_tag_keof, ""_u, td->getPreferRules());
       return;
     }
-    else if(symbol == L'\\')
+    else if(symbol == '\\')
     {
-      symbol = fgetwc_unlocked(input);
-      str += L'\\';
-      str += static_cast<wchar_t>(symbol);
-      symbol = L'\\';  // to prevent exiting with '\$'
+      symbol = input.get();
+      str += '\\';
+      str += symbol;
+      symbol = '\\';  // to prevent exiting with '\$'
     }
-    else if(symbol == L'/')
+    else if(symbol == '/')
     {
       lrlmClassify(str, ivwords);
-      str = "";
+      str.clear();
       ivwords = 0;
       continue;
     }
-    else if(symbol == L'$')
+    else if(symbol == '$')
     {
-      if(str[0] != L'*')// do nothing with unknown words
+      if(str[0] != '*')// do nothing with unknown words
       {
 	lrlmClassify(str, ivwords);
       }
@@ -402,6 +393,6 @@ FileMorphoStream::setEndOfFile(bool eof)
 void
 FileMorphoStream::rewind()
 {
-  std::fseek(input, 0, SEEK_SET);
+  input.rewind();
   end_of_file = false;
 }

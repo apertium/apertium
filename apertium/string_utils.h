@@ -56,6 +56,29 @@ class StringUtils {
   static UString tolower(UString const &s);
 
   static UString toupper(UString const &s);
+
+  static UString getcase(const UString& s);
+
+  static UString copycase(const UString& source, const UString& target);
+};
+
+class u16iter
+{
+private:
+  const UChar* buf;
+  size_t len;
+  size_t i;
+  UChar32 c;
+public:
+  u16iter(const UString& s);
+  u16iter(const u16iter& it);
+
+  u16iter& operator++();
+  u16iter begin();
+  u16iter end();
+  inline UChar32 operator*() const { return c; }
+  bool operator!=(const u16iter& other) const;
+  bool operator==(const u16iter& other) const;
 };
 
 std::wostream & operator<< (std::wostream & ostr, std::string const & str);

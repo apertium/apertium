@@ -63,6 +63,7 @@ h_sources = a.h \
 	    tmx_trail_postprocessors.h \
 	    tmx_translate.h \
 	    tmx_words.h \
+		transfer_base.h \
 	    transfer_data.h \
 	    transfer.h \
 	    transfer_instr.h \
@@ -77,7 +78,8 @@ h_sources = a.h \
 	    unlocked_cstdio.h \
 	    utf_converter.h \
 	    utils.h \
-	    xml_reader.h
+	    xml_reader.h \
+		xml_walk_util.h
 
 cc_sources = a.cc \
 	     align.cc \
@@ -130,6 +132,7 @@ cc_sources = a.cc \
 	     tmx_trail_postprocessors.cc \
 	     tmx_translate.cc \
 	     transfer.cc \
+		 transfer_base.cc \
 	     transfer_data.cc \
 	     transfer_instr.cc \
 	     transfer_mult.cc \
@@ -140,7 +143,8 @@ cc_sources = a.cc \
 	     tsx_reader.cc \
 	     unigram_tagger.cc \
 	     utf_converter.cc \
-	     xml_reader.cc
+	     xml_reader.cc \
+		 xml_walk_util.cc
 
 library_includedir = $(includedir)/$(PACKAGE_NAME)-$(VERSION_API)/$(PACKAGE_NAME)
 library_include_HEADERS = $(h_sources)

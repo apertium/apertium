@@ -20,18 +20,18 @@ namespace SentenceStream {
   bool isSentenceEnd(Stream &in, bool sent_seg = false);
   class SentenceTagger {
   public:
-    void tag(Stream &in, std::wostream &out, bool sent_seg);
+    void tag(Stream &in, std::ostream &out, bool sent_seg);
     SentenceTagger();
   protected:
     virtual TaggedSentence tagSentence(const Sentence &untagged) = 0;
     virtual void outputLexicalUnit(
       const LexicalUnit &lexical_unit, const Optional<Analysis> analysis,
-      std::wostream &output) = 0;
+      std::ostream &output) = 0;
   private:
     void clearBuffers() const;
-    void tagAndPutSentence(std::wostream &out);
+    void tagAndPutSentence(std::ostream &out);
     void putTaggedSent(
-      std::wostream &out, TaggedSentence &tagged_sent, Sentence &full_sent,
+      std::ostream &out, TaggedSentence &tagged_sent, Sentence &full_sent,
       std::vector<bool> &flushes) const;
     mutable Sentence full_sent;
     mutable Sentence lexical_sent;

@@ -21,7 +21,7 @@
 #include <string>
 #include <cstring>
 #include <locale>
-#include <lttoolbox/ltstr.h>
+#include <lttoolbox/ustring.h>
 
 using namespace std;
 
@@ -35,7 +35,7 @@ using namespace std;
 */
 
 class AccentsMap {
-	typedef std::map<UString, UString, Ltstr> acmap;
+	typedef std::map<UString, UString> acmap;
 	private:
 		acmap           map; // Accent to character
 		acmap::iterator it;  // Iterator for searching

@@ -74,7 +74,7 @@ int nguiones_fs(UString const &cadena);
  *  @param fdic the input stream with the expanded dictionary to read
  *  @param td the tagger data instance to mutate
  */
-void scan_for_ambg_classes(FILE *fdic, TaggerData &td);
+void scan_for_ambg_classes(const char* fdic, TaggerData &td);
 void scan_for_ambg_classes(Collection &output, MorphoStream &morpho_stream);
 
 void add_neccesary_ambg_classes(TaggerData &td);

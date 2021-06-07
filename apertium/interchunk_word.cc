@@ -108,7 +108,7 @@ InterchunkWord::chunkPart(ApertiumRE const &part)
     result = part.match(queue);
     if(result.size() != queue.size())
     {
-      return "";
+      return ""_u;
     }
     else
     {

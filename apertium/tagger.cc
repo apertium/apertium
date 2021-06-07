@@ -550,24 +550,12 @@ void apertium_tagger::init_FILE_Tagger(FILE_Tagger &FILE_Tagger_, string const &
 MorphoStream* apertium_tagger::setup_untagged_morpho_stream(
     FILE_Tagger &FILE_Tagger_,
     char *DicFn, char *UntaggedFn,
-    FILE **Dictionary, UFILE* *UntaggedCorpus) {
-  if (*TheFunctionType != Retrain) {
-    *Dictionary = try_open_file_utf8("DICTIONARY", DicFn, "r");
-  }
+    UFILE* *UntaggedCorpus) {
   *UntaggedCorpus = try_open_file_utf8("UNTAGGED_CORPUS", UntaggedFn, "r");
 
-  FILE_Tagger_.read_dictionary(*Dictionary);
+  FILE_Tagger_.read_dictionary(DicFn);
 
   return new FileMorphoStream(UntaggedFn, true, &FILE_Tagger_.get_tagger_data());
-}
-
-void apertium_tagger::close_untagged_files(
-    char *DicFn, char *UntaggedFn,
-    FILE *Dictionary, UFILE* UntaggedCorpus) {
-  if (*TheFunctionType == Supervised || *TheFunctionType == Train) {
-    try_close_file("DICTIONARY", DicFn, Dictionary);
-  }
-  try_close_file("UNTAGGED_CORPUS", UntaggedFn, UntaggedCorpus);
 }
 
 /** Implementation of flags/subcommands */
@@ -595,7 +583,7 @@ void apertium_tagger::g_StreamTagger(StreamTagger &StreamTagger_) {
     return;
   }
 
-  std::wifstream Input_stream;
+  std::ifstream Input_stream;
   try_open_fstream("INPUT", argv[optind + 1], Input_stream);
 
   if (nonoptarg < 3) {
@@ -604,7 +592,7 @@ void apertium_tagger::g_StreamTagger(StreamTagger &StreamTagger_) {
     return;
   }
 
-  std::wofstream Output_stream;
+  std::ofstream Output_stream;
   try_open_fstream("OUTPUT", argv[optind + 2], Input_stream);
 
   Stream Input(TheFlags, Input_stream, argv[optind + 1]);
@@ -628,12 +616,12 @@ void apertium_tagger::s_StreamTaggerTrainer(
     expect_file_arguments(nonoptarg, 2);
   }
 
-  std::wifstream TaggedCorpus_stream;
+  std::ifstream TaggedCorpus_stream;
   try_open_fstream("TAGGED_CORPUS", argv[optind + 1], TaggedCorpus_stream);
   Stream TaggedCorpus(TheFlags, TaggedCorpus_stream, argv[optind + 1]);
 
   if (*TheFunctionTypeType == Perceptron) {
-    std::wifstream UntaggedCorpus_stream;
+    std::ifstream UntaggedCorpus_stream;
     try_open_fstream("UNTAGGED_CORPUS", argv[optind + 2], UntaggedCorpus_stream);
     Stream UntaggedCorpus(TheFlags, UntaggedCorpus_stream, argv[optind + 2]);
 
@@ -661,21 +649,16 @@ void apertium_tagger::g_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
   try_close_file("SERIALISED_TAGGER", argv[optind], Serialised_FILE_Tagger);
   TaggerWord::setArrayTags(FILE_Tagger_.getArrayTags());
   TaggerWord::generate_marks = TheFlags.getMark();
-  if (nonoptarg < 2)
-    FILE_Tagger_.tagger(stdin, stdout);
-  else {
-    UFILE* Input = try_open_file("INPUT", argv[optind + 1], "r");
-
-    if (nonoptarg < 3)
-      FILE_Tagger_.tagger(Input, stdout);
-    else {
-      UFILE* Output = try_open_file_utf8("OUTPUT", argv[optind + 2], "w");
-      FILE_Tagger_.tagger(Input, Output);
-      try_close_file("OUTPUT", argv[optind + 2], Output);
+  const char* infile = NULL;
+  UFILE* Output = u_finit(stdout, NULL, NULL);
+  if (nonoptarg >= 2) {
+    infile = argv[optind + 1];
+    if (nonoptarg >= 3) {
+      Output = try_open_file_utf8("OUTPUT", argv[optind + 2], "w");
     }
-
-    try_close_file("INPUT", argv[optind + 1], Input);
   }
+  FILE_Tagger_.tagger(infile, Output);
+  u_fclose(Output);
 }
 
 void apertium_tagger::r_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
@@ -701,13 +684,11 @@ void apertium_tagger::r_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
   MorphoStream* ms = setup_untagged_morpho_stream(
     FILE_Tagger_,
     NULL, UntaggedFn,
-    NULL, &UntaggedCorpus);
+    &UntaggedCorpus);
 
   FILE_Tagger_.train(*ms, TheFunctionTypeOptionArgument);
   delete ms;
-  close_untagged_files(
-    NULL, UntaggedFn,
-    NULL, UntaggedCorpus);
+  u_fclose(UntaggedCorpus);
 
   Serialised_FILE_Tagger =
       try_open_file("SERIALISED_TAGGER", ProbFn, "wb");
@@ -732,27 +713,20 @@ void apertium_tagger::s_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
       &TsxFn, &ProbFn);
   init_FILE_Tagger(FILE_Tagger_, TsxFn);
 
-  FILE *Dictionary;
   UFILE* UntaggedCorpus;
   MorphoStream* ms = setup_untagged_morpho_stream(
     FILE_Tagger_,
     DicFn, UntaggedFn,
-    &Dictionary, &UntaggedCorpus);
-  UFILE* TaggedCorpus = try_open_file("TAGGED_CORPUS", TaggedFn, "r");
-  FileMorphoStream tms(TaggedCorpus, true, &FILE_Tagger_.get_tagger_data());
+    &UntaggedCorpus);
+  FileMorphoStream tms(TaggedFn, true, &FILE_Tagger_.get_tagger_data());
 
   FILE_Tagger_.init_probabilities_from_tagged_text_(tms, *ms);
-  try_close_file("TAGGED_CORPUS", TaggedFn, TaggedCorpus);
   delete ms;
-  close_untagged_files(
-    DicFn, UntaggedFn,
-    Dictionary, UntaggedCorpus);
+  u_fclose(UntaggedCorpus);
 
   if (do_unsup) {
-    UFILE* Corpus = try_open_file_utf8("CORPUS", CrpFn, "r");
-    FILE_Tagger_.train(Corpus, TheFunctionTypeOptionArgument);
-    try_close_file("CORPUS", CrpFn, Corpus);
- }
+    FILE_Tagger_.train(CrpFn, TheFunctionTypeOptionArgument);
+  }
 
   FILE *Serialised_FILE_Tagger =
       try_open_file("SERIALISED_TAGGER", ProbFn, "wb");
@@ -774,18 +748,15 @@ void apertium_tagger::t_FILE_Tagger(FILE_Tagger &FILE_Tagger_) {
       &TsxFn, &ProbFn);
   init_FILE_Tagger(FILE_Tagger_, TsxFn);
 
-  FILE *Dictionary;
   UFILE* UntaggedCorpus;
   MorphoStream* ms = setup_untagged_morpho_stream(
     FILE_Tagger_,
     DicFn, UntaggedFn,
-    &Dictionary, &UntaggedCorpus);
+    &UntaggedCorpus);
 
   FILE_Tagger_.init_and_train(*ms, TheFunctionTypeOptionArgument);
   delete ms;
-  close_untagged_files(
-    DicFn, UntaggedFn,
-    Dictionary, UntaggedCorpus);
+  u_fclose(UntaggedCorpus);
 
   FILE *Serialised_FILE_Tagger =
       try_open_file("SERIALISED_TAGGER", ProbFn, "wb");

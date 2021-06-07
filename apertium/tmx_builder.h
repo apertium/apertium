@@ -20,6 +20,7 @@
 #include <apertium/transfer_data.h>
 #include <string>
 #include <cstdio>
+#include <lttoolbox/input_file.h>
 
 using namespace std;
 
@@ -41,7 +42,7 @@ private:
   static UString restOfBlank(InputFile& input);
   static UString nextBlank(InputFile& input);
   static UString xmlize(UString const &str);
-  static bool compatible(InputFile& input, UFILE* output, bool lazy = false);
+  static bool compatible(InputFile& input, InputFile& output, bool lazy = false);
   void generateTMX(InputFile& f1, InputFile& f2, UFILE* output);
   void outputTU(InputFile& f1, InputFile& f2, UFILE* output);
   static vector<UString> reverseList(vector<UString> const &v);

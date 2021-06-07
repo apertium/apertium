@@ -21,16 +21,16 @@ public:
   virtual void train(Stream &tagged, Stream &untagged, int iterations);
   // tagger
   virtual void deserialise(std::istream &serialised);
-  virtual void tag(Stream &input, std::wostream &output);
+  virtual void tag(Stream &input, std::ostream &output);
 
   void read_spec(const std::string &filename);
 
-  friend std::wostream& operator<<(std::wostream &out, PerceptronTagger const &pt);
+  friend std::ostream& operator<<(std::ostream &out, PerceptronTagger const &pt);
 protected:
   virtual TaggedSentence tagSentence(const Sentence &untagged);
   virtual void outputLexicalUnit(
     const LexicalUnit &lexical_unit, const Optional<Analysis> analysis,
-    std::wostream &output);
+    std::ostream &output);
 private:
   bool trainSentence(
     const TrainingSentence &sentence,
@@ -52,18 +52,18 @@ private:
   };
   template <typename T> static void extendAgendaAll(
     std::vector<T> &agenda, Optional<Analysis> analy);
-  friend std::wostream& operator<<(std::wostream &out,
+  friend std::ostream& operator<<(std::ostream &out,
                                    const TrainingAgendaItem &tai);
-  friend std::wostream& operator<<(
-      std::wostream &out, const std::vector<TrainingAgendaItem> &agenda);
+  friend std::ostream& operator<<(
+      std::ostream &out, const std::vector<TrainingAgendaItem> &agenda);
   friend bool operator<(const AgendaItem &a, const AgendaItem &b);
-  friend std::wostream& operator<<(
-      std::wostream &out, const PerceptronTagger::AgendaItem &ai);
-  friend std::wostream& operator<<(
-      std::wostream &out, const std::vector<PerceptronTagger::AgendaItem> &agenda);
+  friend std::ostream& operator<<(
+      std::ostream &out, const PerceptronTagger::AgendaItem &ai);
+  friend std::ostream& operator<<(
+      std::ostream &out, const std::vector<PerceptronTagger::AgendaItem> &agenda);
 };
 
-std::wostream& operator<<(std::wostream &out, const TaggedSentence &tagged);
+std::ostream& operator<<(std::ostream &out, const TaggedSentence &tagged);
 }
 
 #endif

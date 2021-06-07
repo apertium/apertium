@@ -11,12 +11,12 @@
 UString storeAndWriteWblank(InputFile& input, UFILE* output)
 {
   int mychar;
-  UString content = "[[";
+  UString content = "[["_u;
 
   while(true)
   {
-    mychar = fgetwc_unlocked(input);
-    if(feof(input))
+    mychar = input.get();
+    if(input.eof())
     {
       cerr << "ERROR: Unexpected EOF" << endl;
       exit(EXIT_FAILURE);
@@ -27,13 +27,13 @@ UString storeAndWriteWblank(InputFile& input, UFILE* output)
     
     if(mychar == '\\')
     {
-      mychar = fgetwc(input);
+      mychar = input.get();
       content += mychar;
       u_fputc(mychar, output);
     }
     else if(mychar == ']')
     {
-      mychar = fgetwc(input);
+      mychar = input.get();
       
       if(mychar == ']')
       {
@@ -51,9 +51,9 @@ void readAndWriteUntil(InputFile& input, UFILE* output, int const charcode)
 {
   int mychar;
 
-  while((mychar = fgetwc_unlocked(input)) != charcode)
+  while((mychar = input.get()) != charcode)
   {
-    if(feof(input))
+    if(input.eof())
     {
       cerr << "ERROR: Unexpected EOF" << endl;
       exit(EXIT_FAILURE);
@@ -61,16 +61,16 @@ void readAndWriteUntil(InputFile& input, UFILE* output, int const charcode)
     u_fputc(mychar, output);
     if(mychar == '\\')
     {
-      mychar = fgetwc(input);
+      mychar = input.get();
       u_fputc(mychar, output);
     }
   }
 }
 
-void procWord(InputFile& input, UFILE* output, bool surface_forms, bool compound_sep, UString wblank = "")
+void procWord(InputFile& input, UFILE* output, bool surface_forms, bool compound_sep, UString wblank = ""_u)
 {
   int mychar;
-  UString buffer = "";
+  UString buffer;
 
   bool buffer_mode = false;
   bool in_tag = false;
@@ -78,12 +78,12 @@ void procWord(InputFile& input, UFILE* output, bool surface_forms, bool compound
 
   if(surface_forms)
   {
-    while((mychar = fgetwc_unlocked(input)) != '/') ;
+    while((mychar = input.get()) != '/') ;
   }
 
-  while((mychar = fgetwc_unlocked(input)) != '$')
+  while((mychar = input.get()) != '$')
   {
-    if(feof(input))
+    if(input.eof())
     {
       cerr << "ERROR: Unexpected EOF" << endl;
       exit(EXIT_FAILURE);
@@ -121,24 +121,24 @@ void procWord(InputFile& input, UFILE* output, bool surface_forms, bool compound
       }
       else if(in_tag == false && mychar == '+')
       {
-        buffer.append("$ ");
+        buffer.append("$ "_u);
         buffer.append(wblank);
-        buffer.append("^");
+        buffer.append("^"_u);
       }
       else if(in_tag == false && mychar == '~' and compound_sep == true)
       {
-        buffer.append("$");
+        buffer.append("$"_u);
         buffer.append(wblank);
-        buffer.append("^");
+        buffer.append("^"_u);
       }
     }
     else
     {
       if(mychar == '+' && queuing == true)
       {
-        buffer.append("$ ");
+        buffer.append("$ "_u);
         buffer.append(wblank);
-        buffer.append("^");
+        buffer.append("^"_u);
         buffer_mode = true;
       }
       else
@@ -155,8 +155,8 @@ void processStream(InputFile& input, UFILE* output, bool null_flush, bool surfac
 {
   while(true)
   {
-    int mychar = fgetwc_unlocked(input);
-    if(feof(input))
+    int mychar = input.get();
+    if(input.eof())
     {
       break;
     }
@@ -164,13 +164,13 @@ void processStream(InputFile& input, UFILE* output, bool null_flush, bool surfac
     {
       case '[':
         u_fputc('[', output);
-        mychar = fgetwc_unlocked(input);
+        mychar = input.get();
         
         if(mychar == '[')
         {
           u_fputc('[', output);
           UString wblank = storeAndWriteWblank(input, output);
-          mychar = fgetwc_unlocked(input);
+          mychar = input.get();
           
           if(mychar == '^')
           {
@@ -186,7 +186,7 @@ void processStream(InputFile& input, UFILE* output, bool null_flush, bool surfac
         }
         else
         {
-          ungetwc(mychar, input);
+          input.unget(mychar);
           readAndWriteUntil(input, output, ']');
           u_fputc(']', output);
         }
@@ -194,7 +194,7 @@ void processStream(InputFile& input, UFILE* output, bool null_flush, bool surfac
 
       case '\\':
         u_fputc(mychar, output);
-        u_fputc(fgetwc_unlocked(input), output);
+        u_fputc(input.get(), output);
         break;
 
       case '^':
@@ -208,7 +208,7 @@ void processStream(InputFile& input, UFILE* output, bool null_flush, bool surfac
 
         if(null_flush)
         {
-          fflush(output);
+          u_fflush(output);
         }
         break;
 

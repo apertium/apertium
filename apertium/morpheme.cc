@@ -30,10 +30,11 @@ bool operator<(const Morpheme &a, const Morpheme &b) {
 }
 
 std::ostream& operator<<(std::ostream& out, const Morpheme &morph) {
-  out << morph.TheLemma;
-  for (auto& it : morph.TheTags) {
-    out << "<" << it.TheTag << ">";
-  }
+  // TODO! this isn't working for some reason
+  //out << morph.TheLemma;
+  //for (auto& it : morph.TheTags) {
+  //  out << "<" << it.TheTag << ">";
+  //}
   return out;
 }
 

@@ -18,27 +18,25 @@
 #ifndef _APERTIUM_RE_
 #define _APERTIUM_RE_
 
-#include <pcre.h>
 #include <cstdio>
-#include <string>
+#include <unicode/regex.h>
+#include <lttoolbox/ustring.h>
 
 using namespace std;
-
-std::string& pcre_version_endian();
 
 class ApertiumRE
 {
 private:
   bool empty;
-  pcre *re;
+  icu::RegexPattern* re;
 public:
   ApertiumRE();
   ~ApertiumRE();
   void read(FILE *);
   void write(FILE *) const;
-  string match(string const &str) const;
-  bool replace(string &str, string const &value) const;
-  void compile(string const &str);
+  UString match(UString const &str) const;
+  bool replace(UString &str, UString const &value) const;
+  void compile(UString const &str);
 };
 
 #endif

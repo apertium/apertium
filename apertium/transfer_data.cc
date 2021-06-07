@@ -46,14 +46,14 @@ TransferData::destroy()
 TransferData::TransferData()
 {
   // adding fixed attr_items
-  attr_items["lem"] = "^(([^<]|\"\\<\")+)";
-  attr_items["lemq"] = "\\#[- _][^<]+";
-  attr_items["lemh"] = "^(([^<#]|\"\\<\"|\"\\#\")+)";
-  attr_items["whole"] = "(.+)";
-  attr_items["tags"] = "((<[^>]+>)+)";
-  attr_items["chname"] = "({([^/]+)\\/)"; // includes delimiters { and / !!!
-  attr_items["chcontent"] = "(\\{.+)";
-  attr_items["content"] = "(\\{.+)";
+  attr_items["lem"_u] = "^(([^<]|\"\\<\")+)"_u;
+  attr_items["lemq"_u] = "\\#[- _][^<]+"_u;
+  attr_items["lemh"_u] = "^(([^<#]|\"\\<\"|\"\\#\")+)"_u;
+  attr_items["whole"_u] = "(.+)"_u;
+  attr_items["tags"_u] = "((<[^>]+>)+)"_u;
+  attr_items["chname"_u] = "({([^/]+)\\/)"_u; // includes delimiters { and / !!!
+  attr_items["chcontent"_u] = "(\\{.+)"_u;
+  attr_items["content"_u] = "(\\{.+)"_u;
 }
 
 TransferData::~TransferData()
@@ -115,7 +115,9 @@ TransferData::getVariables()
 
 int
 TransferData::countToFinalSymbol(const int count) {
-  const UString count_sym = "<RULE_NUMBER:" + to_wstring(count) + ">";
+  UChar buf[64];
+  u_snprintf(buf, 64, "<RULE_NUMBER:%d>", count);
+  UString count_sym = buf;
   alphabet.includeSymbol(count_sym);
   const int symbol = alphabet(count_sym);
   final_symbols.insert(symbol);
@@ -134,7 +136,7 @@ TransferData::write(FILE *output)
   // Find all arcs with "final_symbols" in the transitions, let their source node instead be final,
   // and extract the rule number from the arc. Record relation between source node and rule number
   // in finals_rules. It is now no longer safe to minimize -- but we already did that.
-  const UString rule_sym_pre = "<RULE_NUMBER:"; // see countToFinalSymbol()
+  const UString rule_sym_pre = "<RULE_NUMBER:"_u; // see countToFinalSymbol()
   for(map<int, multimap<int, pair<int, double> > >::const_iterator it = transitions.begin(),
         limit = transitions.end(); it != limit; ++it)
   {
@@ -224,14 +226,16 @@ TransferData::write(FILE *output)
 void
 TransferData::writeRegexps(FILE *output)
 {
-  Compression::string_write(pcre_version_endian(), output);
+  // since ICU doesn't have a binary form, it doesn't matter
+  // what the version is, so leave it blank
+  Compression::string_write(""_u, output);
   Compression::multibyte_write(attr_items.size(), output);
 
   for (auto& it : attr_items) {
     Compression::string_write(it.first, output);
-    ApertiumRE my_re;
-    my_re.compile(UtfConverter::toUtf8(it.second));
-    my_re.write(output);
+    // empty binary form, since ICU doesn't have a dump function
+    // like PCRE did
+    Compression::multibyte_write(0, output);
     Compression::string_write(it.second, output);
   }
 }

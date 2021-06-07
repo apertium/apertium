@@ -27,13 +27,13 @@
 using namespace Apertium::SentenceStream;
 
 namespace Apertium {
-typedef std::set<std::string> VMSet;
+typedef std::set<UString> VMSet;
 class PerceptronSpec
 {
 public:
-  typedef std::vector<unsigned char> FeatureDefn;
-  static void printFeature(std::wostream &out, const PerceptronSpec::FeatureDefn &feat_defn);
-  friend std::wostream& operator<<(std::wostream &out, PerceptronSpec const &pt);
+  typedef std::vector<UChar> FeatureDefn;
+  static void printFeature(std::ostream &out, const PerceptronSpec::FeatureDefn &feat_defn);
+  friend std::ostream& operator<<(std::ostream &out, PerceptronSpec const &pt);
   PerceptronSpec();
   #define OPCODES \
     /** Boolean and arithmetic */\
@@ -168,9 +168,9 @@ public:
   #undef X
   static bool static_constructed;
   static unsigned char num_opcodes;
-  static const std::string opcode_names[];
-  static const std::string type_names[];
-  static std::map<const std::string, Opcode> opcode_values;
+  static const UString opcode_names[];
+  static const UString type_names[];
+  static std::map<const UString, Opcode> opcode_values;
   static std::vector<Morpheme> untagged_sentinel;
   static LexicalUnit token_wordoids_underflow;
   static LexicalUnit token_wordoids_overflow;
@@ -179,7 +179,7 @@ public:
   };
   class StackValue {
   public:
-    friend std::wostream& operator<<(std::wostream& out, StackValue const &val) {
+    friend std::ostream& operator<<(std::ostream& out, StackValue const &val) {
       switch (val.type) {
         case INTVAL:
           out << val.intVal();
@@ -192,8 +192,8 @@ public:
           break;
         case STRARRVAL: {
           out << "[";
-          std::vector<std::string> &str_arr = val.strArr();
-          std::vector<std::string>::const_iterator it = str_arr.begin();
+          std::vector<UString> &str_arr = val.strArr();
+          std::vector<UString>::const_iterator it = str_arr.begin();
           for (; it != str_arr.end(); it++) {
             out << it->c_str();
           }
@@ -230,11 +230,11 @@ public:
       type = other.type;
       switch (type) {
         case STRVAL:
-          payload.strval = new std::string(*other.payload.strval);
+          payload.strval = new UString(*other.payload.strval);
           break;
         case STRARRVAL:
           payload.strarrval =
-              new std::vector<std::string>(*other.payload.strarrval);
+              new std::vector<UString>(*other.payload.strarrval);
           break;
         case WRDVAL:
           payload.wrdval = new Morpheme(*other.payload.wrdval);
@@ -260,12 +260,12 @@ public:
       payload.bval = bval;
       type = BVAL;
     }
-    StackValue(const std::string &strval) {
-      payload.strval = new std::string(strval);
+    StackValue(const UString &strval) {
+      payload.strval = new UString(strval);
       type = STRVAL;
     }
-    StackValue(const std::vector<std::string> &strarrval) {
-      payload.strarrval = new std::vector<std::string>(strarrval);
+    StackValue(const std::vector<UString> &strarrval) {
+      payload.strarrval = new std::vector<UString>(strarrval);
       type = STRARRVAL;
     }
     StackValue(const Morpheme &wordoid) {
@@ -290,11 +290,11 @@ public:
       payload.wrdarrval = new std::vector<Morpheme>(wordoids);
       type = WRDARRVAL;
     }
-    StackValue(std::string *strval) {
+    StackValue(UString *strval) {
       payload.strval = strval;
       type = STRVAL;
     }
-    StackValue(std::vector<std::string> *strarrval) {
+    StackValue(std::vector<UString> *strarrval) {
       payload.strarrval = strarrval;
       type = STRARRVAL;
     }
@@ -331,11 +331,11 @@ public:
       assert(type == BVAL);
       return payload.bval;
     }
-    std::string& str() const {
+    UString& str() const {
       assert(type == STRVAL);
       return *payload.strval;
     }
-    std::vector<std::string>& strArr() const {
+    std::vector<UString>& strArr() const {
       assert(type == STRARRVAL);
       return *payload.strarrval;
     }
@@ -366,8 +366,8 @@ public:
     union StackValueUnion {
       int intval;
       bool bval;
-      std::string* strval;
-      std::vector<std::string>* strarrval;
+      UString* strval;
+      std::vector<UString>* strarrval;
       Morpheme* wrdval;
       std::vector<Morpheme>* wrdarrval;
     } payload;
@@ -379,8 +379,8 @@ public:
     signed char intbyte : 8;
   };
   Optional<TaggerDataPercepCoarseTags> coarse_tags;
-  static std::string dot;
-  std::vector<std::string> str_consts;
+  static UString dot;
+  std::vector<UString> str_consts;
   std::vector<VMSet> set_consts;
   mutable std::vector<StackValue> global_results;
   std::vector<FeatureDefn> global_defns;
@@ -390,10 +390,10 @@ public:
     const TaggedSentence &tagged, const Sentence &untagged,
     int token_idx, int wordoid_idx,
     UnaryFeatureVec &feat_vec_out) const;
-  std::string coarsen(const Morpheme &wrd) const;
+  UString coarsen(const Morpheme &wrd) const;
   void clearCache() const;
   int beam_width;
-  mutable std::map<const Morpheme, std::string> coarsen_cache;
+  mutable std::map<const Morpheme, UString> coarsen_cache;
 private:
   class MachineStack {
     std::deque<StackValue> data;
@@ -440,7 +440,7 @@ private:
     bool is_feature;
     const FeatureDefn &feat;
     const size_t &feat_idx;
-    std::vector<unsigned char>::const_iterator bytecode_iter;
+    std::vector<UChar>::const_iterator bytecode_iter;
     const TaggedSentence &tagged;
     const Sentence &untagged;
     int token_idx;
@@ -454,15 +454,15 @@ private:
     };
     std::deque<LoopState> loop_stack;
     std::vector<StackValue> slots;
-    void unimplemented_opcode(std::string opstr);
+    void unimplemented_opcode(UString opstr);
     const LexicalUnit& get_token(const Sentence &untagged);
     const std::vector<Morpheme>& tagged_to_wordoids(const TaggedToken &tt);
     const Morpheme& get_wordoid(const TaggedSentence &tagged);
     const VMSet& get_set_operand();
     int get_int_operand();
     unsigned int get_uint_operand();
-    const std::string& get_str_operand();
-    static std::string get_tag(const Tag &in);
+    const UString& get_str_operand();
+    static UString get_tag(const Tag &in);
     bool execCommonOp(Opcode op);
   public:
     void traceMachineState();
@@ -478,16 +478,16 @@ private:
       int token_idx,
       int wordoid_idx);
   };
-  struct In : public std::unary_function<const std::string&, bool> {
+  struct In : public std::unary_function<const UString&, bool> {
     const VMSet& haystack;
     In(const VMSet &haystack);
-    bool operator() (const std::string &needle) const;
+    bool operator() (const UString &needle) const;
   };
   static void appendStr(UnaryFeatureVec &feat_vec,
-                        const std::string &tail_str);
+                        const UString &tail_str);
   static void appendStr(UnaryFeatureVec::iterator begin,
                         UnaryFeatureVec::iterator end,
-                        const std::string &tail_str);
+                        const UString &tail_str);
   void serialiseFeatDefn(
     std::ostream &serialised, const FeatureDefn &defn) const;
   void deserialiseFeatDefn(

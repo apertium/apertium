@@ -30,11 +30,11 @@ namespace Apertium {
 class Stream {
 public:
   Stream(TaggerFlags &Flags_);
-  Stream(TaggerFlags &Flags_, std::wifstream &CharacterStream_,
+  Stream(TaggerFlags &Flags_, std::ifstream &CharacterStream_,
          const char *const Filename_);
-  Stream(TaggerFlags &Flags_, std::wifstream &CharacterStream_,
+  Stream(TaggerFlags &Flags_, std::ifstream &CharacterStream_,
          const std::string &Filename_);
-  Stream(TaggerFlags &Flags_, std::wifstream &CharacterStream_,
+  Stream(TaggerFlags &Flags_, std::ifstream &CharacterStream_,
          const std::stringstream &Filename_);
   StreamedType get();
   StreamedType peek();
@@ -43,7 +43,7 @@ public:
 
   static void outputLexicalUnit(
     const LexicalUnit &lexical_unit, const Optional<Analysis> analysis,
-    std::wostream &output, TaggerFlags &flags);
+    std::ostream &output, TaggerFlags &flags);
 
   std::size_t TheLineNumber;
 private:
@@ -64,7 +64,7 @@ private:
                            const wchar_t &Character_);
   void case_0x5c(StreamedType &StreamedType_, UString &Lemma,
                  const wchar_t &Character_);
-  std::wistream &TheCharacterStream;
+  std::istream &TheCharacterStream;
   Optional<std::string> TheFilename;
   UString TheLine;
   TaggerFlags &TheFlags;

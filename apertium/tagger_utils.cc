@@ -67,6 +67,15 @@ void tagger_utils::clear_array_vector(vector<TTag> v[], int l) {
 
 int tagger_utils::ntokens_multiword(UString const &s)
 {
+  vector<UString> tmp = StringUtils::split_UString(s, "_"_u);
+  int n = 0;
+  for (auto& it : tmp) {
+    if (!it.empty()) {
+      n++;
+    }
+  }
+  return n;
+  /*
    wchar_t *news = new wchar_t[s.size()+1];
    wcscpy(news, s.c_str());
    news[s.size()] = 0;
@@ -84,10 +93,20 @@ int tagger_utils::ntokens_multiword(UString const &s)
    delete[] news;
 
    return n;
+   */
 }
 
 int tagger_utils::nguiones_fs(UString const & s) {
-   wchar_t *news = new wchar_t[s.size()+1];
+  vector<UString> tmp = StringUtils::split_UString(s, "-"_u);
+  int n = 0;
+  for (auto& it : tmp) {
+    if (!it.empty()) {
+      n++;
+    }
+  }
+  return n;
+  /*
+   UChar *news = new UChar[s.size()+1];
    wcscpy(news, s.c_str());
    news[s.size()] = 0;
    cerr << news << endl;
@@ -103,12 +122,14 @@ int tagger_utils::nguiones_fs(UString const & s) {
    delete[] news;
 
    return n;
+  */
 }
 
 UString tagger_utils::trim(UString s)
 {
-  if (s.length()==0)
-    return "";
+  if (s.empty()) {
+    return ""_u;
+  }
 
   for (unsigned int i=0; i<(s.length()-1); i++) {
     if ((s.at(i)==L' ')&&(s.at(i+1)==L' ')) {
@@ -125,7 +146,7 @@ UString tagger_utils::trim(UString s)
   return s;
 }
 
-void tagger_utils::scan_for_ambg_classes(FILE *fdic, TaggerData &td) {
+void tagger_utils::scan_for_ambg_classes(const char* fdic, TaggerData &td) {
   Collection &output = td.getOutput();
   FileMorphoStream morpho_stream(fdic, true, &td);
   tagger_utils::scan_for_ambg_classes(output, morpho_stream);
@@ -199,26 +220,29 @@ void
 tagger_utils::require_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, int nw) {
   if (td.getOutput().has_not(tags)) {
     UString errors;
-    errors = "A new ambiguity class was found. I cannot continue.\n";
-    errors+= "Word '" + word.get_superficial_form() + "' not found in the dictionary.\n";
-    errors+= "New ambiguity class: " + word.get_string_tags() + "\n";
+    errors = "A new ambiguity class was found. I cannot continue.\nWord '"_u;
+    errors += word.get_superficial_form();
+    errors += "' not found in the dictionary.\n"_u;
+    errors += "New ambiguity class: "_u;
+    errors += word.get_string_tags();
+    errors += '\n';
     if (nw >= 0) {
-      std::wostringstream ws;
+      std::ostringstream ws;
       ws << (nw + 1);
-      errors+= "Line number: " + ws.str() + "\n";
+      errors += "Line number: "_u;
+      errors += to_ustring(ws.str().c_str());
+      errors += '\n';
     }
-    errors+= "Take a look at the dictionary, then retrain.";
+    errors += "Take a look at the dictionary, then retrain."_u;
     fatal_error(errors);
   }
 }
 
 static void _warn_absent_ambiguity_class(TaggerWord &word) {
-  UString errors;
-  errors = "A new ambiguity class was found. \n";
-  errors += "Retraining the tagger is necessary so as to take it into account.\n";
-  errors += "Word '" + word.get_superficial_form() + "'.\n";
-  errors += "New ambiguity class: " + word.get_string_tags() + "\n";
-  cerr << "Error: " << errors;
+  cerr << "Error: A new ambiguity class was found. \n";
+  cerr << "Retraining the tagger is necessary so as to take it into account.\n";
+  cerr << "Word '" << word.get_superficial_form() << "'.\n";
+  cerr << "New ambiguity class: " << word.get_string_tags() << "\n";
 }
 
 set<TTag> &
@@ -265,7 +289,7 @@ istream& operator>> (istream& is, map <int, T> & f) {
     is>>i;     // warning: does not work if both
     is>>f[i];  // lines merged in a single one
   }
-  if (is.bad()) tagger_utils::fatal_error("reading map");
+  if (is.bad()) tagger_utils::fatal_error("reading map"_u);
   return is;
 }
 

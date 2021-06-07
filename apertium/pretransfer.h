@@ -16,9 +16,9 @@
 #ifndef PRETRANSFER_H
 #define PRETRANSFER_H
 
-#include <iostream>
-#include <lttoolbox/lt_locale.h>
+#include <unicode/ustdio.h>
 #include <lttoolbox/input_file.h>
+#include <lttoolbox/ustring.h>
 
 UString storeAndWriteWblank(InputFile& input, UFILE *output);
 void readAndWriteUntil(InputFile& input, UFILE *output, int const charcode);

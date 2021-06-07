@@ -25,23 +25,23 @@
 
 namespace Apertium {
 Stream::Stream(TaggerFlags &Flags_)
-    : TheLineNumber(1), TheCharacterStream(std::wcin), TheFilename(), TheLine(),
+    : TheLineNumber(1), TheCharacterStream(std::cin), TheFilename(), TheLine(),
       TheFlags(Flags_), private_flush_(false), ThePreviousCase() {}
 
 Stream::Stream(TaggerFlags &Flags_,
-               std::wifstream &CharacterStream_, const char *const Filename_)
+               std::ifstream &CharacterStream_, const char *const Filename_)
     : TheLineNumber(1), TheCharacterStream(CharacterStream_), TheFilename(Filename_),
       TheLine(), TheFlags(Flags_), private_flush_(false),
       ThePreviousCase() {}
 
 Stream::Stream(TaggerFlags &Flags_,
-               std::wifstream &CharacterStream_, const std::string &Filename_)
+               std::ifstream &CharacterStream_, const std::string &Filename_)
     : TheLineNumber(1), TheCharacterStream(CharacterStream_), TheFilename(Filename_),
       TheLine(), TheFlags(Flags_), private_flush_(false),
       ThePreviousCase() {}
 
 Stream::Stream(TaggerFlags &Flags_,
-               std::wifstream &CharacterStream_,
+               std::ifstream &CharacterStream_,
                const std::stringstream &Filename_)
     : TheLineNumber(1), TheCharacterStream(CharacterStream_), TheFilename(Filename_.str()),
       TheLine(), TheFlags(Flags_), private_flush_(false),
@@ -64,15 +64,15 @@ StreamedType Stream::get() {
       TheLine.push_back(Character_);
 
       switch (Character_) {
-      case L'\\': // <\>  92,  Hex 5c,  Octal 134
+      case '\\': // <\>  92,  Hex 5c,  Octal 134
         case_0x5c(TheStreamedType, Lemma, Character_);
         continue;
-      case L'[':
+      case '[':
         if (ThePreviousCase) {
           switch (ThePreviousCase->ThePreviousCase) {
-          case L'[':
-          case L']':
-          case L'$':
+          case '[':
+          case ']':
+          case '$':
             break;
           default:
             std::stringstream Message;
@@ -86,7 +86,7 @@ StreamedType Stream::get() {
         push_back_Character(TheStreamedType, Lemma, Character_);
         ThePreviousCase = PreviousCaseType(Character_);
         continue;
-      case L']':
+      case ']':
         if (!ThePreviousCase) {
           std::stringstream Message;
           Message << "unexpected '" << Character_
@@ -95,8 +95,8 @@ StreamedType Stream::get() {
         }
 
         switch (ThePreviousCase->ThePreviousCase) {
-        case L'[':
-        case L']':
+        case '[':
+        case ']':
           push_back_Character(TheStreamedType, Lemma, Character_);
           ThePreviousCase = PreviousCaseType(Character_);
           continue;
@@ -109,14 +109,14 @@ StreamedType Stream::get() {
         }
 
         std::abort();
-      case L'^':
+      case '^':
         if (ThePreviousCase) {
           switch (ThePreviousCase->ThePreviousCase) {
-          case L'[':
+          case '[':
             push_back_Character(TheStreamedType, Lemma, Character_);
             continue;
-          case L']':
-          case L'$':
+          case ']':
+          case '$':
             break;
           default:
             std::stringstream Message;
@@ -130,7 +130,7 @@ StreamedType Stream::get() {
         TheStreamedType.TheLexicalUnit = LexicalUnit();
         ThePreviousCase = PreviousCaseType(Character_);
         continue;
-      case L'/':
+      case '/':
         if (!ThePreviousCase) {
           std::stringstream Message;
           Message << "unexpected '" << Character_
@@ -140,10 +140,10 @@ StreamedType Stream::get() {
         }
 
         switch (ThePreviousCase->ThePreviousCase) {
-        case L'[':
+        case '[':
           push_back_Character(TheStreamedType, Lemma, Character_);
           continue;
-        case L'^':
+        case '^':
           if (ThePreviousCase->isPreviousCharacter) {
             std::stringstream Message;
             Message << "unexpected '" << Character_
@@ -172,16 +172,16 @@ StreamedType Stream::get() {
             TheLine.push_back(Character_);
 
             switch (Character_) {
-            case L'\\':
+            case '\\':
               TheStreamedType.TheLexicalUnit->TheAnalyses.push_back(Analysis());
               TheStreamedType.TheLexicalUnit->TheAnalyses.back()
                   .TheMorphemes.push_back(Morpheme());
               case_0x5c(TheStreamedType, Lemma, Character_);
               continue;
-            case L'*':
+            case '*':
               ThePreviousCase = PreviousCaseType(Character_);
               continue;
-            case L'\n': {
+            case '\n': {
               std::stringstream Message;
               Message << "unexpected newline following '"
                       << ThePreviousCase->ThePreviousCase
@@ -189,7 +189,7 @@ StreamedType Stream::get() {
               throw Exception::Stream::UnexpectedCharacter(
                   Message_what(Message));
             };
-            case L'<':
+            case '<':
               TheStreamedType.TheLexicalUnit->TheAnalyses.push_back(Analysis());
               TheStreamedType.TheLexicalUnit->TheAnalyses.back()
                 .TheMorphemes.push_back(Morpheme());
@@ -199,13 +199,13 @@ StreamedType Stream::get() {
               ThePreviousCase = PreviousCaseType(Character_);
               continue;
                 
-            case L'[':
-            case L']':
-            case L'^':
-            case L'#':
-            case L'>':
-            case L'+':
-            case L'$': {
+            case '[':
+            case ']':
+            case '^':
+            case '#':
+            case '>':
+            case '+':
+            case '$': {
               std::stringstream Message;
               Message << "unexpected '" << Character_
                       << "' immediately following '"
@@ -223,7 +223,7 @@ StreamedType Stream::get() {
           }
 
           continue;
-        case L'>':
+        case '>':
           if (!ThePreviousCase->isPreviousCharacter) {
             std::stringstream Message;
             Message << "unexpected '" << Character_
@@ -235,7 +235,7 @@ StreamedType Stream::get() {
           }
 
           break;
-        case L'#':
+        case '#':
 
           if (ThePreviousCase->isPreviousCharacter) {
             std::stringstream Message;
@@ -262,12 +262,12 @@ StreamedType Stream::get() {
             .TheMorphemes.push_back(Morpheme());
         ThePreviousCase = PreviousCaseType(Character_);
         continue;
-      case L'*':
+      case '*':
         if (ThePreviousCase) {
           switch (ThePreviousCase->ThePreviousCase) {
-          case L'[':
-          case L']':
-          case L'$':
+          case '[':
+          case ']':
+          case '$':
             break;
           default:
             std::stringstream Message;
@@ -281,7 +281,7 @@ StreamedType Stream::get() {
 
         push_back_Character(TheStreamedType, Lemma, Character_);
         continue;
-      case L'<':
+      case '<':
         if (!ThePreviousCase) {
           std::stringstream Message;
           Message << "unexpected '" << Character_
@@ -292,14 +292,14 @@ StreamedType Stream::get() {
         }
 
         switch (ThePreviousCase->ThePreviousCase) {
-        case L'[':
+        case '[':
           push_back_Character(TheStreamedType, Lemma, Character_);
           continue;
-        case L'/':
+        case '/':
           break;
-        case L'#':
+        case '#':
           //std::cerr << "[306] Character: " << Character_ << "||| Lemma: " << Lemma << std::endl ;
-        case L'+':
+        case '+':
           if (ThePreviousCase->isPreviousCharacter) {
             std::stringstream Message;
             Message << "unexpected '" << Character_
@@ -312,7 +312,7 @@ StreamedType Stream::get() {
           }
 
           break;
-        case L'>':
+        case '>':
           break;
         default:
           std::stringstream Message;
@@ -329,7 +329,7 @@ StreamedType Stream::get() {
             .TheTags.push_back(Tag());
         ThePreviousCase = PreviousCaseType(Character_);
         continue;
-      case L'>':
+      case '>':
         if (!ThePreviousCase) {
           std::stringstream Message;
           Message << "unexpected '" << Character_
@@ -339,10 +339,10 @@ StreamedType Stream::get() {
         }
 
         switch (ThePreviousCase->ThePreviousCase) {
-        case L'[':
+        case '[':
           push_back_Character(TheStreamedType, Lemma, Character_);
           continue;
-        case L'<':
+        case '<':
           if (ThePreviousCase->isPreviousCharacter) {
             std::stringstream Message;
             Message << "unexpected '" << Character_
@@ -365,17 +365,17 @@ StreamedType Stream::get() {
         }
 
         std::abort();
-      case L'#':
+      case '#':
         //std::cerr << "[391] Character: " << Character_ << "||| Lemma: " << Lemma << std::endl ;
         if (ThePreviousCase) {
           switch (ThePreviousCase->ThePreviousCase) {
-          case L'[':
-          case L']':
-          case L'^':
-          case L'$':
+          case '[':
+          case ']':
+          case '^':
+          case '$':
             push_back_Character(TheStreamedType, Lemma, Character_);
             continue;
-          case L'/':
+          case '/':
             if (ThePreviousCase->isPreviousCharacter) {
               std::stringstream Message;
               Message << "unexpected '" << Character_
@@ -388,7 +388,7 @@ StreamedType Stream::get() {
             }
 
             break;
-          case L'>':
+          case '>':
             if (!ThePreviousCase->isPreviousCharacter) {
               std::stringstream Message;
               Message << "unexpected '" << Character_
@@ -418,17 +418,17 @@ StreamedType Stream::get() {
 
         push_back_Character(TheStreamedType, Lemma, Character_);
         continue;
-      case L'+':
+      case '+':
         if (ThePreviousCase) {
           switch (ThePreviousCase->ThePreviousCase) {
-          case L'[':
-          case L']':
-          case L'^':
-          case L'/':
-          case L'$':
+          case '[':
+          case ']':
+          case '^':
+          case '/':
+          case '$':
             push_back_Character(TheStreamedType, Lemma, Character_);
             continue;
-          case L'>':
+          case '>':
             if (!ThePreviousCase->isPreviousCharacter) {
               std::stringstream Message;
               Message << "unexpected '" << Character_
@@ -441,7 +441,7 @@ StreamedType Stream::get() {
             }
 
             break;
-          case L'#':
+          case '#':
             if (ThePreviousCase->isPreviousCharacter) {
               std::stringstream Message;
               Message << "unexpected '" << Character_
@@ -472,7 +472,7 @@ StreamedType Stream::get() {
 
         push_back_Character(TheStreamedType, Lemma, Character_);
         continue;
-      case L'$':
+      case '$':
         if (!ThePreviousCase) {
           std::stringstream Message;
           Message << "unexpected '" << Character_
@@ -482,10 +482,10 @@ StreamedType Stream::get() {
         }
 
         switch (ThePreviousCase->ThePreviousCase) {
-        case L'[':
+        case '[':
           push_back_Character(TheStreamedType, Lemma, Character_);
           continue;
-        case L'*':
+        case '*':
           if (ThePreviousCase->isPreviousCharacter) {
             std::stringstream Message;
             Message << "unexpected '" << Character_
@@ -506,7 +506,7 @@ StreamedType Stream::get() {
 
           ThePreviousCase = PreviousCaseType(Character_);
           return TheStreamedType;
-        case L'>':
+        case '>':
           if (!ThePreviousCase->isPreviousCharacter) {
             std::stringstream Message;
             Message << "unexpected '" << Character_
@@ -518,7 +518,7 @@ StreamedType Stream::get() {
           }
 
           break;
-        case L'#':
+        case '#':
           if (ThePreviousCase->isPreviousCharacter) {
             std::stringstream Message;
             Message << "unexpected '" << Character_
@@ -541,12 +541,12 @@ StreamedType Stream::get() {
 
         ThePreviousCase = PreviousCaseType(Character_);
         return TheStreamedType;
-      case L'\n':
+      case '\n':
         if (ThePreviousCase) {
           switch (ThePreviousCase->ThePreviousCase) {
-          case L'[':
-          case L']':
-          case L'$':
+          case '[':
+          case ']':
+          case '$':
             break;
           default:
             std::stringstream Message;
@@ -572,8 +572,8 @@ StreamedType Stream::get() {
 
   if (ThePreviousCase) {
     switch (ThePreviousCase->ThePreviousCase) {
-    case L']':
-    case L'$':
+    case ']':
+    case '$':
       break;
     default:
       std::stringstream Message;
@@ -610,14 +610,14 @@ bool Stream::peekIsBlank() {
   TheCharacterStream.clear(state);
   TheCharacterStream.seekg(pos);
 
-  return newline1 == L'\n' && newline2 == L'\n';
+  return newline1 == '\n' && newline2 == '\n';
 }
 
 bool Stream::flush_() const { return private_flush_; }
 
 void Stream::outputLexicalUnit(
     const LexicalUnit &lexical_unit, const Optional<Analysis> analysis,
-    std::wostream &output, TaggerFlags &flags) {
+    std::ostream &output, TaggerFlags &flags) {
   using namespace std::rel_ops;
   output << "^";
 
@@ -680,9 +680,9 @@ UString Stream::Message_what(const std::stringstream &Message) const {
     what_ << UString(TheFilename->begin(), TheFilename->end()) << ": ";
 
   what_ << TheLineNumber << ":" << TheLine.size() << ": " << Message.str()
-        << L'\n' << TheLine << L'\n' << UString(TheLine.size() - 1, L' ')
-        << L'^';
-  return what_.str();
+        << '\n' << TheLine << '\n' << UString(TheLine.size() - 1, ' ')
+        << '^';
+  return to_ustring(what_.str().c_str());
 }
 
 bool
@@ -709,7 +709,7 @@ bool Stream::isTheCharacterStream_eof(StreamedType &StreamedType_,
     return true;
 
   if (TheFlags.getNullFlush()) {
-    if (Character_ == L'\0') {
+    if (Character_ == '\0') {
       push_back_Character(StreamedType_, Lemma, Character_);
       private_flush_ = true;
       return true;
@@ -724,45 +724,45 @@ void Stream::push_back_Character(StreamedType &StreamedType_,
                                  const wchar_t &Character_) {
   if (ThePreviousCase) {
     switch (ThePreviousCase->ThePreviousCase) {
-    case L'[':
+    case '[':
       StreamedType_.TheString += Character_;
       break;
-    case L']':
+    case ']':
       StreamedType_.TheString += Character_;
       break;
-    case L'^':
+    case '^':
       StreamedType_.TheLexicalUnit->TheSurfaceForm += Character_;
       break;
-    case L'/':
+    case '/':
       StreamedType_.TheLexicalUnit->TheAnalyses.back()
           .TheMorphemes.back()
           .TheLemma.push_back(Character_);
       break;
-    case L'*':
+    case '*':
       Lemma += Character_;
       break;
-    case L'<':
+    case '<':
       StreamedType_.TheLexicalUnit->TheAnalyses.back()
           .TheMorphemes.back()
           .TheTags.back()
           .TheTag += Character_;
       break;
-    case L'>':
+    case '>':
       StreamedType_.TheLexicalUnit->TheAnalyses.back()
           .TheMorphemes.back()
           .TheLemma.push_back(Character_);
       break;
-    case L'#':
+    case '#':
       StreamedType_.TheLexicalUnit->TheAnalyses.back()
           .TheMorphemes.back()
           .TheLemma.push_back(Character_);
       break;
-    case L'+':
+    case '+':
       StreamedType_.TheLexicalUnit->TheAnalyses.back()
           .TheMorphemes.back()
           .TheLemma.push_back(Character_);
       break;
-    case L'$':
+    case '$':
       StreamedType_.TheString += Character_;
       break;
     default:

@@ -12,7 +12,7 @@ PerceptronTagger::PerceptronTagger(TaggerFlags flags) : StreamTagger(flags) {};
 
 PerceptronTagger::~PerceptronTagger() {};
 
-void PerceptronTagger::tag(Stream &in, std::wostream &out) {
+void PerceptronTagger::tag(Stream &in, std::ostream &out) {
   SentenceStream::SentenceTagger::tag(in, out, TheFlags.getSentSeg());
 }
 
@@ -20,8 +20,8 @@ void PerceptronTagger::read_spec(const std::string &filename) {
   MTXReader(spec).read(filename);
 }
 
-std::wostream &
-operator<<(std::wostream &out, PerceptronTagger const &pt) {
+std::ostream &
+operator<<(std::ostream &out, PerceptronTagger const &pt) {
   out << "== Spec ==\n";
   out << pt.spec;
   out << "== Weights " << pt.weights.size() << " ==\n";
@@ -100,7 +100,7 @@ PerceptronTagger::tagSentence(const Sentence &untagged_sent) {
 
 void PerceptronTagger::outputLexicalUnit(
     const LexicalUnit &lexical_unit, const Optional<Analysis> analysis,
-    std::wostream &output) {
+    std::ostream &output) {
   StreamTagger::outputLexicalUnit(lexical_unit, analysis, output);
 }
 
@@ -289,8 +289,8 @@ PerceptronTagger::extendAgendaAll(
   }
 }
 
-std::wostream&
-operator<<(std::wostream &out, const TaggedSentence &tagged) {
+std::ostream&
+operator<<(std::ostream &out, const TaggedSentence &tagged) {
   TaggedSentence::const_iterator tsi;
   for (tsi = tagged.begin(); tsi != tagged.end(); tsi++) {
     if (*tsi) {
@@ -303,8 +303,8 @@ operator<<(std::wostream &out, const TaggedSentence &tagged) {
   return out;
 }
 
-std::wostream&
-operator<<(std::wostream &out, const PerceptronTagger::TrainingAgendaItem &tai) {
+std::ostream&
+operator<<(std::ostream &out, const PerceptronTagger::TrainingAgendaItem &tai) {
   out << "Score: " << tai.score << "\n";
   out << "Sentence: " << tai.tagged << "\n";
   out << "\n";
@@ -312,8 +312,8 @@ operator<<(std::wostream &out, const PerceptronTagger::TrainingAgendaItem &tai) 
   return out;
 }
 
-std::wostream&
-operator<<(std::wostream &out, const std::vector<PerceptronTagger::TrainingAgendaItem> &agenda) {
+std::ostream&
+operator<<(std::ostream &out, const std::vector<PerceptronTagger::TrainingAgendaItem> &agenda) {
   std::vector<PerceptronTagger::TrainingAgendaItem>::const_iterator agenda_it;
   for (agenda_it = agenda.begin(); agenda_it != agenda.end(); agenda_it++) {
     out << *agenda_it;
@@ -322,15 +322,15 @@ operator<<(std::wostream &out, const std::vector<PerceptronTagger::TrainingAgend
   return out;
 }
 
-std::wostream&
-operator<<(std::wostream &out, const PerceptronTagger::AgendaItem &ai) {
+std::ostream&
+operator<<(std::ostream &out, const PerceptronTagger::AgendaItem &ai) {
   out << "Score: " << ai.score << "\n";
   out << "Sentence: " << ai.tagged << "\n";
   return out;
 }
 
-std::wostream&
-operator<<(std::wostream &out, const std::vector<PerceptronTagger::AgendaItem> &agenda) {
+std::ostream&
+operator<<(std::ostream &out, const std::vector<PerceptronTagger::AgendaItem> &agenda) {
   std::vector<PerceptronTagger::AgendaItem>::const_iterator agenda_it;
   for (agenda_it = agenda.begin(); agenda_it != agenda.end(); agenda_it++) {
     out << *agenda_it;

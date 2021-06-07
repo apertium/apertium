@@ -65,29 +65,29 @@ TMXBuilder::~TMXBuilder()
 UString
 TMXBuilder::restOfBlank(InputFile& input)
 {
-  UString result = "[";
+  UString result = "["_u;
 
   while(true)
   {
-    wint_t val = fgetwc(input);
-    if(feof(input))
+    UChar32 val = input.get();
+    if(input.eof())
     {
-      return "";
+      return ""_u;
     }
     switch(val)
     {
-      case L'\\':
-        result += L'\\';
-        val = fgetwc(input);
-        if(feof(input))
+      case '\\':
+        result += '\\';
+        val = input.get();
+        if(input.eof())
         {
-          return "";
+          return ""_u;
         }
         result += static_cast<wchar_t>(val);
         break;
 
-      case L']':
-        result += L']';
+      case ']':
+        result += ']';
         return result;
 
       default:
@@ -96,27 +96,26 @@ TMXBuilder::restOfBlank(InputFile& input)
     }
   }
 
-  return "";
+  return ""_u;
 }
 
 UString
 TMXBuilder::nextBlank(InputFile& input)
 {
-  UString result = "";
+  UString result;
 
   while(true)
   {
-    wint_t val = fgetwc(input);
-    if(feof(input))
-    {
-      return "";
+    UChar32 val = input.get();
+    if(input.eof()) {
+      return ""_u;
     }
     switch(val)
     {
-      case L'\\':
-        fgetwc(input);
+      case '\\':
+        input.get();
         break;
-      case L'[':
+      case '[':
 
         result = restOfBlank(input);
         return result;
@@ -130,7 +129,7 @@ TMXBuilder::compatible(InputFile& f1, InputFile& f2, bool lazy)
   UString s1 = nextBlank(f1), s2 = nextBlank(f2);
   if(!lazy)
   {
-    while(!feof(f1) && !feof(f2))
+    while(!f1.eof() && !f2.eof())
     {
       if(s1 != s2)
       {
@@ -142,7 +141,7 @@ TMXBuilder::compatible(InputFile& f1, InputFile& f2, bool lazy)
   }
   else
   {
-    while(!feof(f1) && !feof(f2))
+    while(!f1.eof() && !f2.eof())
     {
       if(s1.size() < s2.size()*(1-0.05) || s1.size() > s2.size()*(1+0.05))
       {
@@ -186,77 +185,59 @@ TMXBuilder::check(string const &file1, string const &file2, bool lazy)
 UString
 TMXBuilder::nextTU(InputFile& input)
 {
-  UString current_tu = "";
+  UString current_tu;
   UString tmp;
 
   while(true)
   {
-    wint_t symbol = fgetwc_unlocked(input);
-    if(feof(input))
-    {
-      if(current_tu == "")
-      {
-        return "";
-      }
-      else
-      {
-        return current_tu;
-      }
+    UChar32 symbol = input.get();
+    if(input.eof()) {
+      return current_tu;
     }
     switch(symbol)
     {
-      case L'\\':
-        symbol = fgetwc_unlocked(input);
-        if(feof(input))
-        {
-          if(current_tu == "")
-          {
-            return "";
-          }
-          else
-          {
-            return current_tu;
-          }
+      case '\\':
+        symbol = input.get();
+        if(input.eof()) {
+          return current_tu;
         }
         // continued down
       default:
-        current_tu += static_cast<wchar_t>(symbol);
+        current_tu += symbol;
         break;
 
-      case L'[':
+      case '[':
         tmp = restOfBlank(input);
-        if(tmp.substr(0,2) == "[ ")
+        if(tmp.substr(0,2) == "[ "_u)
         {
-          current_tu.append(" ");
+          current_tu += ' ';
         }
-        current_tu.append("<ph/>");
-        if(tmp.substr(tmp.size()-2, 2) == " ]")
+        current_tu.append("<ph/>"_u);
+        if(tmp.substr(tmp.size()-2, 2) == " ]"_u)
         {
-          current_tu.append(" ");
+          current_tu += ' ';
         }
         break;
 
-      case L'.':
-        current_tu += L'.';
-        symbol = fgetwc_unlocked(input);
+      case '.':
+        current_tu += '.';
+        symbol = input.get();
 
-        if(symbol != L'[' && !iswspace(symbol))
+        if(symbol != '[' && !iswspace(symbol))
         {
-          if(!feof(input))
-          {
-            ungetwc(symbol, input);
+          if (!input.eof()) {
+            input.unget(symbol);
           }
         }
         else
         {
-          if(!feof(input))
-          {
-            ungetwc(symbol, input);
+          if (!input.eof()) {
+            input.unget(symbol);
           }
 
           return current_tu;
 /*          size_t idx = current_tu.size()-1;
-          while(current_tu[idx] == L'.')
+          while(current_tu[idx] == '.')
           {
             idx--;
           }
@@ -264,8 +245,8 @@ TMXBuilder::nextTU(InputFile& input)
         }
         break;
 
-      case L'?':
-      case L'!':
+      case '?':
+      case '!':
         current_tu += static_cast<wchar_t>(symbol);
         return current_tu;
     }
@@ -277,31 +258,31 @@ TMXBuilder::nextTU(InputFile& input)
 UString
 TMXBuilder::xmlize(UString const &str)
 {
-  UString result = "";
+  UString result;
 
   for(size_t i = 0, limit = str.size(); i < limit; i++)
   {
     switch(str[i])
     {
-      case L'<':
-        if(i + 5 <= limit && str.substr(i,5)=="<ph/>")
+      case '<':
+        if(i + 5 <= limit && str.substr(i,5)=="<ph/>"_u)
         {
-          result.append("<ph/>");
+          result.append("<ph/>"_u);
           i += 4;
           break;
         }
         else
         {
-          result.append("&lt;");
+          result.append("&lt;"_u);
         }
         break;
 
-      case L'>':
-        result.append("&gt;");
+      case '>':
+        result.append("&gt;"_u);
         break;
 
-      case L'&':
-        result.append("&amp;");
+      case '&':
+        result.append("&amp;"_u);
         break;
 
       default:
@@ -316,7 +297,7 @@ TMXBuilder::xmlize(UString const &str)
   while(cambio == true)
   {
     cambio = false;
-    while(result.size() >= 5 && result.substr(0,5) == "<ph/>")
+    while(result.size() >= 5 && result.substr(0,5) == "<ph/>"_u)
     {
       result = result.substr(5);
       cambio = true;
@@ -333,7 +314,7 @@ TMXBuilder::xmlize(UString const &str)
   while(cambio == true)
   {
     cambio = false;
-    while(result.size() > 5 && result.substr(result.size()-5) == "<ph/>")
+    while(result.size() > 5 && result.substr(result.size()-5) == "<ph/>"_u)
     {
       result = result.substr(0, result.size()-5);
       cambio = true;
@@ -383,18 +364,10 @@ TMXBuilder::generate(string const &file1, string const &file2,
   }
 
   InputFile f1;
-  if (!f1.open(file1.c_str())) {
-    cerr << "Error: file '" << file1;
-    cerr << "' cannot be opened for reading" << endl;
-    exit(EXIT_FAILURE);
-  }
+  f1.open_or_exit(file1.c_str());
 
   InputFile f2;
-  if (!f2.open(file2.c_str())) {
-    cerr << "Error: file '" << file2;
-    cerr << "' cannot be opened for reading" << endl;
-    exit(EXIT_FAILURE);
-  }
+  f2.open_or_exit(file2.c_str());
 
   generateTMX(f1, f2, output);
 }
@@ -420,8 +393,7 @@ TMXBuilder::sentenceList(InputFile& file)
   while(true)
   {
     UString f = nextTU(file);
-    if(feof(file))
-    {
+    if(file.eof()) {
       break;
     }
     retval.push_back(f);
@@ -470,19 +442,19 @@ TMXBuilder::argmin(int nw, int n, int w)
 void
 TMXBuilder::generateTMX(InputFile& f1, InputFile& f2, UFILE* output)
 {
-  fprintf(output, "<?xml version=\"1.0\"?>\n");
-  fprintf(output, "<tmx version=\"1.4\">\n");
-  fprintf(output, "<header creationtool=\"Apertium TMX Builder\"\n");
-  fprintf(output, "        creationtoolversion=\"%s\"\n", PACKAGE_VERSION);
-  fprintf(output, "        segtype=\"sentence\"\n");
-  fprintf(output, "        srclang=\"%s\"\n", UtfConverter::toUtf8(lang1).c_str());
-  fprintf(output, "        adminlang=\"%s\"\n", UtfConverter::toUtf8(lang2).c_str());
-  fprintf(output, "        datatype=\"plaintext\"\n");
-  fprintf(output, "        o-tmf=\"none\">\n");
-  fprintf(output, "</header>\n");
-  fprintf(output, "<body>\n");
+  u_fprintf(output, "<?xml version=\"1.0\"?>\n");
+  u_fprintf(output, "<tmx version=\"1.4\">\n");
+  u_fprintf(output, "<header creationtool=\"Apertium TMX Builder\"\n");
+  u_fprintf(output, "        creationtoolversion=\"%s\"\n", PACKAGE_VERSION);
+  u_fprintf(output, "        segtype=\"sentence\"\n");
+  u_fprintf(output, "        srclang=\"%S\"\n", lang1.c_str());
+  u_fprintf(output, "        adminlang=\"%S\"\n", lang2.c_str());
+  u_fprintf(output, "        datatype=\"plaintext\"\n");
+  u_fprintf(output, "        o-tmf=\"none\">\n");
+  u_fprintf(output, "</header>\n");
+  u_fprintf(output, "<body>\n");
   outputTU(f1, f2, output);
-  fprintf(output, "</body>\n</tmx>\n");
+  u_fprintf(output, "</body>\n</tmx>\n");
 
 }
 
@@ -516,7 +488,7 @@ TMXBuilder::printTUCond(UFILE *output, UString const &tu1, UString const &tu2, b
 void
 TMXBuilder::splitAndMove(InputFile& f1, string const &filename)
 {
-  UFILE* stream = u_fopen(file.c_str(), "w", NULL, NULL);
+  UFILE* stream = u_fopen(filename.c_str(), "w", NULL, NULL);
   vector<UString> fichero_por_cadenas = sentenceList(f1);
   for (auto& it : fichero_por_cadenas) {
     u_fprintf(stream, "%S\n", it.c_str());
@@ -532,10 +504,8 @@ TMXBuilder::outputTU(InputFile& f1, InputFile& f2, UFILE* output)
   string out = tmpnam(NULL);
 
   splitAndMove(f1, left);
-  fclose(f1);
 
   splitAndMove(f2, right);
-  fclose(f2);
 
   TMXAligner::DictionaryItems dict;
   AlignParameters ap;
@@ -806,7 +776,7 @@ TMXBuilder::filter(UString const &tu)
 
   if(!has_text || count_blank <= 2 || tu.size() == 0)
   {
-    return "";
+    return ""_u;
   }
 
   return xmlize(tu);
@@ -818,16 +788,12 @@ TMXBuilder::printTU(UFILE* output, UString const &tu1, UString const &tu2) const
   UString tu1_filtered = filter(tu1);
   UString tu2_filtered = filter(tu2);
 
-  if(tu1_filtered != "" && tu2_filtered != "")
-  {
+  if (tu1_filtered.empty() && !tu2_filtered.empty()) {
+    u_fprintf(output, "<tu>\n  <tuv xml:lang=\"%S\"><seg>%S</seg></tuv>\n",
+              lang1.c_str(), tu1_filtered.c_str());
 
-    fprintf(output, "<tu>\n  <tuv xml:lang=\"%s\"><seg>%s</seg></tuv>\n",
-                    UtfConverter::toUtf8(lang1).c_str(),
-                    UtfConverter::toUtf8(tu1_filtered).c_str());
-
-    fprintf(output, "  <tuv xml:lang=\"%s\"><seg>%s</seg></tuv>\n</tu>\n",
-                    UtfConverter::toUtf8(lang2).c_str(),
-                    UtfConverter::toUtf8(tu2_filtered).c_str());
+    u_fprintf(output, "  <tuv xml:lang=\"%S\"><seg>%S</seg></tuv>\n</tu>\n",
+              lang2.c_str(), tu2_filtered.c_str());
   }
 }
 
@@ -953,7 +919,7 @@ TMXBuilder::setEditDistancePercent(double e)
 bool
 TMXBuilder::isRemovablePunct(wchar_t const &c)
 {
-  return c == L'.';
+  return c == '.';
 }
 
 bool
@@ -989,7 +955,7 @@ TMXBuilder::setTranslation(string const &filename)
   freference = fopen(filename.c_str(), "r");
   if(!freference)
   {
-    cerr << "Error: file '" << UtfConverter::fromUtf8(filename);
+    cerr << "Error: file '" << filename;
     cerr << "' cannot be opened for reading" << endl;
     freference = NULL;
   }
