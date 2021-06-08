@@ -31,7 +31,7 @@ typedef std::set<UString> VMSet;
 class PerceptronSpec
 {
 public:
-  typedef std::vector<UChar> FeatureDefn;
+  typedef std::vector<unsigned char> FeatureDefn;
   static void printFeature(std::ostream &out, const PerceptronSpec::FeatureDefn &feat_defn);
   friend std::ostream& operator<<(std::ostream &out, PerceptronSpec const &pt);
   PerceptronSpec();
@@ -440,7 +440,7 @@ private:
     bool is_feature;
     const FeatureDefn &feat;
     const size_t &feat_idx;
-    std::vector<UChar>::const_iterator bytecode_iter;
+    std::vector<unsigned char>::const_iterator bytecode_iter;
     const TaggedSentence &tagged;
     const Sentence &untagged;
     int token_idx;

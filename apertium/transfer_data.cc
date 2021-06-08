@@ -51,7 +51,7 @@ TransferData::TransferData()
   attr_items["lemh"_u] = "^(([^<#]|\"\\<\"|\"\\#\")+)"_u;
   attr_items["whole"_u] = "(.+)"_u;
   attr_items["tags"_u] = "((<[^>]+>)+)"_u;
-  attr_items["chname"_u] = "({([^/]+)\\/)"_u; // includes delimiters { and / !!!
+  attr_items["chname"_u] = "(\\{([^/]+)\\/)"_u; // includes delimiters { and / !!!
   attr_items["chcontent"_u] = "(\\{.+)"_u;
   attr_items["content"_u] = "(\\{.+)"_u;
 }

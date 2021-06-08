@@ -9,7 +9,7 @@ using namespace std;
 
 TransferBase::TransferBase()
   : me(nullptr), doc(nullptr), root_element(nullptr),
-    lword(0), nwords(0), output(nullptr),
+    lword(0), lastrule(nullptr), nwords(0), output(nullptr),
     any_char(0), any_tag(0), in_let_var(false), in_out(false),
     null_flush(false), internal_null_flush(false), trace(false)
 {}
@@ -70,12 +70,17 @@ TransferBase::read(const char* transferfile, const char* datafile)
   me = new MatchExe(t, finals);
 
   // attr_items
-  Compression::string_read(in); // formerly PCRE version, now blank
+  bool icu = Compression::string_read(in).empty();
   for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
   {
     UString const cad_k = Compression::string_read(in);
     attr_items[cad_k].read(in);
     UString fallback = Compression::string_read(in);
+    if (!icu && cad_k == "chname"_u) {
+      // chname was previously "({([^/]+)\\/)"
+      // which is fine for PCRE, but ICU chokes on the unmatched bracket
+      fallback = "(\\{([^/]+)\\/)"_u;
+    }
     attr_items[cad_k].compile(fallback);
   }
 

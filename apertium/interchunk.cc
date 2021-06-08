@@ -63,10 +63,10 @@ Interchunk::evalCachedString(xmlNode* element)
       }
     }
     break;
-    
+
   case ti_var:
     return variables[ti.getContent()];
-    
+
   case ti_lit_tag:
   case ti_lit:
     return ti.getContent();
@@ -178,7 +178,7 @@ Interchunk::processOut(xmlNode *localroot)
       write(evalString(i), output);
     }
   }
-  
+
   in_out = false;
 }
 
@@ -407,7 +407,7 @@ Interchunk::readToken(InputFile& in)
           content += in.get();
         } else if(val2 == '}') {
           UChar32 val3 = in.peek();
-          
+
           content += '}';
           if(val3 == '$') {
             break;
@@ -469,27 +469,25 @@ Interchunk::interchunk(InputFile& in, UFILE* out)
     {
       if(lastrule != NULL)
       {
-	applyRule();
-	input_buffer.setPos(last);
+        applyRule();
+        input_buffer.setPos(last);
       }
       else
       {
-	if(tmpword.size() != 0)
-	{
-      u_fprintf(output, "^%S$", tmpword[0]->c_str());
-	  tmpword.clear();
-	  input_buffer.setPos(last);
-	  input_buffer.next();
-	  last = input_buffer.getPos();
-	  ms.init(me->getInitial());
-	}
-	else if(tmpblank.size() != 0)
-	{
-      write(*tmpblank[0], output);
-	  tmpblank.clear();
-	  last = input_buffer.getPos();
-	  ms.init(me->getInitial());
-	}
+        if(tmpword.size() != 0) {
+          u_fprintf(output, "^%S$", tmpword[0]->c_str());
+          tmpword.clear();
+          input_buffer.setPos(last);
+          input_buffer.next();
+          last = input_buffer.getPos();
+          ms.init(me->getInitial());
+        }
+        else if(tmpblank.size() != 0) {
+          write(*tmpblank[0], output);
+          tmpblank.clear();
+          last = input_buffer.getPos();
+          ms.init(me->getInitial());
+        }
       }
     }
     int val = ms.classifyFinals(me->getFinals());
@@ -498,7 +496,7 @@ Interchunk::interchunk(InputFile& in, UFILE* out)
       size_t lastrule_line = rule_lines[val-1];
       lastrule = rule_map[val-1];
       last = input_buffer.getPos();
-      
+
       last_lword = tmpword.size();
 
       if(trace)

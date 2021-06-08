@@ -2,7 +2,11 @@
 
 children::children(xmlNode* node_)
   : node(node_), cur(node->children)
-{}
+{
+  while (cur && cur->type != XML_ELEMENT_NODE) {
+    cur = cur->next;
+  }
+}
 
 children::children(const children& it)
   : node(it.node), cur(it.cur)

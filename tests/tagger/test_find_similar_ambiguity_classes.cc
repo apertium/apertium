@@ -1,3 +1,4 @@
+#include <lttoolbox/ustring.h>
 #include "apertium/utf_converter.h"
 #include "apertium/tagger_utils.h"
 #include "apertium/tagger_data_hmm.h"
@@ -6,32 +7,33 @@
 #include <sstream>
 #include <algorithm>
 
-void print_ambiguity_class(const vector<wstring> &array_tags, const set<TTag> &abgset)
+void print_ambiguity_class(const vector<UString> &array_tags, const set<TTag> &abgset)
 {
   unsigned int j;
   set<TTag>::const_iterator abgseti;
   for (abgseti=abgset.begin(), j=0; abgseti!=abgset.end(); abgseti++, j++) {
-    wcout << array_tags[*abgseti];
+    cout << array_tags[*abgseti];
     if (j < abgset.size() - 1) {
-      wcout << " ";
+      cout << " ";
     }
   }
 }
 
 void find_similar_ambiguity_class_io(TaggerData &td)
 {
-  vector<wstring> &array_tags = td.getArrayTags();
-  wstring line = L"";
-  getline(wcin, line, L'\n');
+  vector<UString> &array_tags = td.getArrayTags();
+  string line_ = "";
+  getline(cin, line_, '\n');
+  UString line = to_ustring(line_.c_str());
 
-  wstringstream line_stream(line);
+  basic_istringstream<UChar> line_stream(line);
   set<TTag> ambiguity_class;
-  wstring tag_name;
+  UString tag_name;
   while (line_stream >> tag_name) {
-    vector<wstring>::iterator it;
+    vector<UString>::iterator it;
     it = find(array_tags.begin(), array_tags.end(), tag_name);
     if (it == array_tags.end()) {
-        wcerr << L"Tag not in model: " << tag_name << L'\n';
+        cerr << "Tag not in model: " << tag_name << '\n';
         exit(-3);
     }
     ambiguity_class.insert(it - array_tags.begin());
