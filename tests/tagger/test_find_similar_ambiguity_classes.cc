@@ -22,14 +22,19 @@ void print_ambiguity_class(const vector<UString> &array_tags, const set<TTag> &a
 void find_similar_ambiguity_class_io(TaggerData &td)
 {
   vector<UString> &array_tags = td.getArrayTags();
-  string line_ = "";
-  getline(cin, line_, '\n');
-  UString line = to_ustring(line_.c_str());
-
-  basic_istringstream<UChar> line_stream(line);
+  UFILE* in = u_finit(stdin, NULL, NULL);
   set<TTag> ambiguity_class;
-  UString tag_name;
-  while (line_stream >> tag_name) {
+  while (true) {
+    UString tag_name;
+    UChar32 c;
+    while (true) {
+      c = u_fgetcx(in);
+      if (u_isspace(c)) {
+        break;
+      } else {
+        tag_name += c;
+      }
+    }
     vector<UString>::iterator it;
     it = find(array_tags.begin(), array_tags.end(), tag_name);
     if (it == array_tags.end()) {
@@ -37,6 +42,9 @@ void find_similar_ambiguity_class_io(TaggerData &td)
         exit(-3);
     }
     ambiguity_class.insert(it - array_tags.begin());
+    if (c == '\n') {
+      break;
+    }
   }
   set<TTag> similar_ambiguity_class = tagger_utils::find_similar_ambiguity_class(td, ambiguity_class);
   print_ambiguity_class(array_tags, similar_ambiguity_class);
