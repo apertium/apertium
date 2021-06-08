@@ -49,15 +49,15 @@ void processStream(InputFile& in, UFILE* out, bool null_flush)
   {
     if (!((c == ' ') && (prev == ' ')))
     {
-      putc(c, out);
+      u_fputc(c, out);
     }
     if (c == 0 && null_flush)
     {
-      fflush(out);
-      putc(c, out);
+      u_fflush(out);
+      u_fputc(c, out);
     }
     prev = c;
-    c = fgetc(in);
+    c = in.get();
   }
 }
 

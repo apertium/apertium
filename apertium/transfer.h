@@ -19,32 +19,19 @@
 
 #include <apertium/transfer_base.h>
 
-#include <apertium/transfer_token.h>
 #include <apertium/transfer_word.h>
-#include <lttoolbox/buffer.h>
 #include <lttoolbox/fst_processor.h>
-
-#include <cstdio>
-#include <vector>
-#include <queue>
+#include <lttoolbox/input_file.h>
 
 using namespace std;
 
-class Transfer : TransferBase
+class Transfer : public TransferBase
 {
 private:
 
   TransferWord **word;
-  queue <UString> blank_queue;
-  int lword;
   int last_lword;
-  Buffer<TransferToken> input_buffer;
-  vector<UString *> tmpword;
-  vector<UString *> tmpblank;
-  
-  bool in_out;
   bool in_lu;
-  
   bool in_wblank;
   UString out_wblank;
   map <UString, UString> var_out_wblank;
@@ -52,10 +39,6 @@ private:
   FSTProcessor fstp;
   FSTProcessor extended;
   bool isExtended;
-  UFILE *output;
-
-  xmlNode *lastrule;
-  unsigned int nwords;
 
   enum OutputType{lu,chunk};
 
@@ -68,28 +51,19 @@ private:
   void readBil(string const &filename);
 
   void processLet(xmlNode *localroot);
-  void processAppend(xmlNode *localroot);
   void processOut(xmlNode *localroot);
   void processCallMacro(xmlNode *localroot);
   void processModifyCase(xmlNode *localroot);
-  bool processLogical(xmlNode *localroot);
-  bool processTest(xmlNode *localroot);
-  bool processAnd(xmlNode *localroot);
-  bool processOr(xmlNode *localroot);
-  bool processEqual(xmlNode *localroot);
-  bool processBeginsWith(xmlNode *localroot);
-  bool processBeginsWithList(xmlNode *localroot);
-  bool processEndsWith(xmlNode *localroot);
-  bool processEndsWithList(xmlNode *local);
-  bool processContainsSubstring(xmlNode *localroot);
-  bool processNot(xmlNode *localroot);
-  bool processIn(xmlNode *localroot);
-  int processRule(xmlNode *localroot);
-  UString evalString(xmlNode *localroot);
-  int processInstruction(xmlNode *localroot);
-  int processChoose(xmlNode *localroot);
+  UString evalCachedString(xmlNode *localroot);
   UString processChunk(xmlNode *localroot);
   UString processTags(xmlNode *localroot);
+  void processClip(xmlNode* element);
+  void processBlank(xmlNode* element);
+  void processCaseOf(xmlNode* element);
+  UString processLu(xmlNode* element);
+  UString processMlu(xmlNode* element);
+
+  void processLuCount(xmlNode* element);
 
   UString readWord(InputFile& in);
   UString readBlank(InputFile& in);
@@ -102,7 +76,6 @@ private:
   void tmp_clear();
 public:
   Transfer();
-  ~Transfer();
 
   void read(string const &transferfile, string const &datafile,
 	    string const &fstfile = "");

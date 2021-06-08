@@ -17,22 +17,12 @@
 
 #include <map>
 #include <iostream>
-#include <cwchar>
 #include <string>
 #include <cstring>
 #include <locale>
 #include <lttoolbox/ustring.h>
 
 using namespace std;
-
-/*struct Ltstr // Already in lttoolbox/ltstr.h
-{
-  bool operator()(UString const &s1, UString const &s2) const
-  {
-    return wcscmp(s1.c_str(), s2.c_str()) < 0;
-  }
-};
-*/
 
 class AccentsMap {
 	typedef std::map<UString, UString> acmap;
@@ -53,3 +43,5 @@ class AccentsMap {
 		UString get(UString input);
 };
 
+void fputus(const UString& s, FILE* out);
+void fputrange(const char* s, int start, int len, FILE* out);

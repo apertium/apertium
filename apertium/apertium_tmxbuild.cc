@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
   LtLocale::tryToSetLocale();
   string output_file = "";
   string doc1 = "", doc2 = "";
-  string lang1 = "", lang2 = "";
+  UString lang1, lang2;
 
   double percent = 0.85;
   int low_limit = 15;
@@ -174,8 +174,8 @@ int main(int argc, char *argv[])
     case 5:
       doc1 = argv[optind - 1 + 3];
       doc2 = argv[optind - 1 + 4];
-      lang1 = argv[optind - 1 + 1];
-      lang2 = argv[optind - 1 + 2];
+      lang1 = to_ustring(argv[optind - 1 + 1]);
+      lang2 = to_ustring(argv[optind - 1 + 2]);
       break;
 
     default:
@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
       return EXIT_FAILURE;
   }
 
-  TMXBuilder tmxb(UtfConverter::fromUtf8(lang1), UtfConverter::fromUtf8(lang2));
+  TMXBuilder tmxb(lang1, lang2);
 //  if(!tmxb.check(doc1, doc2))
 //  {
 //    cerr << "Error: The two files are incompatible for building a TMX." << endl;

@@ -36,7 +36,6 @@ protected:
   int type;
   UString name;
   UString attrib(UString const &name);
-  string attrib(string const &name);
   void parseError(UString const &message);
   void unexpectedTag();
   void stepToTag();

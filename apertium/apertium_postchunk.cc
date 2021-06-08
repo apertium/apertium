@@ -47,10 +47,10 @@ void message(char *progname)
   exit(EXIT_FAILURE);
 }
 
-void testfile(string const &filename)
+void testfile(const char* filename)
 {
   struct stat mybuf;
-  if(stat(filename.c_str(), &mybuf) == -1)
+  if(stat(filename, &mybuf) == -1)
   {
     cerr << "Error: can't stat file '";
     cerr << filename << "'." << endl;
@@ -110,7 +110,8 @@ int main(int argc, char *argv[])
 
   InputFile input;
   UFILE* output = u_finit(stdout, NULL, NULL);
-  string f1, f2;
+  const char* f1;
+  const char* f2;
   switch(argc - optind + 1)
   {
     case 5:

@@ -12,8 +12,9 @@ private:
   xmlNode* node;
   xmlNode* cur;
 public:
-  children(const xmlNode* node);
+  children(xmlNode* node);
   children(const children& it);
+  ~children();
 
   children& operator++();
   children begin();

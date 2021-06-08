@@ -9,7 +9,8 @@ using namespace std;
 
 TransferBase::TransferBase()
   : me(nullptr), doc(nullptr), root_element(nullptr),
-    any_char(0), any_tag(0), in_let_var(false),
+    lword(0), nwords(0), output(nullptr),
+    any_char(0), any_tag(0), in_let_var(false), in_out(false),
     null_flush(false), internal_null_flush(false), trace(false)
 {}
 
@@ -193,7 +194,7 @@ TransferBase::evalString(xmlNode* element)
     processBlank(element);
   } else if (!xmlStrcmp(element->name, (const xmlChar*) "get-case-from")) {
     int pos = atoi((const char*) element->properties->children->content);
-    xmlNode* param;
+    xmlNode* param = NULL;
     for (auto it : children(element)) {
       param = it;
       break;
@@ -202,9 +203,9 @@ TransferBase::evalString(xmlNode* element)
   } else if (!xmlStrcmp(element->name, (const xmlChar*) "var")) {
     evalStringCache[element] = TransferInstr(ti_var, getattr(element, "n"), 0);
   } else if (!xmlStrcmp(element->name, (const xmlChar*) "lu-count")) {
-    evalLuCount(element);
+    processLuCount(element);
   } else if (!xmlStrcmp(element->name, (const xmlChar*) "case-of")) {
-    evalCaseOf(element);
+    processCaseOf(element);
   } else if (!xmlStrcmp(element->name, (const xmlChar*) "concat")) {
     UString value;
     for (auto it : children(element)) {
@@ -212,16 +213,39 @@ TransferBase::evalString(xmlNode* element)
     }
     return value;
   } else if (!xmlStrcmp(element->name, (const xmlChar*) "lu")) {
-    evalLu(element);
+    return processLu(element);
   } else if (!xmlStrcmp(element->name, (const xmlChar*) "mlu")) {
-    evalMlu(element);
+    return processMlu(element);
   } else if (!xmlStrcmp(element->name, (const xmlChar*) "chunk")) {
-    evalChunk(element);
+    return processChunk(element);
   } else {
     cerr << "Error: unexpected expression: '" << element->name << "'" << endl;
     exit(EXIT_FAILURE);
   }
   return evalCachedString(element);
+}
+
+int
+TransferBase::processRule(xmlNode* localroot)
+{
+  int words_to_consume = -1;
+  // iterating over the <action> tag
+  for (auto i : children(localroot)) {
+    words_to_consume = processInstruction(i);
+    // When an instruction which modifies the number of words to be consumed
+    // from the input is found, execution of the rule is stopped
+    if (words_to_consume != -1) {
+      break;
+    }
+  }
+  // flush remaining non-space blanks
+  while (!blank_queue.empty()) {
+    if (blank_queue.front() != " "_u) {
+      write(blank_queue.front(), output);
+    }
+    blank_queue.pop();
+  }
+  return words_to_consume;
 }
 
 int

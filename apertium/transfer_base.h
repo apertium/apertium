@@ -3,17 +3,21 @@
 
 #include <lttoolbox/ustring.h>
 #include <lttoolbox/alphabet.h>
+#include <lttoolbox/buffer.h>
 #include <lttoolbox/match_exe.h>
 #include <lttoolbox/match_state.h>
 
 #include <apertium/apertium_re.h>
 #include <apertium/transfer_instr.h>
+#include <apertium/transfer_token.h>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
 #include <map>
 #include <set>
+#include <queue>
+#include <vector>
 
 using namespace std;
 
@@ -34,10 +38,21 @@ protected:
   xmlDoc* doc;
   xmlNode* root_element;
 
+  queue<UString> blank_queue;
+  Buffer<TransferToken> input_buffer;
+  int lword;
+  vector<UString*> tmpword;
+  vector<UString*> tmpblank;
+  xmlNode* lastrule;
+  unsigned int nwords;
+
+  UFILE* output;
+
   int32_t any_char;
   int32_t any_tag;
 
   bool in_let_var;
+  bool in_out;
   UString var_val;
   map<xmlNode *, TransferInstr> evalStringCache;
 
@@ -56,12 +71,13 @@ protected:
 
   virtual void processClip(xmlNode* element) = 0;
   virtual void processBlank(xmlNode* element) = 0;
-  virtual void evalLuCount(xmlNode* element) = 0;
-  virtual void evalCaseOf(xmlNode* element) = 0;
-  virtual void evalLu(xmlNode* element) = 0;
-  virtual void evalMlu(xmlNode* element) = 0;
-  virtual void evalChunk(xmlNode* element) = 0;
+  virtual void processLuCount(xmlNode* element) = 0;
+  virtual void processCaseOf(xmlNode* element) = 0;
+  virtual UString processLu(xmlNode* element) = 0;
+  virtual UString processMlu(xmlNode* element) = 0;
+  virtual UString processChunk(xmlNode* element) = 0;
 
+  int processRule(xmlNode* localroot);
   int processInstruction(xmlNode* localroot);
   int processRejectCurrentRule(xmlNode* localroot);
   int processChoose(xmlNode* localroot);
@@ -90,8 +106,6 @@ protected:
   bool processContainsSubstring(xmlNode *localroot);
   bool processEqual(xmlNode *localroot);
   bool processIn(xmlNode *localroot);
-
-  virtual int processRule(xmlNode *localroot) = 0;
 
   UString tags(const UString& s) const;
 

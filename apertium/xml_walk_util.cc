@@ -1,6 +1,6 @@
 #include <apertium/xml_walk_util.h>
 
-children::children(const xmlNode* node_)
+children::children(xmlNode* node_)
   : node(node_), cur(node->children)
 {}
 
@@ -20,6 +20,7 @@ children::operator++()
       cur = cur->next;
     }
   }
+  return *this;
 }
 
 children

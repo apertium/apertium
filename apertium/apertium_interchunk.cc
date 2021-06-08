@@ -74,7 +74,7 @@ UFILE * open_output(const char* filename)
   if(!output)
   {
     cerr << "Error: can't open output file '";
-    cerr << filename.c_str() << "'." << endl;
+    cerr << filename << "'." << endl;
     exit(EXIT_FAILURE);
   }
   return output;
@@ -120,7 +120,8 @@ int main(int argc, char *argv[])
 
   InputFile input;
   UFILE* output = u_finit(stdout, NULL, NULL);
-  string f1, f2;
+  const char* f1;
+  const char* f2;
   switch(argc - optind + 1)
   {
     case 5:

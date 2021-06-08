@@ -17,7 +17,6 @@
  */
 
 #include "getopt_long.h"
-#include <apertium/utf_converter.h>
 #include <apertium/file_morpho_stream.h>
 #include <apertium/tsx_reader.h>
 #include <apertium/tagger_data_hmm.h>
@@ -41,8 +40,8 @@ void check_file(FILE *f, const string& path) {
   }
 }
 
-void readwords (FILE *is, int corpus_length) {
-  FileMorphoStream lexmorfo(is, true, &tagger_data_hmm);
+void readwords (int corpus_length) {
+  FileMorphoStream lexmorfo(NULL, true, &tagger_data_hmm);
   TaggerWord *word=NULL;
   int nwords=0;
 
@@ -50,15 +49,15 @@ void readwords (FILE *is, int corpus_length) {
   while(word) {
     nwords++;
 
-    cout<<UtfConverter::toUtf8(word->get_superficial_form())<<" "<<UtfConverter::toUtf8(word->get_string_tags())<<"\n";
+    cout << word->get_superficial_form() << " " << word->get_string_tags() << "\n";
 
     if (check_ambclasses) {
       int k=tagger_data_hmm.getOutput()[word->get_tags()];
 
       if ((k>=tagger_data_hmm.getM())||(k<0)) {
 	cerr<<"Error: Ambiguity class number out of range: "<<k<<"\n";
-	cerr<<"Word: "<<UtfConverter::toUtf8(word->get_superficial_form())<<"\n";
-	cerr<<"Ambiguity class: "<<UtfConverter::toUtf8(word->get_string_tags())<<"\n";
+	cerr<<"Word: "<< word->get_superficial_form() << "\n";
+	cerr<<"Ambiguity class: "<< word->get_string_tags() << "\n";
       }
     }
 
@@ -191,5 +190,5 @@ int main(int argc, char* argv[]) {
 
   TaggerWord::setArrayTags(tagger_data_hmm.getArrayTags());
 
-  readwords(stdin, corpus_length);
+  readwords(corpus_length);
 }

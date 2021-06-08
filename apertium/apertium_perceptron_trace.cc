@@ -41,11 +41,11 @@ int perceptron_trace(int argc, char* argv[])
     PerceptronTagger pt(flags);
     pt.read_spec(argv[2]);
 
-    std::wifstream untagged_stream;
+    std::ifstream untagged_stream;
     try_open_fstream("UNTAGGED_CORPUS", argv[3], untagged_stream);
     Stream untagged(flags, untagged_stream, argv[3]);
 
-    std::wifstream tagged_stream;
+    std::ifstream tagged_stream;
     try_open_fstream("TAGGED_CORPUS", argv[4], tagged_stream);
     Stream tagged(flags, tagged_stream, argv[4]);
 
