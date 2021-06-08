@@ -69,27 +69,8 @@ fi
 
 AC_CHECK_FUNCS(strcasecmp)
 
-if test x$(uname) != xDarwin;
-then
-AC_CHECK_HEADER(pcreposix.h,
-  AC_CHECK_LIB(pcre, pcre_fullinfo,[
-    LIBS="$LIBS -lpcreposix -lpcre"
-    no_comp_check=yes],
-    AC_MSG_ERROR([*** unable to locate pcre library ***])),
-  AC_MSG_ERROR([*** unable to locate pcreposix.h include file ***]))
-
-AC_CHECK_HEADER(pcrecpp.h,
-  AC_CHECK_LIB(pcrecpp,pcre_compile,[
-  LIBS="$LIBS -lpcrecpp"
-  no_comp_check=yes],
-  AC_MSG_ERROR([*** unable to locate pcrecpp library ***])),
-  AC_MSG_ERROR([*** unable to locate pcrecpp.h include file ***]))
-fi
-
-
 PKG_CHECK_MODULES(LTTOOLBOX, [lttoolbox >= 3.5.3], CPPFLAGS="$CPPFLAGS $LTTOOLBOX_CFLAGS"; LIBS="$LIBS $LTTOOLBOX_LIBS")
 PKG_CHECK_MODULES(LIBXML2, [libxml-2.0 >= 2.6.17], CPPFLAGS="$CPPFLAGS $LIBXML2_CFLAGS"; LIBS="$LIBS $LIBXML2_LIBS")
-PKG_CHECK_MODULES(PCRE, [libpcre >= 6.4], CPPFLAGS="$CPPFLAGS $PCRE_CFLAGS"; LIBS="$LIBS $PCRE_LIBS")
 PKG_CHECK_MODULES(ICU, [icu-i18n, icu-io, icu-uc], CPPFLAGS="$CPPFLAGS $ICU_CFLAGS"; LIBS="$LIBS $ICU_LIBS")
 
 AC_C_BIGENDIAN
