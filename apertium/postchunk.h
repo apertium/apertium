@@ -29,7 +29,7 @@ class Postchunk : public TransferBase
 private:
 
   InterchunkWord **word;
-  
+
   bool in_lu;
   bool in_wblank;
   UString out_wblank;
@@ -44,9 +44,9 @@ private:
   void processCaseOf(xmlNode* element);
   UString processLu(xmlNode* element);
   UString processMlu(xmlNode* element);
-  
+
   UString processChunk(xmlNode* element);
-  
+
   void processLet(xmlNode *localroot);
   void processOut(xmlNode *localroot);
   void processCallMacro(xmlNode *localroot);
@@ -56,7 +56,7 @@ private:
   UString readBlank(InputFile& in);
   UString readUntil(InputFile& in, int const symbol) const;
   void applyWord(UString const &word_str);
-  void applyRule();
+  int applyRule();
   TransferToken & readToken(InputFile& in);
   static void unchunk(UString const &chunk, UFILE *output);
   static vector<UString> getVecTags(UString const &chunk);

@@ -51,7 +51,7 @@ private:
   UString readBlank(InputFile& in);
   UString readUntil(InputFile& in, int const symbol) const;
   void applyWord(UString const &word_str);
-  void applyRule();
+  int applyRule();
   TransferToken & readToken(InputFile& in);
   bool checkIndex(xmlNode *element, int index, int limit);
   void interchunk_wrapper_null_flush(InputFile& in, UFILE* out);

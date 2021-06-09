@@ -555,6 +555,9 @@ Postchunk::postchunk(InputFile& in, UFILE* out)
   }
 
   unsigned int last = input_buffer.getPos();
+  unsigned int prev_last = last;
+  int lastrule_id = -1;
+  set<int> banned_rules;
 
   output = out;
   ms.init(me->getInitial());
@@ -565,35 +568,59 @@ Postchunk::postchunk(InputFile& in, UFILE* out)
     {
       if(lastrule != NULL)
       {
-	applyRule();
-	input_buffer.setPos(last);
+        int words_to_consume = applyRule();
+        if (words_to_consume == -1) {
+          banned_rules.clear();
+          input_buffer.setPos(last);
+        } else if (words_to_consume == 1) {
+          banned_rules.clear();
+          if (prev_last >= input_buffer.getSize()) {
+            input_buffer.setPos(0);
+          } else {
+            input_buffer.setPos(prev_last+1);
+          }
+          while (true) {
+            TransferToken& tt = input_buffer.next();
+            if (tt.getType() == tt_word) {
+              break;
+            }
+          }
+        } else {
+          banned_rules.insert(lastrule_id);
+          input_buffer.setPos(prev_last);
+          input_buffer.next();
+          last = input_buffer.getPos();
+        }
+        lastrule_id = -1;
       }
       else
       {
-	if(tmpword.size() != 0)
-	{
-	  unchunk(*tmpword[0], output);
-	  tmpword.clear();
-	  input_buffer.setPos(last);
-	  input_buffer.next();
-	  last = input_buffer.getPos();
-	  ms.init(me->getInitial());
-	}
-	else if(tmpblank.size() != 0)
-	{
-      write(*tmpblank[0], output);
-	  tmpblank.clear();
-	  last = input_buffer.getPos();
-	  ms.init(me->getInitial());
-	}
+        if(tmpword.size() != 0) {
+          unchunk(*tmpword[0], output);
+          tmpword.clear();
+          input_buffer.setPos(last);
+          input_buffer.next();
+          prev_last = last;
+          banned_rules.clear();
+          last = input_buffer.getPos();
+          ms.init(me->getInitial());
+        }
+        else if(tmpblank.size() != 0) {
+          write(*tmpblank[0], output);
+          tmpblank.clear();
+          prev_last = last;
+          last = input_buffer.getPos();
+          ms.init(me->getInitial());
+        }
       }
     }
-    int val = ms.classifyFinals(me->getFinals());
+    int val = ms.classifyFinals(me->getFinals(), banned_rules);
     if(val != -1)
     {
       size_t lastrule_line = rule_lines[val-1];
       lastrule = rule_map[val-1];
       last = input_buffer.getPos();
+      lastrule_id = val;
 
       if(trace)
       {
@@ -609,37 +636,35 @@ Postchunk::postchunk(InputFile& in, UFILE* out)
 
     switch(current.getType())
     {
-      case tt_word:
-	applyWord(current.getContent());
-        tmpword.push_back(&current.getContent());
-	break;
+    case tt_word:
+      applyWord(current.getContent());
+      tmpword.push_back(&current.getContent());
+      break;
 
-      case tt_blank:
-	ms.step(' ');
-	tmpblank.push_back(&current.getContent());
-	break;
+    case tt_blank:
+      ms.step(' ');
+      tmpblank.push_back(&current.getContent());
+      break;
 
-      case tt_eof:
-	if(tmpword.size() != 0)
-	{
-	  tmpblank.push_back(&current.getContent());
-	  ms.clear();
-	}
-	else
-	{
-      write(current.getContent(), output);
-	  return;
-	}
-	break;
+    case tt_eof:
+      if(tmpword.size() != 0) {
+        tmpblank.push_back(&current.getContent());
+        ms.clear();
+      }
+      else {
+        write(current.getContent(), output);
+        return;
+      }
+      break;
 
-      default:
-	cerr << "Error: Unknown input token." << endl;
-	return;
+    default:
+      cerr << "Error: Unknown input token." << endl;
+      return;
     }
   }
 }
 
-void
+int
 Postchunk::applyRule()
 {
   UString const chunk = *tmpword[0];
@@ -659,7 +684,7 @@ Postchunk::applyRule()
     word[i] = new InterchunkWord(*tmpword[i-1]);
   }
 
-  processRule(lastrule);
+  int words_to_consume = processRule(lastrule);
   lastrule = NULL;
 
   if(word)
@@ -683,6 +708,7 @@ Postchunk::applyRule()
   tmpword.clear();
   tmpblank.clear();
   ms.init(me->getInitial());
+  return words_to_consume;
 }
 
 void
@@ -852,19 +878,15 @@ Postchunk::unchunk(UString const &chunk, UFILE* output)
         }
         else if(chunk[i] == '<')
         {
-          if(iswdigit(chunk[i+1]))
+          if(u_isdigit(chunk[i+1]))
           {
-            // replace tag
-            // TODO
-            unsigned long value = stoi(chunk.c_str()+i+1) - 1;
-            //unsigned long value = wcstoul(chunk.c_str()+i+1,
-			//		  NULL, 0) - 1;
-            //atoi(chunk.c_str()+i+1)-1;
+            int j = ++i;
+            while (chunk[++i] != '>');
+            unsigned long value = stoi(chunk.substr(j, i-j)) - 1;
             if(vectags.size() > value)
             {
               write(vectags[value], output);
             }
-            while(chunk[++i] != '>');
           }
           else
           {
@@ -882,7 +904,7 @@ Postchunk::unchunk(UString const &chunk, UFILE* output)
           }
           else if(uppercase_first)
           {
-            if(iswalnum(chunk[i])) {
+            if(u_isalnum(chunk[i])) {
               // TODO
               u_fputc(u_toupper(chunk[i]), output);
               uppercase_first = false;

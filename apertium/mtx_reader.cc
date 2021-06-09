@@ -91,10 +91,7 @@ void MTXReader::emitUInt(int val)
 
 void MTXReader::procCoarseTags()
 {
-  UString tsx_fn_attr = attrib("tag"_u);
-  std::string tsx_fn;
-  utf8::utf16to8(tsx_fn_attr.begin(), tsx_fn_attr.end(), std::back_inserter(tsx_fn));
-  // TODO TODO TODO
+  std::string tsx_fn((const char*) xmlTextReaderGetAttribute(reader, (const xmlChar*) "tag"));
   bool is_abs = ((tsx_fn.size() >= 1 && tsx_fn[0] == '/') ||
                  (tsx_fn.size() >= 2 && tsx_fn[1] == ':'));
   if (!is_abs) {
