@@ -108,7 +108,7 @@ Transfer::evalCachedString(xmlNode *element)
           var_out_wblank[var_val] = combineWblanks(var_out_wblank[var_val], word[ti.getPos()]->getWblank());
         }
       }
-          
+
       return word[ti.getPos()]->source(attr_items[ti.getContent()], ti.getCondition());
     }
     break;
@@ -122,7 +122,7 @@ Transfer::evalCachedString(xmlNode *element)
           var_out_wblank[var_val] = combineWblanks(var_out_wblank[var_val], word[ti.getPos()]->getWblank());
         }
       }
-            
+
       return word[ti.getPos()]->target(attr_items[ti.getContent()], ti.getCondition());
     }
     break;
@@ -191,7 +191,7 @@ Transfer::evalCachedString(xmlNode *element)
       if(in_out) {
         blank_queue.pop();
       }
-          
+
       return retblank;
     } else {
       return " "_u;
@@ -307,18 +307,18 @@ Transfer::processLu(xmlNode* element)
 {
   in_lu = true;
   out_wblank.clear();
-      
+
   UString myword;
   for (auto i : children(element)) {
     myword.append(evalString(i));
   }
-    
+
   in_lu = false;
-    
+
   if(last_lword == 1) {
     out_wblank = word[0]->getWblank();
   }
-      
+
   if(!myword.empty()) {
     if(myword[0] != '[' || myword[1] != '[') {
       UString ret = out_wblank;
@@ -342,7 +342,7 @@ Transfer::processMlu(xmlNode* element)
 
   bool first_time = true;
   out_wblank.clear();
-  
+
   in_lu = true;
   for (auto i : children(element)) {
     UString myword;
@@ -366,7 +366,7 @@ Transfer::processMlu(xmlNode* element)
   if(last_lword == 1) {
     out_wblank = word[0]->getWblank();
   }
-    
+
   if(!value.empty()) {
     UString ret = out_wblank;
     ret += '^';
@@ -521,11 +521,11 @@ Transfer::processLet(xmlNode *localroot)
         var_val = ti.getContent();
 
         var_out_wblank[var_val].clear();
-        
+
         variables[ti.getContent()] = evalString(rightSide);
-          
+
         in_let_var = false;
-        
+
         return;
 
       case ti_clip_sl:
@@ -565,14 +565,14 @@ Transfer::processLet(xmlNode *localroot)
   if(leftSide->name != NULL && !xmlStrcmp(leftSide->name, (const xmlChar *) "var"))
   {
     in_let_var = true;
-    
+
     UString const val = to_ustring((const char *) leftSide->properties->children->content);
-    
+
     var_val = val;
     var_out_wblank[var_val].clear();
-    
+
     variables[val] = evalString(rightSide);
-      
+
     in_let_var = false;
     evalStringCache[leftSide] = TransferInstr(ti_var, val, 0);
   }
@@ -806,7 +806,7 @@ Transfer::readToken(InputFile& in)
     {
       content = "[["_u;
       content += val;
-      
+
       while(true)
       {
         UChar32 val3 = in.get();
@@ -851,7 +851,7 @@ Transfer::readToken(InputFile& in)
         { //wordbound blank
           in_wblank = true;
           content.pop_back();
-          
+
           return input_buffer.add(TransferToken(content, tt_blank));
         }
         else if(val2 == ']')
@@ -896,6 +896,7 @@ Transfer::tmp_clear()
 {
   tmpblank.clear();
   tmpword.clear();
+  variables = variable_defaults;
 }
 
 void
@@ -1092,7 +1093,7 @@ Transfer::transfer(InputFile& in, UFILE* out)
                     {
                       wblank.push_back(*it);
                     }
-                    
+
                     it++;
                   }
                 }
@@ -1312,7 +1313,7 @@ Transfer::applyRule()
               {
                 wblank.push_back(*it);
               }
-              
+
               it++;
             }
           }
@@ -1388,7 +1389,7 @@ void
 Transfer::applyWord(UString const &word_str)
 {
   ms.step('^');
-    
+
   for(unsigned int i = 0, limit = word_str.size(); i < limit; i++)
   {
     switch(word_str[i])
@@ -1397,7 +1398,7 @@ Transfer::applyWord(UString const &word_str)
         i++;
 	ms.step(towlower(word_str[i]), any_char);
 	break;
-        
+
       case '[':
         if(word_str[i+1] == '[')
         {
@@ -1414,7 +1415,7 @@ Transfer::applyWord(UString const &word_str)
                 break;
               }
             }
-            
+
             i++;
           }
         }
@@ -1423,7 +1424,7 @@ Transfer::applyWord(UString const &word_str)
           ms.step(towlower(word_str[i]), any_char);
         }
         break;
-        
+
       case '/':
         i = limit;
         break;

@@ -444,6 +444,7 @@ Interchunk::interchunk_wrapper_null_flush(InputFile& in, UFILE* out)
     interchunk(in, out);
     u_fputc('\0', out);
     u_fflush(out);
+    variables = variable_defaults;
   }
   internal_null_flush = false;
   null_flush = true;

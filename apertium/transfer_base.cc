@@ -89,6 +89,7 @@ TransferBase::read(const char* transferfile, const char* datafile)
   {
     UString const cad_k = Compression::string_read(in);
     variables[cad_k] = Compression::string_read(in);
+    variable_defaults[cad_k] = variables[cad_k];
   }
 
   // macros

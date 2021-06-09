@@ -163,13 +163,13 @@ Postchunk::processLu(xmlNode* element)
 {
   in_lu = true;
   out_wblank.clear();
-  
+
   UString myword;
   for (auto i : children(element)) {
     myword.append(evalString(i));
   }
   in_lu = false;
-  
+
   if (lword == 1) {
     out_wblank = word[1]->getWblank();
   }
@@ -185,7 +185,7 @@ UString
 Postchunk::processMlu(xmlNode* element)
 {
   UString value;
-  
+
   bool first_time = true;
   out_wblank.clear();
   in_lu = true;
@@ -196,7 +196,7 @@ Postchunk::processMlu(xmlNode* element)
     for (auto j : children(i)) {
       myword.append(evalString(j));
     }
-        
+
 	if (!first_time) {
       if(!myword.empty() && myword[0] != '#') {  //'+#' problem
         value += '+';
@@ -211,7 +211,7 @@ Postchunk::processMlu(xmlNode* element)
   }
 
   in_lu = false;
-  
+
   if (lword == 1) {
     out_wblank = word[1]->getWblank();
   }
@@ -245,7 +245,7 @@ Postchunk::processOut(xmlNode *localroot)
       write(evalString(i), output);
     }
   }
-  
+
   in_out = false;
 }
 
@@ -285,9 +285,9 @@ Postchunk::processLet(xmlNode *localroot)
         in_let_var = true;
         var_val = ti.getContent();
         var_out_wblank[var_val].clear();
-        
+
         variables[ti.getContent()] = evalString(rightSide);
-        
+
         in_let_var = false;
         return;
 
@@ -308,14 +308,14 @@ Postchunk::processLet(xmlNode *localroot)
   if(!xmlStrcmp(leftSide->name, (const xmlChar *) "var"))
   {
     in_let_var = true;
-    
+
     UString const val = to_ustring((const char *) leftSide->properties->children->content);
-    
+
     var_val = val;
     var_out_wblank[var_val].clear();
-    
+
     variables[val] = evalString(rightSide);
-    
+
     in_let_var = false;
     evalStringCache[leftSide] = TransferInstr(ti_var, val, 0);
   }
@@ -539,6 +539,7 @@ Postchunk::postchunk_wrapper_null_flush(InputFile& in, UFILE* out)
     postchunk(in, out);
     u_fputc('\0', out);
     u_fflush(out);
+    variables = variable_defaults;
   }
 
   internal_null_flush = false;
@@ -1040,10 +1041,10 @@ Postchunk::splitWordsAndBlanks(UString const &chunk, vector<UString *> &words,
           {
             ref += chunk[i];
           }
-          
+
           i++;
         }
-        
+
         while(chunk[++i] != '$')
         {
           if(chunk[i] == '\\')
@@ -1147,4 +1148,3 @@ Postchunk::splitWordsAndBlanks(UString const &chunk, vector<UString *> &words,
     }
   }
 }
-

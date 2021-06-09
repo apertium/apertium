@@ -29,6 +29,7 @@ protected:
   MatchState ms;
   map<UString, ApertiumRE> attr_items;
   map<UString, UString> variables;
+  map<UString, UString> variable_defaults;
   map<UString, int> macros;
   map<UString, set<UString>> lists;
   map<UString, set<UString>> listslow;
