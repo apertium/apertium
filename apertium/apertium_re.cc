@@ -56,8 +56,9 @@ ApertiumRE::compile(UString const &str)
   UnicodeString s = str.c_str();
   UErrorCode err = U_ZERO_ERROR;
   re = RegexPattern::compile(s, UREGEX_DOTALL|UREGEX_CASE_INSENSITIVE, err);
-  if(!U_SUCCESS(err)) {
+  if(U_FAILURE(err)) {
     cerr << "Error: unable to compile regular expression '" << str << "'." << endl;
+    cerr << "error code: " << u_errorName(err) << endl;
     exit(EXIT_FAILURE);
   }
 
@@ -86,8 +87,9 @@ ApertiumRE::match(UString const &str) const
   UErrorCode err = U_ZERO_ERROR;
   RegexMatcher* m = re->matcher(s, err);
 
-  if (!U_SUCCESS(err)) {
+  if (U_FAILURE(err)) {
     cerr << "Error: Unable to apply regexp" << endl;
+    cerr << "error code: " << u_errorName(err) << endl;
     exit(EXIT_FAILURE);
   }
 
@@ -96,7 +98,7 @@ ApertiumRE::match(UString const &str) const
   }
 
   UString ret = m->group(err).getTerminatedBuffer();
-  if (!U_SUCCESS(err)) {
+  if (U_FAILURE(err)) {
     cerr << "Error: Unable to extract substring from regexp match" << endl;
     cerr << "error code: " << u_errorName(err) << endl;
     exit(EXIT_FAILURE);
@@ -117,8 +119,9 @@ ApertiumRE::replace(UString &str, UString const &value) const
   UErrorCode err = U_ZERO_ERROR;
   RegexMatcher* m = re->matcher(s, err);
 
-  if (!U_SUCCESS(err)) {
+  if (U_FAILURE(err)) {
     cerr << "Error: Unable to apply regexp" << endl;
+    cerr << "error code: " << u_errorName(err) << endl;
     exit(EXIT_FAILURE);
   }
 
