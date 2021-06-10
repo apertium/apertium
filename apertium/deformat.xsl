@@ -164,7 +164,6 @@ extern "C" {
 }
 
 #include &lt;lttoolbox/lt_locale.h&gt;
-#include &lt;lttoolbox/ltstr.h&gt;
 #include &lt;apertium/string_to_wostream.h&gt;
 #ifndef GENFORMAT
 #include "apertium_config.h"
@@ -302,7 +301,7 @@ string get_tagName(string tag){
 <xsl:for-each select="./rules/replacement-rule">
   <xsl:variable name="varname"
 		select="concat(concat(string('S'),position()),string('_substitution'))"/>
-  <xsl:value-of select="string('map&lt;string, wstring, Ltstr&gt; S')"/>
+  <xsl:value-of select="string('map&lt;string, wstring&gt; S')"/>
   <xsl:value-of select="position()"/>
   <xsl:value-of select="string('_substitution;&#xA;&#xA;void S')"/>
   <xsl:value-of select="position()"/>

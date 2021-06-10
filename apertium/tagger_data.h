@@ -21,7 +21,6 @@
 #include <apertium/ttag.h>
 #include <apertium/collection.h>
 #include <lttoolbox/pattern_list.h>
-#include <lttoolbox/ltstr.h>
 
 #include <map>
 #include <set>

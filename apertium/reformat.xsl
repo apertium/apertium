@@ -36,7 +36,6 @@
 #include &lt;string&gt;
 #include &lt;unistd.h&gt;
 #include &lt;lttoolbox/lt_locale.h&gt;
-#include &lt;lttoolbox/ltstr.h&gt;
 #include &lt;apertium/string_to_wostream.h&gt;
 #include &lt;wchar.h&gt;
 #ifdef _WIN32
@@ -51,7 +50,7 @@ using namespace std;
 <xsl:for-each select="./rules/replacement-rule">
   <xsl:variable name="varname"
 		select="concat(concat(string('S'),position()),string('_substitution'))"/>
-  <xsl:value-of select="string('map&lt;wstring, wstring, Ltstr&gt; S')"/>
+  <xsl:value-of select="string('map&lt;wstring, wstring&gt; S')"/>
   <xsl:value-of select="position()"/>
   <xsl:value-of select="string('_substitution;&#xA;&#xA;void S')"/>
   <xsl:value-of select="position()"/>

@@ -70,7 +70,6 @@ h_sources = a.h \
 	    transfer_mult.h \
 	    transfer_token.h \
 	    transfer_word.h \
-	    transfer_word_list.h \
 	    trx_reader.h \
 	    tsx_reader.h \
 	    ttag.h \
@@ -138,7 +137,6 @@ cc_sources = a.cc \
 	     transfer_mult.cc \
 	     transfer_token.cc \
 	     transfer_word.cc \
-	     transfer_word_list.cc \
 	     trx_reader.cc \
 	     tsx_reader.cc \
 	     unigram_tagger.cc \
