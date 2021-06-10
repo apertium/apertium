@@ -19,7 +19,6 @@ extern "C" {
 }
 
 #include <lttoolbox/lt_locale.h>
-#include <lttoolbox/ltstr.h>
 #ifndef GENFORMAT
 #include "apertium_config.h"
 #endif

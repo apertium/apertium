@@ -18,7 +18,6 @@
 #define _TRANSFERDATA_
 
 #include <lttoolbox/alphabet.h>
-#include <lttoolbox/ltstr.h>
 #include <lttoolbox/transducer.h>
 
 #include <map>

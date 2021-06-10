@@ -19,7 +19,6 @@
 
 #include <apertium/transfer_data.h>
 #include <apertium/xml_reader.h>
-#include <lttoolbox/ltstr.h>
 
 #include <libxml/xmlreader.h>
 #include <map>

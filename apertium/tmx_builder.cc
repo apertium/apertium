@@ -18,7 +18,6 @@
 #include <apertium/utf_converter.h>
 #include <apertium/string_utils.h>
 #include <apertium/tmx_aligner_tool.h>
-#include <lttoolbox/ltstr.h>
 #include <lttoolbox/compression.h>
 
 

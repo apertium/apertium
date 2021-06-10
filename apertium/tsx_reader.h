@@ -22,7 +22,6 @@
 #include <apertium/ttag.h>
 #include <apertium/xml_reader.h>
 #include <lttoolbox/pattern_list.h>
-#include <lttoolbox/ltstr.h>
 
 #include <libxml/xmlreader.h>
 #include <map>

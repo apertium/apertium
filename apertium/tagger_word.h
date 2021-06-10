@@ -23,7 +23,6 @@
 #include <string>
 #include <vector>
 
-#include <lttoolbox/ltstr.h>
 #include <apertium/ttag.h>
 #include <apertium/apertium_re.h>
 

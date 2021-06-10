@@ -7,7 +7,6 @@
 #include <apertium/ttag.h>
 #include <apertium/utf_converter.h>
 #include <lttoolbox/pattern_list.h>
-#include <lttoolbox/ltstr.h>
 #include <lttoolbox/xml_parse_util.h>
 
 #include <libxml/xmlreader.h>
