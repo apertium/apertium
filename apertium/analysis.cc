@@ -16,16 +16,12 @@
 #include "analysis.h"
 
 #include "exception.h"
-#include "morpheme.h"
-
-#include <string>
-#include <vector>
 
 namespace Apertium {
 std::ostream &operator<<(std::ostream &Stream_, const Analysis &Analysis_) {
+  ::operator<<(Stream_, static_cast<UString>(Analysis_));
   //Stream_ << static_cast<UString>(Analysis_);
-  // this line is giving a type error that I can't make sense of
-  // wstring wcerr TODO L""
+  // namespace issue
   return Stream_;
 }
 

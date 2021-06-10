@@ -30,11 +30,13 @@ bool operator<(const Morpheme &a, const Morpheme &b) {
 }
 
 std::ostream& operator<<(std::ostream& out, const Morpheme &morph) {
-  // TODO! this isn't working for some reason
-  //out << morph.TheLemma;
-  //for (auto& it : morph.TheTags) {
-  //  out << "<" << it.TheTag << ">";
-  //}
+  ::operator<<(out, morph.TheLemma);
+  for (auto& it : morph.TheTags) {
+    out << '<';
+    ::operator<<(out, it.TheTag);
+    out << '>';
+  }
+  // namespace issue
   return out;
 }
 

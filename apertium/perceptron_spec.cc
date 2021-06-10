@@ -734,8 +734,9 @@ void
 PerceptronSpec::Machine::unimplemented_opcode(UString opstr) {
   int bytecode_idx = bytecode_iter - feat.begin();
   std::stringstream msg;
-  msg << "Unimplemented opcode: " //<< opstr // TODO
-      << " at " << (is_feature ? "feature" : "global") << " #" << feat_idx << " address #" << bytecode_idx;
+  msg << "Unimplemented opcode: ";
+  ::operator<<(msg, opstr); // namespace issue
+  msg << " at " << (is_feature ? "feature" : "global") << " #" << feat_idx << " address #" << bytecode_idx;
   throw Apertium::Exception::apertium_tagger::UnimplementedOpcode(msg);
 }
 
