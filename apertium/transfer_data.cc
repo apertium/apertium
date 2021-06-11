@@ -17,7 +17,6 @@
 
 #include <apertium/transfer_data.h>
 #include <lttoolbox/compression.h>
-#include <apertium/utf_converter.h>
 #include <apertium/apertium_re.h>
 #include <iostream>
 #include <apertium/string_utils.h>

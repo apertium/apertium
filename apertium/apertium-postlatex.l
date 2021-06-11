@@ -23,7 +23,7 @@ extern "C" {
 #include "apertium_config.h"
 #endif
 #include <apertium/unlocked_cstdio.h>
-#include <utf8/utf8.h>
+#include <utf8.h>
 #ifdef _WIN32
 #include <io.h>
 #include <fcntl.h>

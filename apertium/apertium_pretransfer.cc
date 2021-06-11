@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
     if(!input.open(argv[argc-1])) {
       usage(argv[0]);
     }
-    u_finit(stdout, NULL, NULL);
+    output = u_finit(stdout, NULL, NULL);
   }
   else
   {

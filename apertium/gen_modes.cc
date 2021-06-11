@@ -22,7 +22,6 @@
 #include <iostream>
 #include <fstream>
 #include "string_utils.h"
-#include "utf_converter.h"
 #include <libgen.h>
 #include <getopt.h>
 #include <libxml/xmlreader.h>

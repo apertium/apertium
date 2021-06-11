@@ -4,7 +4,7 @@
 #include <lttoolbox/match_state.h>
 #include <iomanip>
 #include <apertium/string_utils.h>
-#include <utf8/utf8.h>
+#include <utf8.h>
 
 
 namespace Apertium {

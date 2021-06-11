@@ -23,18 +23,6 @@
 #include <algorithm>
 #include <climits>
 #include <apertium/string_utils.h>
-#ifdef _MSC_VER
-#define wcstok wcstok_s
-#endif
-#ifdef __MINGW32__
-
-wchar_t *_wcstok(wchar_t *wcs, const wchar_t *delim, wchar_t **ptr) {
-  (void)ptr;
-  return wcstok(wcs, delim);
-}
-
-#define wcstok _wcstok
-#endif
 
 using namespace Apertium;
 
@@ -75,25 +63,6 @@ int tagger_utils::ntokens_multiword(UString const &s)
     }
   }
   return n;
-  /*
-   wchar_t *news = new wchar_t[s.size()+1];
-   wcscpy(news, s.c_str());
-   news[s.size()] = 0;
-   cerr << news << endl;
-
-   wchar_t const *delim = "_";
-   wchar_t *ptr;
-   int n=0;
-
-   if (wcstok(news, delim, &ptr))
-     n++;
-   while (wcstok(NULL, delim, &ptr))
-     n++;
-
-   delete[] news;
-
-   return n;
-   */
 }
 
 int tagger_utils::nguiones_fs(UString const & s) {
@@ -105,24 +74,6 @@ int tagger_utils::nguiones_fs(UString const & s) {
     }
   }
   return n;
-  /*
-   UChar *news = new UChar[s.size()+1];
-   wcscpy(news, s.c_str());
-   news[s.size()] = 0;
-   cerr << news << endl;
-   wchar_t const *delim = "-";
-   wchar_t *ptr;
-   int n=0;
-
-   if (wcstok(news, delim, &ptr))
-     n++;
-   while (wcstok(NULL, delim, &ptr))
-     n++;
-
-   delete[] news;
-
-   return n;
-  */
 }
 
 UString tagger_utils::trim(UString s)
@@ -200,7 +151,6 @@ set<TTag> &
 tagger_utils::find_similar_ambiguity_class(TaggerData &td, set<TTag> &c) {
   set<TTag> &ret = td.getOpenClass();
   Collection &output = td.getOutput();
-  int ret_idx = output[ret];
 
   for (int k=0; k<output.size(); k++) {
     const set<TTag> &ambg_class = output[k];
@@ -209,7 +159,6 @@ tagger_utils::find_similar_ambiguity_class(TaggerData &td, set<TTag> &c) {
       continue;
     }
     if (includes(ambg_class.begin(), ambg_class.end(), c.begin(), c.end())) {
-      ret_idx = k;
       ret = ambg_class;
     }
   }
@@ -304,4 +253,3 @@ ostream& operator<< (ostream& os, const set<T>& s) {
   os<<'}';
   return os;
 }
-

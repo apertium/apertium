@@ -30,7 +30,7 @@
 #include <fcntl.h>
 #endif
 
-#include "utf8/utf8.h"
+#include <utf8.h>
 #include "unicode/uchar.h"
 
 using namespace std;

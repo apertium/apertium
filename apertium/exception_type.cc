@@ -15,7 +15,6 @@
 
 #include "exception_type.h"
 
-#include "utf_converter.h"
 #include <sstream>
 #include <string>
 

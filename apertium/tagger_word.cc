@@ -15,7 +15,6 @@
  * along with this program; if not, see <https://www.gnu.org/licenses/>.
  */
 #include <apertium/tagger_word.h>
-#include <apertium/utf_converter.h>
 #include <apertium/string_utils.h>
 #include "apertium_config.h"
 #include <apertium/unlocked_cstdio.h>

@@ -168,7 +168,7 @@ extern "C" {
 #ifndef GENFORMAT
 #include "apertium_config.h"
 #endif
-#include &lt;utf8/utf8.h&gt;
+#include &lt;utf8.h&gt;
 #include &lt;apertium/unlocked_cstdio.h&gt;
 #ifdef _WIN32
 #include &lt;io.h&gt;

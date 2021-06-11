@@ -15,7 +15,6 @@
  * along with this program; if not, see <https://www.gnu.org/licenses/>.
  */
 #include <apertium/tmx_builder.h>
-#include <apertium/utf_converter.h>
 #include <apertium/string_utils.h>
 #include <apertium/tmx_aligner_tool.h>
 #include <lttoolbox/compression.h>

@@ -18,16 +18,11 @@
 #include <apertium/trx_reader.h>
 #include <lttoolbox/compression.h>
 #include <lttoolbox/xml_parse_util.h>
-#include <apertium/utf_converter.h>
 #include <apertium/string_utils.h>
 
 #include <cctype>
 #include <iostream>
 #include <stack>
-
-#ifdef _WIN32
-#include <utf8_fwrap.h>
-#endif
 
 using namespace std;
 

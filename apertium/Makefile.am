@@ -75,7 +75,6 @@ h_sources = a.h \
 	    ttag.h \
 	    unigram_tagger.h \
 	    unlocked_cstdio.h \
-	    utf_converter.h \
 	    utils.h \
 	    xml_reader.h \
 		xml_walk_util.h
@@ -140,7 +139,6 @@ cc_sources = a.cc \
 	     trx_reader.cc \
 	     tsx_reader.cc \
 	     unigram_tagger.cc \
-	     utf_converter.cc \
 	     xml_reader.cc \
 		 xml_walk_util.cc
 
@@ -303,7 +301,7 @@ apertium_gen_modes_SOURCES = gen_modes.cc
 apertium_gen_modes_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 if WINDOWS
-AM_CPPFLAGS = -I$(top_srcdir)/utf8 -I$(top_srcdir)/apertium/win32 -I$(top_srcdir) $(APERTIUM_CFLAGS) $(ICU_CFLAGS)
+AM_CPPFLAGS = -I$(top_srcdir)/apertium/win32 -I$(top_srcdir) $(APERTIUM_CFLAGS) $(ICU_CFLAGS)
 else
 AM_CPPFLAGS = -I$(top_srcdir) $(APERTIUM_CFLAGS) $(ICU_CFLAGS)
 endif

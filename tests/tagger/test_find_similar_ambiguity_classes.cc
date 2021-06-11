@@ -1,5 +1,4 @@
 #include <lttoolbox/ustring.h>
-#include "apertium/utf_converter.h"
 #include "apertium/tagger_utils.h"
 #include "apertium/tagger_data_hmm.h"
 #include "apertium/tagger_data.h"

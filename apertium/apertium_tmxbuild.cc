@@ -24,7 +24,6 @@
 
 #include <apertium/apertium_config.h>
 #include <apertium/tmx_builder.h>
-#include <apertium/utf_converter.h>
 #include <apertium/string_utils.h>
 #include "apertium_config.h"
 #include <apertium/unlocked_cstdio.h>

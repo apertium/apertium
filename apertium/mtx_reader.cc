@@ -22,8 +22,6 @@
 #include <apertium/tsx_reader.h>
 #include <apertium/perceptron_spec.h>
 
-#include <utf8/utf8.h> // TODO
-
 #include <cstdlib>
 #include <iostream>
 #include <sstream>

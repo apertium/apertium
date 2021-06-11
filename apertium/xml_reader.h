@@ -5,7 +5,6 @@
 #include <apertium/string_utils.h>
 #include <apertium/tagger_data.h>
 #include <apertium/ttag.h>
-#include <apertium/utf_converter.h>
 #include <lttoolbox/pattern_list.h>
 #include <lttoolbox/xml_parse_util.h>
 
