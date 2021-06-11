@@ -29,9 +29,6 @@
 #include <sstream>
 #include <iterator>
 
-typedef basic_istringstream<UChar> uistringstream;
-typedef basic_stringstream<UChar> ustringstream;
-
 // XML parsing function guideline
 // When control is pass to you, you might need to stepToTag
 // When delegating or returning control, step beyond yourself
@@ -41,13 +38,13 @@ MTXReader::MTXReader(VM &spec) :
     spec(spec), in_global_defn(false),
     template_slot_counter(0), cur_feat(NULL) {}
 
-size_t MTXReader::pushSetConst(UString &val)
+size_t MTXReader::pushSetConst(std::string &val)
 {
   size_t set_idx = spec.set_consts.size();
-  set<UString> s;
-  ustringstream val_ss(val);
+  set<std::string> s;
+  std::stringstream val_ss(val);
   while (!val_ss.eof()) {
-    UString temp;
+    std::string temp;
     val_ss >> temp;
     s.insert(temp);
   }
@@ -55,7 +52,7 @@ size_t MTXReader::pushSetConst(UString &val)
   return set_idx;
 }
 
-size_t MTXReader::pushStrConst(UString &val)
+size_t MTXReader::pushStrConst(std::string &val)
 {
   size_t str_idx = spec.str_consts.size();
   spec.str_consts.push_back(val);
@@ -109,15 +106,15 @@ void MTXReader::procCoarseTags()
 
 void MTXReader::procSetDef()
 {
-  UString name = attrib("name"_u);
+  std::string name = attrib_str("name"_u);
   stepToNextTag();
   size_t set_idx = spec.set_consts.size();
   spec.set_consts.push_back(VMSet());
   VMSet &vm_set = spec.set_consts.back();
   while (type != XML_READER_TYPE_END_ELEMENT) {
-    if (name == "set-member"_u) {
-      UString tag = attrib("tag"_u);
-      UString str = attrib("str"_u);
+    if (name == "set-member") {
+      std::string tag = attrib_str("tag"_u);
+      std::string str = attrib_str("str"_u);
       vm_set.insert(tag.empty() ? str : tag);
     } else {
       parseError("Expected set-member"_u);
@@ -125,15 +122,15 @@ void MTXReader::procSetDef()
     stepToNextTag();
   }
   set_names[name] = set_idx;
-  assert(name == "def-set"_u);
+  assert(name == "def-set");
   stepToNextTag();
 }
 
 void MTXReader::procStrDef()
 {
-  UString name = attrib("name"_u);
-  UString tag = attrib("tag"_u);
-  UString str = attrib("str"_u);
+  std::string name = attrib_str("name"_u);
+  std::string tag = attrib_str("tag"_u);
+  std::string str = attrib_str("str"_u);
   str_names[name] = pushStrConst(tag.empty() ? str : tag);
   stepPastSelfClosingTag("def-str"_u);
 }
@@ -332,7 +329,7 @@ bool MTXReader::tryProcSlice(bool (MTXReader::*proc_inner)(bool))
 bool MTXReader::tryProcArg(ExprType expr_type, bool allow_fail)
 {
   if (name == "var"_u) {
-    UString var_name = attrib("name"_u);
+    std::string var_name = attrib_str("name"_u);
     if (in_global_defn) {
       VarNVMap::const_iterator arg_name_it = template_arg_names.find(var_name);
       if (arg_name_it != template_arg_names.end()) {
@@ -341,7 +338,7 @@ bool MTXReader::tryProcArg(ExprType expr_type, bool allow_fail)
         return true;
       }
       if (!allow_fail) {
-        parseError("No such argument "_u + var_name);
+        parseError("No such argument " + var_name);
       }
     }
   }
@@ -351,12 +348,12 @@ bool MTXReader::tryProcArg(ExprType expr_type, bool allow_fail)
 bool MTXReader::tryProcVar(VM::StackValueType svt)
 {
   if (name == "var"_u) {
-    UString var_name = attrib("name"_u);
+    std::string var_name = attrib_str("name"_u);
 
     VarNVMap::const_iterator slot_names_it = slot_names.find(var_name);
     if (slot_names_it != slot_names.end()) {
       if (slot_types[slot_names_it->second] != svt) {
-        parseError("Variable "_u + var_name + " has the wrong type"_u);
+        parseError("Variable " + var_name + " has the wrong type");
       }
       emitOpcode(VM::GETVAR);
       emitUInt(slot_names_it->second);
@@ -364,17 +361,17 @@ bool MTXReader::tryProcVar(VM::StackValueType svt)
       return true;
     }
 
-    parseError("Variable "_u + var_name + " has not been set."_u);
+    parseError("Variable " + var_name + " has not been set.");
   } else if (!in_global_defn && name == "macro"_u) {
     // Get template data
-    UString var_name = attrib("name"_u);
+    std::string var_name = attrib_str("name"_u);
     VarNVMap::const_iterator template_name_it = template_slot_names.find(var_name);
     if (template_name_it == template_slot_names.end()) {
-      parseError("No such macro "_u + var_name);
+      parseError("No such macro " + var_name);
     }
     size_t templ_idx = template_name_it->second;
     if (template_slot_types[templ_idx] != svt) {
-      parseError("Macro "_u + var_name + " returns the wrong type"_u);
+      parseError("Macro " + var_name + " returns the wrong type");
     }
     std::pair<VM::FeatureDefn, TemplateReplacements> &templ_defn = template_defns[templ_idx];
     // Get arg values
@@ -676,19 +673,19 @@ MTXReader::getConstRef(
     const UString &lit_attr,
     const UString &what,
     VarNVMap &const_map,
-    size_t (MTXReader::*push_new)(UString&),
+    size_t (MTXReader::*push_new)(std::string&),
     bool& exists)
 {
-  UString const_name = attrib(ref_attr);
+  std::string const_name = attrib_str(ref_attr);
   if (!const_name.empty()) {
     exists = true;
     VarNVMap::iterator sit = const_map.find(const_name);
     if (sit == const_map.end()) {
-      parseError("No "_u + what + " named "_u + const_name);
+      parseError("No "_u + what + " named "_u + to_ustring(const_name.c_str()));
     }
     return sit->second;
   }
-  UString const_lit = attrib(lit_attr);
+  std::string const_lit = attrib_str(lit_attr);
   if (!const_lit.empty()) {
     exists = true;
     return (this->*push_new)(const_lit);
@@ -732,13 +729,13 @@ MTXReader::getStrRef()
 }
 
 int
-MTXReader::getInt(UString attr_name, bool& exists)
+MTXReader::getInt(const UString& attr_name, bool& exists)
 {
-  UString int_lit = attrib(attr_name);
+  std::string int_lit = attrib_str(attr_name);
   if (!int_lit.empty()) {
     exists = true;
     int int_out;
-    ustringstream int_ss(int_lit);
+    stringstream int_ss(int_lit);
     int_ss >> int_out;
     return int_out;
   }
@@ -753,12 +750,12 @@ MTXReader::getInt(bool& exists)
 }
 
 int
-MTXReader::getInt(UString attr_name)
+MTXReader::getInt(const UString& attr_name)
 {
   bool has_attr;
   int i = getInt(attr_name, has_attr);
   if (!has_attr) {
-    parseError("String required"_u);
+    parseError("String required");
   }
   return i;
 }
@@ -772,12 +769,12 @@ MTXReader::getInt()
 template<typename GetT, typename EmitT>
 void
 MTXReader::emitAttr(
-    UString what, GetT (MTXReader::*getter)(bool&), void (MTXReader::*emitter)(EmitT))
+    std::string what, GetT (MTXReader::*getter)(bool&), void (MTXReader::*emitter)(EmitT))
 {
   bool has_attr = false;
   GetT val = (this->*getter)(has_attr);
   if (!has_attr) {
-    parseError(what + " required"_u);
+    parseError(what + " required");
   }
   (this->*emitter)(val);
 }
@@ -785,19 +782,19 @@ MTXReader::emitAttr(
 void
 MTXReader::getAndEmitStrRef()
 {
-  emitAttr("String"_u, &MTXReader::getStrRef, &MTXReader::emitUInt);
+  emitAttr("String", &MTXReader::getStrRef, &MTXReader::emitUInt);
 }
 
 void
 MTXReader::getAndEmitSetRef()
 {
-  emitAttr("Set"_u, &MTXReader::getSetRef, &MTXReader::emitUInt);
+  emitAttr("Set", &MTXReader::getSetRef, &MTXReader::emitUInt);
 }
 
 void
 MTXReader::getAndEmitInt()
 {
-  emitAttr("Integer"_u, &MTXReader::getInt, &MTXReader::emitInt);
+  emitAttr("Integer", &MTXReader::getInt, &MTXReader::emitInt);
 }
 
 void
@@ -805,7 +802,7 @@ MTXReader::procInst()
 {
   // XXX: There's no way to tell the difference between an empty and absent
   // attribute with the current lttoolbox xml code
-  UString op = attrib("opcode"_u);
+  std::string op = attrib_str("opcode"_u);
   std::transform(op.begin(), op.end(), op.begin(), ::toupper);
   emitOpcode(VM::opcode_values[op]);
   int val;
@@ -974,8 +971,8 @@ MTXReader::procTypeExpr(ExprType expr_type)
 void
 MTXReader::procForEach(ExprType expr_type)
 {
-  UString var_name = attrib("as"_u);
-  if (var_name == ""_u) {
+  std::string var_name = attrib_str("as"_u);
+  if (var_name.empty()) {
     parseError("'as' attribute required for for-each."_u);
   }
   size_t slot_idx = slot_counter++;
@@ -1057,20 +1054,20 @@ MTXReader::procDefMacro()
   cur_feat = &template_defns.back().first;
   cur_replacements = &template_defns.back().second;
 
-  UString var_name = attrib("as"_u);
-  if (var_name == ""_u) {
+  std::string var_name = attrib_str("as"_u);
+  if (var_name.empty()) {
     parseError("'as' attribute required for def-macro."_u);
   }
   template_slot_names[var_name] = template_slot_counter;
 
   template_arg_names.clear();
-  UString args = attrib("args"_u);
-  uistringstream args_ss(args);
+  std::string args = attrib_str("args"_u);
+  std::istringstream args_ss(args);
   size_t arg_i = 0;
   for (; !args_ss.eof(); arg_i++) {
-    UString arg_name;
+    std::string arg_name;
     args_ss >> arg_name;
-    if (arg_name == ""_u) {
+    if (arg_name.empty()) {
       break;
     }
     template_arg_names[arg_name] = arg_i;
@@ -1168,7 +1165,7 @@ MTXReader::parse()
   }
   if (name == "beam-width"_u) {
     size_t val;
-    uistringstream val_ss(attrib("val"_u));
+    std::istringstream val_ss(attrib_str("val"_u));
     val_ss >> val;
     spec.beam_width = val;
   } else {

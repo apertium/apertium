@@ -69,12 +69,27 @@ XMLReader::attrib(UString const &name)
   return XMLParseUtil::attrib(reader, name);
 }
 
+std::string
+XMLReader::attrib_str(const UString& name)
+{
+  return XMLParseUtil::attrib_str(reader, name);
+}
+
 void
 XMLReader::parseError(UString const &message)
 {
   cerr << "Error at line " << xmlTextReaderGetParserLineNumber(reader)
-        << ", column " << xmlTextReaderGetParserColumnNumber(reader)
-        << ": " << message << "." << endl;
+       << ", column " << xmlTextReaderGetParserColumnNumber(reader)
+       << ": " << message << "." << endl;
+  exit(EXIT_FAILURE);
+}
+
+void
+XMLReader::parseError(const std::string& message)
+{
+  cerr << "Error at line " << xmlTextReaderGetParserLineNumber(reader)
+       << ", column " << xmlTextReaderGetParserColumnNumber(reader)
+       << ": " << message << "." << endl;
   exit(EXIT_FAILURE);
 }
 

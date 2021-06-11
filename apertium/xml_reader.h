@@ -35,7 +35,9 @@ protected:
   int type;
   UString name;
   UString attrib(UString const &name);
+  string attrib_str(const UString& name);
   void parseError(UString const &message);
+  void parseError(const string& message);
   void unexpectedTag();
   void stepToTag();
   void stepPastSelfClosingTag(UString const &tag);
