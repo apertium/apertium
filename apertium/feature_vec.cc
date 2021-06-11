@@ -68,7 +68,7 @@ operator<<(OStream & out, FeatureVec const &fv)
     out << std::dec << (int)(*(bc_it++))[0] << "; ";
     for (;bc_it != feat_it->first.end(); bc_it++)
     {
-      out << bc_it->c_str();
+      out << *bc_it;
       if (bc_it + 1 != feat_it->first.end())
       {
         out << ", ";

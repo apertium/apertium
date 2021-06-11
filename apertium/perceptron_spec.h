@@ -188,12 +188,11 @@ public:
           out << val.boolVal();
           break;
         case STRVAL:
-          out << val.str().c_str();
+          out << val.str();
           break;
         case STRARRVAL: {
           out << "[";
-          std::vector<std::string> &str_arr = val.strArr();
-          for (auto& it : str_arr) {
+          for (auto& it : val.strArr()) {
             out << it;
           }
           out << "]";
