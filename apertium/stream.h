@@ -49,21 +49,21 @@ public:
 private:
   class PreviousCaseType {
   public:
-    PreviousCaseType(const wchar_t &PreviousCase_);
-    wchar_t ThePreviousCase;
+    PreviousCaseType(const UChar &PreviousCase_);
+    UChar ThePreviousCase;
     bool isPreviousCharacter : 1;
   };
   bool is_eof_throw_if_not_TheCharacterStream_good() const;
   UString Message_what(const std::stringstream &Message) const;
   bool is_eof_throw_if_not_TheCharacterStream_good(StreamedType &StreamedType_,
                                                    UString &Lemma,
-                                                   const wchar_t &Character_);
+                                                   const UChar &Character_);
   bool isTheCharacterStream_eof(StreamedType &StreamedType_,
-                                UString &Lemma, const wchar_t &Character_);
+                                UString &Lemma, const UChar &Character_);
   void push_back_Character(StreamedType &StreamedType_, UString &Lemma,
-                           const wchar_t &Character_);
+                           const UChar &Character_);
   void case_0x5c(StreamedType &StreamedType_, UString &Lemma,
-                 const wchar_t &Character_);
+                 const UChar &Character_);
   std::istream &TheCharacterStream;
   Optional<std::string> TheFilename;
   UString TheLine;

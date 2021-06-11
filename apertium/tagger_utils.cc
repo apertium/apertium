@@ -132,15 +132,15 @@ UString tagger_utils::trim(UString s)
   }
 
   for (unsigned int i=0; i<(s.length()-1); i++) {
-    if ((s.at(i)==L' ')&&(s.at(i+1)==L' ')) {
+    if ((s.at(i)==' ')&&(s.at(i+1)==' ')) {
       s.erase(i,1);
       i--;
     }
   }
 
-  if ((s.length()>0)&&(s.at(s.length()-1)==L' '))
+  if ((s.length()>0)&&(s.at(s.length()-1)==' '))
     s.erase(s.length()-1,1);
-  if ((s.length()>0)&&(s.at(0)==L' '))
+  if ((s.length()>0)&&(s.at(0)==' '))
     s.erase(0,1);
 
   return s;
@@ -163,7 +163,7 @@ void tagger_utils::scan_for_ambg_classes(Collection &output, MorphoStream &morph
 
   while (word) {
     if (++nw % 10000 == 0)
-      cerr << L'.' << flush;
+      cerr << '.' << flush;
 
     tags = word->get_tags();
 

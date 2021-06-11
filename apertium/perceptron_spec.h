@@ -27,7 +27,7 @@
 using namespace Apertium::SentenceStream;
 
 namespace Apertium {
-typedef std::set<UString> VMSet;
+typedef std::set<std::string> VMSet;
 class PerceptronSpec
 {
 public:
@@ -188,14 +188,14 @@ public:
           out << val.boolVal();
           break;
         case STRVAL:
-          out << val.str().c_str();
+          out << val.str();
           break;
         case STRARRVAL: {
           out << "[";
           std::vector<UString> &str_arr = val.strArr();
           std::vector<UString>::const_iterator it = str_arr.begin();
           for (; it != str_arr.end(); it++) {
-            out << it->c_str();
+            out << *it;
           }
           out << "]";
         } break;

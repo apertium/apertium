@@ -55,7 +55,7 @@ StreamedType Stream::get() {
   //TheCharacterStream.clear();
   if (!is_eof_throw_if_not_TheCharacterStream_good()) {
     while (true) {
-      const wchar_t Character_ = TheCharacterStream.get();
+      const UChar Character_ = TheCharacterStream.get();
 
       if (is_eof_throw_if_not_TheCharacterStream_good(TheStreamedType, Lemma,
                                                       Character_))
@@ -157,7 +157,7 @@ StreamedType Stream::get() {
           ThePreviousCase = PreviousCaseType(Character_);
 
           {
-            const wchar_t Character_ = TheCharacterStream.get();
+            const UChar Character_ = TheCharacterStream.get();
 
             if (is_eof_throw_if_not_TheCharacterStream_good(
                     TheStreamedType, Lemma, Character_)) {
@@ -198,7 +198,7 @@ StreamedType Stream::get() {
                 .TheTags.push_back(Tag());
               ThePreviousCase = PreviousCaseType(Character_);
               continue;
-                
+
             case '[':
             case ']':
             case '^':
@@ -604,8 +604,8 @@ bool Stream::peekIsBlank() {
   std::ios::iostate state = TheCharacterStream.rdstate();
   int pos = TheCharacterStream.tellg();
 
-  const wchar_t newline1 = TheCharacterStream.get();
-  const wchar_t newline2 = TheCharacterStream.get();
+  const UChar newline1 = TheCharacterStream.get();
+  const UChar newline2 = TheCharacterStream.get();
 
   TheCharacterStream.clear(state);
   TheCharacterStream.seekg(pos);
@@ -652,7 +652,7 @@ void Stream::outputLexicalUnit(
   output << "$";
 }
 
-Stream::PreviousCaseType::PreviousCaseType(const wchar_t &PreviousCase_)
+Stream::PreviousCaseType::PreviousCaseType(const UChar &PreviousCase_)
     : ThePreviousCase(PreviousCase_), isPreviousCharacter(true) {}
 
 bool Stream::is_eof_throw_if_not_TheCharacterStream_good() const {
@@ -665,7 +665,7 @@ bool Stream::is_eof_throw_if_not_TheCharacterStream_good() const {
                                 << TheCharacterStream.fail() << " "
                                 << TheCharacterStream.bad() << "\n";
     std::stringstream Message;
-    Message << "can't get const wchar_t: TheCharacterStream not good";
+    Message << "can't get const UChar: TheCharacterStream not good";
     throw Exception::Stream::TheCharacterStream_not_good(
         Message_what(Message));
   }
@@ -688,13 +688,13 @@ UString Stream::Message_what(const std::stringstream &Message) const {
 bool
 Stream::is_eof_throw_if_not_TheCharacterStream_good(StreamedType &StreamedType_,
                                                     UString &Lemma,
-                                                    const wchar_t &Character_) {
+                                                    const UChar &Character_) {
   if (isTheCharacterStream_eof(StreamedType_, Lemma, Character_))
     return true;
 
   if (!TheCharacterStream) {
     std::stringstream Message;
-    Message << "can't get const wchar_t: TheCharacterStream not good";
+    Message << "can't get const UChar: TheCharacterStream not good";
     throw Exception::Stream::TheCharacterStream_not_good(
         Message_what(Message));
   }
@@ -704,7 +704,7 @@ Stream::is_eof_throw_if_not_TheCharacterStream_good(StreamedType &StreamedType_,
 
 bool Stream::isTheCharacterStream_eof(StreamedType &StreamedType_,
                                       UString &Lemma,
-                                      const wchar_t &Character_) {
+                                      const UChar &Character_) {
   if (TheCharacterStream.eof())
     return true;
 
@@ -721,7 +721,7 @@ bool Stream::isTheCharacterStream_eof(StreamedType &StreamedType_,
 
 void Stream::push_back_Character(StreamedType &StreamedType_,
                                  UString &Lemma,
-                                 const wchar_t &Character_) {
+                                 const UChar &Character_) {
   if (ThePreviousCase) {
     switch (ThePreviousCase->ThePreviousCase) {
     case '[':
@@ -780,11 +780,11 @@ void Stream::push_back_Character(StreamedType &StreamedType_,
 }
 
 void Stream::case_0x5c(StreamedType &StreamedType_, UString &Lemma,
-                       const wchar_t &Character_) {
+                       const UChar &Character_) {
   push_back_Character(StreamedType_, Lemma, Character_);
 
   {
-    const wchar_t Character_ = TheCharacterStream.get();
+    const UChar Character_ = TheCharacterStream.get();
 
     if (is_eof_throw_if_not_TheCharacterStream_good(StreamedType_, Lemma,
                                                     Character_)) {

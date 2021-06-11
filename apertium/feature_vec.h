@@ -10,7 +10,7 @@
 
 namespace Apertium {
 
-typedef std::vector<UString> FeatureKey;
+typedef std::vector<std::string> FeatureKey;
 struct CompareFeatureKey {
   bool operator() (FeatureKey const& lhs, FeatureKey const& rhs) const;
 };
