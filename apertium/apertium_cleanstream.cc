@@ -32,33 +32,6 @@
 
 using namespace std;
 
-UString
-readFullBlock(InputFile& input, UChar32 const delim1, UChar32 const delim2)
-{
-  UString result;
-  result += delim1;
-  UChar32 c = delim1;
-
-  while(!input.eof() && c != delim2) {
-    c = input.get();
-    result += c;
-    if(c != '\\') {
-      continue;
-    } else {
-      result += '\\';
-      c = input.get();
-      result += c;
-    }
-  }
-
-  if(c != delim2)
-  {
-    cerr << "Error: expected: " << delim2 << ", saw: " << c << endl;
-  }
-
-  return result;
-}
-
 int
 main (int argc, char** argv)
 {
@@ -114,7 +87,7 @@ main (int argc, char** argv)
       buf += c;
     } else if(!intoken && c == '[') {
       u_fputc(ws, output);
-      blanktmp = readFullBlock(input, L'[', L']');
+      blanktmp = input.readBlock('[', ']');
       if(keepblank) {
         write(blanktmp, output);
       }

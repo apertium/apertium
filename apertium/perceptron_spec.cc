@@ -95,7 +95,7 @@ PerceptronSpec::PerceptronSpec() {
     }
 
     untagged_sentinel = make_sentinel_wordoids("!UNTAGGED!"_u, "!UT!"_u);
-    token_wordoids_underflow = make_sentinel_token("!SURF_UNDERFLOW!"_u, "!TOKNDERFLOW!"_u, "!TUF!"_u);
+    token_wordoids_underflow = make_sentinel_token("!SURF_UNDERFLOW!"_u, "!TOK_UNDERFLOW!"_u, "!TUF!"_u);
     token_wordoids_overflow = make_sentinel_token("!SURF_OVERFLOW!"_u, "!TOK_OVERFLOW!"_u, "!TOF!"_u);
 
     static_constructed = true;
