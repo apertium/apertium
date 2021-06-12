@@ -41,12 +41,10 @@ size_t MTXReader::pushSetConst(std::string &val)
   size_t set_idx = spec.set_consts.size();
   set<std::string> s;
   std::stringstream val_ss(val);
-  while (!val_ss.eof()) {
-    std::string temp;
-    val_ss >> temp;
-    s.insert(temp);
-  }
-  spec.set_consts.push_back(s);
+  spec.set_consts.push_back(set<std::string>(
+    istream_iterator<std::string>(val_ss),
+    istream_iterator<std::string>()
+  ));
   return set_idx;
 }
 

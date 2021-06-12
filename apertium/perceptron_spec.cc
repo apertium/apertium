@@ -95,7 +95,7 @@ PerceptronSpec::PerceptronSpec() {
     }
 
     untagged_sentinel = make_sentinel_wordoids("!UNTAGGED!"_u, "!UT!"_u);
-    token_wordoids_underflow = make_sentinel_token("!SURFNDERFLOW!"_u, "!TOKNDERFLOW!"_u, "!TUF!"_u);
+    token_wordoids_underflow = make_sentinel_token("!SURF_UNDERFLOW!"_u, "!TOKNDERFLOW!"_u, "!TUF!"_u);
     token_wordoids_overflow = make_sentinel_token("!SURF_OVERFLOW!"_u, "!TOK_OVERFLOW!"_u, "!TOF!"_u);
 
     static_constructed = true;
@@ -483,13 +483,13 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
       UString surf = get_token(untagged).TheSurfaceForm;
       std::string temp;
       utf8::utf16to8(surf.begin(), surf.end(), std::back_inserter(temp));
-      stack.push(temp);
+      stack.push(std::move(temp));
     } break;
     case EXWRDLEMMA: {
       UString lemma = stack.pop_off().wrd().TheLemma;
       std::string temp;
       utf8::utf16to8(lemma.begin(), lemma.end(), std::back_inserter(temp));
-      stack.push(temp);
+      stack.push(std::move(temp));
     } break;
     case EXWRDCOARSETAG: {
       assert(spec.coarse_tags);
