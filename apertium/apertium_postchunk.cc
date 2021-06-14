@@ -24,13 +24,12 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 #ifdef _MSC_VER
 #include <io.h>
 #include <fcntl.h>
 #endif
 
-using namespace Apertium;
 using namespace std;
 
 void message(char *progname)

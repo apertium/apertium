@@ -16,7 +16,7 @@
  */
 #include <apertium/constant_manager.h>
 #include <lttoolbox/compression.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 #include <apertium/serialiser.h>
 #include <apertium/deserialiser.h>
 

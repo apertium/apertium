@@ -24,7 +24,7 @@
 #include <iostream>
 
 #include <cstdlib>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 
 
 using namespace std;

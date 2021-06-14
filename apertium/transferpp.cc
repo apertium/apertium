@@ -18,10 +18,9 @@
 #include <lttoolbox/lt_locale.h>
 #include <cstdlib>
 #include <iostream>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 #include <libgen.h>
 
-using namespace Apertium;
 using namespace std;
 
 int main(int argc, char *argv[])

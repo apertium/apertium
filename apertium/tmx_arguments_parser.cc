@@ -10,7 +10,7 @@
 *                                                                        *
 *************************************************************************/
 #include <apertium/tmx_arguments_parser.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 #include <iostream>
 #include <stdlib.h>
 

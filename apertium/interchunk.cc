@@ -16,12 +16,11 @@
  */
 #include <apertium/interchunk.h>
 
-#include <apertium/xml_walk_util.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/xml_walk_util.h>
+#include <lttoolbox/string_utils.h>
 
 #include <iostream>
 
-using namespace Apertium;
 using namespace std;
 
 Interchunk::Interchunk()

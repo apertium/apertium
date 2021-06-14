@@ -14,7 +14,7 @@
 #include <apertium/tmx_words.h>
 #include <apertium/tmx_dictionary.h>
 #include <apertium/tmx_dic_tree.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 
 #include <algorithm>
 #include <fstream>

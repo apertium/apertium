@@ -3,7 +3,7 @@
 #include <apertium/serialiser.h>
 #include <lttoolbox/match_state.h>
 #include <iomanip>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 #include <utf8.h>
 
 

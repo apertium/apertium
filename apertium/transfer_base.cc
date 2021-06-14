@@ -1,10 +1,9 @@
 #include <apertium/transfer_base.h>
-#include <apertium/xml_walk_util.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/xml_walk_util.h>
+#include <lttoolbox/string_utils.h>
 #include <lttoolbox/compression.h>
 #include <apertium/trx_reader.h>
 
-using namespace Apertium;
 using namespace std;
 
 TransferBase::TransferBase()
@@ -50,7 +49,7 @@ TransferBase::read(const char* transferfile, const char* datafile)
     cerr << "Error: Could not open file '" << datafile << "' for reading." << endl;
     exit(EXIT_FAILURE);
   }
-  
+
   alphabet.read(in);
   any_char = alphabet(TRXReader::ANY_CHAR);
   any_tag = alphabet(TRXReader::ANY_TAG);
@@ -580,14 +579,7 @@ TransferBase::tags(const UString& str) const
   UString ret;
   ret.reserve(str.size()+2);
   ret += '<';
-  for (auto c : u16iter(str)) {
-    if (c == '.') {
-      ret += '>';
-      ret += '<';
-    } else {
-      ret += c;
-    }
-  }
+  ret.append(StringUtils::substitute(str, "."_u, "><"_u));
   ret += '>';
   return ret;
 }
@@ -609,4 +601,3 @@ TransferBase::setTrace(bool val)
 {
   trace = val;
 }
-

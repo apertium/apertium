@@ -24,11 +24,10 @@
 
 #include <apertium/apertium_config.h>
 #include <apertium/tmx_builder.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 #include "apertium_config.h"
 #include <apertium/unlocked_cstdio.h>
 
-using namespace Apertium;
 using namespace std;
 
 void usage(char *progname)

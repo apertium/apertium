@@ -13,7 +13,7 @@
 
 #include <apertium/tmx_words.h> // For SentenceList
 #include <apertium/tmx_dictionary.h> // For FrequencyMap
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 
 #include <iostream>
 #include <map>

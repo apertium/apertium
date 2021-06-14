@@ -17,7 +17,7 @@
 #include <apertium/mtx_reader.h>
 #include <lttoolbox/xml_parse_util.h>
 #include <lttoolbox/compression.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 #include <apertium/utils.h>
 #include <apertium/tsx_reader.h>
 #include <apertium/perceptron_spec.h>

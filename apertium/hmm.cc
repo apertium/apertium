@@ -30,7 +30,7 @@
 #include <unistd.h>
 #include <vector>
 #include <algorithm>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 #include <apertium/file_morpho_stream.h>
 
 inline bool p_isnan(double v) {

@@ -26,10 +26,9 @@
 #include <fcntl.h>
 #endif
 #include <apertium/pretransfer.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 #include <lttoolbox/lt_locale.h>
 
-using namespace Apertium;
 using namespace std;
 
 void usage(char *progname)

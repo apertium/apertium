@@ -20,7 +20,7 @@
 #include <apertium/hmm.h>
 #include <apertium/tagger_data_hmm.h>
 #include <apertium/tagger_word.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 #include <lttoolbox/input_file.h>
 
 #include <cstdlib>

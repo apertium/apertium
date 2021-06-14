@@ -15,7 +15,7 @@
 
 #include "align.h"
 #include "linebreak.h"
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 
 #include <iomanip>
 #include <ios>

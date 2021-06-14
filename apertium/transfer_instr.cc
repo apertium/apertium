@@ -15,9 +15,8 @@
  * along with this program; if not, see <https://www.gnu.org/licenses/>.
  */
 #include <apertium/transfer_instr.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 
-using namespace Apertium;
 void
 TransferInstr::copy(TransferInstr const &o)
 {

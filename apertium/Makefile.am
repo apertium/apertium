@@ -38,7 +38,6 @@ h_sources = a.h \
 	    stream_tagger.h \
 	    streamed_type.h \
 	    string_to_wostream.h \
-	    string_utils.h \
 	    shell_utils.h \
 	    tag.h \
 	    tagger.h \
@@ -76,8 +75,7 @@ h_sources = a.h \
 	    unigram_tagger.h \
 	    unlocked_cstdio.h \
 	    utils.h \
-	    xml_reader.h \
-		xml_walk_util.h
+	    xml_reader.h
 
 cc_sources = a.cc \
 	     align.cc \
@@ -109,7 +107,6 @@ cc_sources = a.cc \
 	     sentence_stream.cc \
 	     stream.cc \
 	     stream_tagger.cc \
-	     string_utils.cc \
 	     shell_utils.cc \
 	     tag.cc \
 	     tagger.cc \
@@ -139,8 +136,7 @@ cc_sources = a.cc \
 	     trx_reader.cc \
 	     tsx_reader.cc \
 	     unigram_tagger.cc \
-	     xml_reader.cc \
-		 xml_walk_util.cc
+	     xml_reader.cc
 
 library_includedir = $(includedir)/$(PACKAGE_NAME)-$(VERSION_API)/$(PACKAGE_NAME)
 library_include_HEADERS = $(h_sources)

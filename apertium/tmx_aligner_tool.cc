@@ -10,7 +10,7 @@
 *                                                                        *
 *************************************************************************/
 #include <apertium/tmx_aligner_tool.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 
 namespace TMXAligner
 {

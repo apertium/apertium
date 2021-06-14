@@ -17,9 +17,7 @@
 
 #include <apertium/interchunk_word.h>
 #include <iostream>
-#include <apertium/string_utils.h>
-
-using namespace Apertium;
+#include <lttoolbox/string_utils.h>
 
 void
 InterchunkWord::copy(InterchunkWord const &o)
@@ -86,7 +84,7 @@ InterchunkWord::init(UString const &chunk)
       }
     }
   }
-  
+
   if(b_end > 0)
   {
     this->wblank = chunk.substr(0, b_end);

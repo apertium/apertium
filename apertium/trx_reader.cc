@@ -20,9 +20,7 @@
 
 #include <cstdlib>
 #include <iostream>
-#include <apertium/string_utils.h>
-
-using namespace Apertium;
+#include <lttoolbox/string_utils.h>
 
 UString const TRXReader::ANY_TAG         = "<ANY_TAG>"_u;
 UString const TRXReader::ANY_CHAR        = "<ANY_CHAR>"_u;

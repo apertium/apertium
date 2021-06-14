@@ -16,12 +16,11 @@
  */
 #include <apertium/postchunk.h>
 
-#include <apertium/xml_walk_util.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/xml_walk_util.h>
+#include <lttoolbox/string_utils.h>
 
 #include <iostream>
 
-using namespace Apertium;
 using namespace std;
 
 Postchunk::Postchunk()
@@ -882,7 +881,7 @@ Postchunk::unchunk(UString const &chunk, UFILE* output)
           {
             int j = ++i;
             while (chunk[++i] != '>');
-            unsigned long value = stoi(chunk.substr(j, i-j)) - 1;
+            unsigned long value = StringUtils::stoi(chunk.substr(j, i-j)) - 1;
             if(vectags.size() > value)
             {
               write(vectags[value], output);
@@ -988,7 +987,7 @@ Postchunk::splitWordsAndBlanks(UString const &chunk, vector<UString *> &words,
           if(iswdigit(chunk[i+1]))
           {
             // replace tag
-            unsigned long value = stoi(chunk.c_str()+i+1) - 1;
+            unsigned long value = StringUtils::stoi(chunk.c_str()+i+1) - 1;
             // TODO
             //unsigned long value = wcstoul(chunk.c_str()+i+1,
             //                              NULL, 0) - 1;
@@ -1079,7 +1078,7 @@ Postchunk::splitWordsAndBlanks(UString const &chunk, vector<UString *> &words,
             if(iswdigit(chunk[i+1]))
             {
               // replace tag
-              unsigned long value = stoi(chunk.c_str()+i+1) - 1;
+              unsigned long value = StringUtils::stoi(chunk.c_str()+i+1) - 1;
               //unsigned long value = wcstoul(chunk.c_str()+i+1,
               //                              NULL, 0) - 1;
               // TODO: make sure this is equivalent

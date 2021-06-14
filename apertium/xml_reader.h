@@ -2,7 +2,7 @@
 #define _XMLREADER_
 
 #include <apertium/constant_manager.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 #include <apertium/tagger_data.h>
 #include <apertium/ttag.h>
 #include <lttoolbox/pattern_list.h>

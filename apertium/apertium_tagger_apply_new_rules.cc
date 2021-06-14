@@ -26,7 +26,7 @@
 #include <apertium/hmm.h>
 #include <apertium/tagger_data_hmm.h>
 #include <apertium/tsx_reader.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 
 using namespace Apertium;
 

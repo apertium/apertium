@@ -40,7 +40,7 @@
 #include <unistd.h>
 #include <vector>
 #include <algorithm>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 #include <cstdlib>
 
 using namespace std;

@@ -18,9 +18,8 @@
 #include <lttoolbox/compression.h>
 #include <iostream>
 #include <cstdlib>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 
-using namespace Apertium;
 using namespace std;
 using namespace icu;
 

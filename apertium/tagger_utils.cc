@@ -22,9 +22,7 @@
 #include <sstream>
 #include <algorithm>
 #include <climits>
-#include <apertium/string_utils.h>
-
-using namespace Apertium;
+#include <lttoolbox/string_utils.h>
 
 
 void tagger_utils::fatal_error (UString const &s) {
@@ -55,7 +53,7 @@ void tagger_utils::clear_array_vector(vector<TTag> v[], int l) {
 
 int tagger_utils::ntokens_multiword(UString const &s)
 {
-  vector<UString> tmp = StringUtils::split_UString(s, "_"_u);
+  vector<UString> tmp = StringUtils::split(s, "_"_u);
   int n = 0;
   for (auto& it : tmp) {
     if (!it.empty()) {
@@ -66,7 +64,7 @@ int tagger_utils::ntokens_multiword(UString const &s)
 }
 
 int tagger_utils::nguiones_fs(UString const & s) {
-  vector<UString> tmp = StringUtils::split_UString(s, "-"_u);
+  vector<UString> tmp = StringUtils::split(s, "-"_u);
   int n = 0;
   for (auto& it : tmp) {
     if (!it.empty()) {

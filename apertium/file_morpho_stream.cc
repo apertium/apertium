@@ -21,11 +21,10 @@
  */
 
 #include <apertium/file_morpho_stream.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 #include "apertium_config.h"
 #include <apertium/unlocked_cstdio.h>
 
-using namespace Apertium;
 FileMorphoStream::FileMorphoStream(const char* ftxt, bool d, TaggerData *t) :
     ms() {
   foundEOF = false;

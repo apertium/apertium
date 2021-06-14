@@ -19,9 +19,8 @@
 #include <lttoolbox/compression.h>
 #include <apertium/apertium_re.h>
 #include <iostream>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 
-using namespace Apertium;
 using namespace std;
 
 void
@@ -158,7 +157,7 @@ TransferData::write(FILE *output)
       if(s.compare(0, rule_sym_pre.size(), rule_sym_pre) != 0) {
         continue;
       }
-      const int rule_num = stoi(s.substr(rule_sym_pre.size()));
+      const int rule_num = StringUtils::stoi(s.substr(rule_sym_pre.size()));
       transducer.setFinal(src, wgt);
       finals_rules[src] = rule_num;
     }

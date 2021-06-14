@@ -15,7 +15,7 @@
  * along with this program; if not, see <https://www.gnu.org/licenses/>.
  */
 #include <apertium/tmx_builder.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 #include <apertium/tmx_aligner_tool.h>
 #include <lttoolbox/compression.h>
 
@@ -35,7 +35,6 @@
 #include <fcntl.h>
 #endif
 
-using namespace Apertium;
 using namespace std;
 
 TMXBuilder::TMXBuilder(UString const &l1, UString const &l2):

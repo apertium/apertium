@@ -3,7 +3,7 @@
 #include <lttoolbox/lt_locale.h>
 #include <apertium/apertium_config.h>
 #include <apertium/unlocked_cstdio.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 
 #include <iostream>
 #include <string>

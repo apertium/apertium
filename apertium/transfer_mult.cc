@@ -18,7 +18,7 @@
 #include <apertium/trx_reader.h>
 #include <lttoolbox/compression.h>
 #include <lttoolbox/xml_parse_util.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 
 #include <cctype>
 #include <iostream>

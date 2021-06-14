@@ -18,7 +18,7 @@
 #include <apertium/tagger_data_hmm.h>
 #include <lttoolbox/compression.h>
 #include <apertium/endian_double_util.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 
 using namespace Apertium;
 
