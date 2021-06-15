@@ -23,18 +23,13 @@
 using namespace std;
 using namespace icu;
 
-ApertiumRE::ApertiumRE() :
-re(0)
-{
-  empty = true;
-}
+ApertiumRE::ApertiumRE() {}
 
 ApertiumRE::~ApertiumRE()
 {
-  if(!empty) {
+  if (re != nullptr) {
     delete re;
   }
-  empty = true;
 }
 
 void
@@ -45,13 +40,14 @@ ApertiumRE::read(FILE *input)
     cerr << "Error reading regexp" << endl;
     exit(EXIT_FAILURE);
   }
-
-  empty = true;
 }
 
 void
 ApertiumRE::compile(UString const &str)
 {
+  if (re != nullptr) {
+    delete re;
+  }
   UnicodeString s = str.c_str();
   UErrorCode err = U_ZERO_ERROR;
   re = RegexPattern::compile(s, UREGEX_DOTALL|UREGEX_CASE_INSENSITIVE, err);
@@ -60,14 +56,12 @@ ApertiumRE::compile(UString const &str)
     cerr << "error code: " << u_errorName(err) << endl;
     exit(EXIT_FAILURE);
   }
-
-  empty = false;
 }
 
 void
 ApertiumRE::write(FILE *output) const
 {
-  if(empty) {
+  if (re == nullptr) {
     cerr << "Error, cannot write empty regexp" << endl;
     exit(EXIT_FAILURE);
   }
@@ -78,7 +72,7 @@ ApertiumRE::write(FILE *output) const
 UString
 ApertiumRE::match(UString const &str) const
 {
-  if(empty) {
+  if(re == nullptr) {
     return ""_u;
   }
 
@@ -110,7 +104,7 @@ ApertiumRE::match(UString const &str) const
 bool
 ApertiumRE::replace(UString &str, UString const &value) const
 {
-  if(empty) {
+  if(re == nullptr) {
     return false;
   }
 

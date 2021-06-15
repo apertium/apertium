@@ -27,8 +27,7 @@ using namespace std;
 class ApertiumRE
 {
 private:
-  bool empty;
-  icu::RegexPattern* re;
+  icu::RegexPattern* re = nullptr;
 public:
   ApertiumRE();
   ~ApertiumRE();
