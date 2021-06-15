@@ -20,7 +20,7 @@
 
 #include <cstdlib>
 #include <iostream>
-#include <lttoolbox/string_utils.h>
+#include <apertium/transfer_regex.h>
 
 UString const TRXReader::ANY_TAG         = "<ANY_TAG>"_u;
 UString const TRXReader::ANY_CHAR        = "<ANY_CHAR>"_u;
@@ -321,6 +321,7 @@ void
 TRXReader::procDefAttrs()
 {
   UString attrname;
+  vector<UString> items;
 
   while(type != XML_READER_TYPE_END_ELEMENT ||
         name != "section-def-attrs"_u)
@@ -330,7 +331,7 @@ TRXReader::procDefAttrs()
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
-        insertAttrItem(attrname, attrib("tags"_u));
+        items.push_back(attrib("tags"_u));
       }
     }
     else if(name == "def-attr"_u)
@@ -341,8 +342,8 @@ TRXReader::procDefAttrs()
       }
       else
       {
-        UString all = td.getAttrItems()[attrname];
-        td.getAttrItems()[attrname] = "("_u + all + ")"_u;
+        td.getAttrItems()[attrname] = optimize_regex(items);
+        items.clear();
         attrname.clear();
       }
     }
@@ -555,29 +556,4 @@ TRXReader::insertCatItem(UString const &name, UString const &lemma,
   lt.lemma = lemma;
   lt.tags = tags;
   cat_items.insert(pair<UString, LemmaTags>(name, lt));
-}
-
-void
-TRXReader::insertAttrItem(UString const &name, UString const &tags)
-{
-  if(td.getAttrItems()[name].size() != 0)
-  {
-    td.getAttrItems()[name] += '|';
-  }
-
-  td.getAttrItems()[name] += '<';
-
-  for(unsigned int i = 0, limit = tags.size(); i != limit; i++)
-  {
-    if(tags[i] == '.')
-    {
-      td.getAttrItems()[name].append("><"_u);
-    }
-    else
-    {
-      td.getAttrItems()[name] += tags[i];
-    }
-  }
-  td.getAttrItems()[name] += '>';
-
 }

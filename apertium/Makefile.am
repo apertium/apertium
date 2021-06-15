@@ -67,6 +67,7 @@ h_sources = a.h \
 	    transfer.h \
 	    transfer_instr.h \
 	    transfer_mult.h \
+		transfer_regex.h \
 	    transfer_token.h \
 	    transfer_word.h \
 	    trx_reader.h \
@@ -131,6 +132,7 @@ cc_sources = a.cc \
 	     transfer_data.cc \
 	     transfer_instr.cc \
 	     transfer_mult.cc \
+		 transfer_regex.cc \
 	     transfer_token.cc \
 	     transfer_word.cc \
 	     trx_reader.cc \

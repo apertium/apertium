@@ -51,7 +51,6 @@ private:
 
   void insertCatItem(UString const &name, UString const &lemma,
 		     UString const &tags);
-  void insertAttrItem(UString const &name, UString const &tags);
   void createVar(UString const &name, UString const &initial_value);
   void insertListItem(UString const &name, UString const &value);
   void createMacro(UString const &name, int const val);
