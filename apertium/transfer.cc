@@ -137,7 +137,7 @@ Transfer::evalCachedString(xmlNode *element)
       if(!word[ti.getPos()]->source(attr_items[ti.getContent()], ti.getCondition()).empty()) {
         UString ret;
         ret += '<';
-        ret += UString((UChar*) ti.getPointer());
+        ret += ti.getStrval();
         ret += '>';
         return ret;
       } else {
@@ -151,7 +151,7 @@ Transfer::evalCachedString(xmlNode *element)
       if(!word[ti.getPos()]->target(attr_items[ti.getContent()], ti.getCondition()).empty()) {
         UString ret;
         ret += '<';
-        ret += UString((UChar*) ti.getPointer());
+        ret += ti.getStrval();
         ret += '>';
         return ret;
       } else {
@@ -165,7 +165,7 @@ Transfer::evalCachedString(xmlNode *element)
       if(!word[ti.getPos()]->reference(attr_items[ti.getContent()], ti.getCondition()).empty()) {
         UString ret;
         ret += '<';
-        ret += UString((UChar*) ti.getPointer());
+        ret += ti.getStrval();
         ret += '>';
         return ret;
       } else {
@@ -232,7 +232,8 @@ void
 Transfer::processClip(xmlNode* element)
 {
   int pos = 0;
-  xmlChar *side = NULL, *as = NULL;
+  xmlChar *side = NULL;
+  UString as;
   UString part;
   bool queue = true;
 
@@ -248,17 +249,17 @@ Transfer::processClip(xmlNode* element)
         queue = false;
       }
     } else if(!xmlStrcmp(i->name, (const xmlChar *) "link-to")) {
-      as = i->children->content;
+      as = to_ustring((const char*)i->children->content);
     }
   }
 
-  if(as != NULL) {
+  if(!as.empty()) {
     if(!xmlStrcmp(side, (const xmlChar *) "sl")) {
-      evalStringCache[element] = TransferInstr(ti_linkto_sl, part, pos, (void *) as, queue);
+      evalStringCache[element] = TransferInstr(ti_linkto_sl, part, pos, NULL, queue, as);
     } else if(!xmlStrcmp(side, (const xmlChar *) "ref")) {
-      evalStringCache[element] = TransferInstr(ti_linkto_ref, part, pos, (void *) as, queue);
+      evalStringCache[element] = TransferInstr(ti_linkto_ref, part, pos, NULL, queue, as);
     } else {
-      evalStringCache[element] = TransferInstr(ti_linkto_tl, part, pos, (void *) as, queue);
+      evalStringCache[element] = TransferInstr(ti_linkto_tl, part, pos, NULL, queue, as);
     }
   } else if(!xmlStrcmp(side, (const xmlChar *) "sl")) {
     evalStringCache[element] = TransferInstr(ti_clip_sl, part, pos, NULL, queue);
@@ -1395,8 +1396,8 @@ Transfer::applyWord(UString const &word_str)
     {
       case '\\':
         i++;
-	ms.step(towlower(word_str[i]), any_char);
-	break;
+        ms.step(towlower(word_str[i]), any_char);
+        break;
 
       case '[':
         if(word_str[i+1] == '[')

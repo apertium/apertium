@@ -25,6 +25,7 @@ TransferInstr::copy(TransferInstr const &o)
   pos = o.pos;
   pointer = o.pointer;
   condition = o.condition;
+  strval = o.strval;
 }
 
 void
@@ -33,13 +34,15 @@ TransferInstr::destroy()
 }
 
 TransferInstr::TransferInstr(TransferInstrType t, UString const &c,
-                             int const p, void *ptr, bool cond)
+                             int const p, xmlNode* ptr, bool cond,
+                             const UString& sv)
 {
   type = t;
   content = c;
   pos = p;
   pointer = ptr;
   condition = cond;
+  strval = sv;
 }
 
 TransferInstr::~TransferInstr()
@@ -81,7 +84,7 @@ TransferInstr::getPos()
   return pos;
 }
 
-void *
+xmlNode*
 TransferInstr::getPointer()
 {
   return pointer;
@@ -91,4 +94,10 @@ bool
 TransferInstr::getCondition()
 {
   return condition;
+}
+
+const UString&
+TransferInstr::getStrval()
+{
+  return strval;
 }
