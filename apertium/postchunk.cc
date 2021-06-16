@@ -720,7 +720,7 @@ Postchunk::applyWord(UString const &word_str)
     {
       case '\\':
         i++;
-	ms.step(towlower(word_str[i]), any_char);
+	ms.step(u_tolower(word_str[i]), any_char);
 	break;
 
       case '<':
@@ -748,7 +748,7 @@ Postchunk::applyWord(UString const &word_str)
         return;
 
       default:
-	ms.step(towlower(word_str[i]), any_char);
+	ms.step(u_tolower(word_str[i]), any_char);
 	break;
     }
   }
@@ -984,7 +984,7 @@ Postchunk::splitWordsAndBlanks(UString const &chunk, vector<UString *> &words,
         }
         else if(chunk[i] == '<')
         {
-          if(iswdigit(chunk[i+1]))
+          if(u_isdigit(chunk[i+1]))
           {
             // replace tag
             unsigned long value = StringUtils::stoi(chunk.c_str()+i+1) - 1;
@@ -1013,7 +1013,7 @@ Postchunk::splitWordsAndBlanks(UString const &chunk, vector<UString *> &words,
           }
           else if(uppercase_first)
           {
-            if(iswalnum(chunk[i]))
+            if(u_isalnum(chunk[i]))
             {
               // TODO
               ref += u_toupper(chunk[i]);
@@ -1075,7 +1075,7 @@ Postchunk::splitWordsAndBlanks(UString const &chunk, vector<UString *> &words,
           }
           else if(chunk[i] == '<')
           {
-            if(iswdigit(chunk[i+1]))
+            if(u_isdigit(chunk[i+1]))
             {
               // replace tag
               unsigned long value = StringUtils::stoi(chunk.c_str()+i+1) - 1;

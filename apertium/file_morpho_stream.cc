@@ -169,7 +169,7 @@ FileMorphoStream::lrlmClassify(UString const &str, int &ivwords)
           last_type = val;
         }
       }
-      ms.step(towlower(str[i]), ca_any_char);
+      ms.step(u_tolower(str[i]), ca_any_char);
     }
     else
     {

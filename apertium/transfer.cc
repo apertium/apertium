@@ -1396,7 +1396,7 @@ Transfer::applyWord(UString const &word_str)
     {
       case '\\':
         i++;
-        ms.step(towlower(word_str[i]), any_char);
+        ms.step(u_tolower(word_str[i]), any_char);
         break;
 
       case '[':
@@ -1421,7 +1421,7 @@ Transfer::applyWord(UString const &word_str)
         }
         else
         {
-          ms.step(towlower(word_str[i]), any_char);
+          ms.step(u_tolower(word_str[i]), any_char);
         }
         break;
 
@@ -1450,7 +1450,7 @@ Transfer::applyWord(UString const &word_str)
 	break;
 
       default:
-	ms.step(towlower(word_str[i]), any_char);
+	ms.step(u_tolower(word_str[i]), any_char);
 	break;
     }
   }

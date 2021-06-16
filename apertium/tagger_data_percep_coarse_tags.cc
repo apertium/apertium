@@ -57,7 +57,7 @@ const UString& TaggerDataPercepCoarseTags::coarsen(const Apertium::Morpheme &wrd
   // Input lemma
   ms.init(me->getInitial());
   for (size_t i = 0; i < wrd.TheLemma.size(); i++) {
-    ms.step(std::towlower(wrd.TheLemma[i]), ca_any_char);
+    ms.step(u_tolower(wrd.TheLemma[i]), ca_any_char);
   }
   // Input fine tags
   for (size_t i = 0; i < wrd.TheTags.size(); i++) {

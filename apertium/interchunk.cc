@@ -624,7 +624,7 @@ Interchunk::applyWord(UString const &word_str)
     {
       case '\\':
         i++;
-	ms.step(towlower(word_str[i]), any_char);
+	ms.step(u_tolower(word_str[i]), any_char);
 	break;
 
       case '<':
@@ -652,7 +652,7 @@ Interchunk::applyWord(UString const &word_str)
         return;
 
       default:
-	ms.step(towlower(word_str[i]), any_char);
+	ms.step(u_tolower(word_str[i]), any_char);
 	break;
     }
   }

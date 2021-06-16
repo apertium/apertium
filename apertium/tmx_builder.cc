@@ -220,7 +220,7 @@ TMXBuilder::nextTU(InputFile& input)
         current_tu += '.';
         symbol = input.get();
 
-        if(symbol != '[' && !iswspace(symbol))
+        if(symbol != '[' && !u_isspace(symbol))
         {
           if (!input.eof()) {
             input.unget(symbol);
@@ -299,7 +299,7 @@ TMXBuilder::xmlize(UString const &str)
       result = result.substr(5);
       cambio = true;
     }
-    while(result.size() > 0 && !iswalnum(result[0]) && !iswpunct(result[0]))
+    while(result.size() > 0 && !u_isalnum(result[0]) && !u_ispunct(result[0]))
     {
       result = result.substr(1);
       cambio = true;
@@ -316,7 +316,7 @@ TMXBuilder::xmlize(UString const &str)
       result = result.substr(0, result.size()-5);
       cambio = true;
     }
-    while(result.size() > 0 && !iswalnum(result[result.size()-1]) && !iswpunct(result[result.size()-1]))
+    while(result.size() > 0 && !u_isalnum(result[result.size()-1]) && !u_ispunct(result[result.size()-1]))
     {
       result = result.substr(0, result.size()-1);
       cambio = true;
@@ -761,11 +761,11 @@ TMXBuilder::filter(UString const &tu)
 
   for(unsigned int i = 0, limit = tu.size(); i != limit; i++)
   {
-    if(iswalpha(tu[i]))
+    if(u_isalpha(tu[i]))
     {
       has_text = true;
     }
-    else if(has_text && iswspace(tu[i]))
+    else if(has_text && u_isspace(tu[i]))
     {
       count_blank++;
     }
