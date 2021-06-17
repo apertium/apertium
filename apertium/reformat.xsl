@@ -78,7 +78,7 @@ using namespace std;
   string filename = yytext;
   filename = filename.substr(2, filename.size()-3);
   FILE *temp = fopen(filename.c_str(), "rb");
-  char mychar;
+  int mychar;
 
   if(!temp)
   {
