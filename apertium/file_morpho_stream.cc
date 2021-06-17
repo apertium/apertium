@@ -132,7 +132,7 @@ FileMorphoStream::get_next_word()
             vwords[ivwords]->add_tag(ca_tag_keof, ""_u, td->getPreferRules());
             return get_next_word();
           }
-          str += static_cast<wchar_t>(symbol);
+          str += symbol;
           symbol = '\\';
         } else if(symbol == '^') {
           if(str.size() > 0) {
@@ -141,7 +141,7 @@ FileMorphoStream::get_next_word()
           readRestOfWord(ivwords);
           return get_next_word();
         } else {
-          str += static_cast<wchar_t>(symbol);
+          str += symbol;
         }
       }
     }
@@ -320,7 +320,7 @@ FileMorphoStream::readRestOfWord(int &ivwords)
     }
     else
     {
-      str += static_cast<wchar_t>(symbol);
+      str += symbol;
     }
   }
 
@@ -360,13 +360,13 @@ FileMorphoStream::readRestOfWord(int &ivwords)
     {
       if(str[0] != '*')// do nothing with unknown words
       {
-	lrlmClassify(str, ivwords);
+        lrlmClassify(str, ivwords);
       }
       return;
     }
     else
     {
-      str += static_cast<wchar_t>(symbol);
+      str += symbol;
     }
   }
 }

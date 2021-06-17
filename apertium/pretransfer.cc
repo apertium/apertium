@@ -21,10 +21,10 @@ UString storeAndWriteWblank(InputFile& input, UFILE* output)
       cerr << "ERROR: Unexpected EOF" << endl;
       exit(EXIT_FAILURE);
     }
-    
+
     content += mychar;
     u_fputc(mychar, output);
-    
+
     if(mychar == '\\')
     {
       mychar = input.get();
@@ -34,7 +34,7 @@ UString storeAndWriteWblank(InputFile& input, UFILE* output)
     else if(mychar == ']')
     {
       mychar = input.get();
-      
+
       if(mychar == ']')
       {
         content += mychar;
@@ -43,7 +43,7 @@ UString storeAndWriteWblank(InputFile& input, UFILE* output)
       }
     }
   }
-  
+
   return content;
 }
 
@@ -117,7 +117,7 @@ void procWord(InputFile& input, UFILE* output, bool surface_forms, bool compound
       if((mychar != '+' || (mychar == '+' && in_tag == true)) &&
          (mychar != '~' || (mychar == '~' && in_tag == true)))
       {
-        buffer += static_cast<wchar_t>(mychar);
+        buffer += mychar;
       }
       else if(in_tag == false && mychar == '+')
       {
@@ -165,13 +165,13 @@ void processStream(InputFile& input, UFILE* output, bool null_flush, bool surfac
       case '[':
         u_fputc('[', output);
         mychar = input.get();
-        
+
         if(mychar == '[')
         {
           u_fputc('[', output);
           UString wblank = storeAndWriteWblank(input, output);
           mychar = input.get();
-          
+
           if(mychar == '^')
           {
             u_fputc(mychar, output);

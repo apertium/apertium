@@ -408,9 +408,9 @@ bool ngermanbabel = false;
 void usage(string const &progname)
 {
 
-  wcerr << "USAGE: " << progname << " [input_file [output_file]" << ']' << endl;
+  cerr << "USAGE: " << progname << " [input_file [output_file]" << ']' << endl;
 
-  wcerr << "LaTeX format preprocessor " << endl;
+  cerr << "LaTeX format preprocessor " << endl;
   exit(EXIT_SUCCESS);
 }
 

@@ -183,7 +183,7 @@ TransferMult::readToken(InputFile& in)
 	}
 	else
 	{
-	  content += wchar_t(val2);
+	  content += val2;
 	}
       }
     }
@@ -197,7 +197,7 @@ TransferMult::readToken(InputFile& in)
     }
     else
     {
-      content += wchar_t(val);
+      content += val;
     }
   }
 }

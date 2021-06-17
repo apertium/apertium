@@ -61,7 +61,7 @@ private:
   static vector<UString> extractFragment(vector<UString> const &text, unsigned int base,
 					 unsigned int width);
 
-  static bool isRemovablePunct(wchar_t const &c);
+  static bool isRemovablePunct(UChar32 const &c);
   bool similar(UString const &s1, UString const &s2);
 
   void splitAndMove(InputFile& file, string const &filename);

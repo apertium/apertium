@@ -827,7 +827,7 @@ Transfer::readToken(InputFile& in)
         }
         else
         {
-          content += wchar_t(val3);
+          content += val3;
         }
       }
     }
@@ -861,7 +861,7 @@ Transfer::readToken(InputFile& in)
         }
         else
         {
-          content += wchar_t(val2);
+          content += val2;
         }
       }
     }
@@ -880,7 +880,7 @@ Transfer::readToken(InputFile& in)
     }
     else
     {
-      content += wchar_t(val);
+      content += val;
     }
   }
 }

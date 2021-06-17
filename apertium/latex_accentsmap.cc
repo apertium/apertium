@@ -112,7 +112,7 @@ UString AccentsMap::get(UString input){
 void AccentsMap::init_locale(){
 	char *locale = setlocale(LC_ALL, "");
 	std::locale lollocale(locale);
-	wcout.imbue(lollocale);
+	cout.imbue(lollocale);
 }
 
 
@@ -181,7 +181,7 @@ void AccentsMap::init_locale(){
 	map["ß"_u] = "{\\ss}"_u;
 	map["¡"_u] = "{!`}"_u;
 	map["¿"_u] = "{?`}"_u;
-	map[L"\\"] = "\\\\"_u;    # Characters that should be quoted
+	map["\\"_u] = "\\\\"_u;    # Characters that should be quoted
 	map["~"_u] = "\\~"_u;
 	map["&"_u] = "\\&"_u;
 	map["$"_u] = "\\$"_u;

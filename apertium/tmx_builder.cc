@@ -62,38 +62,12 @@ TMXBuilder::~TMXBuilder()
 UString
 TMXBuilder::restOfBlank(InputFile& input)
 {
-  UString result = "["_u;
-
-  while(true)
-  {
-    UChar32 val = input.get();
-    if(input.eof())
-    {
-      return ""_u;
-    }
-    switch(val)
-    {
-      case '\\':
-        result += '\\';
-        val = input.get();
-        if(input.eof())
-        {
-          return ""_u;
-        }
-        result += static_cast<wchar_t>(val);
-        break;
-
-      case ']':
-        result += ']';
-        return result;
-
-      default:
-        result += static_cast<wchar_t>(val);
-        break;
-    }
+  UString result = input.readBlock('[', ']');
+  if (result[result.size()-1] == ']') {
+    return result;
+  } else {
+    return ""_u;
   }
-
-  return ""_u;
 }
 
 UString
@@ -244,7 +218,7 @@ TMXBuilder::nextTU(InputFile& input)
 
       case '?':
       case '!':
-        current_tu += static_cast<wchar_t>(symbol);
+        current_tu += symbol;
         return current_tu;
     }
   }
@@ -914,7 +888,7 @@ TMXBuilder::setEditDistancePercent(double e)
 }
 
 bool
-TMXBuilder::isRemovablePunct(wchar_t const &c)
+TMXBuilder::isRemovablePunct(UChar32 const &c)
 {
   return c == '.';
 }

@@ -874,22 +874,22 @@ MTXReader::printStackValueType(VM::StackValueType svt)
 {
   switch (svt) {
     case VM::INTVAL:
-      std::cerr << "INT"_u;
+      std::cerr << "INT";
       break;
     case VM::BVAL:
-      std::cerr << "BOOL"_u;
+      std::cerr << "BOOL";
       break;
     case VM::STRVAL:
-      std::cerr << "STR"_u;
+      std::cerr << "STR";
       break;
     case VM::STRARRVAL:
-      std::cerr << "STRARR"_u;
+      std::cerr << "STRARR";
       break;
     case VM::WRDVAL:
-      std::cerr << "WRD"_u;
+      std::cerr << "WRD";
       break;
     case VM::WRDARRVAL:
-      std::cerr << "WRDARR"_u;
+      std::cerr << "WRDARR";
       break;
     default:
       throw 1;
@@ -901,29 +901,29 @@ MTXReader::printTypeExpr(ExprType expr_type)
 {
   switch (expr_type) {
     case VOIDEXPR:
-      std::cerr << "VOID"_u;
+      std::cerr << "VOID";
       break;
     case INTEXPR:
-      std::cerr << "INT"_u;
+      std::cerr << "INT";
       break;
     case BEXPR:
-      std::cerr << "BOOL"_u;
+      std::cerr << "BOOL";
       break;
     case STREXPR:
-      std::cerr << "STR"_u;
+      std::cerr << "STR";
       procStrExpr();
       break;
     case STRARREXPR:
-      std::cerr << "STRARR"_u;
+      std::cerr << "STRARR";
       break;
     case WRDEXPR:
-      std::cerr << "WRD"_u;
+      std::cerr << "WRD";
       break;
     case WRDARREXPR:
-      std::cerr << "WRDARR"_u;
+      std::cerr << "WRDARR";
       break;
     case ADDREXPR:
-      std::cerr << "ADDR"_u;
+      std::cerr << "ADDR";
       break;
     default:
       throw 1;
@@ -1138,7 +1138,7 @@ MTXReader::printTmplDefns()
 {
   std::vector<TemplateDefn>::const_iterator it = template_defns.begin();
   for (; it != template_defns.end(); it++) {
-    std::cerr << " Macro "_u << it - template_defns.begin() << "\n"_u;
+    std::cerr << " Macro " << it - template_defns.begin() << "\n";
     printTmplDefn(*it);
   }
 }

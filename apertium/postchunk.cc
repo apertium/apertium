@@ -522,7 +522,7 @@ Postchunk::readToken(InputFile& in)
     }
     else
     {
-      content += wchar_t(val);
+      content += val;
     }
   }
 }
