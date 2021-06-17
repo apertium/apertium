@@ -213,9 +213,3 @@ void fputus(const UString& s, FILE* out)
   utf8::utf16to8(s.begin(), s.end(), std::back_inserter(temp));
   fputs(temp.c_str(), out);
 }
-
-void fputrange(const char* s, int start, int len, FILE* out)
-{
-  string temp = s;
-  fputs(temp.substr(start, len).c_str(), out);
-}

@@ -44,4 +44,3 @@ class AccentsMap {
 };
 
 void fputus(const UString& s, FILE* out);
-void fputrange(const char* s, int start, int len, FILE* out);

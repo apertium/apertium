@@ -56,7 +56,7 @@ bool ngermanbabel = false;
 
 
 \\t\{..\}	{ //This information is lost
-    fputrange(yytext, 3, yyleng-4, yyout);
+    fwrite(yytext+3, 1, yyleng-4, yyout);
 }
 \\l	{
 	fputs("ł", yyout);
@@ -148,7 +148,7 @@ bool ngermanbabel = false;
 
 \\#[0-9]+	{
         fputs("<HASH_", yyout);
-        fputrange(yytext, 2, yyleng-2, yyout);
+        fwrite(yytext+2, 1, yyleng-2, yyout);
         fputs("/>", yyout);
 }
 
@@ -165,7 +165,7 @@ bool ngermanbabel = false;
 	UString result = accentsMap.get(key);
     if (result.empty()) {
       fputc('<', yyout);
-      fputrange(yytext, 1, yyleng, yyout);
+      fwrite(yytext+1, 1, yyleng-1, yyout);
       fputs("/>", yyout);
     } else {
       fputus(result, yyout);
@@ -179,10 +179,10 @@ bool ngermanbabel = false;
 \%.*	{
     fputs("<COMMENT>", yyout);
 	if (yytext[yyleng-1] == '\r') {
-      fputrange(yytext, 1, yyleng-2, yyout);
+      fwrite(yytext+1, 1, yyleng-2, yyout);
       fputs("</COMMENT>\r", yyout);
 	} else {
-      fputrange(yytext, 1, yyleng-1, yyout);
+      fwrite(yytext+1, 1, yyleng-1, yyout);
       fputs("</COMMENT>", yyout);
     }
 }
@@ -200,7 +200,7 @@ bool ngermanbabel = false;
 
 \[[^\]]*\]	{
   fputs("<PARAM>", yyout);
-  fputrange(yytext, 1, yyleng-2, yyout);
+  fwrite(yytext+1, 1, yyleng-2, yyout);
   fputs("</PARAM>", yyout);
 }
 
@@ -228,7 +228,7 @@ bool ngermanbabel = false;
 <readbrackets>[a-zA-Z0-9]+\*	{
   fputc('<', yyout);
   fputus(closesym, yyout);
-  fputrange(yytext, 0, yyleng-1, yyout);
+  fwrite(yytext+0, 1, yyleng-1, yyout);
   fputs("_STAR>", yyout);
 }
 
@@ -252,13 +252,13 @@ bool ngermanbabel = false;
 
 \\[A-Za-z]+\*	{
   fputc('<', yyout);
-  fputrange(yytext, 1, yyleng-2, yyout);
+  fwrite(yytext+1, 1, yyleng-2, yyout);
   fputs("_STAR/>", yyout);
 }
 
 \\[A-Za-z]+	{
   fputc('<', yyout);
-  fputrange(yytext, 1, yyleng, yyout);
+  fwrite(yytext+1, 1, yyleng-1, yyout);
   fputs("/>", yyout);
 }
 
@@ -308,37 +308,37 @@ bool ngermanbabel = false;
 
 \\verb[|][^|]+[|]	{
         fputs("<VERB>", yyout);
-        fputrange(yytext, 5, yyleng-5, yyout);
+        fwrite(yytext+5, 1, yyleng-5, yyout);
         fputs("</VERB>", yyout);
 }
 
 \\verb[!][^!]+[!]	{
         fputs("<VERB>",yyout);
-        fputrange(yytext, 5, yyleng-5, yyout);
+        fwrite(yytext+5, 1, yyleng-5, yyout);
         fputs("</VERB>", yyout);
 }
 
 \\verb[?][^?]+[?]	{
         fputs("<VERB>",yyout);
-        fputrange(yytext, 5, yyleng-5, yyout);
+        fwrite(yytext+5, 1, yyleng-5, yyout);
         fputs("</VERB>", yyout);
 }
 
 \\verb[/][^/]+[/]	{
         fputs("<VERB>",yyout);
-        fputrange(yytext, 5, yyleng-5, yyout);
+        fwrite(yytext+5, 1, yyleng-5, yyout);
         fputs("</VERB>", yyout);
 }
 
 \\verb[#][^#]+[#]	{
         fputs("<VERB>",yyout);
-        fputrange(yytext, 5, yyleng-5, yyout);
+        fwrite(yytext+5, 1, yyleng-5, yyout);
         fputs("</VERB>", yyout);
 }
 
 \\verb[+][^+]+[+]	{
         fputs("<VERB>",yyout);
-        fputrange(yytext, 5, yyleng-5, yyout);
+        fwrite(yytext+5, 1, yyleng-5, yyout);
         fputs("</VERB>", yyout);
 }
 

@@ -146,7 +146,7 @@ AccentsMap accentsMap(true);
 
 \<COMMENT\>[^\<]*	{
     fputs("\%", yyout);
-    fputrange(yytext, 9, yyleng-9, yyout);
+    fwrite(yytext+9, 1, yyleng-9, yyout);
 }
 
 \<\/COMMENT\>	{
@@ -155,7 +155,7 @@ AccentsMap accentsMap(true);
 
 \<PARAM\>[^\<]*	{
     fputc('[', yyout);
-    fputrange(yytext, 7, yyleng-7, yyout);
+    fwrite(yytext+7, 1, yyleng-7, yyout);
 }
 \<\/PARAM\>	{
 	fputs("]", yyout);
@@ -214,13 +214,13 @@ AccentsMap accentsMap(true);
 
 \<[a-zA-Z0-9]+\>	{
     fputs("\\begin{", yyout);
-    fputrange(yytext, 1, yyleng-2, yyout);
+    fwrite(yytext+1, 1, yyleng-2, yyout);
     fputc('}', yyout);
 }
 
 \<HASH_[0-9]+\/\>	{
     fputs("\\#", yyout);
-    fputrange(yytext, 6, yyleng-8, yyout);
+    fwrite(yytext+6, 1, yyleng-8, yyout);
 }
 
 \<HASH\/\>		{
@@ -229,30 +229,30 @@ AccentsMap accentsMap(true);
 
 \<[a-zA-Z0-9]+_STAR\>	{
     fputs("\\begin{", yyout);
-    fputrange(yytext, 1, yyleng-7, yyout);
+    fwrite(yytext+1, 1, yyleng-7, yyout);
     fputs("*}", yyout);
 }
 
 \<\/[a-zA-Z0-9]+\>	{
     fputs("\\end{", yyout);
-    fputrange(yytext, 2, yyleng-3, yyout);
+    fwrite(yytext+2, 1, yyleng-3, yyout);
     fputc('}', yyout);
 }
 
 \<\/[a-zA-Z0-9]+_STAR\>	{
     fputs("\\end{", yyout);
-    fputrange(yytext, 2, yyleng-8, yyout);
+    fwrite(yytext+2, 1, yyleng-8, yyout);
     fputs("*}", yyout);
 }
 
 \<[a-zA-Z0-9]+\/\>	{
     fputc('\\', yyout);
-    fputrange(yytext, 1, yyleng-3, yyout);
+    fwrite(yytext+1, 1, yyleng-3, yyout);
 }
 
 \<[a-zA-Z0-9]+_STAR\/\>	{
     fputc('\\', yyout);
-    fputrange(yytext, 1, yyleng-8, yyout);
+    fwrite(yytext+1, 1, yyleng-8, yyout);
     fputc('*', yyout);
 }
  /*NO ENTIENDO ESTA REGLA
