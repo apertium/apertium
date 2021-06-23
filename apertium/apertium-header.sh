@@ -447,7 +447,7 @@ while [[ $OPTIND -le $# ]]; do
 done
 
 
-while getopts ":uahlzf:d:m:o:n" opt; do
+while getopts ":uahlzf:d:m:o:nH" opt; do
   case "$opt" in
     f) FORMAT=$OPTARG ;;
     d) DATADIR=$OPTARG ;;
@@ -455,6 +455,7 @@ while getopts ":uahlzf:d:m:o:n" opt; do
     o) TRANSLATION_MEMORY_DIRECTION=$OPTARG ;;
     u) UWORDS="no" ;;
     n) FORMAT_OPTIONS+=(-n) ;;
+    H) FORMAT_OPTIONS+=(-o) ;;
     a) OPTION_TAGGER="-m" ;;
     l) LIST_MODES_AND_EXIT=true ;;
     z) NULL_FLUSH+=(-z) ;;
