@@ -201,6 +201,14 @@ void put(const UString&amp; str, FILE* f)
   fputs_unlocked(temp.c_str(), f);
 }
 
+template &lt;size_t N&gt;
+void put(const char16_t(&amp;str)[N], FILE* f)
+{
+  string temp;
+  utf8::utf16to8(str, str + N, std::back_inserter(temp));
+  fputs_unlocked(temp.c_str(), f);
+}
+
 void init_escape()
 {
   if(regcomp(&amp;escape_chars, "<xsl:call-template name="replaceString">
