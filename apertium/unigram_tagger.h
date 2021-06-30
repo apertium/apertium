@@ -45,8 +45,8 @@ enum UnigramTaggerModel {
 class UnigramTagger : public StreamTagger {
 private:
   long double model3_score(const Analysis &Analysis_);
-  void tag(const LexicalUnit &LexicalUnit_, std::wostream &Output);
-  std::wstringstream score_DEBUG;
+  void tag(const LexicalUnit &LexicalUnit_, std::ostream &Output);
+  std::stringstream score_DEBUG;
 protected:
 
   UnigramTaggerModel model;
@@ -94,7 +94,7 @@ public:
   UnigramTaggerModel getModel();
   void serialise(std::ostream& o) const;
   void deserialise(std::istream& s);
-  void tag(Stream& Input, std::wostream& Output);
+  void tag(Stream& Input, std::ostream& Output);
   void train(Stream& TaggedCorpus);
 };
 }

@@ -134,9 +134,9 @@ UnigramTagger::score(const Analysis& Analysis_) {
       }
       if(TheFlags.getDebug())
       {
-        score_DEBUG << L"(" << tokenCount_r_a << L" * "
-                    << tokenCount_a << L") /\n    ("
-                    << tokenCount_a << L" + " << typeCount_a << L")";
+        score_DEBUG << "(" << tokenCount_r_a << " * "
+                    << tokenCount_a << ") /\n    ("
+                    << tokenCount_a << " + " << typeCount_a << ")";
       }
       return (tokenCount_r_a * tokenCount_a) / (tokenCount_a + typeCount_a);
     }
@@ -159,7 +159,7 @@ UnigramTagger::model3_score(const Analysis &Analysis_)
 
   i i_(Analysis_);
   Lemma l_(Analysis_);
-  std::wstringstream score_DEBUG_div;
+  std::stringstream score_DEBUG_div;
   if(Model3_l_t.find(i_) != Model3_l_t.end())
   {
     if(Model3_l_t[i_].find(l_) != Model3_l_t[i_].end())
@@ -174,9 +174,9 @@ UnigramTagger::model3_score(const Analysis &Analysis_)
   }
   if(TheFlags.getDebug())
   {
-    score_DEBUG << L"(" << tokenCount_r_i << L" * " << tokenCount_i;
-    std::wstringstream score_DEBUG_div;
-    score_DEBUG_div << L"(" << tokenCount_i << L" + " << typeCount_i << L")";
+    score_DEBUG << "(" << tokenCount_r_i << " * " << tokenCount_i;
+    std::stringstream score_DEBUG_div;
+    score_DEBUG_div << "(" << tokenCount_i << " + " << typeCount_i << ")";
   }
 
   long double score = tokenCount_r_i * tokenCount_i;
@@ -223,9 +223,9 @@ UnigramTagger::model3_score(const Analysis &Analysis_)
     }
     if(TheFlags.getDebug())
     {
-      score_DEBUG << L" * " << tokenCount_d_i << L" * " << tokenCount_i_d;
-      score_DEBUG_div << L" * (" << tokenCount_i << L" + " << typeCount_i
-                      << L") * (" << tokenCount_d << L" + " << typeCount_d << L")";
+      score_DEBUG << " * " << tokenCount_d_i << " * " << tokenCount_i_d;
+      score_DEBUG_div << " * (" << tokenCount_i << " + " << typeCount_i
+                      << ") * (" << tokenCount_d << " + " << typeCount_d << ")";
     }
 
     score *= (tokenCount_d_i * tokenCount_i_d);
@@ -233,14 +233,14 @@ UnigramTagger::model3_score(const Analysis &Analysis_)
   }
   if(TheFlags.getDebug())
   {
-    score_DEBUG << L") /\n    [" << score_DEBUG_div.str() << L"]";
+    score_DEBUG << ") /\n    [" << score_DEBUG_div.str() << "]";
   }
 
   return score / score_Divisor;
 }
 
 void
-UnigramTagger::tag(Stream &Input, std::wostream &Output)
+UnigramTagger::tag(Stream &Input, std::ostream &Output)
 {
   while (true) {
     StreamedType StreamedType_ = Input.get();
@@ -255,7 +255,7 @@ UnigramTagger::tag(Stream &Input, std::wostream &Output)
     }
     if(TheFlags.getDebug())
     {
-      std::wcerr << L"\n\n";
+      std::cerr << "\n\n";
     }
 
     tag(*StreamedType_.TheLexicalUnit, Output);
@@ -266,7 +266,7 @@ UnigramTagger::tag(Stream &Input, std::wostream &Output)
 }
 
 void
-UnigramTagger::tag(const LexicalUnit &LexicalUnit_, std::wostream &Output)
+UnigramTagger::tag(const LexicalUnit &LexicalUnit_, std::ostream &Output)
 {
   Optional<Analysis> TheAnalysis;
   long double max_score = 0;
@@ -275,7 +275,7 @@ UnigramTagger::tag(const LexicalUnit &LexicalUnit_, std::wostream &Output)
   {
     if(TheFlags.getDebug())
     {
-      score_DEBUG.str(L"");
+      score_DEBUG.str("");
     }
     const Analysis& a_ = LexicalUnit_.TheAnalyses[n];
     long double s = score(a_);
@@ -286,10 +286,10 @@ UnigramTagger::tag(const LexicalUnit &LexicalUnit_, std::wostream &Output)
     }
     if(TheFlags.getDebug())
     {
-      std::wcerr << L"score(\"" << a_ << L"\") ==\n "
-                 << score_DEBUG.str() << L" ==\n  " << std::fixed
+      std::cerr << "score(\"" << a_ << "\") ==\n "
+                 << score_DEBUG.str() << " ==\n  " << std::fixed
                  << std::setprecision(std::numeric_limits<long double>::digits10)
-                 << s << L"\n";
+                 << s << "\n";
     }
   }
 

@@ -22,7 +22,6 @@
 #include <apertium/ttag.h>
 #include <apertium/xml_reader.h>
 #include <lttoolbox/pattern_list.h>
-#include <lttoolbox/ltstr.h>
 
 #include <libxml/xmlreader.h>
 #include <map>
@@ -44,7 +43,7 @@ class MTXReader : public XMLReader
   };
 
   typedef PerceptronSpec VM;
-  typedef std::map<std::wstring, size_t> VarNVMap;
+  typedef std::map<std::string, size_t> VarNVMap;
   typedef std::vector<std::pair<size_t, ExprType> > TemplateReplacements;
   typedef std::map<std::pair<size_t, std::vector<VM::FeatureDefn> >, size_t> InstanciationMap;
   typedef std::pair<VM::FeatureDefn, TemplateReplacements> TemplateDefn;
@@ -59,8 +58,8 @@ protected:
 private:
   size_t pushSetConst(std::string &val);
   size_t pushStrConst(std::string &val);
-  size_t getConstRef(const std::wstring &ref_attr, const std::string &lit_attr,
-                     const std::wstring &what, VarNVMap &const_map,
+  size_t getConstRef(const UString& ref_attr, const UString& lit_attr,
+                     const UString& what, VarNVMap &const_map,
                      size_t (MTXReader::*push_new)(std::string&), bool& exists);
   size_t getSetRef(bool& exists);
   size_t getSetRef();
@@ -71,9 +70,9 @@ private:
   void pokeBytecode(size_t addr, VM::Bytecode bc);
   void emitInt(int val);
   void emitUInt(int val);
-  int getInt(std::string attr_name, bool& exists);
+  int getInt(const UString& attr_name, bool& exists);
   int getInt(bool& exists);
-  int getInt(std::string attr_name);
+  int getInt(const UString& attr_name);
   int getInt();
 
   void procCoarseTags();
@@ -109,7 +108,7 @@ private:
   void procForEach(ExprType type);
   void procPred();
   template<typename GetT, typename EmitT> void emitAttr(
-      std::wstring what, GetT (MTXReader::*getter)(bool&),
+      std::string what, GetT (MTXReader::*getter)(bool&),
       void (MTXReader::*emitter)(EmitT));
   void getAndEmitStrRef();
   void getAndEmitSetRef();

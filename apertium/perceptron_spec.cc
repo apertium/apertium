@@ -1,17 +1,18 @@
 #include <apertium/perceptron_spec.h>
-#include <apertium/utf_converter.h>
 #include <apertium/deserialiser.h>
 #include <apertium/serialiser.h>
 #include <lttoolbox/match_state.h>
 #include <iomanip>
+#include <lttoolbox/string_utils.h>
+#include <utf8.h>
 
 
 namespace Apertium {
 
-void PerceptronSpec::printFeature(std::wostream &out, const PerceptronSpec::FeatureDefn &feat_defn)
+void PerceptronSpec::printFeature(std::ostream &out, const PerceptronSpec::FeatureDefn &feat_defn)
 {
   ios::fmtflags orig_flags(out.flags());
-  out << std::hex << std::setw(2) << std::setfill(L'0');
+  out << std::hex << std::setw(2) << std::setfill('0');
   for (size_t j = 0; j < feat_defn.size(); j++) {
      out << +feat_defn[j]  << " ";
   }
@@ -27,8 +28,8 @@ void PerceptronSpec::printFeature(std::wostream &out, const PerceptronSpec::Feat
   out << "\n";
 }
 
-std::wostream &
-operator<<(std::wostream &out, PerceptronSpec const &ps) {
+std::ostream &
+operator<<(std::ostream &out, PerceptronSpec const &ps) {
   out << "= Global predicate =\n";
   PerceptronSpec::printFeature(out, ps.global_pred);
   out << "= Globals (" << ps.global_defns.size() << ") =\n";
@@ -51,12 +52,13 @@ const std::string PerceptronSpec::opcode_names[] = {
 #undef X
 
 const std::string PerceptronSpec::type_names[] = {
-  "integer", "boolean", "string", "string array", "wordoid", "wordoid array"
+     "integer", "boolean", "string", "string array",
+     "wordoid", "wordoid array"
 };
 
 static Morpheme make_sentinel_wordoid(
-    const std::wstring &lemma_str,
-    const std::wstring &tag_str) {
+    const UString &lemma_str,
+    const UString &tag_str) {
   Morpheme morpheme;
   morpheme.TheLemma = lemma_str;
   Tag tag;
@@ -66,17 +68,17 @@ static Morpheme make_sentinel_wordoid(
 }
 
 static std::vector<Morpheme> make_sentinel_wordoids(
-    const std::wstring &lemma_str,
-    const std::wstring &tag_str) {
+    const UString &lemma_str,
+    const UString &tag_str) {
   std::vector<Morpheme> morphemes;
   morphemes.push_back(make_sentinel_wordoid(lemma_str, tag_str));
   return morphemes;
 }
 
 static LexicalUnit make_sentinel_token(
-    const std::wstring &surf,
-    const std::wstring &lemma_str,
-    const std::wstring &tag_str) {
+    const UString &surf,
+    const UString &lemma_str,
+    const UString &tag_str) {
   Analysis analy;
   analy.TheMorphemes = make_sentinel_wordoids(lemma_str, tag_str);
   LexicalUnit lu;
@@ -92,9 +94,9 @@ PerceptronSpec::PerceptronSpec() {
       opcode_values[opcode_names[i]] = (Opcode)i;
     }
 
-    untagged_sentinel = make_sentinel_wordoids(L"!UNTAGGED!", L"!UT!");
-    token_wordoids_underflow = make_sentinel_token(L"!SURF_UNDERFLOW!", L"!TOK_UNDERFLOW!", L"!TUF!");
-    token_wordoids_overflow = make_sentinel_token(L"!SURF_OVERFLOW!", L"!TOK_OVERFLOW!", L"!TOF!");
+    untagged_sentinel = make_sentinel_wordoids("!UNTAGGED!"_u, "!UT!"_u);
+    token_wordoids_underflow = make_sentinel_token("!SURF_UNDERFLOW!"_u, "!TOK_UNDERFLOW!"_u, "!TUF!"_u);
+    token_wordoids_overflow = make_sentinel_token("!SURF_OVERFLOW!"_u, "!TOK_OVERFLOW!"_u, "!TOF!"_u);
 
     static_constructed = true;
   }
@@ -158,9 +160,11 @@ PerceptronSpec::coarsen(const Morpheme &wrd) const
 {
   std::map<const Morpheme, std::string>::const_iterator it = coarsen_cache.find(wrd);
   if (it == coarsen_cache.end()) {
-    std::string coarse_tag = UtfConverter::toUtf8(coarse_tags->coarsen(wrd));
-    coarsen_cache[wrd] = coarse_tag;
-    return coarse_tag;
+    UString coarse_tag = coarse_tags->coarsen(wrd);
+    std::string result;
+    utf8::utf16to8(coarse_tag.begin(), coarse_tag.end(), std::back_inserter(result));
+    coarsen_cache[wrd] = result;
+    return result;
   }
   return it->second;
 }
@@ -254,11 +258,6 @@ PerceptronSpec::Machine::Machine(
     token_idx(token_idx), wordoid_idx(wordoid_idx) {}
 
 
-static bool
-inRange(int lower, int upper, int x) {
-  return lower <= x && x < upper;
-}
-
 static int
 clamp(int lower, int upper, int x) {
   return std::min(std::max(x, lower), upper);
@@ -289,14 +288,14 @@ subscript(std::vector<T> vec, int idx) {
 void
 PerceptronSpec::Machine::traceMachineState()
 {
-  std::wcerr << "pc: " << bytecode_iter - feat.begin() << "\n";
-  std::wcerr << "peek: ";
-  std::wcerr << *bytecode_iter;
+  std::cerr << "pc: " << bytecode_iter - feat.begin() << "\n";
+  std::cerr << "peek: ";
+  std::cerr << *bytecode_iter;
   if (*bytecode_iter < num_opcodes) {
-    std::wcerr << " (" << opcode_names[*bytecode_iter].c_str() << ")";
+    std::cerr << " (" << opcode_names[*bytecode_iter].c_str() << ")";
   }
-  std::wcerr << "\n";
-  std::wcerr << "stack: " << stack << "\n";
+  std::cerr << "\n";
+  std::cerr << "stack: " << stack << "\n";
 }
 
 bool
@@ -367,12 +366,12 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
           .accumulator=StackValue(0)});
     } break;
     case FOREACH: {
-      //std::wcerr << "size: " << loop_stack.back().iterable.size()
+      //std::cerr << "size: " << loop_stack.back().iterable.size()
                  //<< " iteration: " << loop_stack.back().iteration << "\n";
-      //std::wcerr << "foreach pc: " << bytecode_iter - feat.begin() << "\n";
+      //std::cerr << "foreach pc: " << bytecode_iter - feat.begin() << "\n";
       size_t slot = get_uint_operand();
       size_t end_offset = get_uint_operand();
-      //std::wcerr << "after foreach pc: " << bytecode_iter - feat.begin() << "\n";
+      //std::cerr << "after foreach pc: " << bytecode_iter - feat.begin() << "\n";
       if (loop_stack.back().iteration == loop_stack.back().iterable.size()) {
         stack.push(loop_stack.back().accumulator);
         loop_stack.pop_back();
@@ -392,10 +391,10 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
         if (loop_state.iteration == 0) {
           if (stack.top().type == WRDVAL) {
             loop_state.accumulator = StackValue(std::vector<Morpheme>());
-            //std::wcerr << "Wordoid array size " << loop_state.iterable.size() << "\n";
+            //std::cerr << "Wordoid array size " << loop_state.iterable.size() << "\n";
           } else if (stack.top().type == STRVAL) {
             loop_state.accumulator = StackValue(std::vector<std::string>());
-            //std::wcerr << "String array size " << loop_state.iterable.size() << "\n";
+            //std::cerr << "String array size " << loop_state.iterable.size() << "\n";
           } else {
             throw 1;
           }
@@ -403,7 +402,7 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
         if (stack.top().type == WRDVAL) {
           loop_state.accumulator.wrdArr().push_back(stack.top().wrd());
         } else if (stack.top().type == STRVAL) {
-          //std::wcerr << "String array size " << loop_state.accumulator.size() << "\n";
+          //std::cerr << "String array size " << loop_state.accumulator.size() << "\n";
           loop_state.accumulator.strArr().push_back(stack.top().str());
         } else {
           throw 1;
@@ -416,7 +415,7 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
     } break;
     case GETGVAR: {
       int slot = get_uint_operand();
-      //std::wcerr << "GETGVAR " << slot << " " << spec.global_results[slot] << "\n";
+      //std::cerr << "GETGVAR " << slot << " " << spec.global_results[slot] << "\n";
       stack.push(spec.global_results[slot]);
     } break;
     case GETVAR: {
@@ -476,17 +475,21 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
       stack.push(clamp(0, (int)untagged.size() - 1, stack.pop_off().intVal()));
       break;
     case GETWRD: {
-      //std::wcerr << "GETWRD start\n";
+      //std::cerr << "GETWRD start\n";
       stack.push(get_wordoid(tagged));
-      //std::wcerr << "GETWRD done\n";
+      //std::cerr << "GETWRD done\n";
     } break;
     case EXTOKSURF: {
-      std::wstring surf = get_token(untagged).TheSurfaceForm;
-      stack.push(new std::string(UtfConverter::toUtf8(surf)));
+      UString surf = get_token(untagged).TheSurfaceForm;
+      std::string temp;
+      utf8::utf16to8(surf.begin(), surf.end(), std::back_inserter(temp));
+      stack.push(std::move(temp));
     } break;
     case EXWRDLEMMA: {
-      std::wstring lemma = stack.pop_off().wrd().TheLemma;
-      stack.push(new std::string(UtfConverter::toUtf8(lemma)));
+      UString lemma = stack.pop_off().wrd().TheLemma;
+      std::string temp;
+      utf8::utf16to8(lemma.begin(), lemma.end(), std::back_inserter(temp));
+      stack.push(std::move(temp));
     } break;
     case EXWRDCOARSETAG: {
       assert(spec.coarse_tags);
@@ -510,7 +513,7 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
           if (wrd_it == wrds.end()) {
             break;
           } else {
-            ambgset.back() += "+";
+            ambgset.back() += '+';
           }
         }
       }
@@ -519,11 +522,11 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
     case EXTAGS: {
       const std::vector<Tag> &tags = stack.top().wrd().TheTags;
       /*std::vector<Tag>::const_iterator it = tags.begin();
-      std::wcerr << "tags: ";
+      std::cerr << "tags: ";
       for (;it != tags.end(); it++) {
-        std::wcerr << &(*it) << " " << it->TheTag << ", ";
+        std::cerr << &(*it) << " " << it->TheTag << ", ";
       }
-      std::wcerr << "\n";*/
+      std::cerr << "\n";*/
       std::vector<std::string> *tags_str = new std::vector<std::string>;
       tags_str->resize(tags.size());
       transform(tags.begin(), tags.end(), tags_str->begin(), get_tag);
@@ -608,9 +611,11 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
     case HASANYSUBSTR: unimplemented_opcode("HASANYSUBSTR"); break;
     case CPYSTR: unimplemented_opcode("CPYSTR"); break;
     case LOWER: {
-      // XXX: Eek! Bad! No Unicode. ICU please.
-      std::string &str = stack.top().str();
-      std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+      UString str = to_ustring(stack.pop_off().str().c_str());
+      UString low = StringUtils::tolower(str);
+      std::string tmp;
+      utf8::utf16to8(low.begin(), low.end(), std::back_inserter(tmp));
+      stack.push(tmp);
     } break;
     case SLICE: {
       int begin = get_int_operand();
@@ -641,16 +646,15 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
     } break;
     case JOIN: {
       const std::string &sep = get_str_operand();
-      std::stringstream ss;
       std::vector<std::string> str_arr = stack.pop_off().strArr();
-      std::vector<std::string>::const_iterator it;
-      for (it = str_arr.begin(); it != str_arr.end(); it++) {
-        ss << *it;
-        if (it + 1 != str_arr.end()) {
-          ss << sep;
+      std::string ss;
+      for (auto& it : str_arr) {
+        if (!ss.empty()) {
+          ss.append(sep);
         }
+        ss.append(it);
       }
-      stack.push(StackValue(ss.str()));
+      stack.push(StackValue(ss));
     } break;
     default:
       return false;
@@ -740,8 +744,8 @@ void
 PerceptronSpec::Machine::unimplemented_opcode(std::string opstr) {
   int bytecode_idx = bytecode_iter - feat.begin();
   std::stringstream msg;
-  msg << "Unimplemented opcode: " << opstr
-      << " at " << (is_feature ? "feature" : "global") << " #" << feat_idx << " address #" << bytecode_idx;
+  msg << "Unimplemented opcode: " << opstr;
+  msg << " at " << (is_feature ? "feature" : "global") << " #" << feat_idx << " address #" << bytecode_idx;
   throw Apertium::Exception::apertium_tagger::UnimplementedOpcode(msg);
 }
 
@@ -767,7 +771,9 @@ void PerceptronSpec::appendStr(UnaryFeatureVec::iterator begin,
 
 std::string
 PerceptronSpec::Machine::get_tag(const Tag &in) {
-  return UtfConverter::toUtf8(in.TheTag);
+  std::string result;
+  utf8::utf16to8(in.TheTag.begin(), in.TheTag.end(), std::back_inserter(result));
+  return result;
 }
 
 void PerceptronSpec::serialiseFeatDefn(

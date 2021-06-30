@@ -32,8 +32,8 @@ class PerceptronSpec
 {
 public:
   typedef std::vector<unsigned char> FeatureDefn;
-  static void printFeature(std::wostream &out, const PerceptronSpec::FeatureDefn &feat_defn);
-  friend std::wostream& operator<<(std::wostream &out, PerceptronSpec const &pt);
+  static void printFeature(std::ostream &out, const PerceptronSpec::FeatureDefn &feat_defn);
+  friend std::ostream& operator<<(std::ostream &out, PerceptronSpec const &pt);
   PerceptronSpec();
   #define OPCODES \
     /** Boolean and arithmetic */\
@@ -179,7 +179,7 @@ public:
   };
   class StackValue {
   public:
-    friend std::wostream& operator<<(std::wostream& out, StackValue const &val) {
+    friend std::ostream& operator<<(std::ostream& out, StackValue const &val) {
       switch (val.type) {
         case INTVAL:
           out << val.intVal();
@@ -188,14 +188,12 @@ public:
           out << val.boolVal();
           break;
         case STRVAL:
-          out << val.str().c_str();
+          out << val.str();
           break;
         case STRARRVAL: {
           out << "[";
-          std::vector<std::string> &str_arr = val.strArr();
-          std::vector<std::string>::const_iterator it = str_arr.begin();
-          for (; it != str_arr.end(); it++) {
-            out << it->c_str();
+          for (auto& it : val.strArr()) {
+            out << it;
           }
           out << "]";
         } break;
@@ -205,9 +203,8 @@ public:
         case WRDARRVAL: {
           out << "[";
           std::vector<Morpheme> &wrd_arr = val.wrdArr();
-          std::vector<Morpheme>::const_iterator it = wrd_arr.begin();
-          for (; it != wrd_arr.end(); it++) {
-            out << *it;
+          for (auto& it : wrd_arr) {
+            out << it;
           }
           out << "]";
         } break;
@@ -226,7 +223,7 @@ public:
     StackValue(const StackValue &other) {
       // C++11: Probably reference counting with shared_ptr would be better
       // than all this copying if it were available
-      //std::wcerr << "StackValue init\n";
+      //std::cerr << "StackValue init\n";
       type = other.type;
       switch (type) {
         case STRVAL:
@@ -248,7 +245,7 @@ public:
       }
     }
     StackValue& operator=(StackValue other) {
-      //std::wcerr << "StackValue assign\n";
+      //std::cerr << "StackValue assign\n";
       swap(*this, other);
       return *this;
     }
@@ -260,7 +257,7 @@ public:
       payload.bval = bval;
       type = BVAL;
     }
-    StackValue(const std::string &strval) {
+    StackValue(const std::string& strval) {
       payload.strval = new std::string(strval);
       type = STRVAL;
     }
@@ -269,32 +266,32 @@ public:
       type = STRARRVAL;
     }
     StackValue(const Morpheme &wordoid) {
-      /*std::wcerr << L"Before ";
+      /*std::cerr << "Before ";
       std::vector<Tag>::const_iterator it = wordoid.TheTags.begin();
       for (;it != wordoid.TheTags.end(); it++) {
-        std::wcerr << &(*it) << " ";
+        std::cerr << &(*it) << " ";
       }
-      std::wcerr << L"\n";
-      std::wcerr << L"Copy morpheme " << &wordoid;*/
+      std::cerr << "\n";
+      std::cerr << "Copy morpheme " << &wordoid;*/
       payload.wrdval = new Morpheme(wordoid);
-      /*std::wcerr << L" to " << payload.wrdval << "\n";
-      std::wcerr << L"After ";
+      /*std::cerr << " to " << payload.wrdval << "\n";
+      std::cerr << "After ";
       it = payload.wrdval->TheTags.begin();
       for (;it != payload.wrdval->TheTags.end(); it++) {
-        std::wcerr << &(*it) << " ";
+        std::cerr << &(*it) << " ";
       }
-      std::wcerr << L"\n";*/
+      std::cerr << "\n";*/
       type = WRDVAL;
     }
     StackValue(const std::vector<Morpheme> &wordoids) {
       payload.wrdarrval = new std::vector<Morpheme>(wordoids);
       type = WRDARRVAL;
     }
-    StackValue(std::string *strval) {
+    StackValue(std::string* strval) {
       payload.strval = strval;
       type = STRVAL;
     }
-    StackValue(std::vector<std::string> *strarrval) {
+    StackValue(std::vector<std::string>* strarrval) {
       payload.strarrval = strarrval;
       type = STRARRVAL;
     }
@@ -410,20 +407,20 @@ private:
       data.pop_back();
     }
     /*void push(StackValue val) {
-      std::wcerr << "before copy push\n";
+      std::cerr << "before copy push\n";
       data.push_back(val);
-      std::wcerr << "after copy push\n";
+      std::cerr << "after copy push\n";
     }*/
     void push(const StackValue &val) {
-      //std::wcerr << "before push\n";
+      //std::cerr << "before push\n";
       data.push_back(val);
-      //std::wcerr << "after push\n";
+      //std::cerr << "after push\n";
     }
     StackValue& top() {
       return data.back();
     }
     StackValue pop_off() {
-      //std::wcerr << L"Top value: " << top().payload.intval << "\n";
+      //std::cerr << "Top value: " << top().payload.intval << "\n";
       StackValue ret = top();
       pop();
       return ret;

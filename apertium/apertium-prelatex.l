@@ -10,7 +10,8 @@
 #include <string>
 #include <vector>
 #include <apertium/latex_accentsmap.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
+#include <apertium/string_to_wostream.h>
 
 extern "C" {
 #if !defined(__STDC__)
@@ -20,7 +21,6 @@ extern "C" {
 }
 
 #include <lttoolbox/lt_locale.h>
-#include <lttoolbox/ltstr.h>
 #ifndef GENFORMAT
 #include "apertium_config.h"
 #endif
@@ -33,37 +33,9 @@ extern "C" {
 using namespace std;
 
 AccentsMap accentsMap(false);
-wstring closesym = L"";
-string memconv = "";
+UString closesym;
 //For german babel detection
 bool ngermanbabel = false;
-
-wstring convertir(string const &multibyte, int const length)
-{
-  memconv.append(multibyte.c_str(), length);
-  int tam = memconv.size();
-  wchar_t *retval = new wchar_t[tam+1];
-  size_t l = mbstowcs(retval, memconv.c_str(), tam);
-
-  if(l == ((size_t) -1))
-  {
-    delete[] retval;
-    if(memconv.size() >= 4)
-    {
-      wcerr << L"Warning: wrong encoding" << endl;
-    }
-    return L"";
-  }
-  else
-  {
-    memconv = "";
-    retval[l] = 0;
-    wstring ret = retval;
-    delete[] retval;
-    return ret;
-  }
-}
-
 
 
 
@@ -84,25 +56,25 @@ wstring convertir(string const &multibyte, int const length)
 
 
 \\t\{..\}	{ //This information is lost
-	fputws(convertir(yytext+3,yyleng-4).c_str(),yyout);
+    fwrite(yytext+3, 1, yyleng-4, yyout);
 }
 \\l	{
-	fputws(L"ł", yyout);
+	fputs("ł", yyout);
 }
 
 \"[oOaAuUsS]	{ //When usepackage[ngerman]{babel} is present (not checked).
-	if(!ngermanbabel)
-		fputws(convertir(yytext,yyleng).c_str(),yyout);
-	else {
+	if(!ngermanbabel) {
+        fputs(yytext, yyout);
+    } else {
 		switch(yytext[1]){
-			case 'o': fputws(L"ö", yyout); break;
-			case 'O': fputws(L"Ö", yyout); break;
-			case 'a': fputws(L"ä", yyout); break;
-			case 'A': fputws(L"Ä", yyout); break;
-			case 'u': fputws(L"ü", yyout); break;
-			case 'U': fputws(L"Ü", yyout); break;
-			case 's': fputws(L"ß", yyout); break;
-			case 'S': fputws(L"ß", yyout); break;
+			case 'o': fputs("ö", yyout); break;
+			case 'O': fputs("Ö", yyout); break;
+			case 'a': fputs("ä", yyout); break;
+			case 'A': fputs("Ä", yyout); break;
+			case 'u': fputs("ü", yyout); break;
+			case 'U': fputs("Ü", yyout); break;
+			case 's': fputs("ß", yyout); break;
+			case 'S': fputs("ß", yyout); break;
 		}
 	}
 }
@@ -113,288 +85,304 @@ wstring convertir(string const &multibyte, int const length)
 	switch(yytext[1]){
 	case '^':
 		if(yytext[4]=='i')
-			fputws(L"î", yyout);
+			fputs("î", yyout);
 		else
-			fputws(L"ĵ",yyout);
+			fputs("ĵ",yyout);
 		break;
 	case '\"':
 		if(yytext[4]=='i')
-			fputws(L"ï",yyout);
+			fputs("ï",yyout);
 		else
-			fputws(L"j",yyout); //should actually be j with umlaut
+			fputs("j",yyout); //should actually be j with umlaut
 		break;
 	case '\'':
 		if(yytext[4]=='i')
-			fputws(L"í",yyout);
+			fputs("í",yyout);
 		else
-			fputws(L"j",yyout); //should actually be j with accent
+			fputs("j",yyout); //should actually be j with accent
 		break;
 	case '`':
 		if(yytext[4]=='i')
-			fputws(L"ì",yyout);
+			fputs("ì",yyout);
 		else
-			fputws(L"k",yyout); //should actually be j with accent
+			fputs("k",yyout); //should actually be j with accent
 		break;
 	}
 }
 
 \{\\oe\}	{
-	fputws(L"œ",yyout);
+	fputs("œ",yyout);
 }
 
 \{\\OE\}	{
-	fputws(L"Œ",yyout);
+	fputs("Œ",yyout);
 }
 
 \{\\ae\}	{
-	fputws(L"æ",yyout);
+	fputs("æ",yyout);
 }
 
 \{\\AE\}	{
-	fputws(L"Æ",yyout);
+	fputs("Æ",yyout);
 }
 
 \{\\aa\}	{
-	fputws(L"å",yyout);
+	fputs("å",yyout);
 }
 
 \{\\AA\}	{
-	fputws(L"Å",yyout);
+	fputs("Å",yyout);
 }
 
 \{\\o\}	{
-	fputws(L"ø",yyout);
+	fputs("ø",yyout);
 }
 
 \{\\O\}	{
-	fputws(L"Ø",yyout);
+	fputs("Ø",yyout);
 }
 
 \{\\ss\}	{
-	fputws(L"ß",yyout);
+	fputs("ß",yyout);
 }
 
 \\#[0-9]+	{
-        fputws((wstring(L"<HASH_")+convertir(yytext+2,yyleng-2)+wstring(L"/>")).c_str(),yyout);
+        fputs("<HASH_", yyout);
+        fwrite(yytext+2, 1, yyleng-2, yyout);
+        fputs("/>", yyout);
 }
 
 \\#		{
-        fputws(L"<HASH/>", yyout);
+        fputs("<HASH/>", yyout);
 }
 
 \\[`'\^\"H~ck=b.druv]((\{.\})|(.))	{
-	wstring ws = convertir(yytext,yyleng).c_str();
+    UString ws = to_ustring(yytext);
+    UString key;
+    key += ws[1];
+    key += (yyleng == 3) ? ws[2] : ws[3];
 
-	wstring result = accentsMap.get(
-	  L""+ws.substr(1,1)+ (
-	    (yyleng==3)? ws.substr(2,1) : ws.substr(3,1)
-	  ));
-
-        if(result == L"")
-        {
-	  fputws((wstring(L"<")+convertir(yytext+1,yyleng)+wstring(L"/>")).c_str(),yyout);
-        }
-        else
-        {
-  	  fputws(result.c_str(), yyout);
-        }
+	UString result = accentsMap.get(key);
+    if (result.empty()) {
+      fputc('<', yyout);
+      fwrite(yytext+1, 1, yyleng-1, yyout);
+      fputs("/>", yyout);
+    } else {
+      fputus(result, yyout);
+    }
 }
 
 \\\\	{
-	fputws(L"<BR/>",yyout);
+	fputs("<BR/>",yyout);
 }
 
 \%.*	{
-	if(yytext[yyleng-1]=='\r')
-		fputws((wstring(L"<COMMENT>")+convertir(yytext+1,yyleng-2)+wstring(L"</COMMENT>\r")).c_str(),yyout);
-	else
-		fputws((wstring(L"<COMMENT>")+convertir(yytext+1,yyleng-1)+wstring(L"</COMMENT>")).c_str(),yyout);
+    fputs("<COMMENT>", yyout);
+	if (yytext[yyleng-1] == '\r') {
+      fwrite(yytext+1, 1, yyleng-2, yyout);
+      fputs("</COMMENT>\r", yyout);
+	} else {
+      fwrite(yytext+1, 1, yyleng-1, yyout);
+      fputs("</COMMENT>", yyout);
+    }
 }
 
 \\usepackage\[[^\]]*\]	{
-	wstring ws = convertir(yytext+12,yyleng-13);
-	fputws((wstring(L"<usepackage/><PARAM>")+ws+wstring(L"</PARAM>")).c_str(), yyout);
-	if(ws.find(L"ngerman") != wstring::npos)
-		ngermanbabel = true;
+  fputs("<usepackage/><PARAM>", yyout);
+  // this is maybe wrong, but hopefully no one puts non-ASCII
+  // characters in their package names
+  UString ws = to_ustring(yytext).substr(12, yyleng-13);
+  fputus(ws, yyout);
+  fputs("</PARAM>", yyout);
+  if(ws.find("ngerman"_u) != UString::npos)
+    ngermanbabel = true;
 }
 
 \[[^\]]*\]	{
-	fputws((wstring(L"<PARAM>")+convertir(yytext+1,yyleng-2)+wstring(L"</PARAM>")).c_str(), yyout);
+  fputs("<PARAM>", yyout);
+  fwrite(yytext+1, 1, yyleng-2, yyout);
+  fputs("</PARAM>", yyout);
 }
 
 \\begin[^a-zA-Z0-9_]	{
 	BEGIN(readbrackets);
-	closesym = L"";
+	closesym = ""_u;
 }
 
 \\end[^a-zA-Z0-9_]	{
 	BEGIN(readbrackets);
-	closesym = L"/";
+	closesym = "/"_u;
 }
 
 
 
 <readbrackets>[ \n\r\t]*\{?[ \n\r\t]*	{
-	wstring ws = convertir(yytext,yyleng);
-	int i = ws.find(L'{'); //remove it
-	if(i>=0)
-		ws = ws.substr(0,i)+ws.substr(i+1);
-	fputws(ws.c_str(),yyout);
+  UString ws = to_ustring(yytext);
+  int i = ws.find('{');
+  if (i >= 0) {
+    ws = ws.substr(0, i) + ws.substr(i+1);
+  }
+  fputus(ws, yyout);
 }
 
 <readbrackets>[a-zA-Z0-9]+\*	{
-	fputws((wstring(L"<")+closesym+convertir(yytext,yyleng-1)+wstring(L"_STAR>")).c_str(),yyout);
+  fputc('<', yyout);
+  fputus(closesym, yyout);
+  fwrite(yytext+0, 1, yyleng-1, yyout);
+  fputs("_STAR>", yyout);
 }
 
 <readbrackets>[a-zA-Z0-9]+	{
-	fputws((wstring(L"<")+closesym+convertir(yytext,yyleng)+wstring(L">")).c_str(),yyout);
+  fputc('<', yyout);
+  fputus(closesym, yyout);
+  fputs(yytext, yyout);
+  fputc('>', yyout);
 }
 
 <readbrackets>[ \n\r\t]*\}[ \n\r\t]*	{
 	BEGIN(0);
-	wstring ws = convertir(yytext,yyleng);
-	int i = ws.find(L'}'); //remove it
-	if(i>=0)
-		ws = ws.substr(0,i)+ws.substr(i+1);
-	fputws(ws.c_str(),yyout);
+    UString ws = to_ustring(yytext);
+    int i = ws.find('}');
+    if (i >= 0) {
+      ws = ws.substr(0, i) + ws.substr(i+1);
+    }
+    fputus(ws, yyout);
 }
 
 
 \\[A-Za-z]+\*	{
-	fputws((wstring(L"<")+convertir(yytext+1,yyleng-2)+wstring(L"_STAR/>")).c_str(),yyout);
+  fputc('<', yyout);
+  fwrite(yytext+1, 1, yyleng-2, yyout);
+  fputs("_STAR/>", yyout);
 }
 
 \\[A-Za-z]+	{
-	fputws((wstring(L"<")+convertir(yytext+1,yyleng)+wstring(L"/>")).c_str(),yyout);
+  fputc('<', yyout);
+  fwrite(yytext+1, 1, yyleng-1, yyout);
+  fputs("/>", yyout);
 }
 
 \\\{	{
-        fputws(L"<LEFTESCAPEDBRACE/>", yyout);
+        fputs("<LEFTESCAPEDBRACE/>", yyout);
         }
 
 \\\{	{
-        fputws(L"<RIGHTESCAPEDBRACE/>", yyout);
+        fputs("<RIGHTESCAPEDBRACE/>", yyout);
         }
 
 \\\%	{
-        fputws(L"<ESCAPEDPERCENT/>", yyout);
+        fputs("<ESCAPEDPERCENT/>", yyout);
         }
 
 \{	{
-	fputws(L"<CONTENTS>",yyout);
+	fputs("<CONTENTS>",yyout);
 }
 
 \}	{
-	fputws((wstring(L"</CONTENTS>")).c_str(),yyout);
+	fputs("</CONTENTS>", yyout);
 }
 
 ~	{
-	fputws(L"&NBSP;",yyout);
+	fputs("&NBSP;",yyout);
 }
 
 \$\$	{
 	BEGIN(mathenv);
-	fputws(L"<MATH_DOLLARS>",yyout);
+	fputs("<MATH_DOLLARS>",yyout);
 }
 
 <mathenv>\$\$	{
-	fputws(L"</MATH_DOLLARS>",yyout);
+	fputs("</MATH_DOLLARS>",yyout);
 	BEGIN(0);
 }
 
 \$	{
 	BEGIN(mathenv);
-	fputws(L"<MATH_DOLLAR>",yyout);
+	fputs("<MATH_DOLLAR>",yyout);
 }
 
 <mathenv>\$	{
-	fputws(L"</MATH_DOLLAR>",yyout);
+	fputs("</MATH_DOLLAR>",yyout);
 	BEGIN(0);
 }
 
 \\verb[|][^|]+[|]	{
-        fputws(L"<VERB>",yyout);
-        wstring ws = convertir(yytext, yyleng);
-        fputws(ws.substr(5, ws.size()-5).c_str(), yyout);
-        fputws(L"</VERB>", yyout);
+        fputs("<VERB>", yyout);
+        fwrite(yytext+5, 1, yyleng-5, yyout);
+        fputs("</VERB>", yyout);
 }
 
 \\verb[!][^!]+[!]	{
-        fputws(L"<VERB>",yyout);
-        wstring ws = convertir(yytext, yyleng);
-        fputws(ws.substr(5, ws.size()-5).c_str(), yyout);
-        fputws(L"</VERB>", yyout);
+        fputs("<VERB>",yyout);
+        fwrite(yytext+5, 1, yyleng-5, yyout);
+        fputs("</VERB>", yyout);
 }
 
 \\verb[?][^?]+[?]	{
-        fputws(L"<VERB>",yyout);
-        wstring ws = convertir(yytext, yyleng);
-        fputws(ws.substr(5, ws.size()-5).c_str(), yyout);
-        fputws(L"</VERB>", yyout);
+        fputs("<VERB>",yyout);
+        fwrite(yytext+5, 1, yyleng-5, yyout);
+        fputs("</VERB>", yyout);
 }
 
 \\verb[/][^/]+[/]	{
-        fputws(L"<VERB>",yyout);
-        wstring ws = convertir(yytext, yyleng);
-        fputws(ws.substr(5, ws.size()-5).c_str(), yyout);
-        fputws(L"</VERB>", yyout);
+        fputs("<VERB>",yyout);
+        fwrite(yytext+5, 1, yyleng-5, yyout);
+        fputs("</VERB>", yyout);
 }
 
 \\verb[#][^#]+[#]	{
-        fputws(L"<VERB>",yyout);
-        wstring ws = convertir(yytext, yyleng);
-        fputws(ws.substr(5, ws.size()-5).c_str(), yyout);
-        fputws(L"</VERB>", yyout);
+        fputs("<VERB>",yyout);
+        fwrite(yytext+5, 1, yyleng-5, yyout);
+        fputs("</VERB>", yyout);
 }
 
 \\verb[+][^+]+[+]	{
-        fputws(L"<VERB>",yyout);
-        wstring ws = convertir(yytext, yyleng);
-        fputws(ws.substr(5, ws.size()-5).c_str(), yyout);
-        fputws(L"</VERB>", yyout);
+        fputs("<VERB>",yyout);
+        fwrite(yytext+5, 1, yyleng-5, yyout);
+        fputs("</VERB>", yyout);
 }
 
 \\\(	{
-	fputws(L"<MATH_PAR>",yyout);
+	fputs("<MATH_PAR>",yyout);
 }
 
 \\\)	{
-	fputws(L"</MATH_PAR>",yyout);
+	fputs("</MATH_PAR>",yyout);
 }
 
 \\\[	{
-	fputws(L"<MATH_BRA>",yyout);
+	fputs("<MATH_BRA>",yyout);
 }
 
 \\\]	{
-	fputws(L"</MATH_BRA>",yyout);
+	fputs("</MATH_BRA>",yyout);
 }
 
 \?`	{
-	fputws(L"¿",yyout);
+	fputs("¿",yyout);
 }
 
 !`	{
-	fputws(L"¡",yyout);
+	fputs("¡",yyout);
 }
 
 \"	{
-	fputws(L"&quot;",yyout);
+	fputs("&quot;",yyout);
 }
 \'	{
-	fputws(L"&apos;",yyout);
+	fputs("&apos;",yyout);
 }
 \<	{
-	fputws(L"&lt;",yyout);
+	fputs("&lt;",yyout);
 }
 \>	{
-	fputws(L"&gt;",yyout);
+	fputs("&gt;",yyout);
 }
 \\\&	{
-	fputws(L"&amp;",yyout);
+	fputs("&amp;",yyout);
 }
 \&	{
-	fputws(L"<AMP/>",yyout);
+	fputs("<AMP/>",yyout);
 }
 
 
@@ -402,11 +390,11 @@ wstring convertir(string const &multibyte, int const length)
 
 
 (.|\n|\r)	{
-	fputws(convertir(yytext,yyleng).c_str(),yyout);
+	fputs(yytext, yyout);
 }
 
 <mathenv>(.|\n)	{
-	fputws(convertir(yytext,yyleng).c_str(),yyout);
+  fputs(yytext, yyout);
 }
 
 
@@ -420,9 +408,9 @@ wstring convertir(string const &multibyte, int const length)
 void usage(string const &progname)
 {
 
-  wcerr << "USAGE: " << progname << " [input_file [output_file]" << ']' << endl;
+  cerr << "USAGE: " << progname << " [input_file [output_file]" << ']' << endl;
 
-  wcerr << "LaTeX format preprocessor " << endl;
+  cerr << "LaTeX format preprocessor " << endl;
   exit(EXIT_SUCCESS);
 }
 

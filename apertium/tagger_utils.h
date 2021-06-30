@@ -36,7 +36,7 @@ namespace tagger_utils
 /** Print a fatal error message
  *  @param s the error message to print
  */
-void fatal_error (wstring const &s);
+void fatal_error (UString const &s);
 
 /** Print a fatal error message related to a file
  *  @param s the file name to be printted in the error message
@@ -63,18 +63,18 @@ void clear_array_vector(vector<TTag> v[], int l);
 
 /** Return the number of tokens in the multiword unit
  */
- int ntokens_multiword(wstring const &s);
+ int ntokens_multiword(UString const &s);
 
 /** Devuelve el nº de guiones que contiene la cadena pasada como argumento
   */
-int nguiones_fs(wstring const &cadena);
+int nguiones_fs(UString const &cadena);
 
 /** Reads the expanded dictionary received as a parameter puts the resulting
  *  ambiguity classes that the tagger will manage.
  *  @param fdic the input stream with the expanded dictionary to read
  *  @param td the tagger data instance to mutate
  */
-void scan_for_ambg_classes(FILE *fdic, TaggerData &td);
+void scan_for_ambg_classes(const char* fdic, TaggerData &td);
 void scan_for_ambg_classes(Collection &output, MorphoStream &morpho_stream);
 
 void add_neccesary_ambg_classes(TaggerData &td);
@@ -105,7 +105,7 @@ set<TTag> & require_similar_ambiguity_class(TaggerData &td, set<TTag> &tags);
 /** Just prints a warning if warn */
 void warn_absent_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, bool warn);
 
-wstring trim(wstring s);
+UString trim(UString s);
 
 };
 

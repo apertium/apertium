@@ -15,9 +15,8 @@
  * along with this program; if not, see <https://www.gnu.org/licenses/>.
  */
 #include <apertium/transfer_instr.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 
-using namespace Apertium;
 void
 TransferInstr::copy(TransferInstr const &o)
 {
@@ -26,6 +25,7 @@ TransferInstr::copy(TransferInstr const &o)
   pos = o.pos;
   pointer = o.pointer;
   condition = o.condition;
+  strval = o.strval;
 }
 
 void
@@ -33,14 +33,16 @@ TransferInstr::destroy()
 {
 }
 
-TransferInstr::TransferInstr(TransferInstrType t, string const &c,
-                             int const p, void *ptr, bool cond)
+TransferInstr::TransferInstr(TransferInstrType t, UString const &c,
+                             int const p, xmlNode* ptr, bool cond,
+                             const UString& sv)
 {
   type = t;
   content = c;
   pos = p;
   pointer = ptr;
   condition = cond;
+  strval = sv;
 }
 
 TransferInstr::~TransferInstr()
@@ -70,7 +72,7 @@ TransferInstr::getType()
   return type;
 }
 
-string const &
+UString const &
 TransferInstr::getContent()
 {
   return content;
@@ -82,7 +84,7 @@ TransferInstr::getPos()
   return pos;
 }
 
-void *
+xmlNode*
 TransferInstr::getPointer()
 {
   return pointer;
@@ -92,4 +94,10 @@ bool
 TransferInstr::getCondition()
 {
   return condition;
+}
+
+const UString&
+TransferInstr::getStrval()
+{
+  return strval;
 }

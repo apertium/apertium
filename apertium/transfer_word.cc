@@ -17,9 +17,8 @@
 
 #include <apertium/transfer_word.h>
 #include <iostream>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 
-using namespace Apertium;
 void
 TransferWord::copy(TransferWord const &o)
 {
@@ -40,7 +39,7 @@ queue_length(0)
 {
 }
 
-TransferWord::TransferWord(string const &src, string const &tgt, string const &ref, string const &wblank, int queue)
+TransferWord::TransferWord(UString const &src, UString const &tgt, UString const &ref, UString const &wblank, int queue)
 {
   init(src, tgt, ref, wblank);
   queue_length = queue;
@@ -68,7 +67,7 @@ TransferWord::operator =(TransferWord const &o)
 }
 
 void
-TransferWord::init(string const &src, string const &tgt, string const &ref, string const &wblank)
+TransferWord::init(UString const &src, UString const &tgt, UString const &ref, UString const &wblank)
 {
   s_str = src;
   t_str = tgt;
@@ -76,7 +75,7 @@ TransferWord::init(string const &src, string const &tgt, string const &ref, stri
   wb_str = wblank;
 }
 
-string
+UString
 TransferWord::source(ApertiumRE const &part, bool with_queue)
 {
   if(with_queue)
@@ -89,7 +88,7 @@ TransferWord::source(ApertiumRE const &part, bool with_queue)
   }
 }
 
-string
+UString
 TransferWord::target(ApertiumRE const &part, bool with_queue)
 {
   if(with_queue)
@@ -102,7 +101,7 @@ TransferWord::target(ApertiumRE const &part, bool with_queue)
   }
 }
 
-string
+UString
 TransferWord::reference(ApertiumRE const &part, bool with_queue)
 {
   if(with_queue)
@@ -115,14 +114,14 @@ TransferWord::reference(ApertiumRE const &part, bool with_queue)
   }
 }
 
-string
+UString
 TransferWord::getWblank()
 {
   return wb_str;
 }
 
 bool
-TransferWord::setSource(ApertiumRE const &part, string const &value,
+TransferWord::setSource(ApertiumRE const &part, UString const &value,
 			bool with_queue)
 {
   if(with_queue)
@@ -131,7 +130,7 @@ TransferWord::setSource(ApertiumRE const &part, string const &value,
   }
   else
   {
-    string mystring = s_str.substr(0, s_str.size() - queue_length);
+    UString mystring = s_str.substr(0, s_str.size() - queue_length);
     bool ret = part.replace(mystring, value);
     s_str = mystring + s_str.substr(s_str.size() - queue_length);
     return ret;
@@ -139,7 +138,7 @@ TransferWord::setSource(ApertiumRE const &part, string const &value,
 }
 
 bool
-TransferWord::setTarget(ApertiumRE const &part, string const &value,
+TransferWord::setTarget(ApertiumRE const &part, UString const &value,
 			bool with_queue)
 {
   if(with_queue)
@@ -148,7 +147,7 @@ TransferWord::setTarget(ApertiumRE const &part, string const &value,
   }
   else
   {
-    string mystring = t_str.substr(0, t_str.size() - queue_length);
+    UString mystring = t_str.substr(0, t_str.size() - queue_length);
     bool ret = part.replace(mystring, value);
     t_str = mystring + t_str.substr(t_str.size() - queue_length);
     return ret;
@@ -156,7 +155,7 @@ TransferWord::setTarget(ApertiumRE const &part, string const &value,
 }
 
 bool
-TransferWord::setReference(ApertiumRE const &part, string const &value,
+TransferWord::setReference(ApertiumRE const &part, UString const &value,
       bool with_queue)
 {
   if(with_queue)
@@ -165,7 +164,7 @@ TransferWord::setReference(ApertiumRE const &part, string const &value,
   }
   else
   {
-    string mystring = r_str.substr(0, r_str.size() - queue_length);
+    UString mystring = r_str.substr(0, r_str.size() - queue_length);
     bool ret = part.replace(mystring, value);
     r_str = mystring + r_str.substr(r_str.size() - queue_length);
     return ret;

@@ -40,7 +40,7 @@
 #include <unistd.h>
 #include <vector>
 #include <algorithm>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 #include <cstdlib>
 
 using namespace std;
@@ -53,10 +53,10 @@ TaggerData& LSWPoST::get_tagger_data() {
 
 void LSWPoST::deserialise(FILE *Serialised_FILE_Tagger) {
   tdlsw.read(Serialised_FILE_Tagger);
-  eos = (tdlsw.getTagIndex())[L"TAG_SENT"];
+  eos = (tdlsw.getTagIndex())["TAG_SENT"_u];
 }
 
-std::vector<std::wstring> &LSWPoST::getArrayTags() {
+std::vector<UString> &LSWPoST::getArrayTags() {
   return tdlsw.getArrayTags();
 }
 
@@ -64,7 +64,7 @@ void LSWPoST::serialise(FILE *Stream_) { tdlsw.write(Stream_); }
 
 void LSWPoST::deserialise(const TaggerData &Deserialised_FILE_Tagger) {
   tdlsw = TaggerDataLSW(Deserialised_FILE_Tagger);
-  eos = (tdlsw.getTagIndex())[L"TAG_SENT"];
+  eos = (tdlsw.getTagIndex())["TAG_SENT"_u];
 }
 
 void LSWPoST::init_probabilities_from_tagged_text_(MorphoStream &, MorphoStream &) {
@@ -88,7 +88,7 @@ LSWPoST::LSWPoST(TaggerFlags& Flags_) : FILE_Tagger(Flags_) {}
 
 LSWPoST::LSWPoST(TaggerDataLSW t) {
   tdlsw = t;
-  eos = (tdlsw.getTagIndex())[L"TAG_SENT"];
+  eos = (tdlsw.getTagIndex())["TAG_SENT"_u];
 }
 
 LSWPoST::~LSWPoST() {}
@@ -112,7 +112,7 @@ LSWPoST::init_probabilities(MorphoStream &morpho_stream) {
   int num_valid_seq = 0;
 
   word = new TaggerWord();          // word for tags left
-  word->add_tag(eos, L"sent", tdlsw.getPreferRules());
+  word->add_tag(eos, "sent"_u, tdlsw.getPreferRules());
   tags_left = word->get_tags();     // tags left
   if (tags_left.size()==0) { //This is an unknown word
     tags_left = tdlsw.getOpenClass();
@@ -138,7 +138,7 @@ LSWPoST::init_probabilities(MorphoStream &morpho_stream) {
   // count each element of the para matrix
   while (word != NULL) {
     if (++nw % 10000 == 0) {
-      wcerr << L'.' << flush;
+      cerr << '.' << flush;
     }
 
     tags_right = word->get_tags();       // tags right
@@ -184,7 +184,7 @@ LSWPoST::init_probabilities(MorphoStream &morpho_stream) {
     }
   }
 
-  wcerr << L"\n";
+  cerr << "\n";
 }
 
 bool LSWPoST::is_valid_seq(TTag left, TTag mid, TTag right) {
@@ -232,7 +232,7 @@ void
 LSWPoST::post_ambg_class_scan() {
   int N = (tdlsw.getTagIndex()).size();
   int M = (tdlsw.getOutput()).size();
-  wcerr << N << L" states and " << M <<L" ambiguity classes\n";
+  cerr << N << " states and " << M <<" ambiguity classes\n";
 
   // set up the probability matrix of tdlsw, the pointer to the TaggerDataLSW object
   tdlsw.setProbabilities(N);
@@ -249,7 +249,7 @@ LSWPoST::train(MorphoStream &morpho_stream) {
   vector<vector<vector<double> > > para_matrix_new(N, vector<vector<double> >(N, vector<double>(N, 0)));
 
   word = new TaggerWord();          // word for tags left
-  word->add_tag(eos, L"sent", tdlsw.getPreferRules());
+  word->add_tag(eos, "sent"_u, tdlsw.getPreferRules());
   tags_left = word->get_tags();     // tags left
   if (tags_left.size()==0) { //This is an unknown word
     tags_left = tdlsw.getOpenClass();
@@ -273,7 +273,7 @@ LSWPoST::train(MorphoStream &morpho_stream) {
 
   while (word) {
     if (++nw % 10000 == 0) {
-      wcerr << L'.' << flush;
+      cerr << '.' << flush;
     }
 
     tags_right = word->get_tags();       // tags right
@@ -320,11 +320,11 @@ LSWPoST::train(MorphoStream &morpho_stream) {
 
 void
 LSWPoST::print_para_matrix() {
-  wcout << L"para matrix D\n----------------------------\n";
+  cout << "para matrix D\n----------------------------\n";
   for (int i = 0; i < tdlsw.getN(); ++i) {
     for (int j = 0; j < tdlsw.getN(); ++j) {
       for (int k = 0; k < tdlsw.getN(); ++k) {
-        wcout << L"D[" << i << L"][" << j << L"][" << k << L"] = "
+        cout << "D[" << i << "][" << j << "][" << k << "] = "
             << tdlsw.getD()[i][j][k] << "\n";
       }
     }
@@ -332,14 +332,14 @@ LSWPoST::print_para_matrix() {
 }
 
 void
-LSWPoST::tagger(MorphoStream &morpho_stream, FILE *Output) {
+LSWPoST::tagger(MorphoStream &morpho_stream, UFILE* Output) {
   TaggerWord *word_left = NULL, *word_mid = NULL, *word_right = NULL;
   set<TTag> tags_left, tags_mid, tags_right;
   set<TTag>::iterator iter_left, iter_mid, iter_right;
   morpho_stream.setNullFlush(TheFlags.getNullFlush());
 
   word_left = new TaggerWord();          // word left
-  word_left->add_tag(eos, L"sent", tdlsw.getPreferRules());
+  word_left->add_tag(eos, "sent"_u, tdlsw.getPreferRules());
   word_left->set_show_sf(TheFlags.getShowSuperficial());
   tags_left = word_left->get_tags();          // tags left
 
@@ -357,7 +357,7 @@ LSWPoST::tagger(MorphoStream &morpho_stream, FILE *Output) {
   word_right = morpho_stream.get_next_word(); // word_right
   word_right->set_show_sf(TheFlags.getShowSuperficial());
 
-  wstring micad;
+  UString micad;
 
   while (word_right) {
     tags_right = word_right->get_tags();
@@ -380,13 +380,13 @@ LSWPoST::tagger(MorphoStream &morpho_stream, FILE *Output) {
       }
     }
 
-    micad = word_mid->get_lexical_form(tag_max, (tdlsw.getTagIndex())[L"TAG_kEOF"]);
-    fputws_unlocked(micad.c_str(), Output);
+    micad = word_mid->get_lexical_form(tag_max, (tdlsw.getTagIndex())["TAG_kEOF"_u]);
+    write(micad, Output);
     if (morpho_stream.getEndOfFile()) {
       if (TheFlags.getNullFlush()) {
-        fputwc_unlocked(L'\0', Output);
+        u_fputc('\0', Output);
       }
-      fflush(Output);
+      u_fflush(Output);
       morpho_stream.setEndOfFile(false);
     }
 

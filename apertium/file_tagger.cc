@@ -40,8 +40,8 @@ void FILE_Tagger::setNullFlush(const bool &NullFlush) {
   TheFlags.setNullFlush(NullFlush);
 }
 
-void FILE_Tagger::tagger(FILE *Input, FILE *Output) {
-  FileMorphoStream morpho_stream(Input, TheFlags.getDebug(), &get_tagger_data());
+void FILE_Tagger::tagger(const char* input_file, UFILE *Output) {
+  FileMorphoStream morpho_stream(input_file, TheFlags.getDebug(), &get_tagger_data());
 
   tagger(morpho_stream, Output);
 }
@@ -51,13 +51,13 @@ void FILE_Tagger::init_and_train(MorphoStream &lexmorfo, unsigned long count) {
   train(lexmorfo, count);
 }
 
-void FILE_Tagger::init_and_train(FILE *corpus, unsigned long count) {
-  init_probabilities_kupiec_(corpus);
-  train(corpus, count);
+void FILE_Tagger::init_and_train(const char* corpus_file, unsigned long count) {
+  init_probabilities_kupiec_(corpus_file);
+  train(corpus_file, count);
 }
 
-void FILE_Tagger::train(FILE *corpus, unsigned long count) {
-  FileMorphoStream lexmorfo(corpus, true, &get_tagger_data());
+void FILE_Tagger::train(const char* corpus_file, unsigned long count) {
+  FileMorphoStream lexmorfo(corpus_file, true, &get_tagger_data());
   train(lexmorfo, count);
 }
 
@@ -67,19 +67,20 @@ void FILE_Tagger::deserialise(string const &TaggerSpecificationFilename) {
   deserialise(TaggerSpecificationReader_.getTaggerData());
 }
 
-void FILE_Tagger::init_probabilities_from_tagged_text_(FILE *TaggedCorpus,
-                                                       FILE *Corpus) {
-  FileMorphoStream stream_tagged(TaggedCorpus, true, &get_tagger_data());
-  FileMorphoStream stream_untagged(Corpus, true, &get_tagger_data());
+void FILE_Tagger::init_probabilities_from_tagged_text_(
+         const char* tagged_file, const char* untagged_file)
+{
+  FileMorphoStream stream_tagged(tagged_file, true, &get_tagger_data());
+  FileMorphoStream stream_untagged(untagged_file, true, &get_tagger_data());
   init_probabilities_from_tagged_text_(stream_tagged, stream_untagged);
 }
 
-void FILE_Tagger::init_probabilities_kupiec_(FILE *Corpus) {
-  FileMorphoStream lexmorfo(Corpus, true, &get_tagger_data());
+void FILE_Tagger::init_probabilities_kupiec_(const char* corpus_file) {
+  FileMorphoStream lexmorfo(corpus_file, true, &get_tagger_data());
   init_probabilities_kupiec_(lexmorfo);
 }
 
-void FILE_Tagger::read_dictionary(FILE *fdic) {
+void FILE_Tagger::read_dictionary(const char* fdic) {
   tagger_utils::scan_for_ambg_classes(fdic, get_tagger_data());
   tagger_utils::add_neccesary_ambg_classes(get_tagger_data());
   post_ambg_class_scan();

@@ -73,12 +73,14 @@ FILE *try_open_file(const char *metavar, const char *filename,
   return f;
 }
 
-FILE *try_open_file_utf8(const char *metavar, const char *filename,
+UFILE* try_open_file_utf8(const char *metavar, const char *filename,
                                        const char *flags) {
-  FILE *f = try_open_file(metavar, filename, flags);
-#ifdef _MSC_VER
-  _setmode(_fileno(f), _O_U8TEXT);
-#endif // _MSC_VER
+  UFILE* f = u_fopen(filename, flags, NULL, NULL);
+  if (f == NULL) {
+    std::stringstream what_;
+    what_ << "can't open " << metavar << " file \"" << filename << "\"";
+    throw Exception::Shell::FopenError(what_);
+  }
   return f;
 }
 

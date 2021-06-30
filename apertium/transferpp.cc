@@ -18,10 +18,9 @@
 #include <lttoolbox/lt_locale.h>
 #include <cstdlib>
 #include <iostream>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 #include <libgen.h>
 
-using namespace Apertium;
 using namespace std;
 
 int main(int argc, char *argv[])
@@ -30,7 +29,7 @@ int main(int argc, char *argv[])
 
   if(argc != 3)
   {
-    wcerr << "USAGE: " << basename(argv[0]) << " rules_file transfer_file" << endl;
+    cerr << "USAGE: " << basename(argv[0]) << " rules_file transfer_file" << endl;
     exit(EXIT_FAILURE);
   }
 

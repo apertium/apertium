@@ -15,132 +15,19 @@
  * along with this program; if not, see <https://www.gnu.org/licenses/>.
  */
 #include <apertium/transfer.h>
-#include <apertium/trx_reader.h>
-#include <apertium/utf_converter.h>
-#include <apertium/string_utils.h>
-#include <lttoolbox/compression.h>
-#include <lttoolbox/xml_parse_util.h>
-#include <pcre.h>
 
-#include <cctype>
+#include <lttoolbox/string_utils.h>
+#include <lttoolbox/xml_walk_util.h>
+
 #include <iostream>
-#include <stack>
-#include <cerrno>
 
-#ifdef _WIN32
-#include <utf8_fwrap.h>
-#endif
-
-using namespace Apertium;
 using namespace std;
 
-void
-Transfer::destroy()
-{
-  if(me)
-  {
-    delete me;
-    me = NULL;
-  }
-  if(doc)
-  {
-    xmlFreeDoc(doc);
-    doc = NULL;
-  }
-}
-
-Transfer::Transfer() :
-word(0),
-lword(0),
-last_lword(0),
-output(0),
-any_char(0),
-any_tag(0),
-nwords(0)
-{
-  me = NULL;
-  doc = NULL;
-  root_element = NULL;
-  lastrule = NULL;
-  defaultAttrs = lu;
-  useBilingual = true;
-  preBilingual = false;
-  isExtended = false;
-  null_flush = false;
-  internal_null_flush = false;
-  trace = false;
-  trace_att = false;
-  in_lu = false;
-  in_let_var = false;
-  in_out = false;
-  in_wblank = false;
-}
-
-Transfer::~Transfer()
-{
-  destroy();
-}
-
-void
-Transfer::readData(FILE *in)
-{
-  alphabet.read(in);
-  any_char = alphabet(TRXReader::ANY_CHAR);
-  any_tag = alphabet(TRXReader::ANY_TAG);
-
-  Transducer t;
-  t.read(in, alphabet.size());
-
-  map<int, int> finals;
-
-  // finals
-  for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
-  {
-    int key = Compression::multibyte_read(in);
-    finals[key] = Compression::multibyte_read(in);
-  }
-
-  me = new MatchExe(t, finals);
-
-  // attr_items
-  bool recompile_attrs = Compression::string_read(in) != pcre_version_endian();
-  for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
-  {
-    string const cad_k = UtfConverter::toUtf8(Compression::wstring_read(in));
-    attr_items[cad_k].read(in);
-    wstring fallback = Compression::wstring_read(in);
-    if(recompile_attrs) {
-      attr_items[cad_k].compile(UtfConverter::toUtf8(fallback));
-    }
-  }
-
-  // variables
-  for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
-  {
-    string const cad_k = UtfConverter::toUtf8(Compression::wstring_read(in));
-    variables[cad_k] = UtfConverter::toUtf8(Compression::wstring_read(in));
-  }
-
-  // macros
-  for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
-  {
-    string const cad_k = UtfConverter::toUtf8(Compression::wstring_read(in));
-    macros[cad_k] = Compression::multibyte_read(in);
-  }
-
-  // lists
-  for(int i = 0, limit = Compression::multibyte_read(in); i != limit; i++)
-  {
-    string const cad_k = UtfConverter::toUtf8(Compression::wstring_read(in));
-
-    for(int j = 0, limit2 = Compression::multibyte_read(in); j != limit2; j++)
-    {
-      wstring const cad_v = Compression::wstring_read(in);
-      lists[cad_k].insert(UtfConverter::toUtf8(cad_v));
-      listslow[cad_k].insert(UtfConverter::toUtf8(StringUtils::tolower(cad_v)));
-    }
-  }
-}
+Transfer::Transfer()
+  : word(nullptr), last_lword(0), in_lu(false), in_wblank(false),
+    isExtended(false), defaultAttrs(lu), preBilingual(false),
+    useBilingual(true), trace_att(false)
+{}
 
 void
 Transfer::readBil(string const &fstfile)
@@ -148,7 +35,7 @@ Transfer::readBil(string const &fstfile)
   FILE *in = fopen(fstfile.c_str(), "rb");
   if(!in)
   {
-    wcerr << "Error: Could not open file '" << fstfile << "'." << endl;
+    cerr << "Error: Could not open file '" << fstfile << "'." << endl;
     exit(EXIT_FAILURE);
   }
   fstp.load(in);
@@ -162,7 +49,7 @@ Transfer::setExtendedDictionary(string const &fstfile)
   FILE *in = fopen(fstfile.c_str(), "rb");
   if(!in)
   {
-    wcerr << "Error: Could not open extended dictionary file '" << fstfile << "'." << endl;
+    cerr << "Error: Could not open extended dictionary file '" << fstfile << "'." << endl;
     exit(EXIT_FAILURE);
   }
   extended.load(in);
@@ -175,100 +62,14 @@ void
 Transfer::read(string const &transferfile, string const &datafile,
 	       string const &fstfile)
 {
-  readTransfer(transferfile);
-
-  // datafile
-  FILE *in = fopen(datafile.c_str(), "rb");
-  if(!in)
-  {
-    wcerr << "Error: Could not open file '" << datafile << "'." << endl;
-    exit(EXIT_FAILURE);
+  TransferBase::read(transferfile.c_str(), datafile.c_str());
+  if (getattr(root_element, "default") == "chunk"_u) {
+    defaultAttrs = chunk;
+  } else {
+    defaultAttrs = lu;
   }
-  readData(in);
-  fclose(in);
-
-  if(fstfile != "")
-  {
+  if (!fstfile.empty()) {
     readBil(fstfile);
-  }
-}
-
-void
-Transfer::readTransfer(string const &in)
-{
-  doc = xmlReadFile(in.c_str(), NULL, 0);
-
-  if(doc == NULL)
-  {
-    wcerr << "Error: Could not parse file '" << in << "'." << endl;
-    exit(EXIT_FAILURE);
-  }
-
-  root_element = xmlDocGetRootElement(doc);
-
-  // search for root element attributes
-  for(xmlAttr *i = root_element->properties; i != NULL; i = i->next)
-  {
-    if(!xmlStrcmp(i->name, (const xmlChar *) "default"))
-    {
-      if(!xmlStrcmp(i->children->content, (const xmlChar *) "chunk"))
-      {
-        defaultAttrs = chunk;
-      }
-      else
-      {
-        defaultAttrs = lu; // default value for 'default'
-      }
-    }
-  }
-
-  // search for macros & rules
-  for(xmlNode *i = root_element->children; i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
-      if(!xmlStrcmp(i->name, (const xmlChar *) "section-def-macros"))
-      {
-        collectMacros(i);
-      }
-      else if(!xmlStrcmp(i->name, (const xmlChar *) "section-rules"))
-      {
-        collectRules(i);
-      }
-    }
-  }
-}
-
-void
-Transfer::collectRules(xmlNode *localroot)
-{
-  for(xmlNode *rule = localroot->children; rule != NULL; rule = rule->next)
-  {
-    if(rule->type == XML_ELEMENT_NODE)
-    {
-      size_t line = rule->line;
-      for(xmlNode *rulechild = rule->children; ; rulechild = rulechild->next)
-      {
-        if(rulechild->type == XML_ELEMENT_NODE && !xmlStrcmp(rulechild->name, (const xmlChar *) "action"))
-        {
-          rule_map.push_back(rulechild);
-          rule_lines.push_back(line);
-          break;
-        }
-      }
-    }
-  }
-}
-
-void
-Transfer::collectMacros(xmlNode *localroot)
-{
-  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
-      macro_map.push_back(i);
-    }
   }
 }
 
@@ -277,855 +78,422 @@ Transfer::checkIndex(xmlNode *element, int index, int limit)
 {
   if(index >= limit)
   {
-    wcerr << L"Error in " << UtfConverter::fromUtf8((char *) doc->URL) << L": line " << element->line << L": index >= limit" << endl;
+    cerr << "Error in " << (char *) doc->URL << ": line " << element->line << ": index >= limit" << endl;
     return false;
   }
   if(index < 0) {
-    wcerr << L"Error in " << UtfConverter::fromUtf8((char *) doc->URL) << L": line " << element->line << L": index < 0" << endl;
+    cerr << "Error in " << (char *) doc->URL << ": line " << element->line << ": index < 0" << endl;
     return false;
   }
   if(word[index] == 0)
   {
-    wcerr << L"Error in " << UtfConverter::fromUtf8((char *) doc->URL) << L": line " << element->line << L": Null access at word[index]" << endl;
+    cerr << "Error in " << (char *) doc->URL << ": line " << element->line << ": Null access at word[index]" << endl;
     return false;
   }
   return true;
 }
 
-bool
-Transfer::gettingLemmaFromWord(string attr)
+UString
+Transfer::evalCachedString(xmlNode *element)
 {
-    return (attr.compare("lem") == 0 || attr.compare("lemh") == 0 || attr.compare("whole") == 0);
+  TransferInstr& ti = evalStringCache[element];
+  switch (ti.getType()) {
+  case ti_clip_sl:
+    if (checkIndex(element, ti.getPos(), lword)) {
+      if (gettingLemmaFromWord(ti.getContent()) && last_lword > 1) {
+        if(in_lu) {
+          out_wblank = combineWblanks(out_wblank, word[ti.getPos()]->getWblank());
+        } else if (in_let_var) {
+          var_out_wblank[var_val] = combineWblanks(var_out_wblank[var_val], word[ti.getPos()]->getWblank());
+        }
+      }
+
+      return word[ti.getPos()]->source(attr_items[ti.getContent()], ti.getCondition());
+    }
+    break;
+
+  case ti_clip_tl:
+    if(checkIndex(element, ti.getPos(), lword)) {
+      if(gettingLemmaFromWord(ti.getContent()) && last_lword > 1) {
+        if(in_lu) {
+          out_wblank = combineWblanks(out_wblank, word[ti.getPos()]->getWblank());
+        } else if(in_let_var) {
+          var_out_wblank[var_val] = combineWblanks(var_out_wblank[var_val], word[ti.getPos()]->getWblank());
+        }
+      }
+
+      return word[ti.getPos()]->target(attr_items[ti.getContent()], ti.getCondition());
+    }
+    break;
+
+  case ti_clip_ref:
+    if(checkIndex(element, ti.getPos(), lword)) {
+      return word[ti.getPos()]->reference(attr_items[ti.getContent()], ti.getCondition());
+    }
+    break;
+
+  case ti_linkto_sl:
+    if(checkIndex(element, ti.getPos(), lword)) {
+      if(!word[ti.getPos()]->source(attr_items[ti.getContent()], ti.getCondition()).empty()) {
+        UString ret;
+        ret += '<';
+        ret += ti.getStrval();
+        ret += '>';
+        return ret;
+      } else {
+        return ""_u;
+      }
+    }
+    break;
+
+  case ti_linkto_tl:
+    if(checkIndex(element, ti.getPos(), lword)) {
+      if(!word[ti.getPos()]->target(attr_items[ti.getContent()], ti.getCondition()).empty()) {
+        UString ret;
+        ret += '<';
+        ret += ti.getStrval();
+        ret += '>';
+        return ret;
+      } else {
+        return ""_u;
+      }
+    }
+    break;
+
+  case ti_linkto_ref:
+    if(checkIndex(element, ti.getPos(), lword)) {
+      if(!word[ti.getPos()]->reference(attr_items[ti.getContent()], ti.getCondition()).empty()) {
+        UString ret;
+        ret += '<';
+        ret += ti.getStrval();
+        ret += '>';
+        return ret;
+      } else {
+        return ""_u;
+      }
+    }
+    break;
+
+  case ti_var:
+    if(last_lword > 1) {
+      out_wblank = combineWblanks(out_wblank, var_out_wblank[ti.getContent()]);
+    }
+    return variables[ti.getContent()];
+
+  case ti_lit_tag:
+  case ti_lit:
+    return ti.getContent();
+
+  case ti_b:
+    if(!blank_queue.empty()) {
+      UString retblank = blank_queue.front();
+      if(in_out) {
+        blank_queue.pop();
+      }
+
+      return retblank;
+    } else {
+      return " "_u;
+    }
+    break;
+
+  case ti_get_case_from:
+    if(checkIndex(element, ti.getPos(), lword)) {
+      return StringUtils::copycase(word[ti.getPos()]->source(attr_items[ti.getContent()]),
+                                   evalString((xmlNode *) ti.getPointer()));
+    }
+    break;
+
+  case ti_case_of_sl:
+    if(checkIndex(element, ti.getPos(), lword)) {
+      return StringUtils::getcase(word[ti.getPos()]->source(attr_items[ti.getContent()]));
+    }
+    break;
+
+  case ti_case_of_tl:
+    if(checkIndex(element, ti.getPos(), lword)) {
+      return StringUtils::getcase(word[ti.getPos()]->target(attr_items[ti.getContent()]));
+    }
+    break;
+
+  case ti_case_of_ref:
+    if(checkIndex(element, ti.getPos(), lword)) {
+      return StringUtils::getcase(word[ti.getPos()]->reference(attr_items[ti.getContent()]));
+    }
+    break;
+
+  default:
+    return ""_u;
+  }
+  return ""_u;
 }
 
-string
-Transfer::combineWblanks(string wblank_current, string wblank_to_add)
+void
+Transfer::processClip(xmlNode* element)
 {
-  if(wblank_current.empty() && wblank_to_add.empty())
-  {
-    return wblank_current;
-  }
-  else if(wblank_current.empty())
-  {
-    return wblank_to_add;
-  }
-  else if(wblank_to_add.empty())
-  {
-    return wblank_current;
-  }
-  
-  string new_out_wblank;
-  for(string::const_iterator it = wblank_current.begin(); it != wblank_current.end(); it++)
-  {
-    if(*it == '\\')
-    {
-      new_out_wblank += *it;
-      it++;
-      new_out_wblank += *it;
-    }
-    else if(*it == ']')
-    {
-      if(*(it+1) == ']')
-      {
-        new_out_wblank += ';';
-        break;
+  int pos = 0;
+  xmlChar *side = NULL;
+  UString as;
+  UString part;
+  bool queue = true;
+
+  for(xmlAttr *i = element->properties; i != NULL; i = i->next) {
+    if(!xmlStrcmp(i->name, (const xmlChar *) "side")) {
+      side = i->children->content;
+    } else if(!xmlStrcmp(i->name, (const xmlChar *) "part")) {
+      part = to_ustring((const char*) i->children->content);
+    } else if(!xmlStrcmp(i->name, (const xmlChar *) "pos")) {
+      pos = atoi((const char *)i->children->content) - 1;
+    } else if(!xmlStrcmp(i->name, (const xmlChar *) "queue")) {
+      if(!xmlStrcmp(i->children->content, (const xmlChar *) "no")) {
+        queue = false;
       }
-    }
-    else
-    {
-      new_out_wblank += *it;
+    } else if(!xmlStrcmp(i->name, (const xmlChar *) "link-to")) {
+      as = to_ustring((const char*)i->children->content);
     }
   }
-  
-  for(string::const_iterator it = wblank_to_add.begin(); it != wblank_to_add.end(); it++)
-  {
-    if(*it == '\\')
-    {
-      new_out_wblank += *it;
-      it++;
-      new_out_wblank += *it;
+
+  if(!as.empty()) {
+    if(!xmlStrcmp(side, (const xmlChar *) "sl")) {
+      evalStringCache[element] = TransferInstr(ti_linkto_sl, part, pos, NULL, queue, as);
+    } else if(!xmlStrcmp(side, (const xmlChar *) "ref")) {
+      evalStringCache[element] = TransferInstr(ti_linkto_ref, part, pos, NULL, queue, as);
+    } else {
+      evalStringCache[element] = TransferInstr(ti_linkto_tl, part, pos, NULL, queue, as);
     }
-    else if(*it == '[')
-    {
-      if(*(it+1) == '[')
-      {
-        new_out_wblank += ' ';
-        it++;
-      }
-    }
-    else
-    {
-      new_out_wblank += *it;
-    }
+  } else if(!xmlStrcmp(side, (const xmlChar *) "sl")) {
+    evalStringCache[element] = TransferInstr(ti_clip_sl, part, pos, NULL, queue);
+  } else if(!xmlStrcmp(side, (const xmlChar *) "ref")) {
+    evalStringCache[element] = TransferInstr(ti_clip_ref, part, pos, NULL, queue);
+  } else {
+    evalStringCache[element] = TransferInstr(ti_clip_tl, part, pos, NULL, queue);
   }
-  
-  return new_out_wblank;
 }
 
-string
-Transfer::evalString(xmlNode *element)
+void
+Transfer::processBlank(xmlNode* element)
 {
-  map<xmlNode *, TransferInstr>::iterator it;
-  it = evalStringCache.find(element);
-  if(it != evalStringCache.end())
-  {
-    TransferInstr &ti = it->second;
-    switch(ti.getType())
-    {
-      case ti_clip_sl:
-        if(checkIndex(element, ti.getPos(), lword))
-        {
-          if(gettingLemmaFromWord(ti.getContent()) && last_lword > 1)
-          {
-            if(in_lu)
-            {
-              out_wblank = combineWblanks(out_wblank, word[ti.getPos()]->getWblank());
-            }
-            else if(in_let_var)
-            {
-              var_out_wblank[var_val] = combineWblanks(var_out_wblank[var_val], word[ti.getPos()]->getWblank());
-            }
-          }
-          
-          return word[ti.getPos()]->source(attr_items[ti.getContent()], ti.getCondition());
-        }
-        break;
+  evalStringCache[element] = TransferInstr(ti_b, " "_u, -1);
+}
 
-      case ti_clip_tl:
-        if(checkIndex(element, ti.getPos(), lword))
-        {
-          if(gettingLemmaFromWord(ti.getContent()) && last_lword > 1)
-          {
-            if(in_lu)
-            {
-              out_wblank = combineWblanks(out_wblank, word[ti.getPos()]->getWblank());
-            }
-            else if(in_let_var)
-            {
-              var_out_wblank[var_val] = combineWblanks(var_out_wblank[var_val], word[ti.getPos()]->getWblank());
-            }
-          }
-            
-          return word[ti.getPos()]->target(attr_items[ti.getContent()], ti.getCondition());
-        }
-        break;
+void
+Transfer::processCaseOf(xmlNode* element)
+{
+  int pos = 0;
+  xmlChar *side = NULL;
+  UString part;
 
-      case ti_clip_ref:
-        if(checkIndex(element, ti.getPos(), lword))
-        {
-          return word[ti.getPos()]->reference(attr_items[ti.getContent()], ti.getCondition());
-        }
-        break;
-
-      case ti_linkto_sl:
-        if(checkIndex(element, ti.getPos(), lword))
-        {
-          if(word[ti.getPos()]->source(attr_items[ti.getContent()], ti.getCondition()) != "")
-          {
-            return "<" + string((char *) ti.getPointer()) + ">";
-          }
-          else
-          {
-            return "";
-          }
-        }
-        break;
-
-      case ti_linkto_tl:
-        if(checkIndex(element, ti.getPos(), lword))
-        {
-          if(word[ti.getPos()]->target(attr_items[ti.getContent()], ti.getCondition()) != "")
-          {
-            return "<" + string((char *) ti.getPointer()) + ">";
-          }
-          else
-          {
-            return "";
-          }
-        }
-        break;
-
-      case ti_linkto_ref:
-        if(checkIndex(element, ti.getPos(), lword))
-        {
-          if(word[ti.getPos()]->reference(attr_items[ti.getContent()], ti.getCondition()) != "")
-          {
-            return "<" + string((char *) ti.getPointer()) + ">";
-          }
-          else
-          {
-            return "";
-          }
-        }
-        break;
-
-      case ti_var:
-        if(last_lword > 1)
-        {
-          out_wblank = combineWblanks(out_wblank, var_out_wblank[ti.getContent()]);
-        }
-        return variables[ti.getContent()];
-
-      case ti_lit_tag:
-      case ti_lit:
-        return ti.getContent();
-
-      case ti_b:
-        if(!blank_queue.empty())
-        {
-          string retblank = blank_queue.front();
-          if(in_out)
-          {
-            blank_queue.pop();
-          }
-          
-          return retblank;
-        }
-        else
-        {
-          return " ";
-        }
-        break;
-
-      case ti_get_case_from:
-        if(checkIndex(element, ti.getPos(), lword))
-        {
-          return copycase(word[ti.getPos()]->source(attr_items[ti.getContent()]),
-                  evalString((xmlNode *) ti.getPointer()));
-        }
-        break;
-
-      case ti_case_of_sl:
-        if(checkIndex(element, ti.getPos(), lword))
-        {
-          return caseOf(word[ti.getPos()]->source(attr_items[ti.getContent()]));
-        }
-        break;
-
-      case ti_case_of_tl:
-        if(checkIndex(element, ti.getPos(), lword))
-        {
-          return caseOf(word[ti.getPos()]->target(attr_items[ti.getContent()]));
-        }
-        break;
-
-      case ti_case_of_ref:
-        if(checkIndex(element, ti.getPos(), lword))
-        {
-          return caseOf(word[ti.getPos()]->reference(attr_items[ti.getContent()]));
-        }
-        break;
-
-      default:
-        return "";
-    }
-    return "";
-  }
-
-  if(!xmlStrcmp(element->name, (const xmlChar *) "clip"))
-  {
-    int pos = 0;
-    xmlChar *part = NULL, *side = NULL, *as = NULL;
-    bool queue = true;
-
-    for(xmlAttr *i = element->properties; i != NULL; i = i->next)
-    {
-      if(!xmlStrcmp(i->name, (const xmlChar *) "side"))
-      {
-	side = i->children->content;
-      }
-      else if(!xmlStrcmp(i->name, (const xmlChar *) "part"))
-      {
-	part = i->children->content;
-      }
-      else if(!xmlStrcmp(i->name, (const xmlChar *) "pos"))
-      {
-	pos = atoi((const char *)i->children->content) - 1;
-      }
-      else if(!xmlStrcmp(i->name, (const xmlChar *) "queue"))
-      {
-        if(!xmlStrcmp(i->children->content, (const xmlChar *) "no"))
-        {
-          queue = false;
-        }
-      }
-      else if(!xmlStrcmp(i->name, (const xmlChar *) "link-to"))
-      {
-        as = i->children->content;
-      }
-    }
-
-    if(as != NULL)
-    {
-      if(!xmlStrcmp(side, (const xmlChar *) "sl"))
-      {
-        evalStringCache[element] = TransferInstr(ti_linkto_sl, (const char *) part, pos, (void *) as, queue);
-      }
-      else if(!xmlStrcmp(side, (const xmlChar *) "ref"))
-      {
-        evalStringCache[element] = TransferInstr(ti_linkto_ref, (const char *) part, pos, (void *) as, queue);
-      }
-      else
-      {
-        evalStringCache[element] = TransferInstr(ti_linkto_tl, (const char *) part, pos, (void *) as, queue);
-      }
-    }
-    else if(!xmlStrcmp(side, (const xmlChar *) "sl"))
-    {
-      evalStringCache[element] = TransferInstr(ti_clip_sl, (const char *) part, pos, NULL, queue);
-    }
-    else if(!xmlStrcmp(side, (const xmlChar *) "ref"))
-    {
-      evalStringCache[element] = TransferInstr(ti_clip_ref, (const char *) part, pos, NULL, queue);
-    }
-    else
-    {
-      evalStringCache[element] = TransferInstr(ti_clip_tl, (const char *) part, pos, NULL, queue);
+  for(xmlAttr *i = element->properties; i != NULL; i = i->next) {
+    if(!xmlStrcmp(i->name, (const xmlChar *) "side")) {
+      side = i->children->content;
+    } else if(!xmlStrcmp(i->name, (const xmlChar *) "part")) {
+      part = to_ustring((const char*) i->children->content);
+    } else if(!xmlStrcmp(i->name, (const xmlChar *) "pos")) {
+      pos = atoi((const char *) i->children->content) - 1;
     }
   }
-  else if(!xmlStrcmp(element->name, (const xmlChar *) "lit-tag"))
-  {
-    evalStringCache[element] = TransferInstr(ti_lit_tag,
-                                             tags((const char *) element->properties->children->content), 0);
+
+  if(!xmlStrcmp(side, (const xmlChar *) "sl")) {
+    evalStringCache[element] = TransferInstr(ti_case_of_sl, part, pos);
+  } else if(!xmlStrcmp(side, (const xmlChar *) "ref")) {
+    evalStringCache[element] = TransferInstr(ti_case_of_ref, part, pos);
+  } else {
+    evalStringCache[element] = TransferInstr(ti_case_of_tl, part, pos);
   }
-  else if(!xmlStrcmp(element->name, (const xmlChar *) "lit"))
-  {
-    evalStringCache[element] = TransferInstr(ti_lit, string((char *) element->properties->children->content), 0);
+}
+
+UString
+Transfer::processLu(xmlNode* element)
+{
+  in_lu = true;
+  out_wblank.clear();
+
+  UString myword;
+  for (auto i : children(element)) {
+    myword.append(evalString(i));
   }
-  else if(!xmlStrcmp(element->name, (const xmlChar *) "b"))
-  {
-    evalStringCache[element] = TransferInstr(ti_b, " ", -1);
+
+  in_lu = false;
+
+  if(last_lword == 1) {
+    out_wblank = word[0]->getWblank();
   }
-  else if(!xmlStrcmp(element->name, (const xmlChar *) "get-case-from"))
-  {
-    int pos = atoi((const char *) element->properties->children->content) - 1;
-    xmlNode *param = NULL;
-    for(xmlNode *i = element->children; i != NULL; i = i->next)
-    {
-      if(i->type == XML_ELEMENT_NODE)
-      {
-	param = i;
-	break;
-      }
+
+  if(!myword.empty()) {
+    if(myword[0] != '[' || myword[1] != '[') {
+      UString ret = out_wblank;
+      ret += '^';
+      ret += myword;
+      ret += '$';
+      return ret;
+    } else {
+      myword += '$';
+      return myword;
+    }
+  } else {
+    return ""_u;
+  }
+}
+
+UString
+Transfer::processMlu(xmlNode* element)
+{
+  UString value;
+
+  bool first_time = true;
+  out_wblank.clear();
+
+  in_lu = true;
+  for (auto i : children(element)) {
+    UString myword;
+    for (auto j : children(i)) {
+      myword.append(evalString(j));
     }
 
-    evalStringCache[element] = TransferInstr(ti_get_case_from, "lem", pos, param);
-  }
-  else if(!xmlStrcmp(element->name, (const xmlChar *) "var"))
-  {
-    evalStringCache[element] = TransferInstr(ti_var, (const char *) element->properties->children->content, 0);
-  }
-  else if(!xmlStrcmp(element->name, (const xmlChar *) "case-of"))
-  {
-    int pos = 0;
-    xmlChar *part = NULL, *side = NULL;
-
-    for(xmlAttr *i = element->properties; i != NULL; i = i->next)
-    {
-      if(!xmlStrcmp(i->name, (const xmlChar *) "side"))
-      {
-	side = i->children->content;
+	if (!first_time) {
+	  if(!myword.empty() && myword[0] != '#') { //'+#' problem
+        value += '+';
       }
-      else if(!xmlStrcmp(i->name, (const xmlChar *) "part"))
-      {
-	part = i->children->content;
-      }
-      else if(!xmlStrcmp(i->name, (const xmlChar *) "pos"))
-      {
-	pos = atoi((const char *) i->children->content) - 1;
-      }
-    }
-
-    if(!xmlStrcmp(side, (const xmlChar *) "sl"))
-    {
-      evalStringCache[element] = TransferInstr(ti_case_of_sl, (const char *) part, pos);
-    }
-    else if(!xmlStrcmp(side, (const xmlChar *) "ref"))
-    {
-      evalStringCache[element] = TransferInstr(ti_case_of_ref, (const char *) part, pos);
-    }
-    else
-    {
-      evalStringCache[element] = TransferInstr(ti_case_of_tl, (const char *) part, pos);
-    }
-  }
-  else if(!xmlStrcmp(element->name, (const xmlChar *) "concat"))
-  {
-    string value;
-    for(xmlNode *i = element->children; i != NULL; i = i->next)
-    {
-      if(i->type == XML_ELEMENT_NODE)
-      {
-        value.append(evalString(i));
-      }
-    }
-    return value;
-  }
-  else if(!xmlStrcmp(element->name, (const xmlChar *) "lu"))
-  {
-    in_lu = true;
-    out_wblank.clear();
-      
-    string myword;
-    for(xmlNode *i = element->children; i != NULL; i = i->next)
-    {
-       if(i->type == XML_ELEMENT_NODE)
-       {
-         myword.append(evalString(i));
-       }
-    }
-    
-    in_lu = false;
-    
-    if(last_lword == 1)
-    {
-      out_wblank = word[0]->getWblank();
-    }
-      
-    if(myword != "")
-    {
-      if(myword[0] != L'[' || myword[1] != L'[')
-      {
-        return out_wblank+"^"+myword+"$";
-      }
-      else
-      {
-        return myword+"$";
-      }
-    }
-    else
-    {
-      return "";
-    }
-  }
-  else if(!xmlStrcmp(element->name, (const xmlChar *) "mlu"))
-  {
-    string value;
-
-    bool first_time = true;
-    out_wblank.clear();
-
-    for(xmlNode *i = element->children; i != NULL; i = i->next)
-    {
-      if(i->type == XML_ELEMENT_NODE)
-      {
-        in_lu = true;
-        
-        string myword;
-
-        for(xmlNode *j = i->children; j != NULL; j = j->next)
-        {
-          if(j->type == XML_ELEMENT_NODE)
-          {
-            myword.append(evalString(j));
-          }
-        }
-        
-        in_lu = false;
-
-	if(!first_time)
-	{
-	  if(myword != "" && myword[0] != '#')  //'+#' problem
-	  {
-	    value.append("+");
-          }
-	}
-	else
-	{
-	  if(myword != "")
-	  {
+	} else {
+      if (!myword.empty()) {
 	    first_time = false;
-          }
+      }
 	}
 
 	value.append(myword);
-      }
-    }
-
-    if(last_lword == 1)
-    {
-      out_wblank = word[0]->getWblank();
-    }
-    
-    if(value != "")
-    {
-      return out_wblank+"^"+value+"$";
-    }
-    else
-    {
-      return "";
-    }
-  }
-  else if(!xmlStrcmp(element->name, (const xmlChar *) "chunk"))
-  {
-    return processChunk(element);
-  }
-  else
-  {
-    wcerr << "Error: unexpected rvalue expression '" << element->name << "'" << endl;
-    exit(EXIT_FAILURE);
   }
 
-  return evalString(element);
+  if(last_lword == 1) {
+    out_wblank = word[0]->getWblank();
+  }
+
+  if(!value.empty()) {
+    UString ret = out_wblank;
+    ret += '^';
+    ret += value;
+    ret += '$';
+    return ret;
+  } else {
+    return ""_u;
+  }
+}
+
+void
+Transfer::processLuCount(xmlNode* element)
+{
+  cerr << "Error: unexpected expression: '" << element->name << "'" << endl;
+  exit(EXIT_FAILURE);
 }
 
 void
 Transfer::processOut(xmlNode *localroot)
 {
   in_out = true;
-  
-  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
-      if(defaultAttrs == lu)
-      {
-        if(!xmlStrcmp(i->name, (const xmlChar *) "lu"))
-        {
-          in_lu = true;
-          out_wblank.clear();
-            
-          string myword;
-          for(xmlNode *j = i->children; j != NULL; j = j->next)
-          {
-            if(j->type == XML_ELEMENT_NODE)
-            {
-              myword.append(evalString(j));
-            }
-          }
-            
-          in_lu = false;
-          
-          if(last_lword == 1)
-          {
-            out_wblank = word[0]->getWblank();
-          }
 
-          if(myword != "")
-          {
-            if(myword[0] != L'[' || myword[1] != L'[')
-            {
-              fputws_unlocked(UtfConverter::fromUtf8(out_wblank).c_str(), output);
-              fputwc_unlocked(L'^', output);
-            }
-            
-            fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
-            fputwc_unlocked(L'$', output);
-          }
-        }
-        else if(!xmlStrcmp(i->name, (const xmlChar *) "mlu"))
-        {
-          string myword;
-          bool first_time = true;
-          out_wblank.clear();
-          
-          for(xmlNode *j = i->children; j != NULL; j = j->next)
-          {
-            if(j->type == XML_ELEMENT_NODE)
-            {
-              in_lu = true;
-              
-              string mylocalword;
-              for(xmlNode *k = j->children; k != NULL; k = k->next)
-              {
-                if(k->type == XML_ELEMENT_NODE)
-                {
-                  mylocalword.append(evalString(k));
-                }
-              }
-              
-              in_lu = false;
-
-              if(!first_time)
-              {
-                if(mylocalword != "" && mylocalword[0] != '#')  //'+#' problem
-                {
-                  myword += '+';
-                }
-              }
-              else
-              {
-                if(mylocalword != "")
-                {
-                  first_time = false;
-                }
-              }
-              
-              myword.append(mylocalword);
-            }
-          }
-          
-          if(last_lword == 1)
-          {
-            out_wblank = word[0]->getWblank();
-          }
-          
-          if(myword != "")
-          {
-            fputws_unlocked(UtfConverter::fromUtf8(out_wblank).c_str(), output);
-            fputwc_unlocked('^', output);
-            fputws_unlocked(UtfConverter::fromUtf8(myword).c_str(), output);
-            fputwc_unlocked(L'$', output);
-          }
-        }
-        else // 'b'
-        {
-          fputws_unlocked(UtfConverter::fromUtf8(evalString(i)).c_str(),
-			  output);
-        }
+  for (auto i : children(localroot)) {
+    if(defaultAttrs == lu) {
+      if(!xmlStrcmp(i->name, (const xmlChar *) "lu")) {
+        write(processLu(i), output);
+      } else if(!xmlStrcmp(i->name, (const xmlChar *) "mlu")) {
+        write(processMlu(i), output);
       }
-      else
-      {
-        if(!xmlStrcmp(i->name, (const xmlChar *) "chunk"))
-        {
-          fputws_unlocked(UtfConverter::fromUtf8(processChunk(i)).c_str(), output);
-        }
-        else // 'b'
-        {
-          fputws_unlocked(UtfConverter::fromUtf8(evalString(i)).c_str(), output);
-        }
+    } else {
+      if(!xmlStrcmp(i->name, (const xmlChar *) "chunk")) {
+        write(processChunk(i), output);
+      } else { // 'b'
+        write(evalString(i), output);
       }
     }
   }
-  
   in_out = false;
 }
 
-string
+UString
 Transfer::processChunk(xmlNode *localroot)
 {
-  string name, namefrom;
-  string caseofchunk = "aa";
-  string result;
+  UString name, namefrom;
+  UString caseofchunk = "aa"_u;
+  UString result;
 
   for(xmlAttr *i = localroot->properties; i != NULL; i = i->next)
   {
     if(!xmlStrcmp(i->name, (const xmlChar *) "name"))
     {
-      name = (const char *) i->children->content;
+      name = to_ustring((const char *) i->children->content);
     }
     else if(!xmlStrcmp(i->name, (const xmlChar *) "namefrom"))
     {
-      namefrom = (const char *) i->children->content;
+      namefrom = to_ustring((const char *) i->children->content);
     }
     else if(!xmlStrcmp(i->name, (const xmlChar *) "case"))
     {
-      caseofchunk = (const char *) i->children->content;
+      caseofchunk = to_ustring((const char *) i->children->content);
     }
   }
 
-  result.append("^");
-  if(caseofchunk != "")
+  result += '^';
+  if(!caseofchunk.empty())
   {
-    if(name != "")
+    if(!name.empty())
     {
-      result.append(copycase(variables[caseofchunk], name));
+      result.append(StringUtils::copycase(variables[caseofchunk], name));
     }
-    else if(namefrom != "")
+    else if(!namefrom.empty())
     {
-      result.append(copycase(variables[caseofchunk], variables[namefrom]));
+      result.append(StringUtils::copycase(variables[caseofchunk], variables[namefrom]));
     }
     else
     {
-      wcerr << "Error: you must specify either 'name' or 'namefrom' for the 'chunk' element" << endl;
+      cerr << "Error: you must specify either 'name' or 'namefrom' for the 'chunk' element" << endl;
       exit(EXIT_FAILURE);
     }
   }
   else
   {
-    if(name != "")
+    if(!name.empty())
     {
       result.append(name);
     }
-    else if(namefrom != "")
+    else if(!namefrom.empty())
     {
       result.append(variables[namefrom]);
     }
     else
     {
-      wcerr << "Error: you must specify either 'name' or 'namefrom' for the 'chunk' element" << endl;
+      cerr << "Error: you must specify either 'name' or 'namefrom' for the 'chunk' element" << endl;
       exit(EXIT_FAILURE);
     }
   }
 
-  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
-      if(!xmlStrcmp(i->name, (const xmlChar *) "tags"))
-      {
-        result.append(processTags(i));
-        result.append("{");
-      }
-      else if(!xmlStrcmp(i->name, (const xmlChar *) "lu"))
-      {
-        in_lu = true;
-        out_wblank.clear();
-          
-        string myword;
-        for(xmlNode *j = i->children; j != NULL; j = j->next)
-        {
-          if(j->type == XML_ELEMENT_NODE)
-          {
-            myword.append(evalString(j));
-          }
-        }
-        
-        in_lu = false;
-        
-        if(last_lword == 1)
-        {
-          out_wblank = word[0]->getWblank();
-        }
-          
-        if(myword != "")
-        {
-          result.append(out_wblank);
-          result.append("^");
-          result.append(myword);
-          result.append("$");
-        }
-      }
-      else if(!xmlStrcmp(i->name, (const xmlChar *) "mlu"))
-      {
-        bool first_time = true;
-        string myword;
-        
-        out_wblank.clear();
-        
-        for(xmlNode *j = i->children; j != NULL; j = j->next)
-        {
-          string mylocalword;
-          if(j->type == XML_ELEMENT_NODE)
-          {
-            in_lu = true;
-            
-            for(xmlNode *k = j->children; k != NULL; k = k->next)
-            {
-              if(k->type == XML_ELEMENT_NODE)
-              {
-                mylocalword.append(evalString(k));
-              }
-            }
-            
-            in_lu = false;
-
-            if(!first_time)
-            {
-              if(mylocalword != "" && mylocalword[0] != '#')  // '+#' problem
-              {
-                myword += '+';
-              }
-            }
-            else
-            {
-              first_time = false;
-            }
-          }
-          myword.append(mylocalword);
-        }
-        
-        if(last_lword == 1)
-        {
-          out_wblank = word[0]->getWblank();
-        }
-        
-        if(myword != "")
-        {
-          result.append(out_wblank);
-          result.append("^");
-          result.append(myword);
-          result.append("$");
-        }
-      }
-      else // 'b'
-      {
-        result.append(evalString(i));
-      }
+  for (auto i : children(localroot)) {
+    if(!xmlStrcmp(i->name, (const xmlChar *) "tags")) {
+      result.append(processTags(i));
+      result += '{';
+    } else if(!xmlStrcmp(i->name, (const xmlChar *) "lu")) {
+      result.append(processLu(i));
+    } else if(!xmlStrcmp(i->name, (const xmlChar *) "mlu")) {
+      result.append(processMlu(i));
+    } else { // 'b'
+      result.append(evalString(i));
     }
   }
-  result.append("}$");
+  result += '}';
+  result += '$';
   return result;
 }
 
-string
+UString
 Transfer::processTags(xmlNode *localroot)
 {
-  string result;
-  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
-      if(!xmlStrcmp(i->name, (xmlChar const *) "tag"))
-      {
-        for(xmlNode *j = i->children; j != NULL; j = j->next)
-        {
-          if(j->type == XML_ELEMENT_NODE)
-          {
-            result.append(evalString(j));
-          }
-        }
+  UString result;
+  for (auto i : children(localroot)) {
+    if (!xmlStrcmp(i->name, (const xmlChar*) "tag")) {
+      for (auto j : children(i)) {
+        result.append(evalString(j));
       }
     }
   }
   return result;
-}
-
-int
-Transfer::processInstruction(xmlNode *localroot)
-{
-  int words_to_consume = -1;
-  if(!xmlStrcmp(localroot->name, (const xmlChar *) "choose"))
-  {
-    words_to_consume = processChoose(localroot);
-  }
-  else if(!xmlStrcmp(localroot->name, (const xmlChar *) "let"))
-  {
-    processLet(localroot);
-  }
-  else if(!xmlStrcmp(localroot->name, (const xmlChar *) "append"))
-  {
-    processAppend(localroot);
-  }
-  else if(!xmlStrcmp(localroot->name, (const xmlChar *) "out"))
-  {
-    processOut(localroot);
-  }
-  else if(!xmlStrcmp(localroot->name, (const xmlChar *) "call-macro"))
-  {
-    processCallMacro(localroot);
-  }
-  else if(!xmlStrcmp(localroot->name, (const xmlChar *) "modify-case"))
-  {
-    processModifyCase(localroot);
-  }
-  else if(!xmlStrcmp(localroot->name, (const xmlChar *) "reject-current-rule"))
-  {
-    words_to_consume = processRejectCurrentRule(localroot);
-  }
-  return words_to_consume;
-}
-
-int
-Transfer::processRejectCurrentRule(xmlNode *localroot)
-{
-  bool shifting = true;
-  string value;
-  for(xmlAttr *i = localroot->properties; i != NULL; i = i->next)
-  {
-    if(!xmlStrcmp(i->name, (const xmlChar *) "shifting"))
-    {
-      value = (char *) i->children->content;
-      break;
-    }
-  }
-
-  if(value == "no")
-  {
-    shifting = false;
-  }
-
-  return shifting ? 1 : 0;
 }
 
 void
@@ -1133,19 +501,12 @@ Transfer::processLet(xmlNode *localroot)
 {
   xmlNode *leftSide = NULL, *rightSide = NULL;
 
-  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
-      if(leftSide == NULL)
-      {
-	leftSide = i;
-      }
-      else
-      {
-	rightSide = i;
-	break;
-      }
+  for (auto i : children(localroot)) {
+    if(leftSide == NULL) {
+      leftSide = i;
+    } else {
+      rightSide = i;
+      break;
     }
   }
 
@@ -1160,11 +521,11 @@ Transfer::processLet(xmlNode *localroot)
         var_val = ti.getContent();
 
         var_out_wblank[var_val].clear();
-        
+
         variables[ti.getContent()] = evalString(rightSide);
-          
+
         in_let_var = false;
-        
+
         return;
 
       case ti_clip_sl:
@@ -1172,7 +533,7 @@ Transfer::processLet(xmlNode *localroot)
           bool match = word[ti.getPos()]->setSource(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
           if (!match && trace)
           {
-            wcerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+            cerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
           }
         }
         return;
@@ -1182,7 +543,7 @@ Transfer::processLet(xmlNode *localroot)
           bool match = word[ti.getPos()]->setTarget(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
           if (!match && trace)
           {
-            wcerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+            cerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
           }
         }
         return;
@@ -1192,7 +553,7 @@ Transfer::processLet(xmlNode *localroot)
           bool match = word[ti.getPos()]->setReference(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
           if (!match && trace)
           {
-            wcerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+            cerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
           }
         }
         return;
@@ -1204,21 +565,22 @@ Transfer::processLet(xmlNode *localroot)
   if(leftSide->name != NULL && !xmlStrcmp(leftSide->name, (const xmlChar *) "var"))
   {
     in_let_var = true;
-    
-    string const val = (const char *) leftSide->properties->children->content;
-    
+
+    UString const val = to_ustring((const char *) leftSide->properties->children->content);
+
     var_val = val;
     var_out_wblank[var_val].clear();
-    
+
     variables[val] = evalString(rightSide);
-      
+
     in_let_var = false;
     evalStringCache[leftSide] = TransferInstr(ti_var, val, 0);
   }
   else if(!xmlStrcmp(leftSide->name, (const xmlChar *) "clip"))
   {
     int pos = 0;
-    xmlChar *part = NULL, *side = NULL, *as = NULL;
+    xmlChar *side = NULL, *as = NULL;
+    UString part;
     bool queue = true;
 
     for(xmlAttr *i = leftSide->properties; i != NULL; i = i->next)
@@ -1229,7 +591,7 @@ Transfer::processLet(xmlNode *localroot)
       }
       else if(!xmlStrcmp(i->name, (const xmlChar *) "part"))
       {
-	part = i->children->content;
+        part = to_ustring((const char*) i->children->content);
       }
       else if(!xmlStrcmp(i->name, (const xmlChar *) "pos"))
       {
@@ -1249,65 +611,40 @@ Transfer::processLet(xmlNode *localroot)
     }
 
     if (pos >= lword) {
-      wcerr << L"Error: Transfer::processLet() bad access on pos >= lword" << endl;
+      cerr << "Error: Transfer::processLet() bad access on pos >= lword" << endl;
       return;
     }
     if (word[pos] == 0) {
-      wcerr << L"Error: Transfer::processLet() null access on word[pos]" << endl;
+      cerr << "Error: Transfer::processLet() null access on word[pos]" << endl;
       return;
     }
 
     if(!xmlStrcmp(side, (const xmlChar *) "tl"))
     {
-      bool match = word[pos]->setTarget(attr_items[(const char *) part], evalString(rightSide), queue);
+      bool match = word[pos]->setTarget(attr_items[part], evalString(rightSide), queue);
       if(!match && trace)
       {
-        wcerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+        cerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
       }
-      evalStringCache[leftSide] = TransferInstr(ti_clip_tl, (const char *) part, pos, NULL, queue);
+      evalStringCache[leftSide] = TransferInstr(ti_clip_tl, part, pos, NULL, queue);
     }
     else if(!xmlStrcmp(side, (const xmlChar *) "ref"))
     {
-      bool match = word[pos]->setReference(attr_items[(const char *) part], evalString(rightSide), queue);
+      bool match = word[pos]->setReference(attr_items[part], evalString(rightSide), queue);
       if(!match && trace)
       {
-        wcerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+        cerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
       }
-      evalStringCache[leftSide] = TransferInstr(ti_clip_ref, (const char *) part, pos, NULL, queue);
+      evalStringCache[leftSide] = TransferInstr(ti_clip_ref, part, pos, NULL, queue);
     }
     else
     {
-      bool match = word[pos]->setSource(attr_items[(const char *) part], evalString(rightSide), queue);
+      bool match = word[pos]->setSource(attr_items[part], evalString(rightSide), queue);
       if(!match && trace)
       {
-        wcerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+        cerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
       }
-      evalStringCache[leftSide] = TransferInstr(ti_clip_sl, (const char *) part, pos, NULL, queue);
-    }
-  }
-}
-
-void
-Transfer::processAppend(xmlNode *localroot)
-{
-  string name;
-  for(xmlAttr *i = localroot->properties; i != NULL; i = i->next)
-  {
-    if(!xmlStrcmp(i->name, (const xmlChar *) "n"))
-    {
-      name = (char *) i->children->content;
-      break;
-    }
-  }
-
-  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
-      in_let_var = true;
-      var_val = name;
-      variables[name].append(evalString(i));
-      in_let_var = false;
+      evalStringCache[leftSide] = TransferInstr(ti_clip_sl, part, pos, NULL, queue);
     }
   }
 }
@@ -1317,26 +654,20 @@ Transfer::processModifyCase(xmlNode *localroot)
 {
   xmlNode *leftSide = NULL, *rightSide = NULL;
 
-  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
-      if(leftSide == NULL)
-      {
-	leftSide = i;
-      }
-      else
-      {
-	rightSide = i;
-	break;
-      }
+  for (auto i : children(localroot)) {
+    if(leftSide == NULL) {
+      leftSide = i;
+    } else {
+      rightSide = i;
+      break;
     }
   }
 
   if(leftSide->name != NULL && !xmlStrcmp(leftSide->name, (const xmlChar *) "clip"))
   {
     int pos = 0;
-    xmlChar *part = NULL, *side = NULL, *as = NULL;
+    xmlChar *side = NULL, *as = NULL;
+    UString part;
     bool queue = true;
 
     for(xmlAttr *i = leftSide->properties; i != NULL; i = i->next)
@@ -1347,7 +678,7 @@ Transfer::processModifyCase(xmlNode *localroot)
       }
       else if(!xmlStrcmp(i->name, (const xmlChar *) "part"))
       {
-	part = i->children->content;
+        part = to_ustring((const char*)i->children->content);
       }
       else if(!xmlStrcmp(i->name, (const xmlChar *) "pos"))
       {
@@ -1368,46 +699,46 @@ Transfer::processModifyCase(xmlNode *localroot)
     }
     if(!xmlStrcmp(side, (const xmlChar *) "sl"))
     {
-      string const result = copycase(evalString(rightSide),
-				      word[pos]->source(attr_items[(const char *) part], queue));
-      bool match = word[pos]->setSource(attr_items[(const char *) part], result);
+      UString const result = StringUtils::copycase(evalString(rightSide),
+				      word[pos]->source(attr_items[part], queue));
+      bool match = word[pos]->setSource(attr_items[part], result);
       if(!match && trace)
       {
-        wcerr << "apertium-transfer warning: <modify-case> on line " << localroot->line << " sometimes discards its value." << endl;
+        cerr << "apertium-transfer warning: <modify-case> on line " << localroot->line << " sometimes discards its value." << endl;
       }
     }
     else if(!xmlStrcmp(side, (const xmlChar *) "ref"))
     {
-      string const result = copycase(evalString(rightSide),
-              word[pos]->reference(attr_items[(const char *) part], queue));
-      bool match = word[pos]->setReference(attr_items[(const char *) part], result);
+      UString const result = StringUtils::copycase(evalString(rightSide),
+              word[pos]->reference(attr_items[part], queue));
+      bool match = word[pos]->setReference(attr_items[part], result);
       if(!match && trace)
       {
-        wcerr << "apertium-transfer warning: <modify-case> on line " << localroot->line << " sometimes discards its value." << endl;
+        cerr << "apertium-transfer warning: <modify-case> on line " << localroot->line << " sometimes discards its value." << endl;
       }
     }
     else
     {
-      string const result = copycase(evalString(rightSide),
-				     word[pos]->target(attr_items[(const char *) part], queue));
-      bool match = word[pos]->setTarget(attr_items[(const char *) part], result);
+      UString const result = StringUtils::copycase(evalString(rightSide),
+				     word[pos]->target(attr_items[part], queue));
+      bool match = word[pos]->setTarget(attr_items[part], result);
       if(!match && trace)
       {
-        wcerr << "apertium-transfer warning: <modify-case> on line " << localroot->line << " sometimes discards its value." << endl;
+        cerr << "apertium-transfer warning: <modify-case> on line " << localroot->line << " sometimes discards its value." << endl;
       }
     }
   }
   else if(!xmlStrcmp(leftSide->name, (const xmlChar *) "var"))
   {
-    string const val = (const char *) leftSide->properties->children->content;
-    variables[val] = copycase(evalString(rightSide), variables[val]);
+    UString const val = to_ustring((const char *) leftSide->properties->children->content);
+    variables[val] = StringUtils::copycase(evalString(rightSide), variables[val]);
   }
 }
 
 void
 Transfer::processCallMacro(xmlNode *localroot)
 {
-  string const n = (const char *) localroot->properties->children->content;
+  UString const n = to_ustring((const char *) localroot->properties->children->content);
   int npar = 0;
 
   xmlNode *macro = macro_map[macros[n]];
@@ -1424,20 +755,15 @@ Transfer::processCallMacro(xmlNode *localroot)
   // ToDo: Is it at all valid if npar <= 0 ?
 
   TransferWord **myword = NULL;
+  int idx = 0;
   if(npar > 0)
   {
     myword = new TransferWord *[npar];
     std::fill(myword, myword+npar, (TransferWord *)(0));
-  }
-  
-  int idx = 0;
-  for(xmlNode *i = localroot->children; npar && i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
+    for (auto i : children(localroot)) {
       if (idx >= npar) {
-      	  wcerr << L"Error: processCallMacro() number of arguments >= npar at line " << i->line << endl;
-      	  return;
+        cerr << "Error: processCallMacro() number of arguments >= npar at line " << i->line << endl;
+        return;
       }
       int pos = atoi((const char *) i->properties->children->content)-1;
       myword[idx] = word[pos];
@@ -1449,12 +775,8 @@ Transfer::processCallMacro(xmlNode *localroot)
   swap(myword, word);
   swap(npar, lword);
 
-  for(xmlNode *i = macro->children; i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
-      processInstruction(i);
-    }
+  for (auto i : children(macro)) {
+    processInstruction(i);
   }
 
   swap(myword, word);
@@ -1463,759 +785,104 @@ Transfer::processCallMacro(xmlNode *localroot)
   delete[] myword;
 }
 
-int
-Transfer::processChoose(xmlNode *localroot)
-{
-  int words_to_consume = -1;
-  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
-      if(!xmlStrcmp(i->name, (const xmlChar *) "when"))
-      {
-        bool picked_option = false;
-
-	for(xmlNode *j = i->children; j != NULL; j = j->next)
-	{
-	  if(j->type == XML_ELEMENT_NODE)
-	  {
-	    if(!xmlStrcmp(j->name, (const xmlChar *) "test"))
-	    {
-	      if(!processTest(j))
-	      {
-		break;
-	      }
-	      else
-	      {
-	        picked_option = true;
-              }
-	    }
-	    else
-	    {
-              words_to_consume = processInstruction(j);
-              if(words_to_consume != -1)
-              {
-                return words_to_consume;
-              }
-	    }
-	  }
-	}
-        if(picked_option)
-        {
-          return words_to_consume;
-        }
-      }
-      else if(!xmlStrcmp(i->name, (const xmlChar *) "otherwise"))
-      {
-	for(xmlNode *j = i->children; j != NULL; j = j->next)
-	{
-	  if(j->type == XML_ELEMENT_NODE)
-	  {
-            words_to_consume = processInstruction(j);
-            if(words_to_consume != -1)
-            {
-              return words_to_consume;
-            }
-          }
-        }
-      }
-    }
-  }
-  return words_to_consume;
-}
-
-bool
-Transfer::processLogical(xmlNode *localroot)
-{
-  if(!xmlStrcmp(localroot->name, (const xmlChar *) "equal"))
-  {
-    return processEqual(localroot);
-  }
-  else if(!xmlStrcmp(localroot->name, (const xmlChar *) "begins-with"))
-  {
-    return processBeginsWith(localroot);
-  }
-  else if(!xmlStrcmp(localroot->name, (const xmlChar *) "begins-with-list"))
-  {
-    return processBeginsWithList(localroot);
-  }
-  else if(!xmlStrcmp(localroot->name, (const xmlChar *) "ends-with"))
-  {
-    return processEndsWith(localroot);
-  }
-  else if(!xmlStrcmp(localroot->name, (const xmlChar *) "ends-with-list"))
-  {
-    return processEndsWithList(localroot);
-  }
-  else if(!xmlStrcmp(localroot->name, (const xmlChar *) "contains-substring"))
-  {
-    return processContainsSubstring(localroot);
-  }
-  else if(!xmlStrcmp(localroot->name, (const xmlChar *) "or"))
-  {
-    return processOr(localroot);
-  }
-  else if(!xmlStrcmp(localroot->name, (const xmlChar *) "and"))
-  {
-    return processAnd(localroot);
-  }
-  else if(!xmlStrcmp(localroot->name, (const xmlChar *) "not"))
-  {
-    return processNot(localroot);
-  }
-  else if(!xmlStrcmp(localroot->name, (const xmlChar *) "in"))
-  {
-    return processIn(localroot);
-  }
-
-  return false;
-}
-
-bool
-Transfer::processIn(xmlNode *localroot)
-{
-  xmlNode *value = NULL;
-  xmlChar *idlist = NULL;
-
-  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
-      if(value == NULL)
-      {
-        value = i;
-      }
-      else
-      {
-        idlist = i->properties->children->content;
-        break;
-      }
-    }
-  }
-
-  string sval = evalString(value);
-
-  if(localroot->properties != NULL)
-  {
-    if(!xmlStrcmp(localroot->properties->children->content,
-		  (const xmlChar *) "yes"))
-    {
-      set<string, Ltstr> &myset = listslow[(const char *) idlist];
-      if(myset.find(tolower(sval)) != myset.end())
-      {
-	return true;
-      }
-      else
-      {
-	return false;
-      }
-    }
-  }
-
-  set<string, Ltstr> &myset = lists[(const char *) idlist];
-  if(myset.find(sval) != myset.end())
-  {
-    return true;
-  }
-  else
-  {
-    return false;
-  }
-}
-
-bool
-Transfer::processTest(xmlNode *localroot)
-{
-  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
-      return processLogical(i);
-    }
-  }
-  return false;
-}
-
-bool
-Transfer::processAnd(xmlNode *localroot)
-{
-  bool val = true;
-  for(xmlNode *i = localroot->children; val && i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
-      val = val && processLogical(i);
-    }
-  }
-
-  return val;
-}
-
-bool
-Transfer::processOr(xmlNode *localroot)
-{
-  bool val = false;
-  for(xmlNode *i = localroot->children; !val && i != NULL ; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
-      val = val || processLogical(i);
-    }
-  }
-
-  return val;
-}
-
-bool
-Transfer::processNot(xmlNode *localroot)
-{
-  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
-      return !processLogical(i);
-    }
-  }
-  return false;
-}
-
-bool
-Transfer::processEqual(xmlNode *localroot)
-{
-  xmlNode *first = NULL, *second = NULL;
-
-  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
-      if(first == NULL)
-      {
-        first = i;
-      }
-      else
-      {
-	second = i;
-	break;
-      }
-    }
-  }
-
-  if(localroot->properties == NULL)
-  {
-    return evalString(first) == evalString(second);
-  }
-  else
-  {
-    if(!xmlStrcmp(localroot->properties->children->content,
-		  (const xmlChar *) "yes"))
-    {
-      return tolower(evalString(first)) == tolower(evalString(second));
-    }
-    else
-    {
-      return evalString(first) == evalString(second);
-    }
-  }
-}
-
-bool
-Transfer::beginsWith(string const &s1, string const &s2) const
-{
-  int const limit = s2.size(), constraint = s1.size();
-
-  if(constraint < limit)
-  {
-    return false;
-  }
-  for(int i = 0; i != limit; i++)
-  {
-    if(s1[i] != s2[i])
-    {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-bool
-Transfer::endsWith(string const &s1, string const &s2) const
-{
-  int const limit = s2.size(), constraint = s1.size();
-
-  if(constraint < limit)
-  {
-    return false;
-  }
-  for(int i = limit-1, j = constraint - 1; i >= 0; i--, j--)
-  {
-    if(s1[j] != s2[i])
-    {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-
-bool
-Transfer::processBeginsWith(xmlNode *localroot)
-{
-  xmlNode *first = NULL, *second = NULL;
-
-  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
-      if(first == NULL)
-      {
-        first = i;
-      }
-      else
-      {
-	second = i;
-	break;
-      }
-    }
-  }
-
-  if(localroot->properties == NULL)
-  {
-    return beginsWith(evalString(first), evalString(second));
-  }
-  else
-  {
-    if(!xmlStrcmp(localroot->properties->children->content,
-		  (const xmlChar *) "yes"))
-    {
-      return beginsWith(tolower(evalString(first)), tolower(evalString(second)));
-    }
-    else
-    {
-      return beginsWith(evalString(first), evalString(second));
-    }
-  }
-}
-
-bool
-Transfer::processEndsWith(xmlNode *localroot)
-{
-  xmlNode *first = NULL, *second = NULL;
-
-  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
-      if(first == NULL)
-      {
-        first = i;
-      }
-      else
-      {
-	second = i;
-	break;
-      }
-    }
-  }
-
-  if(localroot->properties == NULL)
-  {
-    return endsWith(evalString(first), evalString(second));
-  }
-  else
-  {
-    if(!xmlStrcmp(localroot->properties->children->content,
-		  (const xmlChar *) "yes"))
-    {
-      return endsWith(tolower(evalString(first)), tolower(evalString(second)));
-    }
-    else
-    {
-      return endsWith(evalString(first), evalString(second));
-    }
-  }
-}
-
-bool
-Transfer::processBeginsWithList(xmlNode *localroot)
-{
-  xmlNode *first = NULL, *second = NULL;
-
-  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
-      if(first == NULL)
-      {
-        first = i;
-      }
-      else
-      {
-	second = i;
-	break;
-      }
-    }
-  }
-
-  xmlChar *idlist = second->properties->children->content;
-  string needle = evalString(first);
-  set<string, Ltstr>::iterator it, limit;
-
-  if(localroot->properties == NULL ||
-     xmlStrcmp(localroot->properties->children->content, (const xmlChar *) "yes"))
-  {
-    it = lists[(const char *) idlist].begin();
-    limit = lists[(const char *) idlist].end();
-  }
-  else
-  {
-    needle = tolower(needle);
-    it = listslow[(const char *) idlist].begin();
-    limit = listslow[(const char *) idlist].end();
-  }
-
-  for(; it != limit; it++)
-  {
-    if(beginsWith(needle, *it))
-    {
-      return true;
-    }
-  }
-  return false;
-}
-
-
-bool
-Transfer::processEndsWithList(xmlNode *localroot)
-{
-  xmlNode *first = NULL, *second = NULL;
-
-  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
-      if(first == NULL)
-      {
-        first = i;
-      }
-      else
-      {
-	second = i;
-	break;
-      }
-    }
-  }
-
-  xmlChar *idlist = second->properties->children->content;
-  string needle = evalString(first);
-  set<string, Ltstr>::iterator it, limit;
-
-  if(localroot->properties == NULL ||
-     xmlStrcmp(localroot->properties->children->content, (const xmlChar *) "yes"))
-  {
-    it = lists[(const char *) idlist].begin();
-    limit = lists[(const char *) idlist].end();
-  }
-  else
-  {
-    needle = tolower(needle);
-    it = listslow[(const char *) idlist].begin();
-    limit = listslow[(const char *) idlist].end();
-  }
-
-  for(; it != limit; it++)
-  {
-    if(endsWith(needle, *it))
-    {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool
-Transfer::processContainsSubstring(xmlNode *localroot)
-{
-  xmlNode *first = NULL, *second = NULL;
-
-  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
-      if(first == NULL)
-      {
-        first = i;
-      }
-      else
-      {
-	second = i;
-	break;
-      }
-    }
-  }
-
-  if(localroot->properties == NULL)
-  {
-    return evalString(first).find(evalString(second)) != string::npos;
-  }
-  else
-  {
-    if(!xmlStrcmp(localroot->properties->children->content,
-		  (const xmlChar *) "yes"))
-    {
-      return tolower(evalString(first)).find(tolower(evalString(second))) != string::npos;
-    }
-    else
-    {
-      return evalString(first).find(evalString(second)) != string::npos;
-    }
-  }
-}
-
-string
-Transfer::copycase(string const &source_word, string const &target_word)
-{
-  wstring result;
-  wstring const s_word = UtfConverter::fromUtf8(source_word);
-  wstring const t_word = UtfConverter::fromUtf8(target_word);
-
-  bool firstupper = iswupper(s_word[0]);
-  bool uppercase = firstupper && iswupper(s_word[s_word.size()-1]);
-  bool sizeone = s_word.size() == 1;
-
-  if(!uppercase || (sizeone && uppercase))
-  {
-    result = t_word;
-    result[0] = towlower(result[0]);
-    //result = StringUtils::tolower(t_word);
-  }
-  else
-  {
-    result = StringUtils::toupper(t_word);
-  }
-
-  if(firstupper)
-  {
-    result[0] = towupper(result[0]);
-  }
-
-  return UtfConverter::toUtf8(result);
-}
-
-string
-Transfer::caseOf(string const &str)
-{
-  wstring const s = UtfConverter::fromUtf8(str);
-
-  if(s.size() > 1)
-  {
-    if(!iswupper(s[0]))
-    {
-      return "aa";
-    }
-    else if(!iswupper(s[s.size()-1]))
-    {
-      return "Aa";
-    }
-    else
-    {
-      return "AA";
-    }
-  }
-  else if(s.size() == 1)
-  {
-    if(!iswupper(s[0]))
-    {
-      return "aa";
-    }
-    else
-    {
-      return "Aa";
-    }
-  }
-  else
-  {
-    return "aa";
-  }
-}
-
-string
-Transfer::tolower(string const &str) const
-{
-  return UtfConverter::toUtf8(StringUtils::tolower(UtfConverter::fromUtf8(str)));
-}
-
-string
-Transfer::tags(string const &str) const
-{
-  string result = "<";
-
-  for(unsigned int i = 0, limit = str.size(); i != limit; i++)
-  {
-    if(str[i] == '.')
-    {
-      result.append("><");
-    }
-    else
-    {
-      result += str[i];
-    }
-  }
-
-  result += '>';
-
-  return result;
-}
-
-int
-Transfer::processRule(xmlNode *localroot)
-{
-  int instruction_return, words_to_consume = -1;
-  // localroot is suposed to be an 'action' tag
-  for(xmlNode *i = localroot->children; i != NULL; i = i->next)
-  {
-    if(i->type == XML_ELEMENT_NODE)
-    {
-      instruction_return = processInstruction(i);
-      // When an instruction which modifies the number of words to be consumed
-      // from the input is found, execution of the rule is stopped
-      if(instruction_return != -1)
-      {
-        words_to_consume = instruction_return;
-        break;
-      }
-    }
-  }
-  
-  while(!blank_queue.empty()) //flush remaining blanks that are not spaces
-  {
-    if(blank_queue.front().compare(" ") != 0)
-    {
-      fputws_unlocked(UtfConverter::fromUtf8(blank_queue.front()).c_str(), output);
-    }
-    blank_queue.pop();
-  }
-  
-  return words_to_consume;
-}
-
 TransferToken &
-Transfer::readToken(FILE *in)
+Transfer::readToken(InputFile& in)
 {
   if(!input_buffer.isEmpty())
   {
     return input_buffer.next();
   }
 
-  wstring content;
+  UString content;
   while(true)
   {
-    int val = fgetwc_unlocked(in);
-    if(feof(in) || (val == 0 && internal_null_flush))
+    UChar32 val = in.get();
+    if(in.eof() || (val == 0 && internal_null_flush))
     {
       in_wblank = false;
       return input_buffer.add(TransferToken(content, tt_eof));
     }
     if(in_wblank)
     {
-      content = L"[[";
-      content+= wchar_t(val);
-      
+      content = "[["_u;
+      content += val;
+
       while(true)
       {
-        int val3 = fgetwc_unlocked(in);
-        if(val3 == L'\\')
+        UChar32 val3 = in.get();
+        if(val3 == '\\')
         {
-          content += L'\\';
-          content += wchar_t(fgetwc_unlocked(in));
+          content += '\\';
+          content += in.get();
         }
-        else if(val3 == L'$') //[[..]]^..$ is the LU
+        else if(val3 == '$') //[[..]]^..$ is the LU
         {
           in_wblank = false;
           return input_buffer.add(TransferToken(content, tt_word));
         }
-        else if(val3 == L'\0' && null_flush)
+        else if(val3 == '\0' && null_flush)
         {
           in_wblank = false;
-          fflush(output);
+          u_fflush(output);
         }
         else
         {
-          content += wchar_t(val3);
+          content += val3;
         }
       }
     }
     if(val == '\\')
     {
-      content += L'\\';
-      content += (wchar_t) fgetwc_unlocked(in);
+      content += '\\';
+      content += in.get();
     }
-    else if(val == L'[')
+    else if(val == '[')
     {
-      content += L'[';
+      content += '[';
       while(true)
       {
-        int val2 = fgetwc_unlocked(in);
-        if(val2 == L'\\')
+        UChar32 val2 = in.get();
+        if(val2 == '\\')
         {
-          content += L'\\';
-          content += wchar_t(fgetwc_unlocked(in));
+          content += '\\';
+          content += in.get();
         }
-        else if(val2 == L'[')
+        else if(val2 == '[')
         { //wordbound blank
           in_wblank = true;
           content.pop_back();
-          
+
           return input_buffer.add(TransferToken(content, tt_blank));
         }
-        else if(val2 == L']')
+        else if(val2 == ']')
         {
-          content += L']';
+          content += ']';
           break;
         }
         else
         {
-          content += wchar_t(val2);
+          content += val2;
         }
       }
     }
-    else if(val == L'$')
+    else if(val == '$')
     {
       return input_buffer.add(TransferToken(content, tt_word));
     }
-    else if(val == L'^')
+    else if(val == '^')
     {
       return input_buffer.add(TransferToken(content, tt_blank));
     }
-    else if(val == L'\0' && null_flush)
+    else if(val == '\0' && null_flush)
     {
       in_wblank = false;
-      fflush(output);
+      u_fflush(output);
     }
     else
     {
-      content += wchar_t(val);
+      content += val;
     }
   }
-}
-
-bool
-Transfer::getNullFlush(void)
-{
-  return null_flush;
-}
-
-void
-Transfer::setNullFlush(bool null_flush)
-{
-  this->null_flush = null_flush;
-}
-
-void
-Transfer::setTrace(bool trace)
-{
-  this->trace = trace;
 }
 
 void
@@ -2229,24 +896,21 @@ Transfer::tmp_clear()
 {
   tmpblank.clear();
   tmpword.clear();
+  variables = variable_defaults;
 }
 
 void
-Transfer::transfer_wrapper_null_flush(FILE *in, FILE *out)
+Transfer::transfer_wrapper_null_flush(InputFile& in, UFILE* out)
 {
   null_flush = false;
   internal_null_flush = true;
 
-  while(!feof(in))
+  while(!in.eof())
   {
     tmp_clear();
     transfer(in, out);
-    fputwc_unlocked(L'\0', out);
-    int code = fflush(out);
-    if(code != 0)
-    {
-      wcerr << L"Could not flush output " << errno << endl;
-    }
+    u_fputc('\0', out);
+    u_fflush(out);
   }
 
   internal_null_flush = false;
@@ -2254,7 +918,7 @@ Transfer::transfer_wrapper_null_flush(FILE *in, FILE *out)
 }
 
 void
-Transfer::transfer(FILE *in, FILE *out)
+Transfer::transfer(InputFile& in, UFILE* out)
 {
   if(getNullFlush())
   {
@@ -2274,31 +938,31 @@ Transfer::transfer(FILE *in, FILE *out)
   {
     if(trace_att)
     {
-      wcerr << "Loop start " << endl;
-      wcerr << "ms.size: " << ms.size() << endl;
+      cerr << "Loop start " << endl;
+      cerr << "ms.size: " << ms.size() << endl;
 
-      wcerr << "tmpword.size(): " << tmpword.size() << endl;
+      cerr << "tmpword.size(): " << tmpword.size() << endl;
       for (unsigned int ind = 0; ind < tmpword.size(); ind++)
       {
         if(ind != 0)
         {
-          wcerr << L" ";
+          cerr << " ";
         }
-        wcerr << *tmpword[ind];
+        cerr << *tmpword[ind];
       }
-      wcerr << endl;
+      cerr << endl;
 
-      wcerr << "tmpblank.size(): " << tmpblank.size() << endl;
+      cerr << "tmpblank.size(): " << tmpblank.size() << endl;
       for (unsigned int ind = 0; ind < tmpblank.size(); ind++)
       {
-        wcerr << L"'";
-        wcerr << *tmpblank[ind];
-        wcerr << L"' ";
+        cerr << "'";
+        cerr << *tmpblank[ind];
+        cerr << "' ";
       }
-      wcerr << endl;
+      cerr << endl;
 
-      wcerr << "last: " << last << endl;
-      wcerr << "prev_last: " << prev_last << endl << endl;
+      cerr << "last: " << last << endl;
+      cerr << "prev_last: " << prev_last << endl << endl;
     }
 
     if(ms.size() == 0)
@@ -2309,7 +973,7 @@ Transfer::transfer(FILE *in, FILE *out)
 
         if(trace_att)
         {
-          wcerr << "num_words_to_consume: " << num_words_to_consume << endl;
+          cerr << "num_words_to_consume: " << num_words_to_consume << endl;
         }
 
         //Consume all the words from the input which matched the rule.
@@ -2356,41 +1020,38 @@ Transfer::transfer(FILE *in, FILE *out)
         {
           if(trace_att)
           {
-            wcerr << "printing tmpword[0]" <<endl;
+            cerr << "printing tmpword[0]" <<endl;
           }
 
-          pair<wstring, int> tr;
-          wstring tr_wblank;
+          pair<UString, int> tr;
+          UString tr_wblank;
           if(useBilingual && preBilingual == false)
           {
-	    if(isExtended && (*tmpword[0])[0] == L'*')
-	    {
-	      tr = extended.biltransWithQueue((*tmpword[0]).substr(1), false);
-              if(tr.first[0] == L'@')
-              {
-                tr.first[0] = L'*';
+            if(isExtended && (*tmpword[0])[0] == '*') {
+              tr = extended.biltransWithQueue((*tmpword[0]).substr(1), false);
+              if(tr.first[0] == '@') {
+                tr.first[0] = '*';
+              } else {
+                UString temp;
+                temp += '%';
+                temp.append(tr.first);
+                temp.swap(tr.first);
               }
-              else
-              {
-                tr.first = L"%" + tr.first;
-              }
-            }
-            else
-            {
-	      tr = fstp.biltransWithQueue(*tmpword[0], false);
+            } else {
+              tr = fstp.biltransWithQueue(*tmpword[0], false);
             }
           }
           else if(preBilingual)
           {
-            wstring sl;
-            wstring tl;
-            wstring ref;
-            wstring wblank;
+            UString sl;
+            UString tl;
+            UString ref;
+            UString wblank;
 
             int seenSlash = 0;
-            for(wstring::const_iterator it = tmpword[0]->begin(); it != tmpword[0]->end(); it++)
+            for(UString::const_iterator it = tmpword[0]->begin(); it != tmpword[0]->end(); it++)
             {
-              if(*it == L'\\')
+              if(*it == '\\')
               {
                 if(seenSlash == 0)
                 {
@@ -2412,19 +1073,19 @@ Transfer::transfer(FILE *in, FILE *out)
                 }
                 continue;
               }
-              else if(*it == L'[')
+              else if(*it == '[')
               {
-                if(*(it+1) == L'[') //wordbound blank
+                if(*(it+1) == '[') //wordbound blank
                 {
                   while(true)
                   {
-                    if(*it == L'\\')
+                    if(*it == '\\')
                     {
                       wblank.push_back(*it);
                       it++;
                       wblank.push_back(*it);
                     }
-                    else if(*it == L'^' && *(it-1) == L']' && *(it-2) == L']')
+                    else if(*it == '^' && *(it-1) == ']' && *(it-2) == ']')
                     {
                       break;
                     }
@@ -2432,7 +1093,7 @@ Transfer::transfer(FILE *in, FILE *out)
                     {
                       wblank.push_back(*it);
                     }
-                    
+
                     it++;
                   }
                 }
@@ -2453,7 +1114,7 @@ Transfer::transfer(FILE *in, FILE *out)
                 }
                 continue;
               }
-              else if(*it == L'/')
+              else if(*it == '/')
               {
                 seenSlash++;
 
@@ -2474,44 +1135,29 @@ Transfer::transfer(FILE *in, FILE *out)
               }
             }
             //tmpword[0]->assign(sl);
-            tr = pair<wstring, int>(tl, false);
+            tr = pair<UString, int>(tl, false);
             tr_wblank = wblank;
-            //wcerr << L"pb: " << *tmpword[0] << L" :: " << sl << L" >> " << tl << endl ;
+            //cerr << "pb: " << *tmpword[0] << " :: " << sl << " >> " << tl << endl ;
           }
           else
           {
-            tr = pair<wstring, int>(*tmpword[0], 0);
+            tr = pair<UString, int>(*tmpword[0], 0);
           }
 
-	  if(tr.first.size() != 0)
-	  {
-	    if(defaultAttrs == lu)
-	    {
-        if(tr.first[0] != L'[' || tr.first[1] != L'[')
-        {
-          fputws_unlocked(tr_wblank.c_str(), output);
-          fputwc_unlocked(L'^', output);
+	  if(tr.first.size() != 0) {
+	    if(defaultAttrs == lu) {
+          if(tr.first[0] != '[' || tr.first[1] != '[') {
+            u_fprintf(output, "%S^", tr_wblank.c_str());
+          }
+          u_fprintf(output, "%S$", tr.first.c_str());
+        } else {
+          if(tr.first[0] == '*') {
+            u_fprintf(output, "^unknown<unknown>{%S^", tr_wblank.c_str());
+          } else {
+            u_fprintf(output, "^default<default>{%S^", tr_wblank.c_str());
+          }
+          u_fprintf(output, "%S$}$", tr.first.c_str());
         }
-	      fputws_unlocked(tr.first.c_str(), output);
-	      fputwc_unlocked(L'$', output);
-      }
-      else
-      {
-        if(tr.first[0] == '*')
-        {
-          fputws_unlocked(L"^unknown<unknown>{", output);
-          fputws_unlocked(tr_wblank.c_str(), output);
-          fputwc_unlocked(L'^', output);
-        }
-        else
-        {
-          fputws_unlocked(L"^default<default>{", output);
-          fputws_unlocked(tr_wblank.c_str(), output);
-          fputwc_unlocked(L'^', output);
-        }
-          fputws_unlocked(tr.first.c_str(), output);
-          fputws_unlocked(L"$}$", output);
-      }
 	  }
 	  banned_rules.clear();
 	  tmpword.clear();
@@ -2523,11 +1169,10 @@ Transfer::transfer(FILE *in, FILE *out)
 	}
 	else if(tmpblank.size() != 0)
 	{
-          if(trace_att)
-          {
-            wcerr << "printing tmpblank[0]" <<endl;
+          if(trace_att) {
+            cerr << "printing tmpblank[0]" <<endl;
           }
-          fputws_unlocked(tmpblank[0]->c_str(), output);
+          write(*tmpblank[0], output);
           tmpblank.clear();
           prev_last = last;
           last = input_buffer.getPos();
@@ -2544,18 +1189,12 @@ Transfer::transfer(FILE *in, FILE *out)
       last = input_buffer.getPos();
       last_lword = tmpword.size();
 
-      if(trace)
-      {
-        wcerr << endl << L"apertium-transfer: Rule " << val << L" line " << lastrule_line << L" ";
-        for (unsigned int ind = 0; ind < tmpword.size(); ind++)
-        {
-          if (ind != 0)
-          {
-            wcerr << L" ";
-          }
-          fputws_unlocked(tmpword[ind]->c_str(), stderr);
+      if(trace) {
+        cerr << endl << "apertium-transfer: Rule " << val << " line " << lastrule_line;
+        for (auto& it : tmpword) {
+          cerr << " " << *it;
         }
-        wcerr << endl;
+        cerr << endl;
       }
     }
 
@@ -2569,7 +1208,7 @@ Transfer::transfer(FILE *in, FILE *out)
 	break;
 
       case tt_blank:
-	ms.step(L' ');
+	ms.step(' ');
 	tmpblank.push_back(&current.getContent());
 	break;
 
@@ -2581,13 +1220,13 @@ Transfer::transfer(FILE *in, FILE *out)
 	}
 	else
 	{
-	  fputws_unlocked(current.getContent().c_str(), output);
+      write(current.getContent(), output);
 	  return;
 	}
 	break;
 
       default:
-	wcerr << "Error: Unknown input token." << endl;
+	cerr << "Error: Unknown input token." << endl;
 	return;
     }
   }
@@ -2598,7 +1237,7 @@ Transfer::applyRule()
 {
   int words_to_consume;
   unsigned int limit = tmpword.size();
-  //wcerr << L"applyRule: " << tmpword.size() << endl;
+  //cerr << "applyRule: " << tmpword.size() << endl;
 
   for(unsigned int i = 0; i != limit; i++)
   {
@@ -2612,33 +1251,27 @@ Transfer::applyRule()
     {
       if(int(blank_queue.size()) < last_lword - 1)
       {
-        string blank_to_add = string(UtfConverter::toUtf8(*tmpblank[i-1]));
-        blank_queue.push(blank_to_add);
+        blank_queue.push(*tmpblank[i-1]);
       }
     }
 
-    pair<wstring, int> tr;
+    pair<UString, int> tr;
     if(useBilingual && preBilingual == false)
     {
       tr = fstp.biltransWithQueue(*tmpword[i], false);
-      wstring refx,wblankx;
-      word[i] = new TransferWord(UtfConverter::toUtf8(*tmpword[i]),
-                                 UtfConverter::toUtf8(tr.first),
-                                 UtfConverter::toUtf8(refx),
-                                 UtfConverter::toUtf8(wblankx),
-                                 tr.second);
+      word[i] = new TransferWord(*tmpword[i], tr.first, ""_u, ""_u, tr.second);
     }
     else if(preBilingual)
     {
-      wstring sl;
-      wstring tl;
-      wstring ref;
-      wstring wblank;
+      UString sl;
+      UString tl;
+      UString ref;
+      UString wblank;
 
       int seenSlash = 0;
-      for(wstring::const_iterator it = tmpword[i]->begin(); it != tmpword[i]->end(); it++)
+      for(UString::const_iterator it = tmpword[i]->begin(); it != tmpword[i]->end(); it++)
       {
-        if(*it == L'\\')
+        if(*it == '\\')
         {
           if(seenSlash == 0)
           {
@@ -2660,19 +1293,19 @@ Transfer::applyRule()
           }
           continue;
         }
-        else if(*it == L'[')
+        else if(*it == '[')
         {
-          if(*(it+1) == L'[') //wordbound blank
+          if(*(it+1) == '[') //wordbound blank
           {
             while(true)
             {
-              if(*it == L'\\')
+              if(*it == '\\')
               {
                 wblank.push_back(*it);
                 it++;
                 wblank.push_back(*it);
               }
-              else if(*it == L'^' && *(it-1) == L']' && *(it-2) == L']')
+              else if(*it == '^' && *(it-1) == ']' && *(it-2) == ']')
               {
                 break;
               }
@@ -2680,7 +1313,7 @@ Transfer::applyRule()
               {
                 wblank.push_back(*it);
               }
-              
+
               it++;
             }
           }
@@ -2702,7 +1335,7 @@ Transfer::applyRule()
           continue;
         }
 
-        if(*it == L'/')
+        if(*it == '/')
         {
           seenSlash++;
 
@@ -2722,22 +1355,13 @@ Transfer::applyRule()
           ref.push_back(*it);
         }
       }
-      tr = pair<wstring, int>(tl, false);
-      word[i] = new TransferWord(UtfConverter::toUtf8(sl),
-                                 UtfConverter::toUtf8(tr.first),
-                                 UtfConverter::toUtf8(ref),
-                                 UtfConverter::toUtf8(wblank),
-                                 tr.second);
+      tr = pair<UString, int>(tl, false);
+      word[i] = new TransferWord(sl, tr.first, ref, wblank, tr.second);
     }
     else // neither useBilingual nor preBilingual (sl==tl)
     {
-      tr = pair<wstring, int>(*tmpword[i], false);
-      wstring refx,wblankx;
-      word[i] = new TransferWord(UtfConverter::toUtf8(*tmpword[i]),
-                                 UtfConverter::toUtf8(tr.first),
-                                 UtfConverter::toUtf8(refx),
-                                 UtfConverter::toUtf8(wblankx),
-                                 tr.second);
+      tr = pair<UString, int>(*tmpword[i], false);
+      word[i] = new TransferWord(*tmpword[i], tr.first, ""_u, ""_u, tr.second);
     }
   }
 
@@ -2762,53 +1386,53 @@ Transfer::applyRule()
 
 /* HERE */
 void
-Transfer::applyWord(wstring const &word_str)
+Transfer::applyWord(UString const &word_str)
 {
-  ms.step(L'^');
-    
+  ms.step('^');
+
   for(unsigned int i = 0, limit = word_str.size(); i < limit; i++)
   {
     switch(word_str[i])
     {
-      case L'\\':
+      case '\\':
         i++;
-	ms.step(towlower(word_str[i]), any_char);
-	break;
-        
-      case L'[':
-        if(word_str[i+1] == L'[')
+        ms.step(u_tolower(word_str[i]), any_char);
+        break;
+
+      case '[':
+        if(word_str[i+1] == '[')
         {
           while(true)
           {
-            if(word_str[i] == L'\\')
+            if(word_str[i] == '\\')
             {
               i++;
             }
             else if(i >= 4)
             {
-              if(word_str[i] == L'^' && word_str[i-1] == L']' && word_str[i-2] == L']')
+              if(word_str[i] == '^' && word_str[i-1] == ']' && word_str[i-2] == ']')
               {
                 break;
               }
             }
-            
+
             i++;
           }
         }
         else
         {
-          ms.step(towlower(word_str[i]), any_char);
+          ms.step(u_tolower(word_str[i]), any_char);
         }
         break;
-        
-      case L'/':
+
+      case '/':
         i = limit;
         break;
 
-      case L'<':
+      case '<':
 	for(unsigned int j = i+1; j != limit; j++)
 	{
-	  if(word_str[j] == L'>')
+	  if(word_str[j] == '>')
 	  {
 	    int symbol = alphabet(word_str.substr(i, j-i+1));
 	    if(symbol)
@@ -2826,11 +1450,11 @@ Transfer::applyWord(wstring const &word_str)
 	break;
 
       default:
-	ms.step(towlower(word_str[i]), any_char);
+	ms.step(u_tolower(word_str[i]), any_char);
 	break;
     }
   }
-  ms.step(L'$');
+  ms.step('$');
 }
 
 void

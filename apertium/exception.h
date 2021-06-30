@@ -27,9 +27,8 @@ namespace Exception {
     EXCEPTION_TYPE(const char *const what_) : ExceptionType(what_) {}          \
     EXCEPTION_TYPE(const std::string &what_) : ExceptionType(what_) {}         \
     EXCEPTION_TYPE(const std::stringstream &what_) : ExceptionType(what_) {}   \
-    EXCEPTION_TYPE(const wchar_t *const what_) : ExceptionType(what_) {}       \
-    EXCEPTION_TYPE(const std::wstring &what_) : ExceptionType(what_) {}        \
-    EXCEPTION_TYPE(const std::wstringstream &what_) : ExceptionType(what_) {}  \
+    EXCEPTION_TYPE(const UChar *const what_) : ExceptionType(what_) {}         \
+    EXCEPTION_TYPE(const UString &what_) : ExceptionType(what_) {}             \
     ~EXCEPTION_TYPE() throw() {}                                               \
   };
 

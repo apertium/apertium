@@ -62,10 +62,7 @@ private:
   MorphoStream* setup_untagged_morpho_stream(
     FILE_Tagger &FILE_Tagger_,
     char *DicFn, char *UntaggedFn,
-    FILE **Dictionary, FILE **UntaggedCorpus);
-  void close_untagged_files(
-    char *DicFn, char *UntaggedFn,
-    FILE *Dictionary, FILE *UntaggedCorpus);
+    UFILE **UntaggedCorpus);
 
   void g_StreamTagger(StreamTagger &StreamTagger_);
   void s_StreamTaggerTrainer(StreamTagger &StreamTaggerTrainer_);

@@ -17,25 +17,15 @@
 
 #include <map>
 #include <iostream>
-#include <cwchar>
 #include <string>
 #include <cstring>
 #include <locale>
-#include <lttoolbox/ltstr.h>
+#include <lttoolbox/ustring.h>
 
 using namespace std;
 
-/*struct Ltstr // Already in lttoolbox/ltstr.h
-{
-  bool operator()(wstring const &s1, wstring const &s2) const
-  {
-    return wcscmp(s1.c_str(), s2.c_str()) < 0;
-  }
-};
-*/
-
 class AccentsMap {
-	typedef std::map<wstring, wstring, Ltstr> acmap;
+	typedef std::map<UString, UString> acmap;
 	private:
 		acmap           map; // Accent to character
 		acmap::iterator it;  // Iterator for searching
@@ -50,6 +40,7 @@ class AccentsMap {
 		void init_locale();
 
 		// The getter for both directions depending on init.
-		wstring get(wstring input);
+		UString get(UString input);
 };
 
+void fputus(const UString& s, FILE* out);

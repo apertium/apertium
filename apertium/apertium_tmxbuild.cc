@@ -24,36 +24,34 @@
 
 #include <apertium/apertium_config.h>
 #include <apertium/tmx_builder.h>
-#include <apertium/utf_converter.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 #include "apertium_config.h"
 #include <apertium/unlocked_cstdio.h>
 
-using namespace Apertium;
 using namespace std;
 
 void usage(char *progname)
 {
-  wcerr << L"USAGE: " << basename(progname) << L" [options] code1 code2 doc1 doc2 [output_file]" << endl;
-  wcerr << L"Options:" << endl;
-  wcerr << L"  -p percent    number 0 < n <= 1 to set margin of confidence of TU's " << endl;
-  wcerr << L"                (0.85 by default) in length terms" << endl;
-  wcerr << L"  -e edit       number 0 < n <= 1 to set margin of confidence of TU's " << endl;
-  wcerr << L"                (0.30 by default) in edit distance terms" << endl;
-  wcerr << L"  -l low-limit  ignore percent if the segment is less than lowlimit" <<endl;
-  wcerr << L"                (15 by default)" << endl;
-  wcerr << L"  -m max-edit   characters to be taken into account when aligning" << endl;
-  wcerr << L"                sentences (50 by default)" << endl;
-  wcerr << L"  -d diagonal   diagonal width for using edit distance, 10 by default" << endl;
-  wcerr << L"  -w window     window size of the edit distance with sentences" << endl;
-  wcerr << L"                (100 sentences by default)" << endl;
-  wcerr << L"  -s step       step for moving the window during the alingment" <<endl;
-  wcerr << L"                (75 sentences by default)" << endl;
-  wcerr << L"  -h help       display this help" << endl;
-  wcerr << L"Other parameters:" << endl;
-  wcerr << L"  code1, code2 codes of the languages (i.e. ISO-631 ones)" << endl;
-  wcerr << L"  doc1, doc2    unformatted docs to build the TMX file" << endl;
-  wcerr << L"  output_file   if not specified, the result will be printed to stdout" << endl;
+  cerr << "USAGE: " << basename(progname) << " [options] code1 code2 doc1 doc2 [output_file]" << endl;
+  cerr << "Options:" << endl;
+  cerr << "  -p percent    number 0 < n <= 1 to set margin of confidence of TU's " << endl;
+  cerr << "                (0.85 by default) in length terms" << endl;
+  cerr << "  -e edit       number 0 < n <= 1 to set margin of confidence of TU's " << endl;
+  cerr << "                (0.30 by default) in edit distance terms" << endl;
+  cerr << "  -l low-limit  ignore percent if the segment is less than lowlimit" <<endl;
+  cerr << "                (15 by default)" << endl;
+  cerr << "  -m max-edit   characters to be taken into account when aligning" << endl;
+  cerr << "                sentences (50 by default)" << endl;
+  cerr << "  -d diagonal   diagonal width for using edit distance, 10 by default" << endl;
+  cerr << "  -w window     window size of the edit distance with sentences" << endl;
+  cerr << "                (100 sentences by default)" << endl;
+  cerr << "  -s step       step for moving the window during the alingment" <<endl;
+  cerr << "                (75 sentences by default)" << endl;
+  cerr << "  -h help       display this help" << endl;
+  cerr << "Other parameters:" << endl;
+  cerr << "  code1, code2 codes of the languages (i.e. ISO-631 ones)" << endl;
+  cerr << "  doc1, doc2    unformatted docs to build the TMX file" << endl;
+  cerr << "  output_file   if not specified, the result will be printed to stdout" << endl;
 
   exit(EXIT_FAILURE);
 }
@@ -64,7 +62,7 @@ int main(int argc, char *argv[])
   LtLocale::tryToSetLocale();
   string output_file = "";
   string doc1 = "", doc2 = "";
-  string lang1 = "", lang2 = "";
+  UString lang1, lang2;
 
   double percent = 0.85;
   int low_limit = 15;
@@ -160,7 +158,7 @@ int main(int argc, char *argv[])
 
 
       default:
-        //wcerr<<L"Error: getopt() returned the char code '"<<c<<L"'\n";
+        //cerr<<"Error: getopt() returned the char code '"<<c<<"'\n";
         usage(argv[0]);
         break;
     }
@@ -174,8 +172,8 @@ int main(int argc, char *argv[])
     case 5:
       doc1 = argv[optind - 1 + 3];
       doc2 = argv[optind - 1 + 4];
-      lang1 = argv[optind - 1 + 1];
-      lang2 = argv[optind - 1 + 2];
+      lang1 = to_ustring(argv[optind - 1 + 1]);
+      lang2 = to_ustring(argv[optind - 1 + 2]);
       break;
 
     default:
@@ -183,10 +181,10 @@ int main(int argc, char *argv[])
       return EXIT_FAILURE;
   }
 
-  TMXBuilder tmxb(UtfConverter::fromUtf8(lang1), UtfConverter::fromUtf8(lang2));
+  TMXBuilder tmxb(lang1, lang2);
 //  if(!tmxb.check(doc1, doc2))
 //  {
-//    wcerr << L"Error: The two files are incompatible for building a TMX." << endl;
+//    cerr << "Error: The two files are incompatible for building a TMX." << endl;
 //    exit(EXIT_FAILURE);
 //  }
 

@@ -27,9 +27,9 @@ class Morpheme {
 public:
   friend bool operator==(const Morpheme &a, const Morpheme &b);
   friend bool operator<(const Morpheme &a, const Morpheme &b);
-  friend std::wostream& operator<<(std::wostream& out, const Morpheme &morph);
-  operator std::wstring() const;
-  std::wstring TheLemma;
+  friend std::ostream& operator<<(std::ostream& out, const Morpheme &morph);
+  operator UString() const;
+  UString TheLemma;
   std::vector<Tag> TheTags;
 };
 }

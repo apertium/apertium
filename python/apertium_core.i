@@ -53,8 +53,9 @@
 
 void pretransfer(int argc, char **argv, char *input_path, char *output_path)
 {
-  FILE* input = fopen(input_path, "r");
-  FILE* output = fopen(output_path, "w");
+  InputFile input;
+  input.open(input_path);
+  UFILE* output = u_fopen(output_path, "w", NULL, NULL);
   bool compound_sep = false;
   bool null_flush = false;
   bool surface_forms = false;
@@ -85,8 +86,7 @@ void pretransfer(int argc, char **argv, char *input_path, char *output_path)
     }
   }
   processStream(input, output, null_flush, surface_forms, compound_sep);
-  fclose(input);
-  fclose(output);
+  u_fclose(output);
 }
 
 class ApertiumTransfer: public Transfer
@@ -100,8 +100,9 @@ class ApertiumTransfer: public Transfer
 
   void transfer_text(int argc, char **argv, char *input_path, char *output_path)
   {
-    FILE* input = fopen(input_path, "r");
-    FILE* output = fopen(output_path, "w");
+	InputFile input;
+	input.open(input_path);
+    UFILE* output = u_fopen(output_path, "w", NULL, NULL);
     optind = 1;
     while (true)
     {
@@ -147,8 +148,7 @@ class ApertiumTransfer: public Transfer
       }
     }
     transfer(input, output);
-    fclose(input);
-    fclose(output);
+    u_fclose(output);
   }
 };
 
@@ -173,8 +173,9 @@ class ApertiumInterchunk: public Interchunk
 
   void interchunk_text(int argc, char **argv, char *input_path, char *output_path)
   {
-    FILE* input = fopen(input_path, "r");
-    FILE* output = fopen(output_path, "w");
+	InputFile input;
+	input.open(input_path);
+    UFILE* output = u_fopen(output_path, "w", NULL, NULL);
     optind = 1;
     while (true)
     {
@@ -197,8 +198,7 @@ class ApertiumInterchunk: public Interchunk
       }
     }
     interchunk(input, output);
-    fclose(input);
-    fclose(output);
+    u_fclose(output);
   }
 };
 
@@ -213,8 +213,9 @@ class ApertiumPostchunk: public Postchunk
 
  void postchunk_text(int argc, char **argv, char *input_path, char *output_path)
   {
-    FILE* input = fopen(input_path, "r");
-    FILE* output = fopen(output_path, "w");
+	InputFile input;
+	input.open(input_path);
+    UFILE* output = u_fopen(output_path, "w", NULL, NULL);
     optind = 1;
     while (true)
     {
@@ -237,8 +238,7 @@ class ApertiumPostchunk: public Postchunk
       }
     }
     postchunk(input, output);
-    fclose(input);
-    fclose(output);
+    u_fclose(output);
   }
 };
 

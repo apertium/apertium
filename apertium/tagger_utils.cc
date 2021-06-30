@@ -22,30 +22,16 @@
 #include <sstream>
 #include <algorithm>
 #include <climits>
-#include <apertium/string_utils.h>
-#ifdef _MSC_VER
-#define wcstok wcstok_s
-#endif
-#ifdef __MINGW32__
-
-wchar_t *_wcstok(wchar_t *wcs, const wchar_t *delim, wchar_t **ptr) {
-  (void)ptr;
-  return wcstok(wcs, delim);
-}
-
-#define wcstok _wcstok
-#endif
-
-using namespace Apertium;
+#include <lttoolbox/string_utils.h>
 
 
-void tagger_utils::fatal_error (wstring const &s) {
-  wcerr<<L"Error: "<<s<<L"\n";
+void tagger_utils::fatal_error (UString const &s) {
+  cerr<<"Error: "<<s<<"\n";
   exit(1);
 }
 
 void tagger_utils::file_name_error (string const &s) {
-  wcerr << "Error: " << s << endl;
+  cerr << "Error: " << s << endl;
   exit(1);
 }
 
@@ -65,67 +51,51 @@ void tagger_utils::clear_array_vector(vector<TTag> v[], int l) {
     v[i].clear();
 }
 
-int tagger_utils::ntokens_multiword(wstring const &s)
+int tagger_utils::ntokens_multiword(UString const &s)
 {
-   wchar_t *news = new wchar_t[s.size()+1];
-   wcscpy(news, s.c_str());
-   news[s.size()] = 0;
-   wcerr << news << endl;
-
-   wchar_t const *delim = L"_";
-   wchar_t *ptr;
-   int n=0;
-
-   if (wcstok(news, delim, &ptr))
-     n++;
-   while (wcstok(NULL, delim, &ptr))
-     n++;
-
-   delete[] news;
-
-   return n;
+  vector<UString> tmp = StringUtils::split(s, "_"_u);
+  int n = 0;
+  for (auto& it : tmp) {
+    if (!it.empty()) {
+      n++;
+    }
+  }
+  return n;
 }
 
-int tagger_utils::nguiones_fs(wstring const & s) {
-   wchar_t *news = new wchar_t[s.size()+1];
-   wcscpy(news, s.c_str());
-   news[s.size()] = 0;
-   wcerr << news << endl;
-   wchar_t const *delim = L"-";
-   wchar_t *ptr;
-   int n=0;
-
-   if (wcstok(news, delim, &ptr))
-     n++;
-   while (wcstok(NULL, delim, &ptr))
-     n++;
-
-   delete[] news;
-
-   return n;
+int tagger_utils::nguiones_fs(UString const & s) {
+  vector<UString> tmp = StringUtils::split(s, "-"_u);
+  int n = 0;
+  for (auto& it : tmp) {
+    if (!it.empty()) {
+      n++;
+    }
+  }
+  return n;
 }
 
-wstring tagger_utils::trim(wstring s)
+UString tagger_utils::trim(UString s)
 {
-  if (s.length()==0)
-    return L"";
+  if (s.empty()) {
+    return ""_u;
+  }
 
   for (unsigned int i=0; i<(s.length()-1); i++) {
-    if ((s.at(i)==L' ')&&(s.at(i+1)==L' ')) {
+    if ((s.at(i)==' ')&&(s.at(i+1)==' ')) {
       s.erase(i,1);
       i--;
     }
   }
 
-  if ((s.length()>0)&&(s.at(s.length()-1)==L' '))
+  if ((s.length()>0)&&(s.at(s.length()-1)==' '))
     s.erase(s.length()-1,1);
-  if ((s.length()>0)&&(s.at(0)==L' '))
+  if ((s.length()>0)&&(s.at(0)==' '))
     s.erase(0,1);
 
   return s;
 }
 
-void tagger_utils::scan_for_ambg_classes(FILE *fdic, TaggerData &td) {
+void tagger_utils::scan_for_ambg_classes(const char* fdic, TaggerData &td) {
   Collection &output = td.getOutput();
   FileMorphoStream morpho_stream(fdic, true, &td);
   tagger_utils::scan_for_ambg_classes(output, morpho_stream);
@@ -142,7 +112,7 @@ void tagger_utils::scan_for_ambg_classes(Collection &output, MorphoStream &morph
 
   while (word) {
     if (++nw % 10000 == 0)
-      wcerr << L'.' << flush;
+      cerr << '.' << flush;
 
     tags = word->get_tags();
 
@@ -152,7 +122,7 @@ void tagger_utils::scan_for_ambg_classes(Collection &output, MorphoStream &morph
     delete word;
     word = morpho_stream.get_next_word();
   }
-  wcerr << L"\n";
+  cerr << "\n";
 }
 
 void
@@ -179,7 +149,6 @@ set<TTag> &
 tagger_utils::find_similar_ambiguity_class(TaggerData &td, set<TTag> &c) {
   set<TTag> &ret = td.getOpenClass();
   Collection &output = td.getOutput();
-  int ret_idx = output[ret];
 
   for (int k=0; k<output.size(); k++) {
     const set<TTag> &ambg_class = output[k];
@@ -188,7 +157,6 @@ tagger_utils::find_similar_ambiguity_class(TaggerData &td, set<TTag> &c) {
       continue;
     }
     if (includes(ambg_class.begin(), ambg_class.end(), c.begin(), c.end())) {
-      ret_idx = k;
       ret = ambg_class;
     }
   }
@@ -198,27 +166,30 @@ tagger_utils::find_similar_ambiguity_class(TaggerData &td, set<TTag> &c) {
 void
 tagger_utils::require_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, int nw) {
   if (td.getOutput().has_not(tags)) {
-    wstring errors;
-    errors = L"A new ambiguity class was found. I cannot continue.\n";
-    errors+= L"Word '" + word.get_superficial_form() + L"' not found in the dictionary.\n";
-    errors+= L"New ambiguity class: " + word.get_string_tags() + L"\n";
+    UString errors;
+    errors = "A new ambiguity class was found. I cannot continue.\nWord '"_u;
+    errors += word.get_superficial_form();
+    errors += "' not found in the dictionary.\n"_u;
+    errors += "New ambiguity class: "_u;
+    errors += word.get_string_tags();
+    errors += '\n';
     if (nw >= 0) {
-      std::wostringstream ws;
+      std::ostringstream ws;
       ws << (nw + 1);
-      errors+= L"Line number: " + ws.str() + L"\n";
+      errors += "Line number: "_u;
+      errors += to_ustring(ws.str().c_str());
+      errors += '\n';
     }
-    errors+= L"Take a look at the dictionary, then retrain.";
+    errors += "Take a look at the dictionary, then retrain."_u;
     fatal_error(errors);
   }
 }
 
 static void _warn_absent_ambiguity_class(TaggerWord &word) {
-  wstring errors;
-  errors = L"A new ambiguity class was found. \n";
-  errors += L"Retraining the tagger is necessary so as to take it into account.\n";
-  errors += L"Word '" + word.get_superficial_form() + L"'.\n";
-  errors += L"New ambiguity class: " + word.get_string_tags() + L"\n";
-  wcerr << L"Error: " << errors;
+  cerr << "Error: A new ambiguity class was found. \n";
+  cerr << "Retraining the tagger is necessary so as to take it into account.\n";
+  cerr << "Word '" << word.get_superficial_form() << "'.\n";
+  cerr << "New ambiguity class: " << word.get_string_tags() << "\n";
 }
 
 set<TTag> &
@@ -265,7 +236,7 @@ istream& operator>> (istream& is, map <int, T> & f) {
     is>>i;     // warning: does not work if both
     is>>f[i];  // lines merged in a single one
   }
-  if (is.bad()) tagger_utils::fatal_error(L"reading map");
+  if (is.bad()) tagger_utils::fatal_error("reading map"_u);
   return is;
 }
 
@@ -280,4 +251,3 @@ ostream& operator<< (ostream& os, const set<T>& s) {
   os<<'}';
   return os;
 }
-

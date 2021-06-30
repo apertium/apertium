@@ -38,7 +38,6 @@ h_sources = a.h \
 	    stream_tagger.h \
 	    streamed_type.h \
 	    string_to_wostream.h \
-	    string_utils.h \
 	    shell_utils.h \
 	    tag.h \
 	    tagger.h \
@@ -63,19 +62,19 @@ h_sources = a.h \
 	    tmx_trail_postprocessors.h \
 	    tmx_translate.h \
 	    tmx_words.h \
+		transfer_base.h \
 	    transfer_data.h \
 	    transfer.h \
 	    transfer_instr.h \
 	    transfer_mult.h \
+		transfer_regex.h \
 	    transfer_token.h \
 	    transfer_word.h \
-	    transfer_word_list.h \
 	    trx_reader.h \
 	    tsx_reader.h \
 	    ttag.h \
 	    unigram_tagger.h \
 	    unlocked_cstdio.h \
-	    utf_converter.h \
 	    utils.h \
 	    xml_reader.h
 
@@ -109,7 +108,6 @@ cc_sources = a.cc \
 	     sentence_stream.cc \
 	     stream.cc \
 	     stream_tagger.cc \
-	     string_utils.cc \
 	     shell_utils.cc \
 	     tag.cc \
 	     tagger.cc \
@@ -130,16 +128,16 @@ cc_sources = a.cc \
 	     tmx_trail_postprocessors.cc \
 	     tmx_translate.cc \
 	     transfer.cc \
+		 transfer_base.cc \
 	     transfer_data.cc \
 	     transfer_instr.cc \
 	     transfer_mult.cc \
+		 transfer_regex.cc \
 	     transfer_token.cc \
 	     transfer_word.cc \
-	     transfer_word_list.cc \
 	     trx_reader.cc \
 	     tsx_reader.cc \
 	     unigram_tagger.cc \
-	     utf_converter.cc \
 	     xml_reader.cc
 
 library_includedir = $(includedir)/$(PACKAGE_NAME)-$(VERSION_API)/$(PACKAGE_NAME)
@@ -301,7 +299,7 @@ apertium_gen_modes_SOURCES = gen_modes.cc
 apertium_gen_modes_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 if WINDOWS
-AM_CPPFLAGS = -I$(top_srcdir)/utf8 -I$(top_srcdir)/apertium/win32 -I$(top_srcdir) $(APERTIUM_CFLAGS) $(ICU_CFLAGS)
+AM_CPPFLAGS = -I$(top_srcdir)/apertium/win32 -I$(top_srcdir) $(APERTIUM_CFLAGS) $(ICU_CFLAGS)
 else
 AM_CPPFLAGS = -I$(top_srcdir) $(APERTIUM_CFLAGS) $(ICU_CFLAGS)
 endif

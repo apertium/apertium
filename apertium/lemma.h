@@ -29,7 +29,7 @@ public:
   Lemma();
   Lemma(const Analysis &Analysis_);
   Lemma(const Morpheme &Morpheme_);
-  std::wstring TheLemma;
+  UString TheLemma;
 };
 }
 

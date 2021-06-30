@@ -15,7 +15,7 @@ if HAVE_PYTHON_BINDINGS
 SUBDIRS += python
 endif
 
-EXTRA_DIST=autogen.sh README-MODES apertium.m4 utf8 tests
+EXTRA_DIST=autogen.sh README-MODES apertium.m4 tests
 
 install-data-local:
 	mkdir -p $(DESTDIR)$(modesdir)

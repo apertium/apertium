@@ -19,7 +19,6 @@
 
 #include <apertium/transfer_data.h>
 #include <apertium/xml_reader.h>
-#include <lttoolbox/ltstr.h>
 
 #include <libxml/xmlreader.h>
 #include <map>
@@ -32,11 +31,11 @@ class TRXReader : public XMLReader
 private:
   struct LemmaTags
   {
-    wstring lemma;
-    wstring tags;
+    UString lemma;
+    UString tags;
   };
 
-  multimap<wstring, LemmaTags, Ltstr> cat_items;
+  multimap<UString, LemmaTags> cat_items;
   TransferData td;
 
   void destroy();
@@ -50,22 +49,21 @@ private:
   void procDefMacros();
   void procRules();
 
-  void insertCatItem(wstring const &name, wstring const &lemma,
-		     wstring const &tags);
-  void insertAttrItem(wstring const &name, wstring const &tags);
-  void createVar(wstring const &name, wstring const &initial_value);
-  void insertListItem(wstring const &name, wstring const &value);
-  void createMacro(wstring const &name, int const val);
+  void insertCatItem(UString const &name, UString const &lemma,
+		     UString const &tags);
+  void createVar(UString const &name, UString const &initial_value);
+  void insertListItem(UString const &name, UString const &value);
+  void createMacro(UString const &name, int const val);
 
-  int insertLemma(int const base, wstring const &lemma);
-  int insertTags(int const base, wstring const &tags);
+  int insertLemma(int const base, UString const &lemma);
+  int insertTags(int const base, UString const &tags);
 
 protected:
   virtual void parse();
 
 public:
-  static wstring const ANY_TAG;
-  static wstring const ANY_CHAR;
+  static UString const ANY_TAG;
+  static UString const ANY_CHAR;
 
 
   TRXReader();

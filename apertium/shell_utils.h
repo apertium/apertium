@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <cstdio>
+#include <unicode/ustdio.h>
 
 namespace Apertium {
 namespace ShellUtils {
@@ -22,7 +23,7 @@ FILE*
 try_open_file(const char *metavar, const char *filename,
               const char *flags);
 
-FILE*
+UFILE*
 try_open_file_utf8(const char *metavar, const char *filename,
                    const char *flags);
 

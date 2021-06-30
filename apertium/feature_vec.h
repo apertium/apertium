@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 #include <iostream>
+#include <lttoolbox/ustring.h>
 
 namespace Apertium {
 

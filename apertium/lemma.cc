@@ -37,7 +37,7 @@ Lemma::Lemma(const Analysis &Analysis_) : TheLemma() {
   if (Analysis_.TheMorphemes.front().TheLemma.empty())
     throw Exception::Morpheme::TheLemma_empty(
         "can't convert const Analysis & comprising Morpheme comprising empty "
-        "Lemma std::wstring to Lemma");
+        "Lemma UString to Lemma");
 
   TheLemma = Analysis_.TheMorphemes.front().TheLemma;
 }
@@ -46,7 +46,7 @@ Lemma::Lemma(const Morpheme &Morpheme_) : TheLemma() {
   if (Morpheme_.TheLemma.empty())
     throw Exception::Morpheme::TheLemma_empty("can't convert const Morpheme & "
                                               "comprising empty Lemma "
-                                              "std::wstring to Lemma");
+                                              "UString to Lemma");
 
   TheLemma = Morpheme_.TheLemma;
 }

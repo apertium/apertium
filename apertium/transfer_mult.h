@@ -40,20 +40,20 @@ private:
   Alphabet alphabet;
   MatchExe *me;
   MatchState ms;
-  map<string, ApertiumRE, Ltstr> attr_items;
-  map<string, string, Ltstr> variables;
-  map<string, int, Ltstr> macros;
-  map<string, set<string, Ltstr>, Ltstr> lists;
-  map<string, set<string, Ltstr>, Ltstr> listslow;
+  map<UString, ApertiumRE> attr_items;
+  map<UString, UString> variables;
+  map<UString, int> macros;
+  map<UString, set<UString>> lists;
+  map<UString, set<UString>> listslow;
   TransferWord **word;
-  string **blank;
+  UString **blank;
   Buffer<TransferToken> input_buffer;
-  vector<wstring *> tmpword;
-  vector<wstring *> tmpblank;
-  wstring output_string;
+  vector<UString *> tmpword;
+  vector<UString *> tmpblank;
+  UString output_string;
 
   FSTProcessor fstp;
-  FILE *output;
+  UFILE* output;
   int any_char;
   int any_tag;
   bool isRule;
@@ -66,33 +66,33 @@ private:
   OutputType defaultAttrs;
 
   void destroy();
-  void readData(FILE *input);
+  void readData(FILE* input);
   void readBil(string const &filename);
-  string caseOf(string const &str);
-  string copycase(string const &source_word, string const &target_word);
+  UString caseOf(UString const &str);
+  UString copycase(UString const &source_word, UString const &target_word);
 
-  bool beginsWith(string const &str1, string const &str2) const;
-  bool endsWith(string const &str1, string const &str2) const;
-  string tolower(string const &str) const;
-  string tags(string const &str) const;
-  wstring readWord(FILE *in);
-  wstring readBlank(FILE *in);
-  wstring readUntil(FILE *in, int const symbol) const;
-  void applyWord(wstring const &word_str);
+  bool beginsWith(UString const &str1, UString const &str2) const;
+  bool endsWith(UString const &str1, UString const &str2) const;
+  UString tolower(UString const &str) const;
+  UString tags(UString const &str) const;
+  UString readWord(InputFile& in);
+  UString readBlank(InputFile& in);
+  UString readUntil(InputFile& in, int const symbol) const;
+  void applyWord(UString const &word_str);
   void applyRule();
-  TransferToken & readToken(FILE *in);
-  void writeMultiple(list<vector<wstring> >::iterator itwords,
-                     list<wstring>::iterator itblanks,
-                     list<vector<wstring> >::const_iterator limitwords,
-                     wstring acum = L"", bool multiple = false);
-  vector<wstring> acceptions(wstring str);
-  bool isDefaultWord(wstring const &str);
+  TransferToken & readToken(InputFile& in);
+  void writeMultiple(list<vector<UString> >::iterator itwords,
+                     list<UString>::iterator itblanks,
+                     list<vector<UString> >::const_iterator limitwords,
+                     UString acum = ""_u, bool multiple = false);
+  vector<UString> acceptions(UString str);
+  bool isDefaultWord(UString const &str);
 public:
   TransferMult();
   ~TransferMult();
 
   void read(string const &datafile, string const &fstfile);
-  void transfer(FILE *in, FILE *out);
+  void transfer(InputFile& in, UFILE* out);
 };
 
 #endif

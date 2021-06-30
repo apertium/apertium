@@ -6,10 +6,7 @@
 
 #include <cstdlib>
 #include <iostream>
-#include <map>
 #include <string>
-#include <vector>
-#include <apertium/latex_accentsmap.h>
 
 extern "C" {
 #if !defined(__STDC__)
@@ -19,50 +16,12 @@ extern "C" {
 }
 
 #include <lttoolbox/lt_locale.h>
-#include <lttoolbox/ltstr.h>
 #ifndef GENFORMAT
 #include "apertium_config.h"
 #endif
 #include <apertium/unlocked_cstdio.h>
-#ifdef _WIN32
-#include <io.h>
-#include <fcntl.h>
-#endif
 
 using namespace std;
-
-AccentsMap accentsMap(true);
-wstring closesym = L"";
-string memconv = "";
-
-wstring convertir(string const &multibyte, int const length)
-{
-  memconv.append(multibyte.c_str(), length);
-  int tam = memconv.size();
-  wchar_t *retval = new wchar_t[tam+1];
-  size_t l = mbstowcs(retval, memconv.c_str(), tam);
-
-  if(l == ((size_t) -1))
-  {
-    delete[] retval;
-    if(memconv.size() >= 4)
-    {
-      wcerr << L"Warning: wrong encoding" << endl;
-    }
-    return L"";
-  }
-  else
-  {
-    memconv = "";
-    retval[l] = 0;
-    wstring ret = retval;
-    delete[] retval;
-    return ret;
-  }
-}
-
-
-
 
 %}
 
@@ -79,106 +38,107 @@ wstring convertir(string const &multibyte, int const length)
 
 
 &quot;	{
-	fputws(L"\"",yyout);
+	fputs_unlocked("\"",yyout);
 }
 &apos;	{
-	fputws(L"\'",yyout);
+	fputs_unlocked("\'",yyout);
 }
 &lt;	{
-	fputws(L"<",yyout);
+	fputs_unlocked("<",yyout);
 }
 &gt;	{
-	fputws(L">",yyout);
+	fputs_unlocked(">",yyout);
 }
 &amp;	{
-	fputws(L"\\&",yyout);
+	fputs_unlocked("\\&",yyout);
 }
 \<AMP\/\>	{
-	fputws(L"&",yyout);
+	fputs_unlocked("&",yyout);
 }
 
 \<LEFTESCAPEDBRACE\/\>	{
-        fputws(L"\\{", yyout);
+        fputs_unlocked("\\{", yyout);
 }
 
 \<RIGHTESCAPEDBRACE\/\>	{
-        fputws(L"\\}", yyout);
+        fputs_unlocked("\\}", yyout);
 }
 
 \<ESCAPEDPERCENT\/\>	{
-        fputws(L"\\%", yyout);
+        fputs_unlocked("\\%", yyout);
 }
 
 
 
 ¿	{
-	fputws(L"?`",yyout);
+	fputs_unlocked("?`",yyout);
 }
 
 ¡	{
-	fputws(L"!`",yyout);
+	fputs_unlocked("!`",yyout);
 }
 
 
 
 \<MATH_DOLLARS\>	{
 	BEGIN(mathenv);
-	fputws(L"$$",yyout);
+	fputs_unlocked("$$",yyout);
 }
 
 <mathenv>\<\/MATH_DOLLARS\>	{
-	fputws(L"$$",yyout);
+	fputs_unlocked("$$",yyout);
 	BEGIN(0);
 }
 
 
 \<MATH_DOLLAR\>	{
 	BEGIN(mathenv);
-	fputws(L"$",yyout);
+	fputs_unlocked("$",yyout);
 }
 
 <mathenv>\<\/MATH_DOLLAR\>	{
-	fputws(L"$",yyout);
+	fputs_unlocked("$",yyout);
 	BEGIN(0);
 }
 
 \<MATH_PAR\>	{
-	fputws(L"\\(",yyout);
+	fputs_unlocked("\\(",yyout);
 }
 
 \<\/MATH_PAR\>	{
-	fputws(L"\\)",yyout);
+	fputs_unlocked("\\)",yyout);
 }
 
 \<MATH_BRA\>	{
-	fputws(L"\\[",yyout);
+	fputs_unlocked("\\[",yyout);
 }
 
 \<\/MATH_BRA\>	{
-	fputws(L"\\]",yyout);
+	fputs_unlocked("\\]",yyout);
 }
 
 
 \<CONTENTS\>	{
-	fputws(L"{",yyout);
+	fputs_unlocked("{",yyout);
 }
 
 \<\/CONTENTS\>	{
-	fputws(L"}",yyout);
+	fputs_unlocked("}",yyout);
 }
 
 &NBSP;	{
-	fputws(L"~",yyout);
+	fputs_unlocked("~",yyout);
 }
 
 
 
 \<BR\/\>	{
-	fputws(L"\\\\",yyout);
+	fputs_unlocked("\\\\",yyout);
 }
 
 \<COMMENT\>[^\<]*	{
-	fputws((wstring(L"\%")+convertir(yytext+9,yyleng-9)).c_str(),yyout);
+	fputs_unlocked("\%", yyout);
+	fwrite(yytext+9, 1, yyleng-9, yyout);
 }
 
 \<\/COMMENT\>	{
@@ -186,14 +146,15 @@ wstring convertir(string const &multibyte, int const length)
 
 
 \<PARAM\>[^\<]*	{
-	fputws((wstring(L"[")+convertir(yytext+7,yyleng-7)).c_str(),yyout);
+	fputs_unlocked("[", yyout);
+	fwrite(yytext+7, 1, yyleng-7, yyout);
 }
 \<\/PARAM\>	{
-	fputws(L"]", yyout);
+	fputs_unlocked("]", yyout);
 }
 
 \<VERB\>	{
-        fputws(L"\\verb", yyout);
+        fputs_unlocked("\\verb", yyout);
 }
 
 \<\/VERB\>	{
@@ -202,40 +163,51 @@ wstring convertir(string const &multibyte, int const length)
 
 
 \<[a-zA-Z0-9]+\>	{
-	fputws((wstring(L"\\begin{")+convertir(yytext+1,yyleng-2)+wstring(L"}")).c_str(),yyout);
+	fputs_unlocked("\\begin{", yyout);
+	fwrite(yytext+1, 1, yyleng-2, yyout);
+	fputs_unlocked("}", yyout);
 }
 
 \<[a-zA-Z0-9]+_STAR\>	{
-	fputws((wstring(L"\\begin{")+convertir(yytext+1,yyleng-7)+wstring(L"*}")).c_str(),yyout);
+	fputs_unlocked("\\begin{", yyout);
+	fwrite(yytext+1, 1, yyleng-7, yyout);
+	fputs_unlocked("*}", yyout);
 }
 
 \<\/[a-zA-Z0-9]+\>	{
-	fputws((wstring(L"\\end{")+convertir(yytext+2,yyleng-3)+wstring(L"}")).c_str(),yyout);
+	fputs_unlocked("\\end{", yyout);
+	fwrite(yytext+2, 1, yyleng-3, yyout);
+	fputs_unlocked("}", yyout);
 }
 
 \<\/[a-zA-Z0-9]+_STAR\>	{
-	fputws((wstring(L"\\end{")+convertir(yytext+2,yyleng-8)+wstring(L"*}")).c_str(),yyout);
+	fputs_unlocked("\\end{", yyout);
+	fwrite(yytext+2, 1, yyleng-8, yyout);
+	fputs_unlocked("*}", yyout);
 }
 
 \<[a-zA-Z0-9]+\/\>	{
-	fputws((wstring(L"\\")+convertir(yytext+1,yyleng-3)).c_str(),yyout);
+	fputs_unlocked("\\", yyout);
+	fwrite(yytext+1, 1, yyleng-3, yyout);
 }
 
 \<[a-zA-Z0-9]+_STAR\/\>	{
-	fputws((wstring(L"\\")+convertir(yytext+1,yyleng-8)+wstring(L"*")).c_str(),yyout);
+  fputc_unlocked('\\', yyout);
+  fwrite(yytext+1, 1, yyleng-8, yyout);
+  fputc_unlocked('*', yyout);
 }
 
 \#	{
-        fputws(L"\\#", yyout);
+        fputs_unlocked("\\#", yyout);
 }
 
 
 (.|\n)	{
-	fputws(convertir(yytext,yyleng).c_str(),yyout);
+	fwrite(yytext, 1, yyleng, yyout);
 }
 
 <mathenv>(.|\n)	{
-	fputws(convertir(yytext,yyleng).c_str(),yyout);
+	fwrite(yytext, 1, yyleng, yyout);
 }
 
 
@@ -289,10 +261,6 @@ int main(int argc, char *argv[])
       break;
   }
 
-#ifdef _MSC_VER
-  _setmode(_fileno(yyin), _O_U8TEXT);
-  _setmode(_fileno(yyout), _O_U8TEXT);
-#endif
   // prevent warning message
   yy_push_state(1);
   yy_top_state();

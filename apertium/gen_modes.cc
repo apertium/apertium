@@ -21,8 +21,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
-#include "string_utils.h"
-#include "utf_converter.h"
+#include <lttoolbox/string_utils.h>
 #include <libgen.h>
 #include <getopt.h>
 #include <libxml/xmlreader.h>
@@ -32,7 +31,6 @@
 #include <string>
 #include <set>
 
-using namespace Apertium;
 using namespace std;
 
 void endProgram(char *name)

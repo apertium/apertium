@@ -15,9 +15,7 @@
  * along with this program; if not, see <https://www.gnu.org/licenses/>.
  */
 #include <apertium/transfer_token.h>
-#include <apertium/string_utils.h>
-
-using namespace Apertium;
+#include <lttoolbox/string_utils.h>
 
 void
 TransferToken::copy(TransferToken const &o)
@@ -36,7 +34,7 @@ type(tt_eof)
 {
 }
 
-TransferToken::TransferToken(wstring const &content,
+TransferToken::TransferToken(UString const &content,
 			     TransferTokenType type)
 {
   this->content = content;
@@ -70,7 +68,7 @@ TransferToken::getType()
   return type;
 }
 
-wstring &
+UString &
 TransferToken::getContent()
 {
   return content;
@@ -83,8 +81,7 @@ TransferToken::setType(TransferTokenType type)
 }
 
 void
-TransferToken::setContent(wstring const &content)
+TransferToken::setContent(UString const &content)
 {
   this->content = content;
 }
-

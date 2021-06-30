@@ -1,8 +1,8 @@
 AC_PREREQ(2.52)
 
 m4_define([PKG_VERSION_MAJOR], [3])
-m4_define([PKG_VERSION_MINOR], [7])
-m4_define([PKG_VERSION_PATCH], [1])
+m4_define([PKG_VERSION_MINOR], [8])
+m4_define([PKG_VERSION_PATCH], [0])
 
 AC_INIT([apertium], [PKG_VERSION_MAJOR.PKG_VERSION_MINOR.PKG_VERSION_PATCH], [apertium-stuff@lists.sourceforge.net], [apertium], [https://wiki.apertium.org/])
 AC_CONFIG_HEADER([apertium/apertium_config.h])
@@ -69,62 +69,21 @@ fi
 
 AC_CHECK_FUNCS(strcasecmp)
 
-if test x$(uname) != xDarwin;
-then
-AC_CHECK_HEADER(pcreposix.h,
-  AC_CHECK_LIB(pcre, pcre_fullinfo,[
-    LIBS="$LIBS -lpcreposix -lpcre"
-    no_comp_check=yes],
-    AC_MSG_ERROR([*** unable to locate pcre library ***])),
-  AC_MSG_ERROR([*** unable to locate pcreposix.h include file ***]))
-
-AC_CHECK_HEADER(pcrecpp.h,
-  AC_CHECK_LIB(pcrecpp,pcre_compile,[
-  LIBS="$LIBS -lpcrecpp"
-  no_comp_check=yes],
-  AC_MSG_ERROR([*** unable to locate pcrecpp library ***])),
-  AC_MSG_ERROR([*** unable to locate pcrecpp.h include file ***]))
-fi
-
-
-PKG_CHECK_MODULES(LTTOOLBOX, [lttoolbox >= 3.5.3], CPPFLAGS="$CPPFLAGS $LTTOOLBOX_CFLAGS"; LIBS="$LIBS $LTTOOLBOX_LIBS")
+PKG_CHECK_MODULES(LTTOOLBOX, [lttoolbox >= 3.6.0], CPPFLAGS="$CPPFLAGS $LTTOOLBOX_CFLAGS"; LIBS="$LIBS $LTTOOLBOX_LIBS")
 PKG_CHECK_MODULES(LIBXML2, [libxml-2.0 >= 2.6.17], CPPFLAGS="$CPPFLAGS $LIBXML2_CFLAGS"; LIBS="$LIBS $LIBXML2_LIBS")
-PKG_CHECK_MODULES(PCRE, [libpcre >= 6.4], CPPFLAGS="$CPPFLAGS $PCRE_CFLAGS"; LIBS="$LIBS $PCRE_LIBS")
+PKG_CHECK_MODULES(ICU, [icu-i18n, icu-io, icu-uc], CPPFLAGS="$CPPFLAGS $ICU_CFLAGS"; LIBS="$LIBS $ICU_LIBS")
 
-# Check for wide strings
-AC_DEFUN([AC_CXX_WSTRING],[
-  AC_CACHE_CHECK(whether the compiler supports wide strings,
-  ac_cv_cxx_wstring,
-  [AC_LANG_SAVE
-   AC_LANG_CPLUSPLUS
-   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <string>]],[[
-std::wstring test = L"test";
-   ]])],
-   [ac_cv_cxx_wstring=yes], [ac_cv_cxx_wstring=no])
-   AC_LANG_RESTORE
-  ])
-])
-
-AC_CXX_WSTRING
 AC_C_BIGENDIAN
-
-if test "$ac_cv_cxx_wstring" = no
-then
-  AC_MSG_ERROR([Missing wide string support])
-fi
-
 
 # Checks for header files.
 AC_LANG(C++)
 AC_HEADER_STDC
 AC_CHECK_HEADERS([stdlib.h string.h unistd.h stddef.h filesystem string_view])
 AC_CHECK_LIB([stdc++fs], [_ZNSt12experimental10filesystem2v112current_pathEv])
+AC_CHECK_HEADER([utf8.h], [], [AC_MSG_ERROR([You don't have utfcpp installed.])])
 
-# Checks for ICU
-AC_CHECK_ICU(50)
-
-AC_CHECK_DECLS([fread_unlocked, fwrite_unlocked, fgetc_unlocked, fputc_unlocked, fputs_unlocked, getopt, getopt_long, fgetwc_unlocked, fputwc_unlocked, fgetws_unlocked, fputws_unlocked])
-AC_CHECK_FUNCS([setlocale strdup getopt snprintf mbtowc])
+AC_CHECK_DECLS([fread_unlocked, fwrite_unlocked, fgetc_unlocked, fputc_unlocked, fputs_unlocked, getopt, getopt_long])
+AC_CHECK_FUNCS([setlocale strdup getopt snprintf])
 AC_REPLACE_FUNCS(getopt_long)
 
 AM_CONDITIONAL([WINDOWS], [test x$version_type = xwindows])

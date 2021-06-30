@@ -17,150 +17,75 @@
 #ifndef _TRANSFER_
 #define _TRANSFER_
 
-#include <apertium/transfer_instr.h>
-#include <apertium/transfer_token.h>
-#include <apertium/transfer_word.h>
-#include <apertium/apertium_re.h>
-#include <lttoolbox/alphabet.h>
-#include <lttoolbox/buffer.h>
-#include <lttoolbox/fst_processor.h>
-#include <lttoolbox/ltstr.h>
-#include <lttoolbox/match_exe.h>
-#include <lttoolbox/match_state.h>
+#include <apertium/transfer_base.h>
 
-#include <cstdio>
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <map>
-#include <set>
-#include <vector>
-#include <queue>
+#include <apertium/transfer_word.h>
+#include <lttoolbox/fst_processor.h>
+#include <lttoolbox/input_file.h>
 
 using namespace std;
 
-class Transfer
+class Transfer : public TransferBase
 {
 private:
 
-  Alphabet alphabet;
-  MatchExe *me;
-  MatchState ms;
-  map<string, ApertiumRE, Ltstr> attr_items;
-  map<string, string, Ltstr> variables;
-  map<string, int, Ltstr> macros;
-  map<string, set<string, Ltstr>, Ltstr> lists;
-  map<string, set<string, Ltstr>, Ltstr> listslow;
-  vector<xmlNode *> macro_map;
-  vector<xmlNode *> rule_map;
-  vector<size_t> rule_lines;
-  xmlDoc *doc;
-  xmlNode *root_element;
   TransferWord **word;
-  queue <string> blank_queue;
-  int lword;
   int last_lword;
-  Buffer<TransferToken> input_buffer;
-  vector<wstring *> tmpword;
-  vector<wstring *> tmpblank;
-  
-  bool in_out;
   bool in_lu;
-  bool in_let_var;
-  string var_val; //stores the name of the variable being processed (in let or append)
-  
   bool in_wblank;
-  string out_wblank;
-  map <string, string> var_out_wblank;
+  UString out_wblank;
+  map <UString, UString> var_out_wblank;
   
-  bool gettingLemmaFromWord(string attr);
-  string combineWblanks(string wblank_current, string wblank_to_add);
-    
   FSTProcessor fstp;
   FSTProcessor extended;
   bool isExtended;
-  FILE *output;
-  int any_char;
-  int any_tag;
-
-  xmlNode *lastrule;
-  unsigned int nwords;
-
-  map<xmlNode *, TransferInstr> evalStringCache;
 
   enum OutputType{lu,chunk};
 
   OutputType defaultAttrs;
   bool preBilingual;
   bool useBilingual;
-  bool null_flush;
-  bool internal_null_flush;
-  bool trace;
   bool trace_att;
-  string emptyblank;
+  UString emptyblank;
 
-  void destroy();
-  void readData(FILE *input);
   void readBil(string const &filename);
-  void readTransfer(string const &input);
-  void collectMacros(xmlNode *localroot);
-  void collectRules(xmlNode *localroot);
-  string caseOf(string const &str);
-  string copycase(string const &source_word, string const &target_word);
 
   void processLet(xmlNode *localroot);
-  void processAppend(xmlNode *localroot);
-  int processRejectCurrentRule(xmlNode *localroot);
   void processOut(xmlNode *localroot);
   void processCallMacro(xmlNode *localroot);
   void processModifyCase(xmlNode *localroot);
-  bool processLogical(xmlNode *localroot);
-  bool processTest(xmlNode *localroot);
-  bool processAnd(xmlNode *localroot);
-  bool processOr(xmlNode *localroot);
-  bool processEqual(xmlNode *localroot);
-  bool processBeginsWith(xmlNode *localroot);
-  bool processBeginsWithList(xmlNode *localroot);
-  bool processEndsWith(xmlNode *localroot);
-  bool processEndsWithList(xmlNode *local);
-  bool processContainsSubstring(xmlNode *localroot);
-  bool processNot(xmlNode *localroot);
-  bool processIn(xmlNode *localroot);
-  int processRule(xmlNode *localroot);
-  string evalString(xmlNode *localroot);
-  int processInstruction(xmlNode *localroot);
-  int processChoose(xmlNode *localroot);
-  string processChunk(xmlNode *localroot);
-  string processTags(xmlNode *localroot);
+  UString evalCachedString(xmlNode *localroot);
+  UString processChunk(xmlNode *localroot);
+  UString processTags(xmlNode *localroot);
+  void processClip(xmlNode* element);
+  void processBlank(xmlNode* element);
+  void processCaseOf(xmlNode* element);
+  UString processLu(xmlNode* element);
+  UString processMlu(xmlNode* element);
 
-  bool beginsWith(string const &str1, string const &str2) const;
-  bool endsWith(string const &str1, string const &str2) const;
-  string tolower(string const &str) const;
-  string tags(string const &str) const;
-  wstring readWord(FILE *in);
-  wstring readBlank(FILE *in);
-  wstring readUntil(FILE *in, int const symbol) const;
-  void applyWord(wstring const &word_str);
+  void processLuCount(xmlNode* element);
+
+  UString readWord(InputFile& in);
+  UString readBlank(InputFile& in);
+  UString readUntil(InputFile& in, int const symbol) const;
+  void applyWord(UString const &word_str);
   int applyRule();
-  TransferToken & readToken(FILE *in);
+  TransferToken & readToken(InputFile& in);
   bool checkIndex(xmlNode *element, int index, int limit);
-  void transfer_wrapper_null_flush(FILE *in, FILE *out);
+  void transfer_wrapper_null_flush(InputFile& in, UFILE* out);
   void tmp_clear();
 public:
   Transfer();
-  ~Transfer();
 
   void read(string const &transferfile, string const &datafile,
 	    string const &fstfile = "");
-  void transfer(FILE *in, FILE *out);
+  void transfer(InputFile& in, UFILE* out);
   void setUseBilingual(bool value);
   bool getUseBilingual(void) const;
   void setPreBilingual(bool value);
   bool getPreBilingual(void) const;
   void setExtendedDictionary(string const &fstfile);
   void setCaseSensitiveness(bool value);
-  bool getNullFlush(void);
-  void setNullFlush(bool null_flush);
-  void setTrace(bool trace);
   void setTraceATT(bool trace);
 };
 

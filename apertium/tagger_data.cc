@@ -17,9 +17,7 @@
 #include <apertium/tagger_data.h>
 #include <lttoolbox/compression.h>
 #include <apertium/endian_double_util.h>
-#include <apertium/string_utils.h>
-
-using namespace Apertium;
+#include <lttoolbox/string_utils.h>
 
 void
 TaggerData::copy(TaggerData const &o)
@@ -94,38 +92,38 @@ TaggerData::setForbidRules(vector<TForbidRule> &fr)
   forbid_rules = fr;
 }
 
-map<wstring, TTag, Ltstr> &
+map<UString, TTag> &
 TaggerData::getTagIndex()
 {
   return tag_index;
 }
 
-const map<wstring, TTag, Ltstr> &
+const map<UString, TTag> &
 TaggerData::getTagIndex() const
 {
   return tag_index;
 }
 
 void
-TaggerData::setTagIndex(map<wstring, TTag, Ltstr> const &ti)
+TaggerData::setTagIndex(map<UString, TTag> const &ti)
 {
   tag_index = ti;
 }
 
-vector<wstring> &
+vector<UString> &
 TaggerData::getArrayTags()
 {
   return array_tags;
 }
 
-const vector<wstring> &
+const vector<UString> &
 TaggerData::getArrayTags() const
 {
   return array_tags;
 }
 
 void
-TaggerData::setArrayTags(vector<wstring> const &at)
+TaggerData::setArrayTags(vector<UString> const &at)
 {
   array_tags = at;
 }
@@ -148,38 +146,38 @@ TaggerData::setEnforceRules(vector<TEnforceAfterRule> const &tear)
   enforce_rules = tear;
 }
 
-vector<wstring> &
+vector<UString> &
 TaggerData::getPreferRules()
 {
   return prefer_rules;
 }
 
-const vector<wstring> &
+const vector<UString> &
 TaggerData::getPreferRules() const
 {
   return prefer_rules;
 }
 
 void
-TaggerData::setPreferRules(vector<wstring> const &pr)
+TaggerData::setPreferRules(vector<UString> const &pr)
 {
   prefer_rules = pr;
 }
 
-vector<wstring> &
+vector<UString> &
 TaggerData::getDiscardRules()
 {
   return discard;
 }
 
-const vector<wstring> &
+const vector<UString> &
 TaggerData::getDiscardRules() const
 {
   return discard;
 }
 
 void
-TaggerData::setDiscardRules(vector<wstring> const &v)
+TaggerData::setDiscardRules(vector<UString> const &v)
 {
   discard = v;
 }
@@ -233,7 +231,7 @@ TaggerData::setPatternList(PatternList const &pl)
 }
 
 void
-TaggerData::addDiscard(wstring const &tags)
+TaggerData::addDiscard(UString const &tags)
 {
   discard.push_back(tags);
 }

@@ -29,6 +29,7 @@
 #include <apertium/tagger_data.h>
 #include <apertium/tagger_word.h>
 #include <apertium/morpho_stream.h>
+#include <lttoolbox/input_file.h>
 
 #include <cstdio>
 #include <deque>
@@ -47,9 +48,9 @@ using namespace std;
 class FileMorphoStream : public MorphoStream {
 private:
   bool foundEOF;
-  wstring last_string_tag;
+  UString last_string_tag;
   bool debug;
-  FILE *input;
+  InputFile input;
   int ca_any_char;
   int ca_any_tag;
   int ca_kignorar;
@@ -74,13 +75,13 @@ private:
   bool end_of_file;
 
   void readRestOfWord(int &ivwords);
-  void lrlmClassify(wstring const &str, int &ivwords);
+  void lrlmClassify(UString const &str, int &ivwords);
 public:
 
    /** Constructor
     *  @param is the input stream.
     */
-   FileMorphoStream(FILE *ftxt, bool d, TaggerData *t);
+   FileMorphoStream(const char* ftxt, bool d, TaggerData *t);
 
    /**
     *  Destructor

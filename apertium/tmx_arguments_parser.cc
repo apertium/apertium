@@ -10,7 +10,7 @@
 *                                                                        *
 *************************************************************************/
 #include <apertium/tmx_arguments_parser.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 #include <iostream>
 #include <stdlib.h>
 
@@ -27,7 +27,7 @@ bool Arguments::read( int argc, char **argv )
     std::string p = argv[i];
     if (p.empty() || p[0]!='-')
     {
-      std::wcerr << p << ": unable to parse argument\n";
+      std::cerr << p << ": unable to parse argument\n";
       throw "argument error";
       return false;
     }
@@ -35,7 +35,7 @@ bool Arguments::read( int argc, char **argv )
 
     if (p.empty())
     {
-      std::wcerr << "Empty argument\n";
+      std::cerr << "Empty argument\n";
       throw "argument error";
       return false;
     }
@@ -86,7 +86,7 @@ bool Arguments::read( int argc, char **argv, std::vector<const char*>& remains )
 
     if (p.empty())
     {
-      std::wcerr << "Empty argument\n";
+      std::cerr << "Empty argument\n";
       throw "argument error";
       return false;
     }
@@ -124,13 +124,13 @@ bool Arguments::getNumericParam( const std::string& name, int& num )
   const_iterator it=find(name);
   if (it==end())
   {
-    // std::wcerr << "Argument -" << name << " missing.\n";
+    // std::cerr << "Argument -" << name << " missing.\n";
     return false;
   }
 
   if (it->second.kind != AnyData::Int)
   {
-    std::wcerr << "Argument -" << name << ": integer expected.\n";
+    std::cerr << "Argument -" << name << ": integer expected.\n";
     throw "argument error";
   }
 
@@ -149,7 +149,7 @@ bool Arguments::getSwitchConst( const ArgName& name, bool& sw ) const
   }
   else if (! it->second.dString.empty())
   {
-    std::wcerr << "Argument -" << name << ": value is not allowed.\n";
+    std::cerr << "Argument -" << name << ": value is not allowed.\n";
     return false;
   }
   else
@@ -179,7 +179,7 @@ bool Arguments::getSwitchCompact( const ArgName& name )
   }
   else
   {
-    std::wcerr << "No value is allowed for argument -" << name << ".\n";
+    std::cerr << "No value is allowed for argument -" << name << ".\n";
     throw "argument error";
   }
 }
@@ -188,16 +188,16 @@ void Arguments::checkEmptyArgs() const
 {
   if (!empty())
   {
-    std::wcerr << "Invalid argument: ";
+    std::cerr << "Invalid argument: ";
 
     for ( Arguments::const_iterator it=begin(); it!=end(); ++it )
     {
-      std::wcerr << "-" << it->first;
+      std::cerr << "-" << it->first;
       if (!it->second.dString.empty())
-        std::wcerr << "=" << it->second.dString;
-      std::wcerr << " ";
+        std::cerr << "=" << it->second.dString;
+      std::cerr << " ";
     }
-    std::wcerr << std::endl;
+    std::cerr << std::endl;
 
     throw "argument error";
   }

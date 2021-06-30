@@ -3,74 +3,74 @@
 #include <lttoolbox/lt_locale.h>
 #include <apertium/apertium_config.h>
 #include <apertium/unlocked_cstdio.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 
 #include <iostream>
 #include <string>
 
-wstring storeAndWriteWblank(FILE *input, FILE *output)
+UString storeAndWriteWblank(InputFile& input, UFILE* output)
 {
   int mychar;
-  wstring content = L"[[";
+  UString content = "[["_u;
 
   while(true)
   {
-    mychar = fgetwc_unlocked(input);
-    if(feof(input))
+    mychar = input.get();
+    if(input.eof())
     {
-      wcerr << L"ERROR: Unexpected EOF" << endl;
+      cerr << "ERROR: Unexpected EOF" << endl;
       exit(EXIT_FAILURE);
     }
-    
+
     content += mychar;
-    fputwc_unlocked(mychar, output);
-    
-    if(mychar == L'\\')
+    u_fputc(mychar, output);
+
+    if(mychar == '\\')
     {
-      mychar = fgetwc(input);
+      mychar = input.get();
       content += mychar;
-      fputwc(mychar, output);
+      u_fputc(mychar, output);
     }
-    else if(mychar == L']')
+    else if(mychar == ']')
     {
-      mychar = fgetwc(input);
-      
-      if(mychar == L']')
+      mychar = input.get();
+
+      if(mychar == ']')
       {
         content += mychar;
-        fputwc(mychar, output);
+        u_fputc(mychar, output);
         break;
       }
     }
   }
-  
+
   return content;
 }
 
-void readAndWriteUntil(FILE *input, FILE *output, int const charcode)
+void readAndWriteUntil(InputFile& input, UFILE* output, int const charcode)
 {
   int mychar;
 
-  while((mychar = fgetwc_unlocked(input)) != charcode)
+  while((mychar = input.get()) != charcode)
   {
-    if(feof(input))
+    if(input.eof())
     {
-      wcerr << L"ERROR: Unexpected EOF" << endl;
+      cerr << "ERROR: Unexpected EOF" << endl;
       exit(EXIT_FAILURE);
     }
-    fputwc_unlocked(mychar, output);
-    if(mychar == L'\\')
+    u_fputc(mychar, output);
+    if(mychar == '\\')
     {
-      mychar = fgetwc(input);
-      fputwc(mychar, output);
+      mychar = input.get();
+      u_fputc(mychar, output);
     }
   }
 }
 
-void procWord(FILE *input, FILE *output, bool surface_forms, bool compound_sep, wstring wblank = L"")
+void procWord(InputFile& input, UFILE* output, bool surface_forms, bool compound_sep, UString wblank = ""_u)
 {
   int mychar;
-  wstring buffer = L"";
+  UString buffer;
 
   bool buffer_mode = false;
   bool in_tag = false;
@@ -78,20 +78,20 @@ void procWord(FILE *input, FILE *output, bool surface_forms, bool compound_sep, 
 
   if(surface_forms)
   {
-    while((mychar = fgetwc_unlocked(input)) != L'/') ;
+    while((mychar = input.get()) != '/') ;
   }
 
-  while((mychar = fgetwc_unlocked(input)) != L'$')
+  while((mychar = input.get()) != '$')
   {
-    if(feof(input))
+    if(input.eof())
     {
-      wcerr << L"ERROR: Unexpected EOF" << endl;
+      cerr << "ERROR: Unexpected EOF" << endl;
       exit(EXIT_FAILURE);
     }
 
     switch(mychar)
     {
-    case L'<':
+    case '<':
       in_tag = true;
       if(!buffer_mode)
       {
@@ -99,11 +99,11 @@ void procWord(FILE *input, FILE *output, bool surface_forms, bool compound_sep, 
       }
       break;
 
-    case L'>':
+    case '>':
       in_tag = false;
       break;
 
-    case L'#':
+    case '#':
       if(buffer_mode)
       {
         buffer_mode = false;
@@ -114,106 +114,106 @@ void procWord(FILE *input, FILE *output, bool surface_forms, bool compound_sep, 
 
     if(buffer_mode)
     {
-      if((mychar != L'+' || (mychar == L'+' && in_tag == true)) &&
-         (mychar != L'~' || (mychar == L'~' && in_tag == true)))
+      if((mychar != '+' || (mychar == '+' && in_tag == true)) &&
+         (mychar != '~' || (mychar == '~' && in_tag == true)))
       {
-        buffer += static_cast<wchar_t>(mychar);
+        buffer += mychar;
       }
-      else if(in_tag == false && mychar == L'+')
+      else if(in_tag == false && mychar == '+')
       {
-        buffer.append(L"$ ");
+        buffer.append("$ "_u);
         buffer.append(wblank);
-        buffer.append(L"^");
+        buffer.append("^"_u);
       }
-      else if(in_tag == false && mychar == L'~' and compound_sep == true)
+      else if(in_tag == false && mychar == '~' and compound_sep == true)
       {
-        buffer.append(L"$");
+        buffer.append("$"_u);
         buffer.append(wblank);
-        buffer.append(L"^");
+        buffer.append("^"_u);
       }
     }
     else
     {
-      if(mychar == L'+' && queuing == true)
+      if(mychar == '+' && queuing == true)
       {
-        buffer.append(L"$ ");
+        buffer.append("$ "_u);
         buffer.append(wblank);
-        buffer.append(L"^");
+        buffer.append("^"_u);
         buffer_mode = true;
       }
       else
       {
-        fputwc_unlocked(mychar, output);
+        u_fputc(mychar, output);
       }
     }
 
   }
-  fputws_unlocked(buffer.c_str(), output);
+  write(buffer, output);
 }
 
-void processStream(FILE *input, FILE *output, bool null_flush, bool surface_forms, bool compound_sep)
+void processStream(InputFile& input, UFILE* output, bool null_flush, bool surface_forms, bool compound_sep)
 {
   while(true)
   {
-    int mychar = fgetwc_unlocked(input);
-    if(feof(input))
+    int mychar = input.get();
+    if(input.eof())
     {
       break;
     }
     switch(mychar)
     {
-      case L'[':
-        fputwc_unlocked(L'[', output);
-        mychar = fgetwc_unlocked(input);
-        
-        if(mychar == L'[')
+      case '[':
+        u_fputc('[', output);
+        mychar = input.get();
+
+        if(mychar == '[')
         {
-          fputwc_unlocked(L'[', output);
-          wstring wblank = storeAndWriteWblank(input, output);
-          mychar = fgetwc_unlocked(input);
-          
-          if(mychar == L'^')
+          u_fputc('[', output);
+          UString wblank = storeAndWriteWblank(input, output);
+          mychar = input.get();
+
+          if(mychar == '^')
           {
-            fputwc_unlocked(mychar, output);
+            u_fputc(mychar, output);
             procWord(input, output, surface_forms, compound_sep, wblank);
-            fputwc_unlocked(L'$', output);
+            u_fputc('$', output);
           }
           else
           {
-            wcerr << L"ERROR: Wordbound blank isn't immediately followed by the Lexical Unit." << endl;
+            cerr << "ERROR: Wordbound blank isn't immediately followed by the Lexical Unit." << endl;
             exit(EXIT_FAILURE);
           }
         }
         else
         {
-          ungetwc(mychar, input);
-          readAndWriteUntil(input, output, L']');
-          fputwc_unlocked(L']', output);
+          input.unget(mychar);
+          readAndWriteUntil(input, output, ']');
+          u_fputc(']', output);
         }
         break;
 
-      case L'\\':
-        fputwc_unlocked(mychar, output);
-        fputwc_unlocked(fgetwc_unlocked(input), output);
+      case '\\':
+        u_fputc(mychar, output);
+        u_fputc(input.get(), output);
         break;
 
-      case L'^':
-        fputwc_unlocked(mychar, output);
+      case '^':
+        u_fputc(mychar, output);
         procWord(input, output, surface_forms, compound_sep);
-        fputwc_unlocked(L'$', output);
+        u_fputc('$', output);
         break;
 
-      case L'\0':
-        fputwc_unlocked(mychar, output);
+      case '\0':
+        u_fputc(mychar, output);
 
         if(null_flush)
         {
-          fflush(output);
+          u_fflush(output);
         }
         break;
 
       default:
-        fputwc_unlocked(mychar, output);
+        u_fputc(mychar, output);
         break;
     }
   }

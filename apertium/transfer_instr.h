@@ -17,7 +17,9 @@
 #ifndef _TRANSFERINSTR_
 #define _TRANSFERINSTR_
 
-#include<string>
+#include <libxml/tree.h>
+#include <string>
+#include <lttoolbox/ustring.h>
 
 using namespace std;
 
@@ -44,10 +46,11 @@ class TransferInstr
 {
 private:
   TransferInstrType type;
-  string content;
+  UString content;
   int pos;
-  void *pointer;
+  xmlNode* pointer;
   bool condition;
+  UString strval;
 
   void copy(TransferInstr const &o);
   void destroy();
@@ -58,18 +61,19 @@ public:
   pointer(0),
   condition(false)
   {}
-  TransferInstr(TransferInstrType t, string const &c, int const p,
-                void *ptr=NULL, bool cond = true);
+  TransferInstr(TransferInstrType t, UString const &c, int const p,
+                xmlNode* ptr=NULL, bool cond = true, const UString& sv = ""_u);
   ~TransferInstr();
   TransferInstr(TransferInstr const &o);
   TransferInstr & operator =(TransferInstr const &o);
 
 
   TransferInstrType getType();
-  string const & getContent();
+  UString const & getContent();
   int getPos();
-  void * getPointer();
+  xmlNode* getPointer();
   bool getCondition();
+  const UString& getStrval();
 };
 
 #endif

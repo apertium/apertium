@@ -17,136 +17,63 @@
 #ifndef _POSTCHUNK_
 #define _POSTCHUNK_
 
-#include <apertium/transfer_instr.h>
-#include <apertium/transfer_token.h>
-#include <apertium/interchunk_word.h>
-#include <apertium/apertium_re.h>
-#include <lttoolbox/alphabet.h>
-#include <lttoolbox/buffer.h>
-#include <lttoolbox/ltstr.h>
-#include <lttoolbox/match_exe.h>
-#include <lttoolbox/match_state.h>
+#include <apertium/transfer_base.h>
 
-#include <cstdio>
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <map>
-#include <set>
-#include <vector>
-#include <queue>
+#include <apertium/interchunk_word.h>
+#include <lttoolbox/input_file.h>
 
 using namespace std;
 
-class Postchunk
+class Postchunk : public TransferBase
 {
 private:
 
-  Alphabet alphabet;
-  MatchExe *me;
-  MatchState ms;
-  map<string, ApertiumRE, Ltstr> attr_items;
-  map<string, string, Ltstr> variables;
-  map<string, int, Ltstr> macros;
-  map<string, set<string, Ltstr>, Ltstr> lists;
-  map<string, set<string, Ltstr>, Ltstr> listslow;
-  vector<xmlNode *> macro_map;
-  vector<xmlNode *> rule_map;
-  vector<size_t> rule_lines;
-  xmlDoc *doc;
-  xmlNode *root_element;
   InterchunkWord **word;
-  queue <string> blank_queue;
-  int lword;
-  Buffer<TransferToken> input_buffer;
-  vector<wstring *> tmpword;
-  vector<wstring *> tmpblank;
-  
-  bool in_out;
+
   bool in_lu;
-  bool in_let_var;
-  string var_val;
   bool in_wblank;
-  string out_wblank;
-  map <string, string> var_out_wblank;
-
-  FILE *output;
-  int any_char;
-  int any_tag;
-
-  xmlNode *lastrule;
-  unsigned int nwords;
-
-  map<xmlNode *, TransferInstr> evalStringCache;
+  UString out_wblank;
+  map <UString, UString> var_out_wblank;
 
   bool inword;
-  bool null_flush;
-  bool internal_null_flush;
-  bool trace;
 
-  void destroy();
-  void readData(FILE *input);
-  void readPostchunk(string const &input);
-  void collectMacros(xmlNode *localroot);
-  void collectRules(xmlNode *localroot);
-  static string caseOf(string const &str);
-  static wstring caseOf(wstring const &str);
-  string copycase(string const &source_word, string const &target_word);
+  UString evalCachedString(xmlNode* element);
+  void processClip(xmlNode* element);
+  void processBlank(xmlNode* element);
+  void processLuCount(xmlNode* element);
+  void processCaseOf(xmlNode* element);
+  UString processLu(xmlNode* element);
+  UString processMlu(xmlNode* element);
+
+  UString processChunk(xmlNode* element);
 
   void processLet(xmlNode *localroot);
-  void processAppend(xmlNode *localroot);
   void processOut(xmlNode *localroot);
   void processCallMacro(xmlNode *localroot);
   void processModifyCase(xmlNode *localroot);
-  bool processLogical(xmlNode *localroot);
-  bool processTest(xmlNode *localroot);
-  bool processAnd(xmlNode *localroot);
-  bool processOr(xmlNode *localroot);
-  bool processEqual(xmlNode *localroot);
-  bool processBeginsWith(xmlNode *localroot);
-  bool processBeginsWithList(xmlNode *localroot);
-  bool processEndsWith(xmlNode *localroot);
-  bool processEndsWithList(xmlNode *localroot);
-  bool processContainsSubstring(xmlNode *localroot);
-  bool processNot(xmlNode *localroot);
-  bool processIn(xmlNode *localroot);
-  void processRule(xmlNode *localroot);
-  string evalString(xmlNode *localroot);
-  void processInstruction(xmlNode *localroot);
-  void processChoose(xmlNode *localroot);
   void processTags(xmlNode *localroot);
-  bool beginsWith(string const &str1, string const &str2) const;
-  bool endsWith(string const &str1, string const &str2) const;
-  string tolower(string const &str) const;
-  string tags(string const &str) const;
-  string readWord(FILE *in);
-  string readBlank(FILE *in);
-  string readUntil(FILE *in, int const symbol) const;
-  void applyWord(wstring const &word_str);
-  void applyRule();
-  TransferToken & readToken(FILE *in);
-  static void unchunk(wstring const &chunk, FILE *output);
-  static vector<wstring> getVecTags(wstring const &chunk);
-  static int beginChunk(wstring const &chunk);
-  static int endChunk(wstring const &chunk);
-  static void splitWordsAndBlanks(wstring const &chunk,
-				  vector<wstring *> &words,
-				  vector<wstring *> &blanks);
-  static wstring pseudolemma(wstring const &chunk);
-  static wstring wordzero(wstring const &chunk);
+  UString readWord(InputFile& in);
+  UString readBlank(InputFile& in);
+  UString readUntil(InputFile& in, int const symbol) const;
+  void applyWord(UString const &word_str);
+  int applyRule();
+  TransferToken & readToken(InputFile& in);
+  static void unchunk(UString const &chunk, UFILE *output);
+  static vector<UString> getVecTags(UString const &chunk);
+  static int beginChunk(UString const &chunk);
+  static int endChunk(UString const &chunk);
+  static void splitWordsAndBlanks(UString const &chunk,
+				  vector<UString *> &words,
+				  vector<UString *> &blanks);
+  static UString pseudolemma(UString const &chunk);
+  static UString wordzero(UString const &chunk);
   bool checkIndex(xmlNode *element, int index, int limit);
-  void postchunk_wrapper_null_flush(FILE *in, FILE *out);
-  bool gettingLemmaFromWord(string attr);
-  string combineWblanks(string wblank_current, string wblank_to_add);
+  void postchunk_wrapper_null_flush(InputFile& in, UFILE* out);
 
 public:
   Postchunk();
-  ~Postchunk();
 
-  void read(string const &transferfile, string const &datafile);
-  void postchunk(FILE *in, FILE *out);
-  bool getNullFlush(void);
-  void setNullFlush(bool null_flush);
-  void setTrace(bool trace);
+  void postchunk(InputFile& in, UFILE* out);
 };
 
 #endif

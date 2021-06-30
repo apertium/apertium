@@ -90,15 +90,12 @@
       </xsl:if>
       <xsl:value-of select="string('  printBuffer();&#xA;')"/>
 
-      <xsl:value-of select="string('  if (hasWrite_white) {&#xA;    fputws(L&quot; &quot;, yyout);&#xA;')"/>
+      <xsl:value-of select="string('  if (hasWrite_white) {&#xA;    fputs(&quot; &quot;, yyout);&#xA;')"/>
       <xsl:value-of select="string('    offset++;&#xA;    hasWrite_white = false;&#xA;  }&#xA;')"/>
 
       <xsl:value-of select="string('  current++;&#xA;  orders.push_back(current);&#xA;')"/>
       <xsl:value-of select="string('  last=&quot;open_tag&quot;;&#xA;  offsets.push_back(offset);&#xA;')"/>
-      <xsl:value-of select="string('  wchar_t* symbol = new wchar_t[strlen(yytext) + 1];&#xA;')"/>
-      <xsl:value-of select="string('  mbstowcs(symbol, yytext, strlen(yytext));&#xA;')"/>
-      <xsl:value-of select="string('  symbol[strlen(yytext)] = (char) 0;&#xA;')"/>
-      <xsl:value-of select="string('  tags.push_back(symbol);&#xA;  delete[] symbol;&#xA;}&#xA;')"/>
+      <xsl:value-of select="string('  tags.push_back(to_ustring(yytext));&#xA;}&#xA;')"/>
     </xsl:when>
     <xsl:when test="./@type = 'close'">
       <xsl:value-of select="./tag/@regexp"/>
@@ -164,50 +161,45 @@ extern "C" {
 }
 
 #include &lt;lttoolbox/lt_locale.h&gt;
-#include &lt;lttoolbox/ltstr.h&gt;
-#include &lt;apertium/string_to_wostream.h&gt;
+#include &lt;lttoolbox/ustring.h&gt;
 #ifndef GENFORMAT
 #include "apertium_config.h"
 #endif
-#include &lt;utf8/utf8.h&gt;
+#include &lt;utf8.h&gt;
 #include &lt;apertium/unlocked_cstdio.h&gt;
-#ifdef _WIN32
-#include &lt;io.h&gt;
-#include &lt;fcntl.h&gt;
-#define utf8to32 utf8to16
-#define utf32to8 utf16to8
-#endif
 
 using namespace std;
 
-wstring buffer;
+UString buffer;
 string symbuf;
 bool isDot, isEoh, hasWrite_dot, hasWrite_white;
 bool eosIncond;
 bool noDot;
 bool markEoh;
-FILE *formatfile;
+UFILE* formatfile;
 string last;
 int current;
 long int offset;
 
 
 vector&lt;long int&gt; offsets;
-vector&lt;wstring&gt; tags;
+vector&lt;UString&gt; tags;
 vector&lt;int&gt; orders;
 
 regex_t escape_chars;
 regex_t names_regexp;
 
-void bufferAppend(wstring &amp;buf, string const &amp;str)
+void bufferAppend(UString &amp;buf, string const &amp;str)
 {
-  symbuf.append(str);
-  if (utf8::is_valid(symbuf.begin(), symbuf.end())) {
-  	utf8::utf8to32(symbuf.begin(), symbuf.end(), std::back_inserter(buf));
-  	symbuf.clear();
-  }
+  buf += to_ustring(str.c_str());
 }
 
+void put(const UString&amp; str, FILE* f)
+{
+  string temp;
+  utf8::utf16to8(str.begin(), str.end(), std::back_inserter(temp));
+  fputs_unlocked(temp.c_str(), f);
+}
 
 void init_escape()
 {
@@ -218,7 +210,7 @@ void init_escape()
       <xsl:with-param name="replacement" select="string('\\')"/>
     </xsl:call-template>", REG_EXTENDED))
   {
-    wcerr &lt;&lt; "ERROR: Illegal regular expression for escape characters" &lt;&lt; endl;
+    cerr &lt;&lt; "ERROR: Illegal regular expression for escape characters" &lt;&lt; endl;
     exit(EXIT_FAILURE);
   }
 }
@@ -232,7 +224,7 @@ void init_tagNames()
       <xsl:with-param name="replacement" select="string('\\')"/>
     </xsl:call-template>", REG_EXTENDED))
   {
-    wcerr &lt;&lt; "ERROR: Illegal regular expression for tag-names" &lt;&lt; endl;
+    cerr &lt;&lt; "ERROR: Illegal regular expression for tag-names" &lt;&lt; endl;
     exit(EXIT_FAILURE);
   }
 }
@@ -254,20 +246,20 @@ string backslash(string const &amp;str)
 }
 
 
-wstring escape(string const &amp;str)
+UString escape(string const &amp;str)
 {
   regmatch_t pmatch;
 
   char const *mystring = str.c_str();
   int base = 0;
-  wstring result;
+  UString result;
 
   while(!regexec(&amp;escape_chars, mystring + base, 1, &amp;pmatch, 0))
   {
     bufferAppend(result, str.substr(base, pmatch.rm_so));
-    result += L'\\';
+    result += '\\';
     const char *mb = str.c_str() + base + pmatch.rm_so;
-    wchar_t micaracter = utf8::next(mb, mb+4);
+    UChar32 micaracter = utf8::next(mb, mb+4);
 
     result += micaracter;
     base += pmatch.rm_eo;
@@ -277,10 +269,10 @@ wstring escape(string const &amp;str)
   return result;
 }
 
-wstring escape(wstring const &amp;str)
+UString escape(UString const &amp;str)
 {
   string dest;
-  utf8::utf32to8(str.begin(), str.end(), std::back_inserter(dest));
+  utf8::utf16to8(str.begin(), str.end(), std::back_inserter(dest));
   return escape(dest);
 }
 
@@ -302,7 +294,7 @@ string get_tagName(string tag){
 <xsl:for-each select="./rules/replacement-rule">
   <xsl:variable name="varname"
 		select="concat(concat(string('S'),position()),string('_substitution'))"/>
-  <xsl:value-of select="string('map&lt;string, wstring, Ltstr&gt; S')"/>
+  <xsl:value-of select="string('map&lt;string, UString&gt; S')"/>
   <xsl:value-of select="position()"/>
   <xsl:value-of select="string('_substitution;&#xA;&#xA;void S')"/>
   <xsl:value-of select="position()"/>
@@ -313,9 +305,9 @@ string get_tagName(string tag){
     <xsl:value-of select="$varname"/>
     <xsl:value-of select="string('[&quot;')"/>
     <xsl:value-of select="./@source"/>
-    <xsl:value-of select="string('&quot;] = L&quot;')"/>
+    <xsl:value-of select="string('&quot;] = &quot;')"/>
     <xsl:value-of select="./@target"/>
-    <xsl:value-of select="string('&quot;;')"/>
+    <xsl:value-of select="string('&quot;_u;')"/>
   </xsl:for-each>
 
   <xsl:value-of select="string('&#xA;}&#xA;')"/>
@@ -328,7 +320,7 @@ int get_index(string end_tag){
 
   for (int i=tags.size()-1; i >= 0; i--) {
     new_end_tag.clear();
-    utf8::utf32to8(tags[i].begin(), tags[i].end(), std::back_inserter(new_end_tag));
+    utf8::utf16to8(tags[i].begin(), tags[i].end(), std::back_inserter(new_end_tag));
 
     if (get_tagName(end_tag) == get_tagName(new_end_tag))
       return i;
@@ -338,15 +330,8 @@ int get_index(string end_tag){
 }
 
 void print_emptyTags() {
-  wchar_t tag[250];
-
   for (size_t i=0; i &lt; tags.size(); i++) {
-    swprintf(tag, 250, L"&lt;format-tag offset=\"%d\" order= \"%d\"&gt;&lt;![CDATA[", offsets[i], orders[i]);
-    fputws(tag, formatfile);
-    fputws(tags[i].c_str(), formatfile);
-    fputwc(L']', formatfile);
-    swprintf(tag, 250, L"]&gt;&lt;/format-tag&gt;\n");
-    fputws(tag, formatfile);
+    u_fprintf(formatfile, "&lt;format-tag offset=\"%d\" order= \"%d\"&gt;&lt;![CDATA[%S]&gt;&lt;/format-tag&gt;\n", offsets[i], orders[i], tags[i].c_str());
   }
 }
 </xsl:if>
@@ -355,13 +340,10 @@ void print_emptyTags() {
   <xsl:when test="$mode=string('matxin')">
 void printBuffer(int ind=-1, string end_tag="")
 {
-  wchar_t tag[250];
-  wstring etiketa;
-  wstring wend_tag;
+  UString etiketa;
+  UString wend_tag = to_ustring(end_tag.c_str());
   size_t pos;
   int num;
-
-  utf8::utf8to32(end_tag.begin(), end_tag.end(), std::back_inserter(wend_tag));
 
   if (ind != -1 &amp;&amp; ind == tags.size()-1 &amp;&amp;
       offsets[ind] == offset &amp;&amp; orders[ind] == current)
@@ -372,7 +354,7 @@ void printBuffer(int ind=-1, string end_tag="")
     offsets.pop_back();
     orders.pop_back();
   }
-  else if (ind == -1 &amp;&amp; wend_tag != L"")
+  else if (ind == -1 &amp;&amp; !wend_tag.empty())
   {
     last = "buffer";
     buffer = buffer + wend_tag;
@@ -382,10 +364,9 @@ void printBuffer(int ind=-1, string end_tag="")
     // isEoh handling TODO matxin format
     if (hasWrite_dot &amp;&amp; isDot)
     {
-      swprintf(tag, 250, L"&lt;empty-tag offset=\"%d\"/&gt;\n", offset+1);
-      fputws(tag, formatfile);
+	  u_fprintf(formatfile, "&lt;empty-tag offset=\"%d\"/&gt;\n", offset+1);
 
-      fputws(L" .\n", yyout);
+      fputs(" .\n", yyout);
       offset += 2;
       hasWrite_dot = false;
     }
@@ -396,24 +377,22 @@ void printBuffer(int ind=-1, string end_tag="")
     {
       if (hasWrite_white)
       {
-        fputws(L" ", yyout);
+        fputs(" ", yyout);
         offset++;
         hasWrite_white = false;
       }
 
       current++;
 
-      swprintf(tag, 250, L"&lt;format-tag offset=\"%d\" order=\"%d\"&gt;&lt;![CDATA[", offset, current);
-      fputws(tag, formatfile);
-      while ((pos = buffer.find(L"]]&gt;")) != wstring::npos)
-        buffer.replace(pos, 3, L"\\]\\]\\&gt;");
-      fputws(buffer.c_str(), formatfile);
-      swprintf(tag, 250, L"]]&gt;&lt;/format-tag&gt;\n");
-      fputws(tag, formatfile);
+	  u_fprintf(formatfile, "&lt;format-tag offset=\"%d\" order=\"%d\"&gt;&lt;![CDATA[", offset, current);
+      while ((pos = buffer.find("]]&gt;")) != UString::npos)
+        buffer.replace(pos, 3, "\\]\\]\\&gt;"_u);
+      write(buffer, formatfile);
+	  u_fprintf(formatfile, "]]&gt;&lt;/format-tag&gt;\n");
     }
     else
     {
-      fputws(buffer.c_str(), yyout);
+	  put(buffer, yyout);
       offset += buffer.size();
     }
 
@@ -422,30 +401,27 @@ void printBuffer(int ind=-1, string end_tag="")
     {
       if (hasWrite_white)
       {
-        fputws(L" ", yyout);
+	    fputc(' ', yyout);
         offset++;
         hasWrite_white = false;
       }
 
-      num = swprintf(tag, 250, L"&lt;open-close-tag&gt;\n");
-      swprintf(tag + num, 250 - num, L"&lt;open-tag offset=\"%d\" order=\"%d\"&gt;&lt;![CDATA[", offsets[ind], orders[ind]);
-      fputws(tag, formatfile);
+	  u_fprintf(formatfile, "&lt;open-close-tag&gt;\n");
+	  u_fprintf(formatfile, "&lt;open-tag offset=\"%d\"order=\"%d\"&gt;&lt;![CDATA[", offsets[ind], orders[ind]);
       etiketa = tags[ind];
-      while ((pos = etiketa.find(L"]]&gt;")) != wstring::npos)
-        etiketa.replace(pos, 3, L"\\]\\]\\&gt;");
-      fputws(etiketa.c_str(), formatfile);
+      while ((pos = etiketa.find("]]&gt;"_u)) != UString::npos)
+        etiketa.replace(pos, 3, "\\]\\]\\&gt;"_u);
+      write(etiketa, formatfile);
 
       current++;
 
-      num = swprintf(tag, 250, L"]]&gt;&lt;/open-tag&gt;\n");
-      swprintf(tag + num, 250 - num, L"&lt;close-tag offset=\"%d\" order=\"%d\"&gt;&lt;![CDATA[", offset, current);
-      fputws(tag, formatfile);
-      while ((pos = wend_tag.find(L"]]&gt;")) != wstring::npos)
-        wend_tag.replace(pos, 3, L"\\]\\]\\&gt;");
-      fputws(wend_tag.c_str(), formatfile);
-      num = swprintf(tag, 250, L"]]&gt;&lt;/close-tag&gt;\n");
-      swprintf(tag + num, 250 - num, L"&lt;/open-close-tag&gt;\n");
-      fputws(tag, formatfile);
+      u_fprintf(formatfile, "]]&gt;&lt;/open-tag&gt;\n");
+      u_fprintf(formatfile, "&lt;close-tag offset=\"%d\" order=\"%d\"&gt;&lt;![CDATA[", offset, current);
+      while ((pos = wend_tag.find("]]&gt;"_u)) != UString::npos)
+        wend_tag.replace(pos, 3, "\\]\\]\\&gt;"_u);
+      write(wend_tag, formatfile);
+      u_fprintf(formatfile, "]]&gt;&lt;/close-tag&gt;\n");
+      u_fprintf(formatfile, "&lt;/open-close-tag&gt;\n");
 
       tags.erase(tags.begin() + ind);
       offsets.erase(offsets.begin() + ind);
@@ -454,7 +430,7 @@ void printBuffer(int ind=-1, string end_tag="")
 
 
     last = "buffer";
-    buffer = L"";
+    buffer.clear();
   }
 
 }
@@ -467,11 +443,11 @@ void preDot()
   {
     if(noDot)
     {
-      fputws_unlocked(L"[]", yyout);
+      fputs_unlocked("[]", yyout);
     }
     else
     {
-      fputws_unlocked(L".[]", yyout);
+      fputs_unlocked(".[]", yyout);
     }
   }
 }
@@ -480,66 +456,64 @@ void printBuffer()
 {
   if(isEoh &amp;&amp; markEoh)
   {
-    fputws_unlocked(L"[]\x2761", yyout);
+	put(u"[]\u2761", yyout);
     isEoh = false;
   }
   if(isDot &amp;&amp; !eosIncond)
   {
     if(noDot)
     {
-      fputws_unlocked(L"[]", yyout);
+      fputs_unlocked("[]", yyout);
     }
     else
     {
-      fputws_unlocked(L".[]", yyout);
+      fputs_unlocked(".[]", yyout);
     }
     isDot = false;
   }
   if(buffer.size() &gt; <xsl:value-of select="/format/options/largeblocks/@size"/>)
   {
     string filename = tmpnam(NULL);
-    FILE *largeblock = fopen(filename.c_str(), "wb");
-    fputws_unlocked(buffer.c_str(), largeblock);
-    fclose(largeblock);
+    UFILE *largeblock = u_fopen(filename.c_str(), "wb", NULL, NULL);
+    write(buffer, largeblock);
+    u_fclose(largeblock);
     preDot();
-    fputwc_unlocked(L'[', yyout);
-    fputwc_unlocked(L'@', yyout);
-    std::wstring cad;
-    utf8::utf8to32(filename.begin(), filename.end(), std::back_inserter(cad));
-    fputws_unlocked(cad.c_str(), yyout);
-    fputwc_unlocked(L']', yyout);
+    fputc_unlocked('[', yyout);
+    fputc_unlocked('@', yyout);
+    fputs_unlocked(filename.c_str(), yyout);
+    fputc_unlocked(']', yyout);
   }
   else if(buffer.size() &gt; 1)
   {
     preDot();
-    fputwc_unlocked(L'[', yyout);
-    wstring const tmp = escape(buffer);
-    if(tmp[0] == L'@')
+    fputc_unlocked('[', yyout);
+    UString const tmp = escape(buffer);
+    if(tmp[0] == '@')
     {
-      fputwc_unlocked(L'\\', yyout);
+      fputc_unlocked('\\', yyout);
     }
-    fputws_unlocked(tmp.c_str(), yyout);
-    fputwc_unlocked(L']', yyout);
+	put(tmp, yyout);
+    fputc_unlocked(']', yyout);
   }
-  else if(buffer.size() == 1 &amp;&amp; buffer[0] != L' ')
+  else if(buffer.size() == 1 &amp;&amp; buffer[0] != ' ')
   {
     preDot();
-    fputwc_unlocked(L'[', yyout);
-    wstring const tmp = escape(buffer);
-    if(tmp[0] == L'@')
+    fputc_unlocked('[', yyout);
+    UString const tmp = escape(buffer);
+    if(tmp[0] == '@')
     {
-      fputwc_unlocked(L'\\', yyout);
+      fputc_unlocked('\\', yyout);
     }
-    fputws_unlocked(tmp.c_str(), yyout);
+    put(tmp, yyout);
 
-    fputwc_unlocked(L']', yyout);
+    fputc_unlocked(']', yyout);
   }
   else
   {
-    fputws_unlocked(buffer.c_str(), yyout);
+    put(buffer, yyout);
   }
 
-  buffer = L"";
+  buffer.clear();
 }
   </xsl:otherwise>
 </xsl:choose>
@@ -618,9 +592,9 @@ void printBuffer()
   <xsl:value-of select="$varname"/>
   <xsl:value-of select="string('.find(yytext) != ')"/>
   <xsl:value-of select="$varname"/>
-  <xsl:value-of select="string('.end())&#xA;  {&#xA;    printBuffer();&#xA;    fputws_unlocked(')"/>
+  <xsl:value-of select="string('.end())&#xA;  {&#xA;    printBuffer();&#xA;    put(')"/>
   <xsl:value-of select="$varname"/>
-  <xsl:value-of select="string('[yytext].c_str(), yyout);&#xA;    offset+=')"/>
+  <xsl:value-of select="string('[yytext], yyout);&#xA;    offset+=')"/>
   <xsl:value-of select="$varname"/>
   <xsl:value-of select="string('[yytext].size();&#xA;')"/>
   <xsl:value-of select="string('    hasWrite_dot = hasWrite_white = true;&#xA;  }&#xA;  else&#xA;  {&#xA;')"/>
@@ -637,12 +611,11 @@ void printBuffer()
 
 <xsl:value-of select="./options/escape-chars/@regexp"/>&#x9;{
   printBuffer();
-  fputwc_unlocked(L'\\', yyout);
+  fputc_unlocked('\\', yyout);
   offset++;
   const char *mb = yytext;
-  wchar_t symbol = utf8::next(mb, mb+4);
-
-  fputwc_unlocked(symbol, yyout);
+  UChar32 symbol = utf8::next(mb, mb+4);
+  put(UString(1, symbol), yyout);
   offset++;
   hasWrite_dot = hasWrite_white = true;
 
@@ -654,9 +627,9 @@ void printBuffer()
 
   if (utf8::is_valid(symbuf.begin(), symbuf.end())) {
     const char *mb = symbuf.c_str();
-    wchar_t symbol = utf8::next(mb, mb+4);
+    UChar32 symbol = utf8::next(mb, mb+4);
     symbuf.clear();
-    fputwc_unlocked(symbol, yyout);
+	put(UString(1, symbol), yyout);
     offset++;
     hasWrite_dot = hasWrite_white = true;
   }
@@ -677,20 +650,20 @@ void usage(string const &amp;progname)
 {
 <xsl:choose>
   <xsl:when test="$mode=string('matxin')">
-  wcerr &lt;&lt; "USAGE: " &lt;&lt; progname &lt;&lt; " format_file [input_file [output_file]" &lt;&lt; ']' &lt;&lt; endl;
+  cerr &lt;&lt; "USAGE: " &lt;&lt; progname &lt;&lt; " format_file [input_file [output_file]" &lt;&lt; ']' &lt;&lt; endl;
   </xsl:when>
   <xsl:otherwise>
-  wcerr &lt;&lt; "USAGE: " &lt;&lt; progname &lt;&lt; " [ -h | -o | -i | -n ] [input_file [output_file]" &lt;&lt; ']' &lt;&lt; endl;
+  cerr &lt;&lt; "USAGE: " &lt;&lt; progname &lt;&lt; " [ -h | -o | -i | -n ] [input_file [output_file]" &lt;&lt; ']' &lt;&lt; endl;
   </xsl:otherwise>
 </xsl:choose>
-  wcerr &lt;&lt; "<xsl:value-of select="./@name"/> format processor " &lt;&lt; endl;
+  cerr &lt;&lt; "<xsl:value-of select="./@name"/> format processor " &lt;&lt; endl;
   exit(EXIT_SUCCESS);
 }
 
 int main(int argc, char *argv[])
 {
   LtLocale::tryToSetLocale();
-  size_t base = 0;
+  int base = 0;
   eosIncond = false;
 
   if(argc &gt;= 2)
@@ -740,7 +713,7 @@ int main(int argc, char *argv[])
         usage(argv[0]);
       }
     case 2:
-      formatfile = fopen(argv[1+base], "wb");
+      formatfile = u_fopen(argv[1+base], "wb", NULL, NULL);
       if(!formatfile)
       {
         usage(argv[0]);
@@ -751,35 +724,23 @@ int main(int argc, char *argv[])
   }
   </xsl:when>
   <xsl:otherwise>
- if((argc-base) &gt; 4)
-  {
+  if((argc-base) &gt; 4) {
     usage(argv[0]);
   }
-
-  switch(argc-base)
-  {
-    case 3:
-      yyout = fopen(argv[2+base], "wb");
-      if(!yyout)
-      {
-        usage(argv[0]);
-      }
-    case 2:
-      yyin = fopen(argv[1+base], "rb");
-      if(!yyin)
-      {
-        usage(argv[0]);
-      }
-      break;
-    default:
-      break;
+  if ((argc - base) == 3) {
+    yyout = fopen(argv[2 + base], "wb");
+	if (!yyout) {
+	  usage(argv[0]);
+	}
+  }
+  if ((argc - base) >= 2) {
+    yyin = fopen(argv[1 + base], "rb");
+    if (!yyin) {
+      usage(argv[0]);
+    }
   }
   </xsl:otherwise>
 </xsl:choose>
-#ifdef _MSC_VER
-  _setmode(_fileno(yyin), _O_U8TEXT);
-  _setmode(_fileno(yyout), _O_U8TEXT);
-#endif
   // prevent warning message
   yy_push_state(1);
   yy_top_state();
@@ -792,8 +753,8 @@ int main(int argc, char *argv[])
 </xsl:for-each>
 
 <xsl:if test="$mode=string('matxin')">
-  fputws(L"&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot; ?>\n", formatfile);
-  fputws(L"&lt;format&gt;\n", formatfile);
+  write("&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot; ?>\n"_u, formatfile);
+  write("&lt;format&gt;\n"_u, formatfile);
 </xsl:if>
 
   last.clear();
@@ -807,7 +768,7 @@ int main(int argc, char *argv[])
 
 <xsl:if test="$mode=string('matxin')">
   print_emptyTags();
-  fputws(L"&lt;/format&gt;", formatfile);
+  write("&lt;/format&gt;"_u, formatfile);
   fclose(formatfile);
 </xsl:if>
   fclose(yyin);

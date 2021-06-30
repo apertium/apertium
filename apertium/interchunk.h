@@ -17,119 +17,49 @@
 #ifndef _INTERCHUNK_
 #define _INTERCHUNK_
 
-#include <apertium/transfer_instr.h>
-#include <apertium/transfer_token.h>
-#include <apertium/interchunk_word.h>
-#include <apertium/apertium_re.h>
-#include <lttoolbox/alphabet.h>
-#include <lttoolbox/buffer.h>
-#include <lttoolbox/ltstr.h>
-#include <lttoolbox/match_exe.h>
-#include <lttoolbox/match_state.h>
+#include <apertium/transfer_base.h>
 
-#include <cstring>
-#include <cstdio>
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <map>
-#include <set>
-#include <vector>
-#include <queue>
+#include <apertium/interchunk_word.h>
+#include <lttoolbox/input_file.h>
 
 using namespace std;
 
-class Interchunk
+class Interchunk : public TransferBase
 {
 private:
-
-  Alphabet alphabet;
-  MatchExe *me;
-  MatchState ms;
-  map<string, ApertiumRE, Ltstr> attr_items;
-  map<string, string, Ltstr> variables;
-  map<string, int, Ltstr> macros;
-  map<string, set<string, Ltstr>, Ltstr> lists;
-  map<string, set<string, Ltstr>, Ltstr> listslow;
-  vector<xmlNode *> macro_map;
-  vector<xmlNode *> rule_map;
-  vector<size_t> rule_lines;
-  xmlDoc *doc;
-  xmlNode *root_element;
   InterchunkWord **word;
-  queue <string> blank_queue;
-  int lword;
   int last_lword;
-  Buffer<TransferToken> input_buffer;
-  vector<wstring *> tmpword;
-  vector<wstring *> tmpblank;
 
-  FILE *output;
-  int any_char;
-  int any_tag;
-
-  xmlNode *lastrule;
-  unsigned int nwords;
-
-  map<xmlNode *, TransferInstr> evalStringCache;
   bool inword;
-  bool null_flush;
-  bool internal_null_flush;
-  bool trace;
-  bool in_out;
-
-  void destroy();
-  void readData(FILE *input);
-  void readInterchunk(string const &input);
-  void collectMacros(xmlNode *localroot);
-  void collectRules(xmlNode *localroot);
-  string caseOf(string const &str);
-  string copycase(string const &source_word, string const &target_word);
 
   void processLet(xmlNode *localroot);
-  void processAppend(xmlNode *localroot);
   void processOut(xmlNode *localroot);
   void processCallMacro(xmlNode *localroot);
   void processModifyCase(xmlNode *localroot);
-  bool processLogical(xmlNode *localroot);
-  bool processTest(xmlNode *localroot);
-  bool processAnd(xmlNode *localroot);
-  bool processOr(xmlNode *localroot);
-  bool processEqual(xmlNode *localroot);
-  bool processBeginsWith(xmlNode *localroot);
-  bool processBeginsWithList(xmlNode *localroot);
-  bool processEndsWith(xmlNode *localroot);
-  bool processEndsWithList(xmlNode *localroot);
-  bool processContainsSubstring(xmlNode *localroot);
-  bool processNot(xmlNode *localroot);
-  bool processIn(xmlNode *localroot);
-  void processRule(xmlNode *localroot);
-  string evalString(xmlNode *localroot);
-  void processInstruction(xmlNode *localroot);
-  void processChoose(xmlNode *localroot);
-  string processChunk(xmlNode *localroot);
+  UString processChunk(xmlNode *localroot);
+  void processClip(xmlNode* localroot);
+  void processBlank(xmlNode* localroot);
+  void processCaseOf(xmlNode* localroot);
 
-  bool beginsWith(string const &str1, string const &str2) const;
-  bool endsWith(string const &str1, string const &str2) const;
-  string tolower(string const &str) const;
-  string tags(string const &str) const;
-  string readWord(FILE *in);
-  string readBlank(FILE *in);
-  string readUntil(FILE *in, int const symbol) const;
-  void applyWord(wstring const &word_str);
-  void applyRule();
-  TransferToken & readToken(FILE *in);
+  void processLuCount(xmlNode* localroot);
+  UString processLu(xmlNode* localroot);
+  UString processMlu(xmlNode* localroot);
+
+  UString evalCachedString(xmlNode* element);
+
+  UString readWord(InputFile& in);
+  UString readBlank(InputFile& in);
+  UString readUntil(InputFile& in, int const symbol) const;
+  void applyWord(UString const &word_str);
+  int applyRule();
+  TransferToken & readToken(InputFile& in);
   bool checkIndex(xmlNode *element, int index, int limit);
-  void interchunk_wrapper_null_flush(FILE *in, FILE *out);
+  void interchunk_wrapper_null_flush(InputFile& in, UFILE* out);
 
 public:
   Interchunk();
-  ~Interchunk();
 
-  void read(string const &transferfile, string const &datafile);
-  void interchunk(FILE *in, FILE *out);
-  bool getNullFlush(void);
-  void setNullFlush(bool null_flush);
-  void setTrace(bool trace);
+  void interchunk(InputFile& in, UFILE* out);
 };
 
 #endif

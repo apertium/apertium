@@ -22,7 +22,6 @@
 #include <apertium/ttag.h>
 #include <apertium/xml_reader.h>
 #include <lttoolbox/pattern_list.h>
-#include <lttoolbox/ltstr.h>
 
 #include <libxml/xmlreader.h>
 #include <map>
@@ -37,17 +36,17 @@ class TSXReader : public XMLReader
 private:
   set<TTag> *open_class;
   vector<TForbidRule> *forbid_rules;
-  map<wstring, TTag, Ltstr> *tag_index;
-  vector<wstring> *array_tags;
+  map<UString, TTag> *tag_index;
+  vector<UString> *array_tags;
   vector<TEnforceAfterRule> *enforce_rules;
-  vector<wstring> *prefer_rules;
+  vector<UString> *prefer_rules;
   PatternList *plist;
   ConstantManager *constants;
   TaggerData tdata;
 
-  void newTagIndex(wstring const &tag);
-  void newDefTag(wstring const &tag);
-  void newConstant(wstring const &constant);
+  void newTagIndex(UString const &tag);
+  void newDefTag(UString const &tag);
+  void newConstant(UString const &constant);
   void procDefLabel();
   void procDefMult();
   void procDiscardOnAmbiguity();

@@ -21,9 +21,9 @@ def get_sources():
     sources = ['apertium_core.i']
     cc_sources = [
                   # interchunk.cc postchunk.cc transfer.cc
-                  'apertium_re.cc', 'interchunk.cc', 'interchunk_word.cc', 'postchunk.cc', 'string_utils.cc', 'transfer.cc',
+                  'apertium_re.cc', 'interchunk.cc', 'interchunk_word.cc', 'postchunk.cc', 'transfer.cc',
                   'transfer_data.cc', 'transfer_instr.cc', 'transfer_mult.cc', 'transfer_token.cc', 'transfer_word.cc',
-                  'transfer_word_list.cc', 'trx_reader.cc', 'utf_converter.cc', 'xml_reader.cc',
+                  'trx_reader.cc', 'xml_reader.cc',
                   # 'pretransfer.cc'
                   'pretransfer.cc',
                   # tagger.cc

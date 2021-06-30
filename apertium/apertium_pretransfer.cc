@@ -26,18 +26,18 @@
 #include <fcntl.h>
 #endif
 #include <apertium/pretransfer.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
+#include <lttoolbox/lt_locale.h>
 
-using namespace Apertium;
 using namespace std;
 
 void usage(char *progname)
 {
-  wcerr << L"USAGE: " << basename(progname) << L" [input_file [output_file]]" << endl;
-  wcerr << L"  -n         assume no surface forms" << endl;
-  wcerr << L"  -e         treat ~ as compound separator" << endl;
-  wcerr << L"  -z         null-flushing output on '\0'" << endl;
-  wcerr << L"  -h         shows this message" << endl;
+  cerr << "USAGE: " << basename(progname) << " [input_file [output_file]]" << endl;
+  cerr << "  -n         assume no surface forms" << endl;
+  cerr << "  -e         treat ~ as compound separator" << endl;
+  cerr << "  -z         null-flushing output on '\\0'" << endl;
+  cerr << "  -h         shows this message" << endl;
   exit(EXIT_FAILURE);
 }
 
@@ -90,43 +90,35 @@ int main(int argc, char *argv[])
     usage(argv[0]);
   }
 
-  FILE *input, *output;
+  InputFile input;
+  UFILE* output;
 
   if((argc-optind+1) == 1)
   {
-    input = stdin;
-    output = stdout;
+    output = u_finit(stdout, NULL, NULL);
   }
   else if ((argc-optind+1) == 2)
   {
-    input = fopen(argv[argc-1], "r");
-    if(!input)
-    {
+    if(!input.open(argv[argc-1])) {
       usage(argv[0]);
     }
-    output = stdout;
+    output = u_finit(stdout, NULL, NULL);
   }
   else
   {
-    input = fopen(argv[argc-2], "r");
-    output = fopen(argv[argc-1], "w");
+    output = u_fopen(argv[argc-1], "w", NULL, NULL);
 
-    if(!input || !output)
+    if(!output || !input.open(argv[argc-2]))
     {
       usage(argv[0]);
     }
   }
 
-  if(feof(input))
+  if(input.eof())
   {
-    wcerr << L"ERROR: Can't read file '" << argv[1] << L"'" << endl;
+    cerr << "ERROR: Can't read file '" << argv[1] << "'" << endl;
     exit(EXIT_FAILURE);
   }
-
-#ifdef _MSC_VER
-    _setmode(_fileno(input), _O_U8TEXT);
-    _setmode(_fileno(output), _O_U8TEXT);
-#endif
 
   processStream(input, output, null_flush, surface_forms, compound_sep);
 }

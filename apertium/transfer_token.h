@@ -18,6 +18,7 @@
 #define _TRANSFERTOKEN_
 
 #include <string>
+#include <lttoolbox/ustring.h>
 
 using namespace std;
 
@@ -33,20 +34,20 @@ class TransferToken
 {
 private:
   TransferTokenType type;
-  wstring content;
+  UString content;
 
   void copy(TransferToken const &o);
   void destroy();
 public:
   TransferToken();
-  TransferToken(wstring const &content, TransferTokenType type);
+  TransferToken(UString const &content, TransferTokenType type);
   ~TransferToken();
   TransferToken(TransferToken const &o);
   TransferToken & operator =(TransferToken const &o);
   TransferTokenType getType();
-  wstring & getContent();
+  UString & getContent();
   void setType(TransferTokenType type);
-  void setContent(wstring const &content);
+  void setContent(UString const &content);
 };
 
 #endif

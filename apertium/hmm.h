@@ -65,7 +65,7 @@ protected:
 public:
    TaggerData& get_tagger_data();
    void deserialise(FILE *Serialised_FILE_Tagger);
-   std::vector<std::wstring> &getArrayTags();
+   std::vector<UString> &getArrayTags();
    void serialise(FILE *Stream_);
    void deserialise(const TaggerData &Deserialised_FILE_Tagger);
    void init_probabilities_from_tagged_text_(MorphoStream &stream_tagged,
@@ -143,7 +143,7 @@ public:
     *  @param in the input stream with the untagged text to tag
     *  @param out the output stream with the tagged text
     */
-   void tagger(MorphoStream &morpho_stream, FILE *Output);
+   void tagger(MorphoStream &morpho_stream, UFILE* Output);
 
    /** Prints the A matrix.
     */
@@ -157,7 +157,7 @@ public:
     */
    void print_ambiguity_classes();
 
-   void filter_ambiguity_classes(FILE *in, FILE *out);
+   void filter_ambiguity_classes(const char* input_file, UFILE* output);
 };
 
 #endif

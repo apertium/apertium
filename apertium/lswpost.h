@@ -57,7 +57,7 @@ protected:
 public:
   TaggerData& get_tagger_data();
   void deserialise(FILE *Serialised_FILE_Tagger);
-  std::vector<std::wstring> &getArrayTags();
+  std::vector<UString> &getArrayTags();
   void serialise(FILE *Stream_);
   void deserialise(const TaggerData &Deserialised_FILE_Tagger);
   void init_probabilities_from_tagged_text_(MorphoStream &, MorphoStream &);
@@ -102,6 +102,6 @@ public:
 
    /** Do the tagging
     */
-   void tagger(MorphoStream &morpho_stream, FILE *Output);
+   void tagger(MorphoStream &morpho_stream, UFILE *Output);
 };
 #endif

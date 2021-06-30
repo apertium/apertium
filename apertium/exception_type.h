@@ -19,6 +19,7 @@
 #include <exception>
 #include <sstream>
 #include <string>
+#include <lttoolbox/ustring.h>
 
 namespace Apertium {
 class ExceptionType : public std::exception {
@@ -26,14 +27,13 @@ public:
   ExceptionType(const char *const what_);
   ExceptionType(const std::string &what_);
   ExceptionType(const std::stringstream &what_);
-  ExceptionType(const wchar_t *wchar_t_what_);
-  ExceptionType(const std::wstring &wchar_t_what_);
-  ExceptionType(const std::wstringstream &wchar_t_what_);
+  ExceptionType(const UChar *wchar_t_what_);
+  ExceptionType(const UString &wchar_t_what_);
   virtual ~ExceptionType() throw() = 0;
   const char *what() const throw();
 
 protected:
-  std::string what_;
+  UString what_;
 };
 }
 

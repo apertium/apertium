@@ -24,60 +24,46 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 #ifdef _MSC_VER
 #include <io.h>
 #include <fcntl.h>
 #endif
 
-using namespace Apertium;
 using namespace std;
 
 void message(char *progname)
 {
-  wcerr << "USAGE: " << basename(progname) << " [-z] t3x preproc [input [output]]" << endl;
-  wcerr << "  t3x        t3x rules file" << endl;
-  wcerr << "  preproc    result of preprocess trules file" << endl;
-  wcerr << "  input      input file, standard input by default" << endl;
-  wcerr << "  output     output file, standard output by default" << endl;
-  wcerr << "OPTIONS" <<endl;
-  wcerr << "  -t         trace (show rule numbers and patterns matched)" << endl;
-  wcerr << "  -z         null-flushing output on '\0'" << endl;
+  cerr << "USAGE: " << basename(progname) << " [-z] t3x preproc [input [output]]" << endl;
+  cerr << "  t3x        t3x rules file" << endl;
+  cerr << "  preproc    result of preprocess trules file" << endl;
+  cerr << "  input      input file, standard input by default" << endl;
+  cerr << "  output     output file, standard output by default" << endl;
+  cerr << "OPTIONS" <<endl;
+  cerr << "  -t         trace (show rule numbers and patterns matched)" << endl;
+  cerr << "  -z         null-flushing output on '\0'" << endl;
 
   exit(EXIT_FAILURE);
 }
 
-void testfile(string const &filename)
+void testfile(const char* filename)
 {
   struct stat mybuf;
-  if(stat(filename.c_str(), &mybuf) == -1)
+  if(stat(filename, &mybuf) == -1)
   {
-    wcerr << "Error: can't stat file '";
-    wcerr << filename << "'." << endl;
+    cerr << "Error: can't stat file '";
+    cerr << filename << "'." << endl;
     exit(EXIT_FAILURE);
   }
 }
 
-FILE * open_input(string const &filename)
+UFILE * open_output(string const &filename)
 {
-  FILE *input = fopen(filename.c_str(), "r");
-  if(!input)
-  {
-    wcerr << "Error: can't open input file '";
-    wcerr << filename.c_str() << "'." << endl;
-    exit(EXIT_FAILURE);
-  }
-
-  return input;
-}
-
-FILE * open_output(string const &filename)
-{
-  FILE *output = fopen(filename.c_str(), "w");
+  UFILE *output = u_fopen(filename.c_str(), "w", NULL, NULL);
   if(!output)
   {
-    wcerr << "Error: can't open output file '";
-    wcerr << filename.c_str() << "'." << endl;
+    cerr << "Error: can't open output file '";
+    cerr << filename.c_str() << "'." << endl;
     exit(EXIT_FAILURE);
   }
   return output;
@@ -121,13 +107,15 @@ int main(int argc, char *argv[])
     }
   }
 
-  FILE *input = stdin, *output = stdout;
-  string f1, f2;
+  InputFile input;
+  UFILE* output = u_finit(stdout, NULL, NULL);
+  const char* f1;
+  const char* f2;
   switch(argc - optind + 1)
   {
     case 5:
       output = open_output(argv[argc-1]);
-      input = open_input(argv[argc-2]);
+      input.open_or_exit(argv[argc-2]);
       testfile(argv[argc-3]);
       testfile(argv[argc-4]);
       f1 = argv[argc-4];
@@ -135,7 +123,7 @@ int main(int argc, char *argv[])
       break;
 
     case 4:
-      input = open_input(argv[argc-1]);
+      input.open_or_exit(argv[argc-1]);
       testfile(argv[argc-2]);
       testfile(argv[argc-3]);
       f1 = argv[argc-3];
@@ -153,11 +141,6 @@ int main(int argc, char *argv[])
       message(argv[0]);
       break;
   }
-
-#ifdef _MSC_VER
-  _setmode(_fileno(input), _O_U8TEXT);
-  _setmode(_fileno(output), _O_U8TEXT);
-#endif
 
   p.read(f1, f2);
   p.postchunk(input, output);

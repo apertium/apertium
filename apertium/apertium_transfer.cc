@@ -23,37 +23,36 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <apertium/string_utils.h>
+#include <lttoolbox/string_utils.h>
 #include "getopt_long.h"
 #ifdef _MSC_VER
 #include <io.h>
 #include <fcntl.h>
 #endif
 
-using namespace Apertium;
 using namespace std;
 
 void message(char *progname)
 {
-  wcerr << "USAGE: " << basename(progname) << " trules preproc biltrans [input [output]]" << endl;
-  wcerr << "       " << basename(progname) << " -b trules preproc [input [output]]" << endl;
-  wcerr << "       " << basename(progname) << " -n trules preproc [input [output]]" << endl;
-  wcerr << "       " << basename(progname) << " -x extended trules preproc biltrans [input [output]]" << endl;
-  wcerr << "       " << basename(progname) << " -c trules preproc biltrans [input [output]]" << endl;
-  wcerr << "       " << basename(progname) << " -t trules preproc biltrans [input [output]]" << endl;
-  wcerr << "  trules     transfer rules file" << endl;
-  wcerr << "  preproc    result of preprocess trules file" << endl;
-  wcerr << "  biltrans   bilingual letter transducer file" << endl;
-  wcerr << "  input      input file, standard input by default" << endl;
-  wcerr << "  output     output file, standard output by default" << endl;
-  wcerr << "  -b         input from lexical transfer" << endl;
-  wcerr << "  -n         don't use bilingual dictionary" << endl;
-  wcerr << "  -x bindix  extended mode with user dictionary" << endl;
-  wcerr << "  -c         case-sensitiveness while accessing bilingual dictionary" << endl;
-  wcerr << "  -t         trace (show rule numbers and patterns matched)" << endl;
-  wcerr << "  -T         trace, for apertium-transfer-tools (also sets -t)" << endl;
-  wcerr << "  -z         null-flushing output on '\0'" << endl;
-  wcerr << "  -h         shows this message" << endl;
+  cerr << "USAGE: " << basename(progname) << " trules preproc biltrans [input [output]]" << endl;
+  cerr << "       " << basename(progname) << " -b trules preproc [input [output]]" << endl;
+  cerr << "       " << basename(progname) << " -n trules preproc [input [output]]" << endl;
+  cerr << "       " << basename(progname) << " -x extended trules preproc biltrans [input [output]]" << endl;
+  cerr << "       " << basename(progname) << " -c trules preproc biltrans [input [output]]" << endl;
+  cerr << "       " << basename(progname) << " -t trules preproc biltrans [input [output]]" << endl;
+  cerr << "  trules     transfer rules file" << endl;
+  cerr << "  preproc    result of preprocess trules file" << endl;
+  cerr << "  biltrans   bilingual letter transducer file" << endl;
+  cerr << "  input      input file, standard input by default" << endl;
+  cerr << "  output     output file, standard output by default" << endl;
+  cerr << "  -b         input from lexical transfer" << endl;
+  cerr << "  -n         don't use bilingual dictionary" << endl;
+  cerr << "  -x bindix  extended mode with user dictionary" << endl;
+  cerr << "  -c         case-sensitiveness while accessing bilingual dictionary" << endl;
+  cerr << "  -t         trace (show rule numbers and patterns matched)" << endl;
+  cerr << "  -T         trace, for apertium-transfer-tools (also sets -t)" << endl;
+  cerr << "  -z         null-flushing output on '\0'" << endl;
+  cerr << "  -h         shows this message" << endl;
 
 
   exit(EXIT_FAILURE);
@@ -64,32 +63,27 @@ void testfile(string const &filename)
   struct stat mybuf;
   if(stat(filename.c_str(), &mybuf) == -1)
   {
-    wcerr << "Error: can't stat file '";
-    wcerr << filename << "'." << endl;
+    cerr << "Error: can't stat file '";
+    cerr << filename << "'." << endl;
     exit(EXIT_FAILURE);
   }
 }
 
-FILE * open_input(string const &filename)
+void open_input(InputFile& input, const char* filename)
 {
-  FILE *input = fopen(filename.c_str(), "r");
-  if(!input)
-  {
-    wcerr << "Error: can't open input file '";
-    wcerr << filename.c_str() << "'." << endl;
+  if (!input.open(filename)) {
+    cerr << "Error: can't open input file '";
+    cerr << filename << "'." << endl;
     exit(EXIT_FAILURE);
   }
-
-  return input;
 }
 
-FILE * open_output(string const &filename)
+UFILE* open_output(const char* filename)
 {
-  FILE *output = fopen(filename.c_str(), "w");
-  if(!output)
-  {
-    wcerr << "Error: can't open output file '";
-    wcerr << filename.c_str() << "'." << endl;
+  UFILE* output = u_fopen(filename, "w", NULL, NULL);
+  if(!output) {
+    cerr << "Error: can't open output file '";
+    cerr << filename << "'." << endl;
     exit(EXIT_FAILURE);
   }
   return output;
@@ -107,13 +101,13 @@ int main(int argc, char *argv[])
     static struct option long_options[] =
     {
       {"from-bilingual",      no_argument, 0, 'b'},
-      {"no-bilingual",      no_argument, 0, 'n'},
+      {"no-bilingual",        no_argument, 0, 'n'},
       {"extended",      required_argument, 0, 'x'},
-      {"case-sensitive", no_argument, 0, 'c'},
-      {"null-flush", no_argument, 0, 'z'},
-      {"trace", no_argument, 0, 't'},
-      {"trace_att", no_argument, 0, 'T'},
-      {"help", no_argument, 0, 'h'},
+      {"case-sensitive",      no_argument, 0, 'c'},
+      {"null-flush",          no_argument, 0, 'z'},
+      {"trace",               no_argument, 0, 't'},
+      {"trace_att",           no_argument, 0, 'T'},
+      {"help",                no_argument, 0, 'h'},
       {0, 0, 0, 0}
     };
 
@@ -160,13 +154,14 @@ int main(int argc, char *argv[])
     }
   }
 
-  FILE *input = stdin, *output = stdout;
+  InputFile input;
+  UFILE* output = u_finit(stdout, NULL, NULL);
 
   switch(argc - optind + 1)
   {
     case 6:
       output = open_output(argv[argc-1]);
-      input = open_input(argv[argc-2]);
+      open_input(input, argv[argc-2]);
       testfile(argv[argc-3]);
       testfile(argv[argc-4]);
       testfile(argv[argc-5]);
@@ -177,14 +172,14 @@ int main(int argc, char *argv[])
       if(t.getUseBilingual() == false || t.getPreBilingual() == true)
       {
         output = open_output(argv[argc-1]);
-        input = open_input(argv[argc-2]);
+        open_input(input, argv[argc-2]);
         testfile(argv[argc-3]);
         testfile(argv[argc-4]);
         t.read(argv[argc-4], argv[argc-3]);
       }
       else
       {
-        input = open_input(argv[argc-1]);
+        open_input(input, argv[argc-1]);
         testfile(argv[argc-2]);
         testfile(argv[argc-3]);
         testfile(argv[argc-4]);
@@ -195,7 +190,7 @@ int main(int argc, char *argv[])
     case 4:
       if(t.getUseBilingual() == false || t.getPreBilingual() == true)
       {
-        input = open_input(argv[argc-1]);
+        open_input(input, argv[argc-1]);
         testfile(argv[argc-2]);
         testfile(argv[argc-3]);
         t.read(argv[argc-3], argv[argc-2]);
@@ -225,11 +220,6 @@ int main(int argc, char *argv[])
       message(argv[0]);
       break;
   }
-
-#ifdef _MSC_VER
-  _setmode(_fileno(input), _O_U8TEXT);
-  _setmode(_fileno(output), _O_U8TEXT);
-#endif
 
   t.transfer(input, output);
   return EXIT_SUCCESS;
