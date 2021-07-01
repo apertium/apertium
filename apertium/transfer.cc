@@ -396,6 +396,8 @@ Transfer::processOut(xmlNode *localroot)
         write(processLu(i), output);
       } else if(!xmlStrcmp(i->name, (const xmlChar *) "mlu")) {
         write(processMlu(i), output);
+      } else { // 'b'
+        write(evalString(i), output);
       }
     } else {
       if(!xmlStrcmp(i->name, (const xmlChar *) "chunk")) {
