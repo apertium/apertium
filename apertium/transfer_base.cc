@@ -198,7 +198,7 @@ TransferBase::evalString(xmlNode* element)
   } else if (!xmlStrcmp(element->name, (const xmlChar*) "b")) {
     processBlank(element);
   } else if (!xmlStrcmp(element->name, (const xmlChar*) "get-case-from")) {
-    int pos = atoi((const char*) element->properties->children->content);
+    int pos = atoi((const char*) element->properties->children->content) - 1;
     xmlNode* param = NULL;
     for (auto it : children(element)) {
       param = it;
