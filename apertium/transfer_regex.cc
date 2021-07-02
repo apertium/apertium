@@ -2,6 +2,7 @@
 
 struct TrieNode {
   UChar32 c;
+  bool end;
   std::vector<TrieNode*> next;
 };
 
@@ -15,6 +16,7 @@ add_char(TrieNode* root, UChar32 c)
   }
   TrieNode* t = new TrieNode;
   t->c = c;
+  t->end = false;
   root->next.push_back(t);
   return t;
 }
@@ -38,7 +40,7 @@ add_entry(TrieNode* root, const std::vector<int32_t>& vec)
     escape = false;
     cur = add_char(cur, c);
   }
-  add_char(cur, '\0');
+  cur->end = true;
 }
 
 UString
@@ -47,12 +49,9 @@ unbuildTrie(TrieNode* root)
   UString single;
   single += '[';
   std::vector<UString> groups;
-  bool end = false;
   int single_count = 0;
   for (auto it : root->next) {
-    if (it->next.empty()) {
-      end = true;
-    } else if (it->next.size() == 1 && it->next[0]->c == '\0') {
+    if (it->end && it->next.empty()) {
       single += it->c;
       single_count++;
     } else {
@@ -72,7 +71,13 @@ unbuildTrie(TrieNode* root)
   if (groups.empty()) {
     return ret;
   } else if (groups.size() == 1) {
-    ret += groups[0];
+    if (root->end && groups[0][0] != '(') {
+      ret += '('; ret += '?'; ret += ':';
+      ret += groups[0];
+      ret += ')';
+    } else {
+      ret += groups[0];
+    }
   } else {
     ret += '('; ret += '?'; ret += ':';
     for (size_t i = 0; i < groups.size(); i++) {
@@ -83,7 +88,7 @@ unbuildTrie(TrieNode* root)
     }
     ret += ')';
   }
-  if (end) {
+  if (root->end) {
     ret += '?';
   }
   return ret;
@@ -94,6 +99,7 @@ optimize_regex(const std::vector<UString>& options)
 {
   TrieNode* root = new TrieNode;
   root->c = '<';
+  root->end = false;
   std::vector<int32_t> v;
   for (auto& s : options) {
     v.clear();
