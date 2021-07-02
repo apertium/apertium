@@ -87,6 +87,7 @@ ApertiumRE::match(UString const &str) const
   }
 
   if (!m->find()) {
+    delete m;
     return ""_u;
   }
 
@@ -96,6 +97,8 @@ ApertiumRE::match(UString const &str) const
     cerr << "error code: " << u_errorName(err) << endl;
     exit(EXIT_FAILURE);
   }
+
+  delete m;
 
   return ret;
 }
@@ -121,11 +124,13 @@ ApertiumRE::replace(UString &str, UString const &value) const
   // do this manually rather than call m->replaceFirst()
   // because we want to know that a match happened
   if (!m->find()) {
+    delete m;
     return false;
   }
   UString res = str.substr(0, m->start(err));
   res.append(value);
   res.append(str.substr(m->end(err)));
   res.swap(str);
+  delete m;
   return true;
 }
