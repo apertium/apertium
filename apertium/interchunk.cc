@@ -84,8 +84,8 @@ Interchunk::evalCachedString(xmlNode* element)
 
   case ti_get_case_from:
     if (checkIndex(element, ti.getPos(), lword)) {
-      return StringUtils::copycase(word[ti.getPos()]->chunkPart(attr_items[ti.getContent()]),
-                                   evalString(ti.getPointer()));
+      return copycase(word[ti.getPos()]->chunkPart(attr_items[ti.getContent()]),
+                      evalString(ti.getPointer()));
     }
     break;
 

@@ -181,6 +181,28 @@ TransferBase::combineWblanks(const UString& first, const UString& second)
 }
 
 UString
+TransferBase::copycase(const UString& src, const UString& dest)
+{
+  auto loc = dest.find('<');
+  auto loc2 = dest.rfind('>');
+  if (loc == UString::npos || loc2 == UString::npos) {
+    return StringUtils::copycase(src, dest);
+  } else {
+    UString cs = StringUtils::getcase(src);
+    UString ret = StringUtils::copycase(cs, dest.substr(0, loc));
+    ret += dest.substr(loc, loc2 - loc + 1);
+    if (loc2 + 1 < dest.size()) {
+      if (u_isupper(cs[1])) {
+        ret += StringUtils::toupper(dest.substr(loc2+1));
+      } else {
+        ret += StringUtils::tolower(dest.substr(loc2+1));
+      }
+    }
+    return ret;
+  }
+}
+
+UString
 TransferBase::evalString(xmlNode* element)
 {
   if (!element) {

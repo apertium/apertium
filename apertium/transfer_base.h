@@ -60,12 +60,13 @@ protected:
   bool null_flush;
   bool internal_null_flush;
   bool trace;
-  
+
   void collectMacros(xmlNode *localroot);
   void collectRules(xmlNode *localroot);
 
   bool gettingLemmaFromWord(const UString& attr);
   UString combineWblanks(const UString& first, const UString& second);
+  UString copycase(const UString& src, const UString& dest);
 
   UString evalString(xmlNode* element);
   virtual UString evalCachedString(xmlNode* element) = 0;
@@ -94,7 +95,7 @@ protected:
   bool processAnd(xmlNode *localroot);
   bool processOr(xmlNode *localroot);
   bool processNot(xmlNode *localroot);
-  
+
   bool beginsWith(const UString& haystack, const UString& needle);
   bool endsWith(const UString& haystack, const UString& needle);
 
