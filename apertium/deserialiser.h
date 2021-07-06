@@ -21,7 +21,6 @@
 #include "i.h"
 #include "lemma.h"
 #include "morpheme.h"
-#include "tag.h"
 #include "apertium_config.h"
 
 #include <lttoolbox/deserialiser.h>
@@ -62,14 +61,9 @@ public:
   inline static Morpheme deserialise(std::istream &Stream_);
 };
 
-template <> class Deserialiser<Tag> {
-public:
-  inline static Tag deserialise(std::istream &Stream_);
-};
-
 a Deserialiser<a>::deserialise(std::istream &Stream_) {
   a StreamedType_;
-  StreamedType_.TheTags = Deserialiser<std::vector<Tag> >::deserialise(Stream_);
+  StreamedType_.TheTags = Deserialiser<std::vector<UString> >::deserialise(Stream_);
   StreamedType_.TheMorphemes =
       Deserialiser<std::vector<Morpheme> >::deserialise(Stream_);
   return StreamedType_;
@@ -84,7 +78,7 @@ Analysis Deserialiser<Analysis>::deserialise(std::istream &Stream_) {
 
 i Deserialiser<i>::deserialise(std::istream &Stream_) {
   i StreamedType_;
-  StreamedType_.TheTags = Deserialiser<std::vector<Tag> >::deserialise(Stream_);
+  StreamedType_.TheTags = Deserialiser<std::vector<UString> >::deserialise(Stream_);
   return StreamedType_;
 }
 
@@ -98,13 +92,7 @@ Morpheme Deserialiser<Morpheme>::deserialise(std::istream &Stream_) {
   Morpheme SerialisedType_;
   SerialisedType_.TheLemma = Deserialiser<UString>::deserialise(Stream_);
   SerialisedType_.TheTags =
-      Deserialiser<std::vector<Tag> >::deserialise(Stream_);
-  return SerialisedType_;
-}
-
-Tag Deserialiser<Tag>::deserialise(std::istream &Stream_) {
-  Tag SerialisedType_;
-  SerialisedType_.TheTag = Deserialiser<UString>::deserialise(Stream_);
+      Deserialiser<std::vector<UString> >::deserialise(Stream_);
   return SerialisedType_;
 }
 

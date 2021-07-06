@@ -18,7 +18,6 @@
 
 #include "analysis.h"
 #include "morpheme.h"
-#include "tag.h"
 
 #include <vector>
 
@@ -29,7 +28,7 @@ public:
   friend bool operator<(const a &a_, const a &b_);
   a();
   a(const Analysis &Analysis_);
-  std::vector<Tag> TheTags;
+  std::vector<UString> TheTags;
   std::vector<Morpheme> TheMorphemes;
 };
 }

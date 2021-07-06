@@ -61,9 +61,7 @@ static Morpheme make_sentinel_wordoid(
     const UString &tag_str) {
   Morpheme morpheme;
   morpheme.TheLemma = lemma_str;
-  Tag tag;
-  tag.TheTag = tag_str;
-  morpheme.TheTags.push_back(tag);
+  morpheme.TheTags.push_back(tag_str);
   return morpheme;
 }
 
@@ -520,13 +518,7 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
       stack.push(ambgset);
     } break;
     case EXTAGS: {
-      const std::vector<Tag> &tags = stack.top().wrd().TheTags;
-      /*std::vector<Tag>::const_iterator it = tags.begin();
-      std::cerr << "tags: ";
-      for (;it != tags.end(); it++) {
-        std::cerr << &(*it) << " " << it->TheTag << ", ";
-      }
-      std::cerr << "\n";*/
+      const std::vector<UString> &tags = stack.top().wrd().TheTags;
       std::vector<std::string> *tags_str = new std::vector<std::string>;
       tags_str->resize(tags.size());
       transform(tags.begin(), tags.end(), tags_str->begin(), get_tag);
@@ -770,9 +762,9 @@ void PerceptronSpec::appendStr(UnaryFeatureVec::iterator begin,
 }
 
 std::string
-PerceptronSpec::Machine::get_tag(const Tag &in) {
+PerceptronSpec::Machine::get_tag(const UString &in) {
   std::string result;
-  utf8::utf16to8(in.TheTag.begin(), in.TheTag.end(), std::back_inserter(result));
+  utf8::utf16to8(in.begin(), in.end(), std::back_inserter(result));
   return result;
 }
 

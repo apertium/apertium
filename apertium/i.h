@@ -18,7 +18,6 @@
 
 #include "analysis.h"
 #include "morpheme.h"
-#include "tag.h"
 
 #include <vector>
 
@@ -31,7 +30,7 @@ public:
   i();
   i(const Analysis &Analysis_);
   i(const Morpheme &Morpheme_);
-  std::vector<Tag> TheTags;
+  std::vector<UString> TheTags;
 };
 }
 

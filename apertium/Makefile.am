@@ -39,7 +39,6 @@ h_sources = a.h \
 	    streamed_type.h \
 	    string_to_wostream.h \
 	    shell_utils.h \
-	    tag.h \
 	    tagger.h \
 	    tagger_data.h \
 	    tagger_data_hmm.h \
@@ -109,7 +108,6 @@ cc_sources = a.cc \
 	     stream.cc \
 	     stream_tagger.cc \
 	     shell_utils.cc \
-	     tag.cc \
 	     tagger.cc \
 	     tagger_data.cc \
 	     tagger_data_hmm.cc \

@@ -16,9 +16,8 @@
 #ifndef MORPHEME_H
 #define MORPHEME_H
 
-#include "tag.h"
-
-#include <string>
+#include <lttoolbox/ustring.h>
+#include <lttoolbox/input_file.h>
 #include <vector>
 #include <iostream>
 
@@ -29,8 +28,9 @@ public:
   friend bool operator<(const Morpheme &a, const Morpheme &b);
   friend std::ostream& operator<<(std::ostream& out, const Morpheme &morph);
   operator UString() const;
+  void read(InputFile& in);
   UString TheLemma;
-  std::vector<Tag> TheTags;
+  std::vector<UString> TheTags;
 };
 }
 

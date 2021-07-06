@@ -21,7 +21,6 @@
 #include "i.h"
 #include "lemma.h"
 #include "morpheme.h"
-#include "tag.h"
 #include "apertium_config.h"
 
 #include <lttoolbox/serialiser.h>
@@ -66,12 +65,6 @@ public:
                                std::ostream &Output);
 };
 
-template <> class Serialiser<Tag> {
-public:
-  inline static void serialise(const Tag &SerialisedType_,
-                               std::ostream &Output);
-};
-
 }
 
 void Serialiser<a>::serialise(const a &SerialisedType_, std::ostream &Output) {
@@ -97,11 +90,6 @@ void Serialiser<Morpheme>::serialise(const Morpheme &SerialisedType_,
                                      std::ostream &Output) {
   ::serialise(SerialisedType_.TheLemma, Output);
   ::serialise(SerialisedType_.TheTags, Output);
-}
-
-void Serialiser<Tag>::serialise(const Tag &SerialisedType_,
-                                std::ostream &Output) {
-  ::serialise(SerialisedType_.TheTag, Output);
 }
 
 // [1] operator+ promotes its operand to a printable integral type.

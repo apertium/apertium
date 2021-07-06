@@ -267,7 +267,7 @@ public:
     }
     StackValue(const Morpheme &wordoid) {
       /*std::cerr << "Before ";
-      std::vector<Tag>::const_iterator it = wordoid.TheTags.begin();
+      std::vector<UString>::const_iterator it = wordoid.TheTags.begin();
       for (;it != wordoid.TheTags.end(); it++) {
         std::cerr << &(*it) << " ";
       }
@@ -459,7 +459,7 @@ private:
     int get_int_operand();
     unsigned int get_uint_operand();
     const std::string& get_str_operand();
-    static std::string get_tag(const Tag &in);
+    static std::string get_tag(const UString &in);
     bool execCommonOp(Opcode op);
   public:
     void traceMachineState();

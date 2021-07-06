@@ -577,25 +577,23 @@ void apertium_tagger::g_StreamTagger(StreamTagger &StreamTagger_) {
           << "\" Reason: " << ExceptionType_.what();
     throw Exception::apertium_tagger::deserialise(what_);
   }
+
   if (nonoptarg < 2) {
     Stream Input(TheFlags);
     StreamTagger_.tag(Input, std::cout);
     return;
   }
 
-  std::ifstream Input_stream;
-  try_open_fstream("INPUT", argv[optind + 1], Input_stream);
+  Stream Input(TheFlags, argv[optind + 1]);
 
   if (nonoptarg < 3) {
-    Stream Input(TheFlags, Input_stream, argv[optind + 1]);
     StreamTagger_.tag(Input, std::cout);
     return;
   }
 
   std::ofstream Output_stream;
-  try_open_fstream("OUTPUT", argv[optind + 2], Input_stream);
+  try_open_fstream("OUTPUT", argv[optind + 2], Output_stream);
 
-  Stream Input(TheFlags, Input_stream, argv[optind + 1]);
   StreamTagger_.tag(Input, Output_stream);
 }
 
@@ -616,14 +614,10 @@ void apertium_tagger::s_StreamTaggerTrainer(
     expect_file_arguments(nonoptarg, 2);
   }
 
-  std::ifstream TaggedCorpus_stream;
-  try_open_fstream("TAGGED_CORPUS", argv[optind + 1], TaggedCorpus_stream);
-  Stream TaggedCorpus(TheFlags, TaggedCorpus_stream, argv[optind + 1]);
+  Stream TaggedCorpus(TheFlags, argv[optind + 1]);
 
   if (*TheFunctionTypeType == Perceptron) {
-    std::ifstream UntaggedCorpus_stream;
-    try_open_fstream("UNTAGGED_CORPUS", argv[optind + 2], UntaggedCorpus_stream);
-    Stream UntaggedCorpus(TheFlags, UntaggedCorpus_stream, argv[optind + 2]);
+    Stream UntaggedCorpus(TheFlags, argv[optind + 2]);
 
     PerceptronTagger &pt = dynamic_cast<PerceptronTagger&>(StreamTaggerTrainer_);
     pt.read_spec(argv[optind + 3]);

@@ -51,4 +51,19 @@ Analysis::operator UString() const {
 
   return UString_;
 }
+
+void
+Analysis::read(InputFile& in)
+{
+  UChar32 c;
+  do {
+    TheMorphemes.push_back(Morpheme());
+    TheMorphemes.back().read(in);
+    c = in.get();
+  } while (c == '+');
+  if (in.eof() || c == '\0') {
+    throw Exception::Stream::UnexpectedEndOfFile("Unterminated lexical unit");
+  }
+  in.unget(c); // leave $ or / for caller
+}
 }

@@ -16,15 +16,11 @@ bool isSentenceEnd(StreamedType &token) {
   if (morphemes.size() != 1) {
     return false;
   }
-  std::vector<Tag> &tags = morphemes.begin()->TheTags;
+  std::vector<UString> &tags = morphemes.begin()->TheTags;
   if (tags.size() != 1) {
     return false;
   }
-  Tag &tag = *tags.begin();
-  if (tag.TheTag != "sent"_u) {
-    return false;
-  }
-  return true;
+  return (*tags.begin() == "sent"_u);
 }
 
 bool isSentenceEnd(StreamedType tok, Stream &in, bool sent_seg) {

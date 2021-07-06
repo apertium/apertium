@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 #include <lttoolbox/ustring.h>
+#include <lttoolbox/input_file.h>
 
 namespace Apertium {
 class Analysis {
@@ -31,6 +32,7 @@ public:
   friend bool operator==(const Analysis &a, const Analysis &b);
   friend bool operator<(const Analysis &a, const Analysis &b);
   operator UString() const;
+  void read(InputFile& in);
   std::vector<Morpheme> TheMorphemes;
 };
 }

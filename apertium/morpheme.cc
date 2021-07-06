@@ -33,7 +33,7 @@ std::ostream& operator<<(std::ostream& out, const Morpheme &morph) {
   ::operator<<(out, morph.TheLemma);
   for (auto& it : morph.TheTags) {
     out << '<';
-    ::operator<<(out, it.TheTag);
+    ::operator<<(out, it);
     out << '>';
   }
   // namespace issue
@@ -54,9 +54,57 @@ Morpheme::operator UString() const {
   UString ustring_ = TheLemma;
 
   for (auto& Tag_ : TheTags) {
-    ustring_ += static_cast<UString>(Tag_);
+    ustring_ += '<';
+    ustring_ += Tag_;
+    ustring_ += '>';
   }
 
   return ustring_;
+}
+
+void
+Morpheme::read(InputFile& in)
+{
+  UChar32 c = in.get();
+  while (c != '<' && c != '$' && c != '/' && c != '\0' && c != '+') {
+    TheLemma += c;
+    if (c == '\\') {
+      if (in.eof() || in.peek() == '\0') {
+        throw Exception::Stream::UnexpectedEndOfFile("Unterminted lexical unit");
+      }
+      TheLemma += in.get();
+    }
+    c = in.get();
+  }
+  if (TheLemma.empty()) {
+    throw Exception::Morpheme::TheLemma_empty("empty lemma");
+  }
+  while (c == '<') {
+    UString tg = in.readBlock('<', '>');
+    if (tg.size() == 2) {
+      throw Exception::Morpheme::TheTags_empty("invalid tag <>");
+    }
+    TheTags.push_back(tg.substr(1, tg.size()-2));
+    c = in.get();
+  }
+  if (TheTags.empty()) {
+    throw Exception::Morpheme::TheTags_empty("morpheme has no tags");
+  }
+  if (c == '#') {
+    while (c != '<' && c != '$' && c != '/' && c != '\0' && c != '+') {
+      TheLemma += c;
+      if (c == '\\') {
+        if (in.eof() || in.peek() == '\0') {
+          throw Exception::Stream::UnexpectedEndOfFile("trailing backslash");
+        }
+        TheLemma += in.get();
+      }
+      c = in.get();
+    }
+    if (c == '<') {
+      throw Exception::Stream::UnexpectedCharacter("unexpected < after lemma queue");
+    }
+  }
+  in.unget(c);
 }
 }

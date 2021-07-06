@@ -17,8 +17,6 @@
 #define TAGGING_EXPRESSION_H
 
 #include "analysis.h"
-
-#include <string>
 #include <vector>
 
 namespace Apertium {

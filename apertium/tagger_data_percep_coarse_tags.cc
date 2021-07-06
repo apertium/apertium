@@ -63,7 +63,7 @@ const UString& TaggerDataPercepCoarseTags::coarsen(const Apertium::Morpheme &wrd
   for (size_t i = 0; i < wrd.TheTags.size(); i++) {
     UString tag;
     tag += '<';
-    tag.append(wrd.TheTags[i].TheTag);
+    tag.append(wrd.TheTags[i]);
     tag += '>';
     int symbol = alphabet(tag);
     if (symbol) {
