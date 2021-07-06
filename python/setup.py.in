@@ -32,7 +32,7 @@ def get_sources():
                   'feature_vec_averager.cc', 'file_morpho_stream.cc', 'file_tagger.cc', 'hmm.cc', 'i.cc', 'lemma.cc',
                   'linebreak.cc', 'lswpost.cc', 'morpheme.cc', 'morpho_stream.cc', 'mtx_reader.cc', 'perceptron_spec.cc',
                   'perceptron_tagger.cc', 'sentence_stream.cc', 'shell_utils.cc', 'stream.cc', 'stream_tagger.cc',
-                  'tag.cc', 'tagger.cc', 'tagger_data.cc', 'tagger_data_hmm.cc', 'tagger_data_lsw.cc',
+                  'tagger.cc', 'tagger_data.cc', 'tagger_data_hmm.cc', 'tagger_data_lsw.cc',
                   'tagger_data_percep_coarse_tags.cc', 'tagger_flags.cc','tagger_utils.cc', 'tagger_word.cc',
                   'tsx_reader.cc', 'unigram_tagger.cc']
     rel_path = '@top_srcdir@/apertium'
