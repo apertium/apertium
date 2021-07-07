@@ -21,6 +21,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <apertium/transfer_regex.h>
+#include <apertium/apertium_re.h>
 
 UString const TRXReader::ANY_TAG         = "<ANY_TAG>"_u;
 UString const TRXReader::ANY_CHAR        = "<ANY_CHAR>"_u;
@@ -343,6 +344,9 @@ TRXReader::procDefAttrs()
       else
       {
         td.getAttrItems()[attrname] = optimize_regex(items);
+        // compile it now to check for errors
+        ApertiumRE r;
+        r.compile(td.getAttrItems()[attrname]);
         items.clear();
         attrname.clear();
       }

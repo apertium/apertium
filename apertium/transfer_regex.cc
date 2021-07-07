@@ -67,11 +67,14 @@ unbuildTrie(TrieNode* root)
     }
   }
   UString ret;
+  if (root->c == '+' || root->c == '*' || root->c == '?' || root->c == '.') {
+    ret += '\\';
+  }
   ret += root->c;
   if (groups.empty()) {
     return ret;
   } else if (groups.size() == 1) {
-    if (root->end && groups[0][0] != '(') {
+    if (root->end && groups[0].size() > 1 && groups[0][0] != '(') {
       ret += '('; ret += '?'; ret += ':';
       ret += groups[0];
       ret += ')';
