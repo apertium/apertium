@@ -52,6 +52,9 @@ unbuildTrie(TrieNode* root)
   int single_count = 0;
   for (auto it : root->next) {
     if (it->end && it->next.empty()) {
+      if (it->c == '+' || it->c == '*' || it->c == '?' || it->c == '.') {
+        single += '\\';
+      }
       single += it->c;
       single_count++;
     } else {
