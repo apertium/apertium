@@ -42,21 +42,20 @@ void usage(char *progname)
 
 void processStream(InputFile& in, UFILE* out, bool null_flush)
 {
-  int prev = -1;
-  UChar32 c = in.get();
-  while (c != EOF)
+  bool last_space = false;
+  UChar32 c;
+  while (!in.eof())
   {
-    if (!((c == ' ') && (prev == ' ')))
-    {
-      u_fputc(c, out);
-    }
-    if (c == 0 && null_flush)
-    {
-      u_fflush(out);
-      u_fputc(c, out);
-    }
-    prev = c;
     c = in.get();
+    if (c == U_EOF) {
+      break;
+    } else if (!last_space || c != ' ') {
+      u_fputc(c, out);
+      if (c == '\0' && null_flush) {
+        u_fflush(out);
+      }
+    }
+    last_space = (c == ' ');
   }
 }
 
