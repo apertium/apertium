@@ -61,10 +61,8 @@ FileMorphoStream::get_next_word()
 
     if(word->isAmbiguous())
     {
-      vector<UString> &ref = td->getDiscardRules();
-      for(unsigned int i = 0; i < ref.size(); i++)
-      {
-        word->discardOnAmbiguity(ref[i]);
+      for (auto& it : td->getDiscardRules()) {
+        word->discardOnAmbiguity(it);
       }
     }
 //    cout << *word << endl;
@@ -81,6 +79,10 @@ FileMorphoStream::get_next_word()
 
   while(true)
   {
+    UString str = input.readBlank(true);
+    if (!str.empty()) {
+      vwords[ivwords]->add_ignored_string(str);
+    }
     UChar32 symbol = input.get();
     if(input.eof() || (null_flush && symbol == '\0'))
     {
@@ -88,55 +90,10 @@ FileMorphoStream::get_next_word()
       vwords[ivwords]->add_tag(ca_tag_keof, ""_u, td->getPreferRules());
       return get_next_word();
     }
-    if(symbol == '^')
+    else if(symbol == '^')
     {
       readRestOfWord(ivwords);
       return get_next_word();
-    }
-    else
-    {
-      UString str = ""_u;
-      if(symbol == '\\')
-      {
-        symbol = input.get();
-        str += '\\';
-        str += symbol;
-        symbol = '\\';
-      }
-      else
-      {
-        str += symbol;
-      }
-
-      while(symbol != '^')
-      {
-        symbol = input.get();
-        if(input.eof() || (null_flush && symbol == '\0')) {
-          end_of_file = true;
-          vwords[ivwords]->add_ignored_string(str);
-          vwords[ivwords]->add_tag(ca_tag_keof, ""_u, td->getPreferRules());
-          return get_next_word();
-        } else if(symbol == '\\') {
-          str += '\\';
-          symbol = input.get();
-          if(input.eof() || (null_flush && symbol == '\0')) {
-            end_of_file = true;
-            vwords[ivwords]->add_ignored_string(str);
-            vwords[ivwords]->add_tag(ca_tag_keof, ""_u, td->getPreferRules());
-            return get_next_word();
-          }
-          str += symbol;
-          symbol = '\\';
-        } else if(symbol == '^') {
-          if(str.size() > 0) {
-            vwords[ivwords]->add_ignored_string(str);
-          }
-          readRestOfWord(ivwords);
-          return get_next_word();
-        } else {
-          str += symbol;
-        }
-      }
     }
   }
 }

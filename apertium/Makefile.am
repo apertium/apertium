@@ -37,7 +37,6 @@ h_sources = a.h \
 	    stream.h \
 	    stream_tagger.h \
 	    streamed_type.h \
-	    string_to_wostream.h \
 	    shell_utils.h \
 	    tagger.h \
 	    tagger_data.h \

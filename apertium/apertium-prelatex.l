@@ -11,7 +11,6 @@
 #include <vector>
 #include <apertium/latex_accentsmap.h>
 #include <lttoolbox/string_utils.h>
-#include <apertium/string_to_wostream.h>
 
 extern "C" {
 #if !defined(__STDC__)
