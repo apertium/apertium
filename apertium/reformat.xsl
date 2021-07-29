@@ -23,9 +23,6 @@
 
 %{
 
-#ifndef GENFORMAT
-#include "apertium_config.h"
-#endif
 #include &lt;apertium/unlocked_cstdio.h&gt;
 
 #include &lt;cstdlib&gt;

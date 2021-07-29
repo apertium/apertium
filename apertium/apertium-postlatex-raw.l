@@ -16,9 +16,6 @@ extern "C" {
 }
 
 #include <lttoolbox/lt_locale.h>
-#ifndef GENFORMAT
-#include "apertium_config.h"
-#endif
 #include <apertium/unlocked_cstdio.h>
 
 using namespace std;

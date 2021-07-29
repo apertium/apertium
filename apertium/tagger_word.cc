@@ -16,7 +16,6 @@
  */
 #include <apertium/tagger_word.h>
 #include <lttoolbox/string_utils.h>
-#include "apertium_config.h"
 #include <apertium/unlocked_cstdio.h>
 
 bool TaggerWord::generate_marks=false;

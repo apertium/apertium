@@ -5,7 +5,6 @@ m4_define([PKG_VERSION_MINOR], [8])
 m4_define([PKG_VERSION_PATCH], [0])
 
 AC_INIT([apertium], [PKG_VERSION_MAJOR.PKG_VERSION_MINOR.PKG_VERSION_PATCH], [apertium-stuff@lists.sourceforge.net], [apertium], [https://wiki.apertium.org/])
-AC_CONFIG_HEADER([apertium/apertium_config.h])
 
 VERSION=$PACKAGE_VERSION
 VERSION_MAJOR=PKG_VERSION_MAJOR

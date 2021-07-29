@@ -22,14 +22,10 @@
 
 #include <apertium/file_morpho_stream.h>
 #include <lttoolbox/string_utils.h>
-#include "apertium_config.h"
 #include <apertium/unlocked_cstdio.h>
 
 FileMorphoStream::FileMorphoStream(const char* ftxt, bool d, TaggerData *t) :
-    ms() {
-  foundEOF = false;
-  debug=d;
-  td = t;
+  ms(), debug(d), td(t) {
   me = td->getPatternList().newMatchExe();
   alphabet = td->getPatternList().getAlphabet();
   input.open(ftxt);
@@ -48,9 +44,6 @@ FileMorphoStream::FileMorphoStream(const char* ftxt, bool d, TaggerData *t) :
   map<UString, int> &tag_index = td->getTagIndex();
   ca_tag_keof = tag_index["TAG_kEOF"_u];
   ca_tag_kundef = tag_index["TAG_kUNDEF"_u];
-
-  end_of_file = false;
-  null_flush = false;
 }
 
 FileMorphoStream::~FileMorphoStream()
