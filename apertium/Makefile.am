@@ -44,6 +44,7 @@ h_sources = a.h \
 	    tagger_data_hmm.h \
 	    tagger_data_lsw.h \
 	    tagger_data_percep_coarse_tags.h \
+		tagger_exe.h \
 	    tagger_flags.h \
 	    tagger_utils.h \
 	    tagger_word.h \
@@ -114,6 +115,7 @@ cc_sources = a.cc \
 	     tagger_data_hmm.cc \
 	     tagger_data_lsw.cc \
 	     tagger_data_percep_coarse_tags.cc \
+		 tagger_exe.cc \
 	     tagger_flags.cc \
 	     tagger_utils.cc \
 	     tagger_word.cc \

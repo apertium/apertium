@@ -17,8 +17,10 @@
 
 #include <apertium/tagger_data_exe.h>
 
+#include <lttoolbox/alphabet.h>
 #include <lttoolbox/compression.h>
 
+#include <algorithm>
 #include <cstring>
 #include <stdexcept>
 #include <vector>
@@ -210,12 +212,11 @@ void
 TaggerDataExe::read_compressed_hmm_lsw(FILE* in, bool is_hmm)
 {
   // open_class
-  open_class_count = Compression::multibyte_read(in);
-  open_class = new int32_t[open_class_count];
-  int32_t val = 0;
-  for (uint64_t i = 0; i < open_class_count; i++) {
+  std::vector<uint64_t> open_class;
+  uint64_t val = 0;
+  for (uint64_t i = Compression::multibyte_read(in); i > 0; i--) {
     val += Compression::multibyte_read(in);
-    open_class[i] = val;
+    open_class.push_back(val);
   }
 
   // forbid_rules
@@ -242,16 +243,74 @@ TaggerDataExe::read_compressed_hmm_lsw(FILE* in, bool is_hmm)
   }
 
   // enforce_rules
-  // TODO
+  enforce_rules_count = Compression::multibyte_read(in);
+  enforce_rules_offsets = new uint64_t[enforce_rules_count+1];
+  std::vector<uint64_t> enf;
+  for (uint64_t i = 0; i < enforce_rules_count; i++) {
+    enforce_rules_offsets[i] = enf.size();
+    enf.push_back(Compression::multibyte_read(in));
+    for (uint64_t j = Compression::multibyte_read(in); j > 0; j--) {
+      enf.push_back(Compression::multibyte_read(in));
+    }
+  }
+  enforce_rules_offsets[enforce_rules_count] = enf.size();
+  enforce_rules = new uint64_t[enf.size()];
+  for (uint64_t i = 0; i < enf.size(); i++) {
+    enforce_rules[i] = enf[i];
+  }
 
   // prefer_rules
-  // TODO
+  prefer_rules_count = Compression::multibyte_read(in);
+  prefer_rules = new StringRef[prefer_rules_count];
+  for (uint64_t i = 0; i < prefer_rules_count; i++) {
+    prefer_rules[i] = str_write.add(Compression::string_read(in));
+  }
 
   // constants
-  // TODO
+  constants_count = Compression::multibyte_read(in);
+  constants = new str_int[constants_count];
+  for (uint64_t i = 0; i < constants_count; i++) {
+    constants[i].s = str_write.add(Compression::string_read(in));
+    constants[i].i = Compression::multibyte_read(in);
+  }
 
   // output
-  // TODO
+  output_count = Compression::multibyte_read(in);
+  // +2 in case we need to append open_class
+  output_offsets = new uint64_t[output_count+2];
+  std::vector<uint64_t> out;
+  for (uint64_t i = 0; i < output_count; i++) {
+    output_offsets[i] = out.size();
+    for (uint64_t j = Compression::multibyte_read(in); j > 0; j--) {
+      out.push_back(Compression::multibyte_read(in));
+    }
+  }
+  output_offsets[output_count] = out.size();
+  open_class_index = output_count;
+  for (uint64_t i = 0; i < output_count; i++) {
+    if (output_offsets[i+1] - output_offsets[i] == open_class.size()) {
+      bool match = true;
+      for (uint64_t j = 0; j < open_class.size(); j++) {
+        if (open_class[j] != output[output_offsets[i]+j]) {
+          match = false;
+          break;
+        }
+      }
+      if (match) {
+        open_class_index = i;
+        break;
+      }
+    }
+  }
+  if (open_class_index == output_count) {
+    output_count++;
+    out.insert(out.end(), open_class.begin(), open_class.end());
+    output_offsets[output_count] = out.size();
+  }
+  output = new uint64_t[out.size()];
+  for (uint64_t i = 0; i < out.size(); i++) {
+    output[i] = out[i];
+  }
 
   if (is_hmm) {
     // dimensions
@@ -284,13 +343,28 @@ TaggerDataExe::read_compressed_hmm_lsw(FILE* in, bool is_hmm)
     for (uint64_t count = Compression::multibyte_read(in); count > 0; count--) {
       uint64_t i = Compression::multibyte_read(in);
       uint64_t j = Compression::multibyte_read(in);
-      uint64_t k = Compressoin::multibyte_read(in);
-      d[(i*N*N)+(j*N)+k] = read_compressed_double(in);
+      uint64_t k = Compression::multibyte_read(in);
+      lsw_d[(i*N*N)+(j*N)+k] = read_compressed_double(in);
     }
   }
 
   // pattern list
-  // TODO
+  Alphabet temp;
+  fpos_t pos;
+  fgetpos(in, &pos);
+  alpha.read(in, false);
+  fsetpos(in, &pos);
+  temp.read(in);
+  int len = Compression::multibyte_read(in);
+  if (len == 1) {
+    Compression::string_read(in);
+    trans.read_compressed(in, temp);
+    finals_count = Compression::multibyte_read(in);
+    for (uint64_t i = 0; i < finals_count; i++) {
+      finals[i].i1 = Compression::multibyte_read(in);
+      finals[i].i2 = Compression::multibyte_read(in);
+    }
+  }
 
   // discard
   discard_count = Compression::multibyte_read(in);
@@ -301,4 +375,23 @@ TaggerDataExe::read_compressed_hmm_lsw(FILE* in, bool is_hmm)
   for (uint64_t i = 0; i < discard_count; i++) {
     discard[i] = str_write.add(Compression::string_read(in));
   }
+}
+
+uint64_t
+TaggerDataExe::get_ambiguity_class(const std::set<uint64_t>& tags)
+{
+  uint64_t ret = open_class_index;
+  uint64_t len = output_offsets[ret+1] - output_offsets[ret];
+  for (uint64_t i = 0; i < output_count; i++) {
+    uint64_t loc_len = output_offsets[i+1] - output_offsets[i];
+    if (loc_len < tags.size() || loc_len >= len) {
+      continue;
+    }
+    if (std::includes(output+output_offsets[i], output+output_offsets[i+1],
+                      tags.begin(), tags.end())) {
+      ret = i;
+      len = loc_len;
+    }
+  }
+  return ret;
 }

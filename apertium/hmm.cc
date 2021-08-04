@@ -719,14 +719,14 @@ HMM::tagger(MorphoStream &morpho_stream, UFILE* Output) {
     for (itag=tags.begin(); itag!=tags.end(); itag++) { //For all tag from the current word
       i=*itag;
       for (jtag=pretags.begin(); jtag!=pretags.end(); jtag++) {	//For all tags from the previous word
-	j=*jtag;
-	x = alpha[1-nwpend%2][j]*(tdhmm.getA())[j][i]*(tdhmm.getB())[i][k];
-	if (alpha[nwpend%2][i]<=x) {
-	  if (nwpend>1)
-	    best[nwpend%2][i] = best[1-nwpend%2][j];
-	  best[nwpend%2][i].push_back(i);
-	  alpha[nwpend%2][i] = x;
-	}
+        j=*jtag;
+        x = alpha[1-nwpend%2][j]*(tdhmm.getA())[j][i]*(tdhmm.getB())[i][k];
+        if (alpha[nwpend%2][i]<=x) {
+          if (nwpend>1)
+            best[nwpend%2][i] = best[1-nwpend%2][j];
+          best[nwpend%2][i].push_back(i);
+          alpha[nwpend%2][i] = x;
+        }
       }
     }
 
@@ -736,21 +736,21 @@ HMM::tagger(MorphoStream &morpho_stream, UFILE* Output) {
       prob = alpha[nwpend%2][tag];
 
       if (prob>0)
-	loli -= log(prob);
+        loli -= log(prob);
       else {
         if (TheFlags.getDebug())
-	  cerr<<"Problem with word '"<<word->get_superficial_form()<<"' "<<word->get_string_tags()<<"\n";
+          cerr<<"Problem with word '"<<word->get_superficial_form()<<"' "<<word->get_string_tags()<<"\n";
       }
       for (unsigned t=0; t<best[nwpend%2][tag].size(); t++) {
-	if (TheFlags.getFirst()) {
-	  UString const &micad = wpend[t].get_all_chosen_tag_first(best[nwpend%2][tag][t], (tdhmm.getTagIndex())["TAG_kEOF"_u]);
-	  write(micad, Output);
-	} else {
-	  // print Output
-	  wpend[t].set_show_sf(TheFlags.getShowSuperficial());
-	  UString const &micad = wpend[t].get_lexical_form(best[nwpend%2][tag][t], (tdhmm.getTagIndex())["TAG_kEOF"_u]);
-	  write(micad, Output);
-	}
+        if (TheFlags.getFirst()) {
+          UString const &micad = wpend[t].get_all_chosen_tag_first(best[nwpend%2][tag][t], (tdhmm.getTagIndex())["TAG_kEOF"_u]);
+          write(micad, Output);
+        } else {
+          // print Output
+          wpend[t].set_show_sf(TheFlags.getShowSuperficial());
+          UString const &micad = wpend[t].get_lexical_form(best[nwpend%2][tag][t], (tdhmm.getTagIndex())["TAG_kEOF"_u]);
+          write(micad, Output);
+        }
       }
 
       //Return to the initial state
@@ -760,10 +760,8 @@ HMM::tagger(MorphoStream &morpho_stream, UFILE* Output) {
 
     delete word;
 
-    if(morpho_stream.getEndOfFile())
-    {
-      if(TheFlags.getNullFlush())
-      {
+    if(morpho_stream.getEndOfFile()) {
+      if(TheFlags.getNullFlush()) {
         u_fputc('\0', Output);
         tags.clear();
         tags.insert(eos);

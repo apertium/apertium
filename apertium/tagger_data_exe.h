@@ -19,7 +19,10 @@
 #define _TAGGER_DATA_EXE_
 
 #include <cstdint>
+#include <lttoolbox/alphabet_exe.h>
 #include <lttoolbox/string_writer.h>
+#include <lttoolbox/transducer_exe.h>
+#include <set>
 
 struct str_int {
   StringRef s;
@@ -33,15 +36,15 @@ struct str_str_int {
 };
 
 struct int_int {
-  int32_t i1;
-  int32_t i2;
+  uint64_t i1;
+  uint64_t i2;
 };
 
 class TaggerDataExe {
 private:
   bool mmapping = false;
 
-protected:
+public:
   StringWriter str_write;
 
   /**
@@ -74,9 +77,6 @@ protected:
   /**
    * HMM & LSW shared data
    */
-  int32_t* open_class = nullptr;
-  uint64_t open_class_count = 0;
-
   int_int* forbid_rules = nullptr;
   uint64_t forbid_rules_count = 0;
 
@@ -86,16 +86,29 @@ protected:
   str_int* tag_index = nullptr;
   uint64_t tag_index_count = 0;
 
-  // enforce_rules
+  // [ tagi, taj1, tagj2, tagi, tagj1, tagj2, tagj3 ]
+  // [ 0, 3, 7 ]
+  uint64_t* enforce_rules = nullptr;
+  uint64_t* enforce_rules_offsets = nullptr;
+  uint64_t enforce_rules_count = 0;
 
-  // prefer_rules
+  StringRef* prefer_rules = nullptr;
+  uint64_t prefer_rules_count = 0;
 
   str_int* constants = nullptr;
   uint64_t constants_count = 0;
 
-  // output
+  // output = ambiguity classes
+  uint64_t* output = nullptr;
+  uint64_t* output_offsets = nullptr;
+  uint64_t output_count = 0;
+  uint64_t open_class_index = 0; // which ambiguity class is open_class
 
-  // pattern_list
+  // patterns
+  AlphabetExe alpha;
+  TransducerExe trans;
+  int_int* finals = nullptr;
+  uint64_t finals_count = 0;
 
   StringRef* discard = nullptr;
   uint64_t discard_count = 0;
@@ -103,20 +116,11 @@ protected:
   /**
    * HMM and LSW weight matrices
    */
-  uint64_t M = 0;
-  uint64_t N = 0;
+  uint64_t M = 0; // HMM number of ambiguity classes
+  uint64_t N = 0; // HMM number of known tags
   double* hmm_a = nullptr; // NxN
   double* hmm_b = nullptr; // NxM
   double* lsw_d = nullptr; // NxNxN
-
-  /* HMM
-vector<TForbidRule> forbid_rules
-vector<TEnforceAfterRule> enforce_rules
-vector<wstring> prefer_rules
-Collection output
-PatternList plist
-vector<wstring> discard
-  */
 
   /* perceptron
 map<vector<string>, double> weights
@@ -126,8 +130,6 @@ map<vector<string>, double> weights
   vector<FeatureDefn> features
   vector<FeatureDefn> global_defns
   FeatureDefn global_pred
-  Collection output
-  PatternList plist
   */
 
 public:
@@ -136,6 +138,18 @@ public:
   void read_compressed_unigram3(FILE* in);
   void read_compressed_hmm_lsw(FILE* in, bool is_hmm=true);
   void read_compressed_perceptron(FILE* in);
+
+  uint64_t get_ambiguity_class(const std::set<uint64_t>& tags);
+
+  inline double getA(uint64_t i, uint64_t j) const {
+    return hmm_a[i*M + j];
+  }
+  inline double getB(uint64_t i, uint64_t j) const {
+    return hmm_b[i*N + j];
+  }
+  inline double getD(uint64_t i, uint64_t j, uint64_t k) const {
+    return lsw_d[i*N*N + j*N + k];
+  }
 };
 
 #endif
