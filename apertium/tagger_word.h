@@ -88,6 +88,7 @@ public:
     *  @param lf the lexical form (fine tag)
     */
    virtual void add_tag(TTag &t, const UString &lf, vector<UString> const &prefer_rules);
+  virtual void add_tag(const uint64_t t, const UString& lf, const vector<ApertiumRE>& prefer_rules);
 
    /** Get the set of tags of this word.
     *  @return  set of tags.
@@ -103,6 +104,7 @@ public:
    *  @return the lexical form of tag t
    */
   virtual UString get_lexical_form(TTag &t, int const TAG_kEOF);
+  virtual UString get_lexical_form(const uint64_t t, const uint64_t teof);
 
   UString get_all_chosen_tag_first(TTag &t, int const TAG_kEOF);
 

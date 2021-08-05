@@ -19,6 +19,7 @@
 #define _TAGGER_EXE_
 
 #include <lttoolbox/input_file.h>
+#include <apertium/apertium_re.h>
 #include <apertium/streamed_type.h>
 #include <apertium/tagger_data_exe.h>
 #include <apertium/tagger_word.h>
@@ -29,15 +30,21 @@
 class TaggerExe {
 private:
   bool null_flush = true;
+  bool debug = false;
+  bool show_superficial = false;
+
   bool end_of_file = false;
   std::vector<TaggerWord*> tagger_word_buffer;
   std::map<uint64_t, int> match_finals;
   void build_match_finals();
+  std::vector<ApertiumRE> prefer_rules;
+  void build_prefer_rules();
 public:
   TaggerDataExe tde;
   Apertium::StreamedType read_streamed_type(InputFile& input);
   TaggerWord* read_tagger_word(InputFile& input);
   void tag_hmm(InputFile& input, UFILE* output);
+  void load(FILE* in);
 };
 
 #endif

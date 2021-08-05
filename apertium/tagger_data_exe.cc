@@ -25,6 +25,12 @@
 #include <stdexcept>
 #include <vector>
 
+#include <iostream>
+
+TaggerDataExe::TaggerDataExe()
+  : alpha(AlphabetExe(&str_write))
+{}
+
 uint64_t deserialise_int(FILE* in)
 {
   uint64_t ret = 0;
@@ -291,7 +297,7 @@ TaggerDataExe::read_compressed_hmm_lsw(FILE* in, bool is_hmm)
     if (output_offsets[i+1] - output_offsets[i] == open_class.size()) {
       bool match = true;
       for (uint64_t j = 0; j < open_class.size(); j++) {
-        if (open_class[j] != output[output_offsets[i]+j]) {
+        if (open_class[j] != out[output_offsets[i]+j]) {
           match = false;
           break;
         }
@@ -358,8 +364,9 @@ TaggerDataExe::read_compressed_hmm_lsw(FILE* in, bool is_hmm)
   int len = Compression::multibyte_read(in);
   if (len == 1) {
     Compression::string_read(in);
-    trans.read_compressed(in, temp);
+    trans.read_compressed(in, temp, true);
     finals_count = Compression::multibyte_read(in);
+    finals = new int_int[finals_count];
     for (uint64_t i = 0; i < finals_count; i++) {
       finals[i].i1 = Compression::multibyte_read(in);
       finals[i].i2 = Compression::multibyte_read(in);
@@ -394,4 +401,64 @@ TaggerDataExe::get_ambiguity_class(const std::set<uint64_t>& tags)
     }
   }
   return ret;
+}
+
+bool
+TaggerDataExe::search(str_int* ptr, uint64_t count, StringRef key, uint64_t& val)
+{
+  UString_view k = str_write.get(key);
+  int64_t l = 0, r = count-1, m;
+  while (l <= r) {
+    m = (l + r) / 2;
+    if (str_write.get(ptr[m].s) == k) {
+      val = ptr[m].i;
+      return true;
+    } else if (str_write.get(ptr[m].s) < k) {
+      l = m + 1;
+    } else {
+      r = m - 1;
+    }
+  }
+  return false;
+}
+
+bool
+TaggerDataExe::search(str_str_int* ptr, uint64_t count,
+                      StringRef key1, StringRef key2, uint64_t& val)
+{
+  UString_view k1 = str_write.get(key1);
+  UString_view k2 = str_write.get(key2);
+  int64_t l = 0, r = count-1, m;
+  while (l <= r) {
+    m = (l + r) / 2;
+    if (str_write.get(ptr[m].s1) == k1 && str_write.get(ptr[m].s2) == k2) {
+      val = ptr[m].i;
+      return true;
+    } else if ((str_write.get(ptr[m].s1) < k1) ||
+               (str_write.get(ptr[m].s1) == k1 &&
+                str_write.get(ptr[m].s2) < k2)) {
+      l = m + 1;
+    } else {
+      r = m - 1;
+    }
+  }
+  return false;
+}
+
+bool
+TaggerDataExe::search(int_int* ptr, uint64_t count, uint64_t key, uint64_t& val)
+{
+  int64_t l = 0, r = count-1, m;
+  while (l <= r) {
+    m = (l + r) / 2;
+    if (ptr[m].i1 == key) {
+      val = ptr[m].i2;
+      return true;
+    } else if (ptr[m].i1 < key) {
+      l = m + 1;
+    } else {
+      r = m - 1;
+    }
+  }
+  return false;
 }

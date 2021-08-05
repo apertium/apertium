@@ -133,6 +133,8 @@ map<vector<string>, double> weights
   */
 
 public:
+  TaggerDataExe();
+
   void read_compressed_unigram1(FILE* in);
   void read_compressed_unigram2(FILE* in);
   void read_compressed_unigram3(FILE* in);
@@ -150,6 +152,11 @@ public:
   inline double getD(uint64_t i, uint64_t j, uint64_t k) const {
     return lsw_d[i*N*N + j*N + k];
   }
+
+  bool search(str_int* ptr, uint64_t count, StringRef key, uint64_t& val);
+  bool search(str_str_int* ptr, uint64_t count, StringRef k1, StringRef k2,
+              uint64_t& val);
+  bool search(int_int* ptr, uint64_t count, uint64_t key, uint64_t& val);
 };
 
 #endif

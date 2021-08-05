@@ -115,6 +115,23 @@ TaggerWord::add_tag(TTag &t, const UString &lf, vector<UString> const &prefer_ru
   }
 }
 
+void
+TaggerWord::add_tag(const uint64_t t, const UString& lf, const vector<ApertiumRE>& prefer_rules)
+{
+  TTag tg = static_cast<TTag>(t);
+  if (tags.find(tg) == tags.end()) {
+    tags.insert(tg);
+    lexical_forms[tg] = lf;
+  } else {
+    for (auto& it : prefer_rules) {
+      if (!it.match(lf).empty()) {
+        lexical_forms[tg] = lf;
+        break;
+      }
+    }
+  }
+}
+
 set<TTag>&
 TaggerWord::get_tags() {
   return tags;
@@ -140,6 +157,31 @@ TaggerWord::get_string_tags() {
   st += '}';
 
   return st;
+}
+
+UString
+TaggerWord::get_lexical_form(const uint64_t t, const uint64_t TAG_kEOF)
+{
+  UString ret;
+  if (show_ignored_string) {
+    ret.append(ignored_string);
+  }
+  if (t == TAG_kEOF) {
+    return ret;
+  }
+  if (!previous_plus_cut) {
+    ret += '^';
+  }
+  if (lexical_forms.empty()) {
+    ret += '*';
+    ret.append(superficial_form);
+  } else {
+    ret.append(lexical_forms[static_cast<TTag>(t)]);
+  }
+  if (ret != ignored_string) {
+    ret += (plus_cut ? '+' : '$');
+  }
+  return ret;
 }
 
 UString
