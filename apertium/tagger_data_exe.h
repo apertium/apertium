@@ -144,10 +144,10 @@ public:
   uint64_t get_ambiguity_class(const std::set<uint64_t>& tags);
 
   inline double getA(uint64_t i, uint64_t j) const {
-    return hmm_a[i*M + j];
+    return hmm_a[i*N + j];
   }
   inline double getB(uint64_t i, uint64_t j) const {
-    return hmm_b[i*N + j];
+    return hmm_b[i*M + j];
   }
   inline double getD(uint64_t i, uint64_t j, uint64_t k) const {
     return lsw_d[i*N*N + j*N + k];

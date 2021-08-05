@@ -333,7 +333,9 @@ TaggerDataExe::read_compressed_hmm_lsw(FILE* in, bool is_hmm)
 
     // matrix b
     hmm_b = new double[N*M];
-    memset(hmm_b, 0, N*M*sizeof(double));
+    for (uint64_t i = 0; i < N*M; i++) {
+      hmm_b[i] = 1e-10;
+    }
     for (uint64_t count = Compression::multibyte_read(in); count > 0; count--) {
       uint64_t i = Compression::multibyte_read(in);
       uint64_t j = Compression::multibyte_read(in);
