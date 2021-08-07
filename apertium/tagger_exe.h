@@ -39,10 +39,16 @@ private:
   void build_match_finals();
   std::vector<ApertiumRE> prefer_rules;
   void build_prefer_rules();
+
+  std::map<UString_view, std::pair<uint64_t, uint64_t>> uni2_counts;
+  void build_uni2_counts();
+  long double score_unigram1(UString_view lu);
+  long double score_unigram2(UString_view lu);
 public:
   TaggerDataExe tde;
   Apertium::StreamedType read_streamed_type(InputFile& input);
   TaggerWord* read_tagger_word(InputFile& input);
+  void tag_unigram(InputFile& input, UFILE* output, int model);
   void tag_hmm(InputFile& input, UFILE* output);
   void load(FILE* in);
 };

@@ -153,9 +153,9 @@ public:
     return lsw_d[i*N*N + j*N + k];
   }
 
-  bool search(str_int* ptr, uint64_t count, StringRef key, uint64_t& val);
-  bool search(str_str_int* ptr, uint64_t count, StringRef k1, StringRef k2,
-              uint64_t& val);
+  bool search(str_int* ptr, uint64_t count, UString_view key, uint64_t& val);
+  bool search(str_str_int* ptr, uint64_t count, UString_view k1,
+              UString_view k2, uint64_t& val);
   bool search(int_int* ptr, uint64_t count, uint64_t key, uint64_t& val);
 };
 

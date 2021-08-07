@@ -406,16 +406,16 @@ TaggerDataExe::get_ambiguity_class(const std::set<uint64_t>& tags)
 }
 
 bool
-TaggerDataExe::search(str_int* ptr, uint64_t count, StringRef key, uint64_t& val)
+TaggerDataExe::search(str_int* ptr, uint64_t count, UString_view key,
+                      uint64_t& val)
 {
-  UString_view k = str_write.get(key);
   int64_t l = 0, r = count-1, m;
   while (l <= r) {
     m = (l + r) / 2;
-    if (str_write.get(ptr[m].s) == k) {
+    if (str_write.get(ptr[m].s) == key) {
       val = ptr[m].i;
       return true;
-    } else if (str_write.get(ptr[m].s) < k) {
+    } else if (str_write.get(ptr[m].s) < key) {
       l = m + 1;
     } else {
       r = m - 1;
@@ -426,19 +426,17 @@ TaggerDataExe::search(str_int* ptr, uint64_t count, StringRef key, uint64_t& val
 
 bool
 TaggerDataExe::search(str_str_int* ptr, uint64_t count,
-                      StringRef key1, StringRef key2, uint64_t& val)
+                      UString_view key1, UString_view key2, uint64_t& val)
 {
-  UString_view k1 = str_write.get(key1);
-  UString_view k2 = str_write.get(key2);
   int64_t l = 0, r = count-1, m;
   while (l <= r) {
     m = (l + r) / 2;
-    if (str_write.get(ptr[m].s1) == k1 && str_write.get(ptr[m].s2) == k2) {
+    if (str_write.get(ptr[m].s1) == key1 && str_write.get(ptr[m].s2) == key2) {
       val = ptr[m].i;
       return true;
-    } else if ((str_write.get(ptr[m].s1) < k1) ||
-               (str_write.get(ptr[m].s1) == k1 &&
-                str_write.get(ptr[m].s2) < k2)) {
+    } else if ((str_write.get(ptr[m].s1) < key1) ||
+               (str_write.get(ptr[m].s1) == key1 &&
+                str_write.get(ptr[m].s2) < key2)) {
       l = m + 1;
     } else {
       r = m - 1;
