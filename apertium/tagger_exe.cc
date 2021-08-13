@@ -188,16 +188,6 @@ TaggerExe::score_unigram1(UString_view lu)
   return s;
 }
 
-void
-TaggerExe::build_uni2_counts()
-{
-  for (uint64_t i = 0; i < tde.uni2_count; i++) {
-    UString_view key = tde.str_write.get(tde.uni2[i].s1);
-    uni2_counts[key].first++;
-    uni2_counts[key].second += tde.uni2[i].i;
-  }
-}
-
 long double
 TaggerExe::score_unigram2(UString_view lu)
 {
@@ -222,11 +212,79 @@ TaggerExe::score_unigram2(UString_view lu)
   return (tokenCount_r_a * tokenCount_a) / (tokenCount_a + typeCount_a);
 }
 
+long double
+TaggerExe::score_unigram3(UString_view lu)
+{
+  long double tokenCount_r_i = 1;
+  long double tokenCount_i = 1;
+  long double typeCount_i = 1;
+
+  vector<UString_view> morphemes = StringUtils::split_escape(lu, '+');
+
+  auto loc = morphemes[0].find_first_of('<');
+  UString_view lemma = morphemes[0].substr(0, loc);
+  UString_view tags = morphemes[0].substr(loc);
+  uint64_t n;
+  if (uni3_l_t.find(tags) != uni3_l_t.end()) {
+    if (tde.search(tde.uni3_l_t, tde.uni3_l_t_count, tags, lemma, n)) {
+      tokenCount_r_i += n;
+    } else {
+      typeCount_i += 1;
+    }
+    typeCount_i += uni3_l_t[tags].first;
+    tokenCount_i += uni3_l_t[tags].second;
+  }
+  long double num = tokenCount_r_i * tokenCount_i;
+  long double denom = tokenCount_i + typeCount_i;
+  UString_view l;
+  UString_view t_cur = tags;
+  UString_view t_prev;
+  for (uint64_t i = 1; i < morphemes.size(); i++) {
+    t_prev = t_cur;
+    loc = morphemes[i].find_first_of('<');
+    l = morphemes[i].substr(0, loc);
+    t_cur = morphemes[i].substr(loc);
+
+    long double tokenCount_d_i = 1;
+    long double tokenCount_i_d = 1;
+    long double tokenCount_i = 1;
+    long double typeCount_i = 1;
+    long double tokenCount_d = 1;
+    long double typeCount_d = 1;
+
+    if (uni3_cl_ct.find(t_prev) != uni3_cl_ct.end()) {
+      if (tde.search(tde.uni3_cl_ct, tde.uni3_cl_ct_count, t_prev, l, n)) {
+        tokenCount_d_i += n;
+      } else {
+        typeCount_i += 1;
+      }
+      tokenCount_i += uni3_cl_ct[t_prev].second;
+      typeCount_i += uni3_cl_ct[t_prev].first;
+    }
+    if (uni3_ct_cl.find(l) != uni3_ct_cl.end()) {
+      if (tde.search(tde.uni3_ct_cl, tde.uni3_ct_cl_count, l, t_cur, n)) {
+        tokenCount_i_d += n;
+      } else {
+        typeCount_d += 1;
+      }
+      tokenCount_d += uni3_ct_cl[l].second;
+      typeCount_i += uni3_ct_cl[l].first;
+    }
+    num *= (tokenCount_d_i * tokenCount_i_d);
+    denom *= ((tokenCount_i + typeCount_i) * (tokenCount_d + typeCount_d));
+  }
+  return num / denom;
+}
+
 void
 TaggerExe::tag_unigram(InputFile& input, UFILE* output, int model)
 {
   if (model == 2) {
-    build_uni2_counts();
+    uni2_counts = tde.summarize(tde.uni2, tde.uni2_count);
+  } else if (model == 3) {
+    uni3_l_t = tde.summarize(tde.uni3_l_t, tde.uni3_l_t_count);
+    uni3_cl_ct = tde.summarize(tde.uni3_cl_ct, tde.uni3_cl_ct_count);
+    uni3_ct_cl = tde.summarize(tde.uni3_ct_cl, tde.uni3_ct_cl_count);
   }
   while (!input.eof()) {
     write(input.readBlank(true), output);
@@ -262,6 +320,8 @@ TaggerExe::tag_unigram(InputFile& input, UFILE* output, int model)
         s = score_unigram1(pieces[i]); break;
       case 2:
         s = score_unigram2(pieces[i]); break;
+      case 3:
+        s = score_unigram3(pieces[i]); break;
       default:
         break;
       }
@@ -366,6 +426,72 @@ TaggerExe::tag_hmm(InputFile& input, UFILE* output)
     delete cur_word;
     cur_word = read_tagger_word(input);
   }
+}
+
+void
+TaggerExe::tag_lsw(InputFile& input, UFILE* output)
+{
+  build_match_finals();
+  build_prefer_rules();
+  vector<UString> arr_tg;
+  for (uint64_t i = 0; i < tde.array_tags_count; i++) {
+    arr_tg.push_back(UString{tde.str_write.get(tde.array_tags[i])});
+  }
+  TaggerWord::setArrayTags(arr_tg);
+
+  uint64_t eos;
+  tde.search(tde.tag_index, tde.tag_index_count, "TAG_SENT"_u, eos);
+  uint64_t tag_eof;
+  tde.search(tde.tag_index, tde.tag_index_count, "TAG_kEOF"_u, tag_eof);
+
+  TaggerWord* left = nullptr;
+  TaggerWord* mid = nullptr;
+  TaggerWord* right = nullptr;
+
+  left = new TaggerWord();
+  left->add_tag(eos, "sent"_u, prefer_rules);
+
+  mid = read_tagger_word(input);
+
+  if (input.eof()) {
+    delete left;
+    delete mid;
+    return;
+  }
+
+  right = read_tagger_word(input);
+
+  while (right) {
+    double max = -1;
+    uint64_t tag_max = *(mid->get_tags().begin());
+    for (auto& m : mid->get_tags()) {
+      double n = 0;
+      for (auto& l : left->get_tags()) {
+        for (auto& r : right->get_tags()) {
+          n += tde.getD(l, m, r);
+        }
+      }
+      if (n > max) {
+        max = n;
+        tag_max = m;
+      }
+    }
+
+    write(mid->get_lexical_form(tag_max, tag_eof), output);
+    if (input.eof()) {
+      if (null_flush) {
+        u_fputc('\0', output);
+      }
+      u_fflush(output);
+    }
+
+    delete left;
+    left = mid;
+    mid = right;
+    right = read_tagger_word(input);
+  }
+  delete left;
+  delete mid;
 }
 
 void

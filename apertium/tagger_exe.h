@@ -27,6 +27,8 @@
 #include <map>
 #include <vector>
 
+typedef std::map<UString_view, std::pair<uint64_t, uint64_t>> uni_summary;
+
 class TaggerExe {
 private:
   bool null_flush = true;
@@ -40,16 +42,20 @@ private:
   std::vector<ApertiumRE> prefer_rules;
   void build_prefer_rules();
 
-  std::map<UString_view, std::pair<uint64_t, uint64_t>> uni2_counts;
-  void build_uni2_counts();
+  uni_summary uni2_counts;
+  uni_summary uni3_l_t;
+  uni_summary uni3_cl_ct;
+  uni_summary uni3_ct_cl;
   long double score_unigram1(UString_view lu);
   long double score_unigram2(UString_view lu);
+  long double score_unigram3(UString_view lu);
 public:
   TaggerDataExe tde;
   Apertium::StreamedType read_streamed_type(InputFile& input);
   TaggerWord* read_tagger_word(InputFile& input);
   void tag_unigram(InputFile& input, UFILE* output, int model);
   void tag_hmm(InputFile& input, UFILE* output);
+  void tag_lsw(InputFile& input, UFILE* output);
   void load(FILE* in);
 };
 

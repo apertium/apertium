@@ -39,9 +39,6 @@ PerceptronTagger::tagSentence(const Sentence &untagged_sent) {
   agenda.back().tagged.reserve(sent_len);
 
   UnaryFeatureVec feat_vec_delta;
-  std::vector<Analysis>::const_iterator analys_it;
-  std::vector<AgendaItem>::const_iterator agenda_it;
-  std::vector<Morpheme>::const_iterator wordoid_it;
 
   for (size_t token_idx = 0; token_idx < sent_len; token_idx++) {
     const std::vector<Analysis> &analyses =
@@ -58,22 +55,20 @@ PerceptronTagger::tagSentence(const Sentence &untagged_sent) {
       continue;
     }
 
-    for (agenda_it = agenda.begin(); agenda_it != agenda.end(); agenda_it++) {
-      for (analys_it = analyses.begin(); analys_it != analyses.end(); analys_it++) {
-        const std::vector<Morpheme> &wordoids = analys_it->TheMorphemes;
+    for (auto& agenda_it : agenda) {
+      for (auto& analys_it : analyses) {
 
-        new_agenda.push_back(*agenda_it);
+        new_agenda.push_back(agenda_it);
         AgendaItem &new_agenda_item = new_agenda.back();
-        new_agenda_item.tagged.push_back(*analys_it);
+        new_agenda_item.tagged.push_back(analys_it);
 
-        for (wordoid_it = wordoids.begin(); wordoid_it != wordoids.end(); wordoid_it++) {
-          int wordoid_idx = wordoid_it - wordoids.begin();
+        for (size_t w_idx = 0; w_idx < analys_it.TheMorphemes.size(); w_idx++) {
           feat_vec_delta.clear();
           spec.get_features(new_agenda_item.tagged, untagged_sent,
-                            token_idx, wordoid_idx, feat_vec_delta);
+                            token_idx, w_idx, feat_vec_delta);
           if (TheFlags.getDebug()) {
             FeatureVec fv(feat_vec_delta);
-            std::cerr << "Token " << token_idx << "\t\tWordoid " << wordoid_idx << "\n";
+            std::cerr << "Token " << token_idx << "\t\tWordoid " << w_idx << "\n";
             std::cerr << fv;
             std::cerr << "Score: " << weights * feat_vec_delta << "\n";
           }

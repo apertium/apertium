@@ -22,6 +22,7 @@
 #include <lttoolbox/alphabet_exe.h>
 #include <lttoolbox/string_writer.h>
 #include <lttoolbox/transducer_exe.h>
+#include <map>
 #include <set>
 
 struct str_int {
@@ -157,6 +158,10 @@ public:
   bool search(str_str_int* ptr, uint64_t count, UString_view k1,
               UString_view k2, uint64_t& val);
   bool search(int_int* ptr, uint64_t count, uint64_t key, uint64_t& val);
+
+  std::map<UString_view,
+           std::pair<uint64_t, uint64_t>> summarize(str_str_int* ptr,
+                                                    uint64_t count);
 };
 
 #endif

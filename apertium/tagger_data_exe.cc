@@ -462,3 +462,14 @@ TaggerDataExe::search(int_int* ptr, uint64_t count, uint64_t key, uint64_t& val)
   }
   return false;
 }
+
+std::map<UString_view, std::pair<uint64_t, uint64_t>>
+TaggerDataExe::summarize(str_str_int* ptr, uint64_t count)
+{
+  std::map<UString_view, std::pair<uint64_t, uint64_t>> ret;
+  for (uint64_t i = 0; i < count; i++) {
+    UString_view key = str_write.get(ptr[i].s1);
+    ret[key].first++;
+    ret[key].second += ptr[i].i;
+  }
+}
