@@ -198,6 +198,7 @@ bin_PROGRAMS = apertium-cleanstream \
 	       apertium-tagger-apply-new-rules \
 		   apertium-tagger-new \
 	       apertium-tagger-readwords \
+		   apertium-tagger2txt \
 	       apertium-perceptron-trace \
 	       apertium-tmxbuild \
 	       apertium-transfer \
@@ -263,6 +264,9 @@ apertium_tagger_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_tagger_new_SOURCES = apertium_tagger_new.cc
 apertium_tagger_new_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
+
+apertium_tagger2txt_SOURCES = tagger2txt.cc
+apertium_tagger2txt_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_perceptron_trace_SOURCES = apertium_perceptron_trace.cc
 apertium_perceptron_trace_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
