@@ -2,6 +2,8 @@
 
 #include <lttoolbox/match_state2.h>
 #include <lttoolbox/string_utils.h>
+#include <cassert>
+#include <stack>
 
 #include <iostream>
 

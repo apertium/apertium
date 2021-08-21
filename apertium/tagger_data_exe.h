@@ -24,6 +24,7 @@
 #include <lttoolbox/transducer_exe.h>
 #include <map>
 #include <set>
+#include <apertium/feature_vec.h>
 
 struct str_int {
   StringRef s;
@@ -40,6 +41,10 @@ struct int_int {
   uint64_t i1;
   uint64_t i2;
 };
+
+namespace Apertium {
+class PerceptronSpec;
+}
 
 class TaggerDataExe {
 private:
@@ -122,6 +127,12 @@ public:
   double* hmm_a = nullptr; // NxN
   double* hmm_b = nullptr; // NxM
   double* lsw_d = nullptr; // NxNxN
+
+  /**
+   * Perceptron
+   */
+  Apertium::PerceptronSpec* spec = nullptr;
+  Apertium::FeatureVec percep_weights;
 
   /* perceptron
 map<vector<string>, double> weights

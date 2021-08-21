@@ -17,8 +17,10 @@
 
 #include <apertium/tagger_data_exe.h>
 
+#include <apertium/perceptron_spec.h>
+
 #include <lttoolbox/alphabet.h>
-#include <lttoolbox/compression.h>
+#include <lttoolbox/old_binary.h>
 
 #include <algorithm>
 #include <cstring>
@@ -31,84 +33,38 @@ TaggerDataExe::TaggerDataExe()
   : alpha(AlphabetExe(&str_write))
 {}
 
-uint64_t deserialise_int(FILE* in)
+void deserialise_tags(FILE* in, UString& s)
 {
-  uint64_t ret = 0;
-  uint8_t size = fgetc_unlocked(in);
-  if (size > 8) {
-    throw std::runtime_error("can't deserialise int");
+  for (uint64_t i = OldBinary::read_int(in, false); i > 0; i--) {
+    s += '<';
+    OldBinary::read_ustr(in, s, false);
+    s += '>';
   }
-  uint8_t buffer[8];
-  if (fread_unlocked(buffer, 1, size, in) != size) {
-    throw std::runtime_error("can't deserialise int");
-  }
-  for (uint8_t i = 0; i < size; i++) {
-    ret += static_cast<uint64_t>(buffer[i]) << (8 * (size - i - 1));
-  }
-  return ret;
 }
 
 StringRef deserialise_str(FILE* in, StringWriter& sw)
 {
   UString s;
-  for (uint64_t i = deserialise_int(in); i > 0; i--) {
-    s += static_cast<UChar>(deserialise_int(in));
-  }
+  OldBinary::read_ustr(in, s, false);
   return sw.add(s);
-}
-
-void deserialise_str(FILE* in, UString& s)
-{
-  for (uint64_t i = deserialise_int(in); i > 0; i--) {
-    s += static_cast<UChar>(deserialise_int(in));
-  }
-}
-
-void deserialise_tags(FILE* in, UString& s)
-{
-  for (uint64_t i = deserialise_int(in); i > 0; i--) {
-    s += '<';
-    deserialise_str(in, s);
-    s += '>';
-  }
-}
-
-double
-read_compressed_double(FILE *input)
-{
-  double retval;
-#ifdef WORDS_BIGENDIAN
-  fread_unlocked(&retval, sizeof(double), 1, input);
-#else
-  char *s = reinterpret_cast<char *>(&retval);
-
-  for(int i = sizeof(double)-1; i != -1; i--)
-  {
-    if(fread_unlocked(&(s[i]), 1, 1, input)==0)
-    {
-      return 0;
-    }
-  }
-#endif
-  return retval;
 }
 
 void
 TaggerDataExe::read_compressed_unigram1(FILE* in)
 {
-  uni1_count = deserialise_int(in);
+  uni1_count = OldBinary::read_int(in, false);
   uni1 = new str_int[uni1_count];
   for (uint64_t i = 0; i < uni1_count; i++) {
     UString s;
-    for (uint64_t j = deserialise_int(in); j > 0; j--) {
+    for (uint64_t j = OldBinary::read_int(in, false); j > 0; j--) {
       if (!s.empty()) {
         s += '+';
       }
-      deserialise_str(in, s);
+      OldBinary::read_ustr(in, s, false);
       deserialise_tags(in, s);
     }
     uni1[i].s = str_write.add(s);
-    uni1[i].i = deserialise_int(in);
+    uni1[i].i = OldBinary::read_int(in, false);
   }
 }
 
@@ -119,19 +75,19 @@ TaggerDataExe::read_compressed_unigram2(FILE* in)
   std::vector<StringRef> lems;
   std::vector<uint64_t> counts;
 
-  for (uint64_t ans = deserialise_int(in); ans > 0; ans--) {
+  for (uint64_t ans = OldBinary::read_int(in, false); ans > 0; ans--) {
     UString a;
     deserialise_tags(in, a);
-    for (uint64_t c = deserialise_int(in); c > 0; c--) {
+    for (uint64_t c = OldBinary::read_int(in, false); c > 0; c--) {
       a += '+';
-      deserialise_str(in, a);
+      OldBinary::read_ustr(in, a, false);
       deserialise_tags(in, a);
     }
     StringRef ar = str_write.add(a);
-    for (uint64_t i = deserialise_int(in); i > 0; i--) {
+    for (uint64_t i = OldBinary::read_int(in, false); i > 0; i--) {
       as.push_back(ar);
       lems.push_back(deserialise_str(in, str_write));
-      counts.push_back(deserialise_int(in));
+      counts.push_back(OldBinary::read_int(in, false));
       uni2_count++;
     }
   }
@@ -151,14 +107,14 @@ TaggerDataExe::read_compressed_unigram3(FILE* in)
   std::vector<StringRef> s2;
   std::vector<uint64_t> counts;
 
-  for (uint64_t ans = deserialise_int(in); ans > 0; ans--) {
+  for (uint64_t ans = OldBinary::read_int(in, false); ans > 0; ans--) {
     UString tg;
     deserialise_tags(in, tg);
     StringRef tgr = str_write.add(tg);
-    for (uint64_t i = deserialise_int(in); i > 0; i--) {
+    for (uint64_t i = OldBinary::read_int(in, false); i > 0; i--) {
       s1.push_back(tgr);
       s2.push_back(deserialise_str(in, str_write));
-      counts.push_back(deserialise_int(in));
+      counts.push_back(OldBinary::read_int(in, false));
       uni3_l_t_count++;
     }
   }
@@ -173,14 +129,14 @@ TaggerDataExe::read_compressed_unigram3(FILE* in)
   s2.clear();
   counts.clear();
 
-  for (uint64_t ans = deserialise_int(in); ans > 0; ans--) {
+  for (uint64_t ans = OldBinary::read_int(in, false); ans > 0; ans--) {
     UString tg;
     deserialise_tags(in, tg);
     StringRef tgr = str_write.add(tg);
-    for (uint64_t i = deserialise_int(in); i > 0; i--) {
+    for (uint64_t i = OldBinary::read_int(in, false); i > 0; i--) {
       s1.push_back(tgr);
       s2.push_back(deserialise_str(in, str_write));
-      counts.push_back(deserialise_int(in));
+      counts.push_back(OldBinary::read_int(in, false));
       uni3_cl_ct_count++;
     }
   }
@@ -195,14 +151,14 @@ TaggerDataExe::read_compressed_unigram3(FILE* in)
   s2.clear();
   counts.clear();
 
-  for (uint64_t ans = deserialise_int(in); ans > 0; ans--) {
+  for (uint64_t ans = OldBinary::read_int(in, false); ans > 0; ans--) {
     StringRef lm = deserialise_str(in, str_write);
-    for (uint64_t i = deserialise_int(in); i > 0; i--) {
+    for (uint64_t i = OldBinary::read_int(in, false); i > 0; i--) {
       s1.push_back(lm);
       UString tg;
       deserialise_tags(in, tg);
       s2.push_back(str_write.add(tg));
-      counts.push_back(deserialise_int(in));
+      counts.push_back(OldBinary::read_int(in, false));
       uni3_ct_cl_count++;
     }
   }
@@ -220,43 +176,47 @@ TaggerDataExe::read_compressed_hmm_lsw(FILE* in, bool is_hmm)
   // open_class
   std::vector<uint64_t> open_class;
   uint64_t val = 0;
-  for (uint64_t i = Compression::multibyte_read(in); i > 0; i--) {
-    val += Compression::multibyte_read(in);
+  for (uint64_t i = OldBinary::read_int(in); i > 0; i--) {
+    val += OldBinary::read_int(in);
     open_class.push_back(val);
   }
 
   // forbid_rules
-  forbid_rules_count = Compression::multibyte_read(in);
+  forbid_rules_count = OldBinary::read_int(in);
   forbid_rules = new int_int[forbid_rules_count];
   for (uint64_t i = 0; i < forbid_rules_count; i++) {
-    forbid_rules[i].i1 = Compression::multibyte_read(in);
-    forbid_rules[i].i2 = Compression::multibyte_read(in);
+    forbid_rules[i].i1 = OldBinary::read_int(in);
+    forbid_rules[i].i2 = OldBinary::read_int(in);
   }
 
   // array_tags
-  array_tags_count = Compression::multibyte_read(in);
+  array_tags_count = OldBinary::read_int(in);
   array_tags = new StringRef[array_tags_count];
   for (uint64_t i = 0; i < array_tags_count; i++) {
-    array_tags[i] = str_write.add(Compression::string_read(in));
+    UString temp;
+    OldBinary::read_ustr(in, temp);
+    array_tags[i] = str_write.add(temp);
   }
 
   // tag_index
-  tag_index_count = Compression::multibyte_read(in);
+  tag_index_count = OldBinary::read_int(in);
   tag_index = new str_int[tag_index_count];
   for (uint64_t i = 0; i < tag_index_count; i++) {
-    tag_index[i].s = str_write.add(Compression::string_read(in));
-    tag_index[i].i = Compression::multibyte_read(in);
+    UString temp;
+    OldBinary::read_ustr(in, temp);
+    tag_index[i].s = str_write.add(temp);
+    tag_index[i].i = OldBinary::read_int(in);
   }
 
   // enforce_rules
-  enforce_rules_count = Compression::multibyte_read(in);
+  enforce_rules_count = OldBinary::read_int(in);
   enforce_rules_offsets = new uint64_t[enforce_rules_count+1];
   std::vector<uint64_t> enf;
   for (uint64_t i = 0; i < enforce_rules_count; i++) {
     enforce_rules_offsets[i] = enf.size();
-    enf.push_back(Compression::multibyte_read(in));
-    for (uint64_t j = Compression::multibyte_read(in); j > 0; j--) {
-      enf.push_back(Compression::multibyte_read(in));
+    enf.push_back(OldBinary::read_int(in));
+    for (uint64_t j = OldBinary::read_int(in); j > 0; j--) {
+      enf.push_back(OldBinary::read_int(in));
     }
   }
   enforce_rules_offsets[enforce_rules_count] = enf.size();
@@ -266,29 +226,33 @@ TaggerDataExe::read_compressed_hmm_lsw(FILE* in, bool is_hmm)
   }
 
   // prefer_rules
-  prefer_rules_count = Compression::multibyte_read(in);
+  prefer_rules_count = OldBinary::read_int(in);
   prefer_rules = new StringRef[prefer_rules_count];
   for (uint64_t i = 0; i < prefer_rules_count; i++) {
-    prefer_rules[i] = str_write.add(Compression::string_read(in));
+    UString temp;
+    OldBinary::read_ustr(in, temp);
+    prefer_rules[i] = str_write.add(temp);
   }
 
   // constants
-  constants_count = Compression::multibyte_read(in);
+  constants_count = OldBinary::read_int(in);
   constants = new str_int[constants_count];
   for (uint64_t i = 0; i < constants_count; i++) {
-    constants[i].s = str_write.add(Compression::string_read(in));
-    constants[i].i = Compression::multibyte_read(in);
+    UString temp;
+    OldBinary::read_ustr(in, temp);
+    constants[i].s = str_write.add(temp);
+    constants[i].i = OldBinary::read_int(in);
   }
 
   // output
-  output_count = Compression::multibyte_read(in);
+  output_count = OldBinary::read_int(in);
   // +2 in case we need to append open_class
   output_offsets = new uint64_t[output_count+2];
   std::vector<uint64_t> out;
   for (uint64_t i = 0; i < output_count; i++) {
     output_offsets[i] = out.size();
-    for (uint64_t j = Compression::multibyte_read(in); j > 0; j--) {
-      out.push_back(Compression::multibyte_read(in));
+    for (uint64_t j = OldBinary::read_int(in); j > 0; j--) {
+      out.push_back(OldBinary::read_int(in));
     }
   }
   output_offsets[output_count] = out.size();
@@ -320,14 +284,14 @@ TaggerDataExe::read_compressed_hmm_lsw(FILE* in, bool is_hmm)
 
   if (is_hmm) {
     // dimensions
-    N = Compression::multibyte_read(in);
-    M = Compression::multibyte_read(in);
+    N = OldBinary::read_int(in);
+    M = OldBinary::read_int(in);
 
     // matrix a
     hmm_a = new double[N*N];
     for (uint64_t i = 0; i < N; i++) {
       for (uint64_t j = 0; j < N; j++) {
-        hmm_a[i*N+j] = read_compressed_double(in);
+        hmm_a[i*N+j] = OldBinary::read_double(in, true, true);
       }
     }
 
@@ -336,23 +300,23 @@ TaggerDataExe::read_compressed_hmm_lsw(FILE* in, bool is_hmm)
     for (uint64_t i = 0; i < N*M; i++) {
       hmm_b[i] = 1e-10;
     }
-    for (uint64_t count = Compression::multibyte_read(in); count > 0; count--) {
-      uint64_t i = Compression::multibyte_read(in);
-      uint64_t j = Compression::multibyte_read(in);
-      hmm_b[i*M+j] = read_compressed_double(in);
+    for (uint64_t count = OldBinary::read_int(in); count > 0; count--) {
+      uint64_t i = OldBinary::read_int(in);
+      uint64_t j = OldBinary::read_int(in);
+      hmm_b[i*M+j] = OldBinary::read_double(in, true, true);
     }
   } else {
     // dimensions
-    N = Compression::multibyte_read(in);
+    N = OldBinary::read_int(in);
 
     // matrix d
     lsw_d = new double[N*N*N];
     memset(lsw_d, 0, N*N*N*sizeof(double));
-    for (uint64_t count = Compression::multibyte_read(in); count > 0; count--) {
-      uint64_t i = Compression::multibyte_read(in);
-      uint64_t j = Compression::multibyte_read(in);
-      uint64_t k = Compression::multibyte_read(in);
-      lsw_d[(i*N*N)+(j*N)+k] = read_compressed_double(in);
+    for (uint64_t count = OldBinary::read_int(in); count > 0; count--) {
+      uint64_t i = OldBinary::read_int(in);
+      uint64_t j = OldBinary::read_int(in);
+      uint64_t k = OldBinary::read_int(in);
+      lsw_d[(i*N*N)+(j*N)+k] = OldBinary::read_double(in, true, true);
     }
   }
 
@@ -363,26 +327,146 @@ TaggerDataExe::read_compressed_hmm_lsw(FILE* in, bool is_hmm)
   alpha.read(in, false);
   fsetpos(in, &pos);
   temp.read(in);
-  int len = Compression::multibyte_read(in);
+  int len = OldBinary::read_int(in);
   if (len == 1) {
-    Compression::string_read(in);
+    UString name;
+    OldBinary::read_ustr(in, name);
     trans.read_compressed(in, temp, true);
-    finals_count = Compression::multibyte_read(in);
+    finals_count = OldBinary::read_int(in);
     finals = new int_int[finals_count];
     for (uint64_t i = 0; i < finals_count; i++) {
-      finals[i].i1 = Compression::multibyte_read(in);
-      finals[i].i2 = Compression::multibyte_read(in);
+      finals[i].i1 = OldBinary::read_int(in);
+      finals[i].i2 = OldBinary::read_int(in);
     }
   }
 
   // discard
-  discard_count = Compression::multibyte_read(in);
+  discard_count = OldBinary::read_int(in);
   if (feof(in)) {
     discard_count = 0;
   }
   discard = new StringRef[discard_count];
   for (uint64_t i = 0; i < discard_count; i++) {
-    discard[i] = str_write.add(Compression::string_read(in));
+    UString temp;
+    OldBinary::read_ustr(in, temp);
+    discard[i] = str_write.add(temp);
+  }
+}
+
+void
+TaggerDataExe::read_compressed_perceptron(FILE* in)
+{
+  spec = new Apertium::PerceptronSpec();
+  spec->read_compressed(in);
+  if (OldBinary::read_int(in, false) == 1) {
+    // open_class
+    std::vector<uint64_t> open_class;
+    uint64_t val = 0;
+    for (uint64_t i = OldBinary::read_int(in, false); i > 0; i--) {
+      val += OldBinary::read_int(in, false);
+      open_class.push_back(val);
+    }
+
+    // array_tags
+    array_tags_count = OldBinary::read_int(in, false);
+    array_tags = new StringRef[array_tags_count];
+    for (uint64_t i = 0; i < array_tags_count; i++) {
+      array_tags[i] = deserialise_str(in, str_write);
+    }
+
+    // tag_index
+    tag_index_count = OldBinary::read_int(in, false);
+    tag_index = new str_int[tag_index_count];
+    for (uint64_t i = 0; i < tag_index_count; i++) {
+      tag_index[i].s = deserialise_str(in, str_write);
+      tag_index[i].i = OldBinary::read_int(in, false);
+    }
+
+    // constants
+    constants_count = OldBinary::read_int(in, false);
+    constants = new str_int[constants_count];
+    for (uint64_t i = 0; i < constants_count; i++) {
+      constants[i].s = deserialise_str(in, str_write);
+      constants[i].i = OldBinary::read_int(in, false);
+    }
+
+    // output
+    output_count = OldBinary::read_int(in, false);
+    // +2 in case we need to append open_class
+    output_offsets = new uint64_t[output_count+2];
+    std::vector<uint64_t> out;
+    for (uint64_t i = 0; i < output_count; i++) {
+      output_offsets[i] = out.size();
+      for (uint64_t j = OldBinary::read_int(in, false); j > 0; j--) {
+        out.push_back(OldBinary::read_int(in, false));
+      }
+    }
+    output_offsets[output_count] = out.size();
+    open_class_index = output_count;
+    for (uint64_t i = 0; i < output_count; i++) {
+      if (output_offsets[i+1] - output_offsets[i] == open_class.size()) {
+        bool match = true;
+        for (uint64_t j = 0; j < open_class.size(); j++) {
+          if (open_class[j] != out[output_offsets[i]+j]) {
+            match = false;
+            break;
+          }
+        }
+        if (match) {
+          open_class_index = i;
+          break;
+        }
+      }
+    }
+    if (open_class_index == output_count) {
+      output_count++;
+      out.insert(out.end(), open_class.begin(), open_class.end());
+      output_offsets[output_count] = out.size();
+    }
+    output = new uint64_t[out.size()];
+    for (uint64_t i = 0; i < out.size(); i++) {
+      output[i] = out[i];
+    }
+
+    // pattern list
+    // TODO: tell Alphabet and Transducer to read serialised
+    // rather than compressed
+    Alphabet temp;
+    fpos_t pos;
+    fgetpos(in, &pos);
+    alpha.read(in, false);
+    fsetpos(in, &pos);
+    temp.read(in);
+    int len = OldBinary::read_int(in, false);
+    if (len == 1) {
+      UString name; // ignored
+      OldBinary::read_ustr(in, name, false);
+      trans.read_compressed(in, temp, true);
+      finals_count = OldBinary::read_int(in, false);
+      finals = new int_int[finals_count];
+      for (uint64_t i = 0; i < finals_count; i++) {
+        finals[i].i1 = OldBinary::read_int(in, false);
+        finals[i].i2 = OldBinary::read_int(in, false);
+      }
+    }
+  }
+
+  // weights
+  //percep_weights;
+  uint64_t count = OldBinary::read_int(in, false);
+  for (uint64_t i = 0; i < count; i++) {
+    std::vector<std::string> v;
+    uint64_t count2 = OldBinary::read_int(in, false);
+    for (uint64_t j = 0; j < count2; j++) {
+      std::string s;
+      uint64_t count3 = OldBinary::read_int(in, false);
+      for (uint64_t k = 0; k < count3; k++) {
+        s += static_cast<char>(OldBinary::read_int(in, false));
+      }
+      v.push_back(s);
+    }
+    uint64_t w = OldBinary::read_int(in, false);
+    percep_weights.data[v] = *reinterpret_cast<double*>(&w);
   }
 }
 
@@ -472,4 +556,5 @@ TaggerDataExe::summarize(str_str_int* ptr, uint64_t count)
     ret[key].first++;
     ret[key].second += ptr[i].i;
   }
+  return ret;
 }
