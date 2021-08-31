@@ -429,25 +429,18 @@ TaggerDataExe::read_compressed_perceptron(FILE* in)
     }
 
     // pattern list
-    // TODO: tell Alphabet and Transducer to read serialised
-    // rather than compressed
     Alphabet temp;
     fpos_t pos;
     fgetpos(in, &pos);
-    alpha.read(in, false);
+    alpha.read(in, false, false);
     fsetpos(in, &pos);
-    temp.read(in);
-    int len = OldBinary::read_int(in, false);
-    if (len == 1) {
-      UString name; // ignored
-      OldBinary::read_ustr(in, name, false);
-      trans.read_compressed(in, temp, true);
-      finals_count = OldBinary::read_int(in, false);
-      finals = new int_int[finals_count];
-      for (uint64_t i = 0; i < finals_count; i++) {
-        finals[i].i1 = OldBinary::read_int(in, false);
-        finals[i].i2 = OldBinary::read_int(in, false);
-      }
+    temp.read_serialised(in);
+    trans.read_serialised(in, temp, true);
+    finals_count = OldBinary::read_int(in, false);
+    finals = new int_int[finals_count];
+    for (uint64_t i = 0; i < finals_count; i++) {
+      finals[i].i1 = OldBinary::read_int(in, false);
+      finals[i].i2 = OldBinary::read_int(in, false);
     }
   }
 
@@ -459,14 +452,10 @@ TaggerDataExe::read_compressed_perceptron(FILE* in)
     uint64_t count2 = OldBinary::read_int(in, false);
     for (uint64_t j = 0; j < count2; j++) {
       std::string s;
-      uint64_t count3 = OldBinary::read_int(in, false);
-      for (uint64_t k = 0; k < count3; k++) {
-        s += static_cast<char>(OldBinary::read_int(in, false));
-      }
+      OldBinary::read_str(in, s, false);
       v.push_back(s);
     }
-    uint64_t w = OldBinary::read_int(in, false);
-    percep_weights.data[v] = *reinterpret_cast<double*>(&w);
+    percep_weights.data[v] = OldBinary::read_double(in, false);
   }
 }
 
