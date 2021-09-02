@@ -92,8 +92,8 @@ Postchunk::evalCachedString(xmlNode* element)
     break;
 
   case ti_get_case_from:
-    if (checkIndex(element, ti.getPos(), lword)) {
-      return copycase(word[ti.getPos()]->chunkPart(attr_items[ti.getContent()]),
+    if (checkIndex(element, ti.getPos()+1, lword)) {
+      return copycase(word[ti.getPos()+1]->chunkPart(attr_items[ti.getContent()]),
                       evalString(ti.getPointer()));
     }
     break;

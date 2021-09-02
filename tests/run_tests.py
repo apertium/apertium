@@ -5,6 +5,8 @@ import os
 sys.path.append(os.path.realpath("."))
 
 import unittest
+
+import cleanstream
 import tagger
 import pretransfer
 import transfer
@@ -20,7 +22,8 @@ if __name__ == "__main__":
                    transfer,
                    interchunk,
                    postchunk,
-                   adaptdocx]:
+                   adaptdocx,
+                   cleanstream]:
         suite = unittest.TestLoader().loadTestsFromModule(module)
         res = unittest.TextTestRunner(verbosity=2).run(suite)
         if(not(res.wasSuccessful())):
