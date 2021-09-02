@@ -180,8 +180,8 @@ bool PerceptronTagger::trainSentence(
         std::stringstream what_;
         what_ << "Tagged analysis unavailable in untagged/ambigous input.\n";
         what_ << "Available:\n";
-        for (analys_it = analyses.begin(); analys_it != analyses.end(); analys_it++) {
-          what_ << *analys_it << "\n";
+        for (auto& analys_it : analyses) {
+          what_ << analys_it << "\n";
         }
         what_ << "Required: " << *tagged_tok << "\n";
         what_ << "Rerun with --skip-on-error to skip this sentence.";
@@ -246,9 +246,8 @@ void PerceptronTagger::train(
     std::cerr << "Iteration " << i + 1 << " of " << iterations << "\n";
     avail_skipped = 0;
     tc.shuffle();
-    std::vector<TrainingSentence>::const_iterator si;
-    for (si = tc.sentences.begin(); si != tc.sentences.end(); si++) {
-      avail_skipped += trainSentence(*si, avg_weights);
+    for (auto& si : tc.sentences) {
+      avail_skipped += trainSentence(si, avg_weights);
       spec.clearCache();
     }
   }
@@ -278,18 +277,16 @@ template <typename T> void
 PerceptronTagger::extendAgendaAll(
     std::vector<T> &agenda,
     Optional<Analysis> analy) {
-  typename std::vector<T>::iterator agenda_it;
-  for (agenda_it = agenda.begin(); agenda_it != agenda.end(); agenda_it++) {
-    agenda_it->tagged.push_back(analy);
+  for (auto& it : agenda) {
+    it.tagged.push_back(analy);
   }
 }
 
 std::ostream&
 operator<<(std::ostream &out, const TaggedSentence &tagged) {
-  TaggedSentence::const_iterator tsi;
-  for (tsi = tagged.begin(); tsi != tagged.end(); tsi++) {
-    if (*tsi) {
-      out << **tsi;
+  for (auto& tsi : tagged) {
+    if (tsi) {
+      out << *tsi;
     } else {
       out << "*";
     }
@@ -309,9 +306,8 @@ operator<<(std::ostream &out, const PerceptronTagger::TrainingAgendaItem &tai) {
 
 std::ostream&
 operator<<(std::ostream &out, const std::vector<PerceptronTagger::TrainingAgendaItem> &agenda) {
-  std::vector<PerceptronTagger::TrainingAgendaItem>::const_iterator agenda_it;
-  for (agenda_it = agenda.begin(); agenda_it != agenda.end(); agenda_it++) {
-    out << *agenda_it;
+  for (auto& it : agenda) {
+    out << it;
   }
   out << "\n\n";
   return out;
@@ -326,9 +322,8 @@ operator<<(std::ostream &out, const PerceptronTagger::AgendaItem &ai) {
 
 std::ostream&
 operator<<(std::ostream &out, const std::vector<PerceptronTagger::AgendaItem> &agenda) {
-  std::vector<PerceptronTagger::AgendaItem>::const_iterator agenda_it;
-  for (agenda_it = agenda.begin(); agenda_it != agenda.end(); agenda_it++) {
-    out << *agenda_it;
+  for (auto& it : agenda) {
+    out << it;
   }
   out << "\n\n";
   return out;
