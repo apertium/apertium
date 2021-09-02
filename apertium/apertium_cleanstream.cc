@@ -59,7 +59,7 @@ main (int argc, char** argv)
   InputFile input;
   UFILE* output = u_finit(stdout, NULL, NULL);
   UChar32 c;
-  while (input.eof()) {
+  while (!input.eof()) {
     c = input.get();
     if (c == '^') {
       if (intoken) {
