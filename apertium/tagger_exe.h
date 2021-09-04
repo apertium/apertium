@@ -49,6 +49,8 @@ private:
   long double score_unigram1(UString_view lu);
   long double score_unigram2(UString_view lu);
   long double score_unigram3(UString_view lu);
+  void get_word_features(TaggerWord* w, UChar pref, uint64_t loc,
+                         std::set<UString>& feats);
 public:
   TaggerDataExe tde;
   Apertium::StreamedType read_streamed_type(InputFile& input);
@@ -56,6 +58,7 @@ public:
   void tag_unigram(InputFile& input, UFILE* output, int model);
   void tag_hmm(InputFile& input, UFILE* output);
   void tag_lsw(InputFile& input, UFILE* output);
+  void tag_perceptron(InputFile& input, UFILE* output);
   void load(FILE* in);
 };
 

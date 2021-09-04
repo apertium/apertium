@@ -42,6 +42,12 @@ struct int_int {
   uint64_t i2;
 };
 
+struct str_str_dbl {
+  StringRef s1;
+  StringRef s2;
+  double d;
+};
+
 namespace Apertium {
 class PerceptronSpec;
 }
@@ -131,18 +137,12 @@ public:
   /**
    * Perceptron
    */
-  Apertium::PerceptronSpec* spec = nullptr;
-  Apertium::FeatureVec percep_weights;
-
-  /* perceptron
-map<vector<string>, double> weights
-  int beam_width
-  vector<string> str_consts
-  vector<set<string>> set_consts
-  vector<FeatureDefn> features
-  vector<FeatureDefn> global_defns
-  FeatureDefn global_pred
-  */
+  uint64_t percep_window = 0;
+  uint64_t percep_prefix = 0;
+  uint64_t percep_suffix = 0;
+  bool percep_pairs = false;
+  str_str_dbl* percep_features = nullptr;
+  uint64_t percep_features_count = 0;
 
 public:
   TaggerDataExe();
@@ -168,6 +168,8 @@ public:
   bool search(str_int* ptr, uint64_t count, UString_view key, uint64_t& val);
   bool search(str_str_int* ptr, uint64_t count, UString_view k1,
               UString_view k2, uint64_t& val);
+  bool search(str_str_dbl* ptr, uint64_t count, UString_view k1,
+              UString_view k2, double& val);
   bool search(int_int* ptr, uint64_t count, uint64_t key, uint64_t& val);
 
   std::map<UString_view,

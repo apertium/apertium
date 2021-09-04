@@ -353,11 +353,33 @@ TaggerDataExe::read_compressed_hmm_lsw(FILE* in, bool is_hmm)
   }
 }
 
+void ignore_array(FILE* in, uint8_t depth)
+{
+  if (depth == 0) {
+    OldBinary::read_int(in, false);
+  } else {
+    for (uint64_t i = OldBinary::read_int(in, false); i > 0; i--) {
+      ignore_array(in, depth-1);
+    }
+  }
+}
+
 void
 TaggerDataExe::read_compressed_perceptron(FILE* in)
 {
-  spec = new Apertium::PerceptronSpec();
-  spec->read_compressed(in);
+  percep_window = 2;
+  percep_prefix = 0;
+  percep_suffix = 3;
+  percep_pairs = true;
+
+  // old bytecode stuff that we don't need
+  OldBinary::read_int(in, false); // beam_width - do we need this?
+  ignore_array(in, 2); // str_consts
+  ignore_array(in, 3); // set_consts
+  ignore_array(in, 2); // features
+  ignore_array(in, 2); // global_defns
+  ignore_array(in, 1); // global_pred
+
   if (OldBinary::read_int(in, false) == 1) {
     // open_class
     std::vector<uint64_t> open_class;
@@ -445,17 +467,65 @@ TaggerDataExe::read_compressed_perceptron(FILE* in)
   }
 
   // weights
+  map<UString, map<UString, double>> temp;
   //percep_weights;
-  uint64_t count = OldBinary::read_int(in, false);
-  for (uint64_t i = 0; i < count; i++) {
-    std::vector<std::string> v;
+  percep_features_count = OldBinary::read_int(in, false);
+  std::cerr << "reading in " << percep_features_count << " features\n";
+  for (uint64_t i = 0; i < percep_features_count; i++) {
+    UString tag;
+    UString feat;
     uint64_t count2 = OldBinary::read_int(in, false);
-    for (uint64_t j = 0; j < count2; j++) {
-      std::string s;
-      OldBinary::read_str(in, s, false);
-      v.push_back(s);
+    OldBinary::read_int(in, false); // length of feature number == 1
+    switch (OldBinary::read_int(in, false)) {
+    case 0:
+      feat = "bias"_u; break;
+    case 1:
+      feat = "w0s3"_u; break;
+    case 2:
+      feat = "w0s1"_u; break;
+    case 3:
+      feat = "m1t"_u; break;
+    case 4:
+      feat = "m2t"_u; break;
+    case 5:
+      feat = "m1tm2t"_u; break;
+    case 6:
+      feat = "w0w"_u; break;
+    case 7:
+      feat = "m1tw0w"_u; break;
+    case 8:
+      feat = "m1w"_u; break;
+    case 9:
+      feat = "m1s3"_u; break;
+    case 10:
+      feat = "m2w"_u; break;
+    case 11:
+      feat = "p1w"_u; break;
+    case 12:
+      feat = "p1s3"_u; break;
+    case 13:
+      feat = "p2w"_u; break;
+    default:
+      feat.clear();
+      // we're not reading eng.prob ... oops
     }
-    percep_weights.data[v] = OldBinary::read_double(in, false);
+    OldBinary::read_ustr(in, tag, false);
+    for (uint64_t j = 2; j < count2; j++) {
+      feat += '\0';
+      OldBinary::read_ustr(in, feat, false);
+    }
+    temp[tag][feat] = OldBinary::read_double(in, false);
+  }
+  percep_features = new str_str_dbl[percep_features_count];
+  uint64_t i = 0;
+  for (auto& it : temp) {
+    StringRef tg = str_write.add(it.first);
+    for (auto& it2 : it.second) {
+      percep_features[i].s1 = tg;
+      percep_features[i].s2 = str_write.add(it2.first);
+      percep_features[i].d = it2.second;
+      i++;
+    }
   }
 }
 
@@ -506,6 +576,27 @@ TaggerDataExe::search(str_str_int* ptr, uint64_t count,
     m = (l + r) / 2;
     if (str_write.get(ptr[m].s1) == key1 && str_write.get(ptr[m].s2) == key2) {
       val = ptr[m].i;
+      return true;
+    } else if ((str_write.get(ptr[m].s1) < key1) ||
+               (str_write.get(ptr[m].s1) == key1 &&
+                str_write.get(ptr[m].s2) < key2)) {
+      l = m + 1;
+    } else {
+      r = m - 1;
+    }
+  }
+  return false;
+}
+
+bool
+TaggerDataExe::search(str_str_dbl* ptr, uint64_t count,
+                      UString_view key1, UString_view key2, double& val)
+{
+  int64_t l = 0, r = count-1, m;
+  while (l <= r) {
+    m = (l + r) / 2;
+    if (str_write.get(ptr[m].s1) == key1 && str_write.get(ptr[m].s2) == key2) {
+      val = ptr[m].d;
       return true;
     } else if ((str_write.get(ptr[m].s1) < key1) ||
                (str_write.get(ptr[m].s1) == key1 &&

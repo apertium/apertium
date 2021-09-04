@@ -115,7 +115,7 @@ TaggerExe::read_tagger_word(InputFile& input)
         int tag = -1;
         size_t last_pos = 0;
         for (size_t i = 0; i < segments.size(); i++) {
-          if (i != 0) {
+          if (i > start) { // TODO: != 0 or > start?
             state.step('+');
           }
           state.step(segments[i], tde.alpha);
@@ -497,7 +497,130 @@ TaggerExe::tag_lsw(InputFile& input, UFILE* output)
 }
 
 void
+TaggerExe::get_word_features(TaggerWord* w, UChar pref, uint64_t loc,
+                             set<UString>& features)
+{
+  if (!w) return;
+  UString p;
+  p += pref;
+  p += StringUtils::itoa(loc);
+  auto s = w->get_superficial_form();
+  features.insert(p + "w\0"_u + s);
+  for (uint64_t i = 1; i < tde.percep_prefix; i++) {
+    UString p2 = p;
+    p2 += 'p';
+    p2 += StringUtils::itoa(i);
+    p2 += '\0';
+    features.insert(p2 + s.substr(0, i));
+  }
+  for (uint64_t i = 1; i < tde.percep_suffix; i++) {
+    UString p2 = p;
+    p2 += 's';
+    p2 += StringUtils::itoa(i);
+    p2 += '\0';
+    size_t n = s.size();
+    if (n > i) {
+      n -= i;
+    } else {
+      n = 0;
+    }
+    features.insert(p2 + s.substr(n));
+  }
+}
+
+void
+TaggerExe::tag_perceptron(InputFile& input, UFILE* output)
+{
+  build_match_finals();
+  build_prefer_rules();
+  vector<UString> arr_tg;
+  for (uint64_t i = 0; i < tde.array_tags_count; i++) {
+    arr_tg.push_back(UString{tde.str_write.get(tde.array_tags[i])});
+  }
+  TaggerWord::setArrayTags(arr_tg);
+
+  uint64_t ca_tag_kundef = tde.tag_index_count;
+  tde.search(tde.tag_index, tde.tag_index_count, "TAG_kUNDEF"_u, ca_tag_kundef);
+  uint64_t ca_tag_eof;
+  tde.search(tde.tag_index, tde.tag_index_count, "TAG_kEOF"_u, ca_tag_eof);
+
+  vector<uint64_t> tag_buffer(tde.percep_window, ca_tag_kundef);
+
+  vector<TaggerWord*> pre_buffer(tde.percep_window, nullptr);
+  vector<TaggerWord*> post_buffer(tde.percep_window, nullptr);
+
+  // cycle start point of buffer rather than having a bunch of copying
+  uint64_t buffer_index = 0;
+
+  TaggerWord* cur_word = read_tagger_word(input);
+  for (uint64_t i = 0; i < tde.percep_window; i++) {
+    post_buffer[i] = read_tagger_word(input);
+  }
+
+  while (cur_word) {
+    set<UString> features;
+    features.insert("bias"_u);
+    get_word_features(cur_word, 'w', 0, features);
+    for (uint64_t i = 0; i < tde.percep_window; i++) {
+      uint64_t loc = ((i + buffer_index) % tde.percep_window) + 1;
+      get_word_features(pre_buffer[i], 'm', loc, features);
+      get_word_features(post_buffer[i], 'p', loc, features);
+      if (pre_buffer[i]) {
+        UString p;
+        p += 'm';
+        p += StringUtils::itoa(loc);
+        p += 't';
+        p += '\0';
+        features.insert(p + arr_tg[tag_buffer[i]]);
+      }
+    }
+    if (tde.percep_pairs) {
+      // totally special-casing here - generalize?
+      uint64_t m1 = (tde.percep_window - buffer_index) % tde.percep_window;
+      uint64_t m2 = (tde.percep_window - buffer_index + 1) % tde.percep_window;
+      UString f = "m1tm2t"_u;
+      f += '\0';
+      f += arr_tg[tag_buffer[m1]];
+      f += '\0';
+      f += arr_tg[tag_buffer[m2]];
+      features.insert(f);
+      f = "m1tw0w"_u;
+      f += '\0';
+      f += arr_tg[tag_buffer[m1]];
+      f += '\0';
+      f += cur_word->get_superficial_form();
+      features.insert(f);
+    }
+    uint64_t best_tag = ca_tag_kundef;
+    double best_weight = 0.0;
+    for (auto& tag : cur_word->get_tags()) {
+      double weight = 0.0;
+      double w = 0.0;
+      for (auto& feat : features) {
+        if(tde.search(tde.percep_features, tde.percep_features_count,
+                      arr_tg[tag], feat, w)) {
+          weight += w;
+        }
+      }
+      if (best_tag == ca_tag_kundef || weight > best_weight) {
+        best_tag = tag;
+        best_weight = weight;
+      }
+    }
+    write(cur_word->get_lexical_form(best_tag, ca_tag_eof), output);
+
+    delete pre_buffer[tde.percep_window - buffer_index - 1];
+    pre_buffer[tde.percep_window - buffer_index - 1] = cur_word;
+    tag_buffer[tde.percep_window - buffer_index - 1] = best_tag;
+    cur_word = post_buffer[buffer_index];
+    post_buffer[buffer_index] = read_tagger_word(input);
+    buffer_index = (buffer_index + 1) % tde.percep_window;
+  }
+}
+
+void
 TaggerExe::load(FILE* in)
 {
-  tde.read_compressed_hmm_lsw(in, true);
+  //tde.read_compressed_hmm_lsw(in, true);
+  tde.read_compressed_perceptron(in);
 }
