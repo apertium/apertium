@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see <https://www.gnu.org/licenses/>.
  */
+#include "apertium/apertium_config.h"
 #include <apertium/apertium_re.h>
 #include <lttoolbox/compression.h>
 #include <iostream>
