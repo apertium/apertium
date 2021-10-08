@@ -35,7 +35,7 @@
         </xsl:when>
 	<xsl:otherwise/>
       </xsl:choose>
-    </xsl:for-each>    
+    </xsl:for-each>
   </section-rules>
 </xsl:template>
 
@@ -53,19 +53,19 @@
         </xsl:when>
 	<xsl:otherwise/>
       </xsl:choose>
-    </xsl:for-each>    
+    </xsl:for-each>
   </section-def-macros>
 </xsl:template>
 
 
 <xsl:template match="transfer">
-<transfer>
+<transfer default="{./@default}">
 <xsl:copy-of select="section-def-cats"/>
 <xsl:copy-of select="section-def-attrs"/>
 <xsl:copy-of select="section-def-vars"/>
 <xsl:copy-of select="section-def-lists"/>
 <xsl:apply-templates select="./section-def-macros"/>
-<xsl:apply-templates select="./section-rules"/> 
+<xsl:apply-templates select="./section-rules"/>
 </transfer>
 </xsl:template>
 
