@@ -573,7 +573,14 @@ void printBuffer()
 
 &#x9;\n|.&#x9;{
   last = "buffer";
-  bufferAppend(buffer, yytext);
+  symbuf += yytext;
+
+  if (utf8::is_valid(symbuf.begin(), symbuf.end())) {
+    const char *mb = symbuf.c_str();
+    UChar32 symbol = utf8::next(mb, mb+4);
+    symbuf.clear();
+    buffer += UString(1, symbol);
+  }
 }
 
 }
