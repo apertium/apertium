@@ -5,7 +5,9 @@ set -e -u
 
 cd "$(dirname "$0")"
 
-input='a "Hello, World" app
+declare -a input expected
+
+input[0]='a "Hello, World" app
 <code>update"</code>
 <img src="hi"/>NULL>
 <script>a=">";</script>
@@ -16,8 +18,7 @@ input='a "Hello, World" app
 <img/>DREI
 <img alt="THREE">FIER
 <img alt="FOUR"/>'
-
-expected='a "Hello, World" app[
+expected[0]='a "Hello, World" app[
 <code>]update"[<\/code>
 <img src="hi"\/>]NULL[>
 <script>a=">";<\/script>
@@ -30,6 +31,13 @@ expected='a "Hello, World" app[
 <img alt="]FOUR.[]["\/>
 ]'
 
-result=$(../../apertium/apertium-deshtml-alt <<< "${input}")
 
-diff <(echo "$expected") <(echo "$result")
+input[1]='<apertium-notrans>«</apertium-notrans>'
+expected[1]='.[][<apertium-notrans>«<\/apertium-notrans>
+]'
+
+
+for i in "${!input[@]}"; do
+    result=$(../../apertium/apertium-deshtml-alt <<< "${input[$i]}")
+    diff <(echo "${expected[$i]}") <(echo "${result}")
+done
