@@ -32,6 +32,7 @@ extern "C" {
 using namespace std;
 
 AccentsMap accentsMap(true);
+string symbuf;
 
 %}
 
@@ -262,11 +263,17 @@ AccentsMap accentsMap(true);
 
 
 [^A-Za-z\n]	{
-    UString wt = to_ustring(yytext);
-	UString wa = accentsMap.get(wt);
-	if (wa.empty()) {
-		fputus(wt, yyout);
- 	} else {
+    symbuf += yytext;
+	if (utf8::is_valid(symbuf.begin(), symbuf.end())) {
+      const char *mb = symbuf.c_str();
+      UChar32 symbol = utf8::next(mb, mb+4);
+      UString wt = UString(1, symbol);
+      symbuf.clear();
+      UString wa = accentsMap.get(wt);
+      if (wa.empty()) {
+        fputus(wt, yyout);
+      }
+      else {
         UString tmp;
         tmp += '\\';
         tmp += wa[0];
@@ -274,7 +281,8 @@ AccentsMap accentsMap(true);
         tmp += wa.substr(1);
         tmp += '}';
         fputus(tmp, yyout);
-    }
+      }
+   }
 }
 
 
