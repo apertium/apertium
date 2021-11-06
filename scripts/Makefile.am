@@ -14,6 +14,7 @@ dist_bin_SCRIPTS = \
 	apertium-editdist \
 	apertium-filter-dix \
 	apertium-filter-rules \
+	apertium-filter-xml \
 	apertium-genvdix \
 	apertium-genvldix \
 	apertium-genvrdix \
