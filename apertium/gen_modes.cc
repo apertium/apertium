@@ -196,6 +196,11 @@ void set_trace_opt(pipeline& mode)
     cmd += " -r";
   } else if (starts_with(cmd, "apertium-anaphora")) {
     cmd += " -d";
+  } else if (cmd.rfind("$1") != string::npos) {
+    size_t pos = cmd.find("$1");
+    if (pos != string::npos) {
+      cmd.replace(pos, 2, "-d");
+    }
   }
 }
 
