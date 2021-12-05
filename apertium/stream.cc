@@ -39,6 +39,10 @@ StreamedType Stream::get() {
     UChar32 c = TheCharacterStream.get();
     while (c != '/' && c != '$') {
       TheStreamedType.TheLexicalUnit->TheSurfaceForm += c;
+      if (c == '\\') {
+        c = TheCharacterStream.get();
+        TheStreamedType.TheLexicalUnit->TheSurfaceForm += c;
+      }
       c = TheCharacterStream.get();
     }
     if (c == '$') {
