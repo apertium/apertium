@@ -69,4 +69,26 @@
 </transfer>
 </xsl:template>
 
+<xsl:template match="interchunk">
+<interchunk>
+<xsl:copy-of select="section-def-cats"/>
+<xsl:copy-of select="section-def-attrs"/>
+<xsl:copy-of select="section-def-vars"/>
+<xsl:copy-of select="section-def-lists"/>
+<xsl:apply-templates select="./section-def-macros"/>
+<xsl:apply-templates select="./section-rules"/>
+</interchunk>
+</xsl:template>
+
+<xsl:template match="postchunk">
+<postchunk>
+<xsl:copy-of select="section-def-cats"/>
+<xsl:copy-of select="section-def-attrs"/>
+<xsl:copy-of select="section-def-vars"/>
+<xsl:copy-of select="section-def-lists"/>
+<xsl:apply-templates select="./section-def-macros"/>
+<xsl:apply-templates select="./section-rules"/>
+</postchunk>
+</xsl:template>
+
 </xsl:stylesheet>
