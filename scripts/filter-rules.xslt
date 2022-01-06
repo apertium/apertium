@@ -91,4 +91,18 @@
 </postchunk>
 </xsl:template>
 
+<xsl:template match="lrx|rules|rule|def-seqs|def-seq|match|select|remove|or|repeat|seq">
+	<xsl:copy>
+		<xsl:copy-of select="@*"/>
+		<xsl:for-each select="./*">
+			<xsl:choose>
+				<xsl:when test="./@v=$lang or count(./@v)=0">
+					<xsl:apply-templates select="."/>
+				</xsl:when>
+				<xsl:otherwise/>
+			</xsl:choose>
+		</xsl:for-each>
+	</xsl:copy>
+</xsl:template>
+
 </xsl:stylesheet>
