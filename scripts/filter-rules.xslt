@@ -21,6 +21,8 @@
   <xsl:output method="xml" encoding="UTF-8"/>
   <xsl:param name="lang"/> <!-- language of the variant being generated -->
 
+  <xsl:preserve-space elements="*" />
+
 <xsl:template match="section-rules">
   <section-rules>
     <xsl:for-each select="./rule">
@@ -91,10 +93,10 @@
 </postchunk>
 </xsl:template>
 
-<xsl:template match="lrx|rules|rule|def-seqs|def-seq|match|select|remove|or|repeat|seq">
+<xsl:template match="lrx|rules|rule|def-seqs|def-seq|match|select|remove|or|repeat|seq|metalrx|def-macros|def-macro|macro">
 	<xsl:copy>
 		<xsl:copy-of select="@*"/>
-		<xsl:for-each select="./*">
+		<xsl:for-each select="./node()">
 			<xsl:choose>
 				<xsl:when test="./@v=$lang or count(./@v)=0">
 					<xsl:apply-templates select="."/>
