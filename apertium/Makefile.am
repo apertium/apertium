@@ -536,6 +536,7 @@ apertium: Makefile.am apertium-header.sh
 	@echo '#!/usr/bin/env bash' > $@
 	@echo 'APERTIUM_PATH="$${APERTIUM_PATH:-$(prefix)/bin}"' >>$@
 	@echo 'APERTIUM_DATADIR="$${APERTIUM_DATADIR:-$(prefix)/share/apertium}"' >>$@
+	@echo 'apertium_version="Apertium $(VERSION)"' >>$@
 	@cat apertium-header.sh >>$@
 	@chmod a+x $@
 
