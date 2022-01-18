@@ -53,4 +53,7 @@ if allmacrodefs is not None:
 for macro in macros:
 	rules.remove(macro)
 
+if tree.getroot().tag == 'metalrx':
+	tree.getroot().tag = 'lrx'
+
 tree.write(target)
