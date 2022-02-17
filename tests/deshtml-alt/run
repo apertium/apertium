@@ -15,7 +15,7 @@ input[0]='a "Hello, World" app
 <img other="1">
 <img alt="TWO" other="x"/>
 <a href="hi">EINS<br/>ZWEI
-<img/>DREI
+<img/>DREI 𝜊
 <img alt="THREE">FIER
 <img alt="FOUR"/>'
 expected[0]='a "Hello, World" app[
@@ -26,7 +26,7 @@ expected[0]='a "Hello, World" app[
 <img other="1">
 <img alt="]TWO[" other="x"\/>
 <a href="hi">]EINS[<br\/>]ZWEI[
-<img\/>]DREI[
+<img\/>]DREI 𝜊[
 <img alt="]THREE[">]FIER[
 <img alt="]FOUR.[]["\/>
 ]'
