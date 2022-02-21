@@ -576,10 +576,9 @@ void printBuffer()
   symbuf += yytext;
 
   if (utf8::is_valid(symbuf.begin(), symbuf.end())) {
-    const char *mb = symbuf.c_str();
-    UChar32 symbol = utf8::next(mb, mb+4);
+    UString symbol = to_ustring(symbuf.c_str());
     symbuf.clear();
-    buffer += UString(1, symbol);
+    buffer += symbol;
   }
 }
 
@@ -641,10 +640,9 @@ void printBuffer()
   symbuf += yytext;
 
   if (utf8::is_valid(symbuf.begin(), symbuf.end())) {
-    const char *mb = symbuf.c_str();
-    UChar32 symbol = utf8::next(mb, mb+4);
+    UString symbol = to_ustring(symbuf.c_str());
     symbuf.clear();
-	put(UString(1, symbol), yyout);
+    put(symbol, yyout);
     offset++;
     hasWrite_dot = hasWrite_white = true;
   }
