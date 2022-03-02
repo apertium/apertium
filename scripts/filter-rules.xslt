@@ -60,8 +60,19 @@
 </xsl:template>
 
 
-<xsl:template match="transfer">
+<xsl:template match="transfer[@default]">
 <transfer default="{./@default}">
+<xsl:copy-of select="section-def-cats"/>
+<xsl:copy-of select="section-def-attrs"/>
+<xsl:copy-of select="section-def-vars"/>
+<xsl:copy-of select="section-def-lists"/>
+<xsl:apply-templates select="./section-def-macros"/>
+<xsl:apply-templates select="./section-rules"/>
+</transfer>
+</xsl:template>
+
+<xsl:template match="transfer">
+<transfer>
 <xsl:copy-of select="section-def-cats"/>
 <xsl:copy-of select="section-def-attrs"/>
 <xsl:copy-of select="section-def-vars"/>
