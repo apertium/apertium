@@ -1,5 +1,6 @@
 %module apertium_core
 
+%include <apertium/transfer_base.h>
 %include <apertium/interchunk.h>
 %include <apertium/pretransfer.h>
 %include <apertium/postchunk.h>
@@ -88,6 +89,10 @@ void pretransfer(int argc, char **argv, char *input_path, char *output_path)
   processStream(input, output, null_flush, surface_forms, compound_sep);
   u_fclose(output);
 }
+
+class ApertiumTransferBase: public TransferBase
+{
+};
 
 class ApertiumTransfer: public Transfer
 {
