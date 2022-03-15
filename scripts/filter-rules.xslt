@@ -59,11 +59,10 @@
   </section-def-macros>
 </xsl:template>
 
-
 <xsl:template match="transfer[@default]">
 <transfer default="{./@default}">
-<xsl:copy-of select="section-def-cats"/>
-<xsl:copy-of select="section-def-attrs"/>
+<xsl:apply-templates select="./section-def-cats"/>
+<xsl:apply-templates select="./section-def-attrs"/>
 <xsl:copy-of select="section-def-vars"/>
 <xsl:copy-of select="section-def-lists"/>
 <xsl:apply-templates select="./section-def-macros"/>
@@ -73,8 +72,8 @@
 
 <xsl:template match="transfer">
 <transfer>
-<xsl:copy-of select="section-def-cats"/>
-<xsl:copy-of select="section-def-attrs"/>
+<xsl:apply-templates select="./section-def-cats"/>
+<xsl:apply-templates select="./section-def-attrs"/>
 <xsl:copy-of select="section-def-vars"/>
 <xsl:copy-of select="section-def-lists"/>
 <xsl:apply-templates select="./section-def-macros"/>
@@ -84,8 +83,8 @@
 
 <xsl:template match="interchunk">
 <interchunk>
-<xsl:copy-of select="section-def-cats"/>
-<xsl:copy-of select="section-def-attrs"/>
+<xsl:apply-templates select="./section-def-cats"/>
+<xsl:apply-templates select="./section-def-attrs"/>
 <xsl:copy-of select="section-def-vars"/>
 <xsl:copy-of select="section-def-lists"/>
 <xsl:apply-templates select="./section-def-macros"/>
@@ -95,8 +94,8 @@
 
 <xsl:template match="postchunk">
 <postchunk>
-<xsl:copy-of select="section-def-cats"/>
-<xsl:copy-of select="section-def-attrs"/>
+<xsl:apply-templates select="./section-def-cats"/>
+<xsl:apply-templates select="./section-def-attrs"/>
 <xsl:copy-of select="section-def-vars"/>
 <xsl:copy-of select="section-def-lists"/>
 <xsl:apply-templates select="./section-def-macros"/>
@@ -104,7 +103,7 @@
 </postchunk>
 </xsl:template>
 
-<xsl:template match="lrx|rules|rule|def-seqs|def-seq|match|select|remove|or|repeat|seq|metalrx|def-macros|def-macro|macro">
+<xsl:template match="lrx|rules|rule|def-seqs|def-seq|match|select|remove|or|repeat|seq|metalrx|def-macros|def-macro|macro|section-def-cats|def-cat|cat-item|section-def-attrs|def-attr|attr-item">
 	<xsl:copy>
 		<xsl:copy-of select="@*"/>
 		<xsl:for-each select="./node()">
