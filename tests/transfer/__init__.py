@@ -120,3 +120,9 @@ class BincompatTest(BasicTransferTest):
 
     def compile(self):
         pass
+
+
+class EmptyTransferTest(TransferTest):
+    t1xdata =         "data/empty.t1x"
+    inputs =          ["^hun<prn><f>/ho<prn><f>$"]
+    expectedOutputs = ["^default<default>{^ho<prn><f>$}$"]
