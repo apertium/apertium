@@ -135,6 +135,7 @@ fi
 AC_OUTPUT([
 	Makefile apertium.pc
 	apertium/Makefile
+	data/Makefile
 	scripts/Makefile
 	tests/Makefile tests/tagger/Makefile
 	python/Makefile

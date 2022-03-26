@@ -1,7 +1,7 @@
 ACLOCAL_AMFLAGS=-I m4
 
-SUBDIRS = $(PACKAGE_NAME) scripts tests
-DIST_SUBDIRS = $(PACKAGE_NAME) scripts tests
+SUBDIRS = $(PACKAGE_NAME) data scripts tests
+DIST_SUBDIRS = $(PACKAGE_NAME) data scripts tests
 
 modesdir=$(prefix)/share/apertium/modes
 

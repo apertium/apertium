@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dictionary>
+	<alphabet>·ÀÁÂÄÇÈÉÊËÌÍÎÏÑÒÓÔÖÙÚÛÜàáâäçèéêëìíîïñòóôöùúûüABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzŀlčćšőßœ</alphabet>
+	<sdefs>
+		<sdef n="apos"/>
+		<sdef n="cm"/>
+		<sdef n="file"/>
+		<sdef n="guio"/>
+		<sdef n="lpar"/>
+		<sdef n="lquest"/>
+		<sdef n="rpar"/>
+		<sdef n="sent"/>
+		<sdef n="web"/>
+	</sdefs>
+	<pardefs>
+		<pardef n="emails">
+			<e><re>[a-z.]+@[a-z.]+</re><p><l></l><r><s n="web"/></r></p></e>
+		</pardef>
+		<pardef n="urls">
+			<e><re>(http://|https://|ftp://)?[áéíóúàèìòùäëïöüñça-z0-9](([\-_])?[áéíóúàèìòùäëïöüñça-z0-9])*(.[áéíóúàèìòùäëïöüñça-z0-9](([\-_])?[áéíóúàèìòùäëïöüñça-z0-9])*)*(.[a-z][a-z]|.aero|.asia|.biz|.cat|.com|.coop|.edu|.gov|.info|.int|.jobs|.mil|.mobi|.museum|.name|.net|.org|.pro|.tel|.travel)(/([áéíóúàèìòùäëïöüñça-z0-9\-_\?=&amp;\*,]+(.[áéíóúàèìòùäëïöüñça-z0-9\-_\?=&amp;\*,]+)*/)*([áéíóúàèìòùäëïöüñça-z0-9\-_\?=&amp;\*,]+(.[áéíóúàèìòùäëïöüñça-z0-9\-_\?=&amp;\*,]+)*)?)?</re><p><l></l><r><s n="web"/></r></p></e>
+		</pardef>
+		<pardef n="sentence_final">
+			<e><re>[.\?;:!]</re><p><l></l><r><s n="sent"/></r></p></e>
+		</pardef>
+		<pardef n="sentence_initial">
+			<e><re>[¿¡]</re><p><l></l><r><s n="lquest"/></r></p></e>
+		</pardef>
+		<pardef n="hyphen">
+			<e><p><l>-</l><r>-<s n="guio"/></r></p></e>
+		</pardef>
+		<pardef n="apostrophe">
+			<e><p><l>'</l><r>'<s n="apos"/></r></p></e>
+		</pardef>
+		<pardef n="parens">
+			<e><re>[\(\[]</re><p><l></l><r><s n="lpar"/></r></p></e>
+			<e><re>[\)\]]</re><p><l></l><r><s n="rpar"/></r></p></e>
+		</pardef>
+		<pardef n="ip">
+			<e><re>(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])(.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]))(.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]))(.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]))</re><p><l></l><r><s n="web"/></r></p></e>
+		</pardef>
+		<pardef n="filenames">
+			<e><re>[a-z\-_0-9]+.[a-z0-9]+</re><p><l></l><r><s n="file"/></r></p></e>
+		</pardef>
+		<pardef n="comma">
+			<e><p><l>,</l><r>,<s n="cm"/></r></p></e>
+		</pardef>
+	</pardefs>
+	<section id="internet" type="standard">
+		<e><par n="emails"/></e>
+		<e><par n="urls"/></e>
+		<e><par n="ip"/></e>
+		<e><par n="filenames"/></e>
+	</section>
+	<section id="punctuation" type="inconditional">
+		<e><par n="sentence_final"/></e>
+		<e><par n="sentence_initial"/></e>
+		<e><par n="apostrophe"/></e>
+		<e><par n="hyphen"/></e>
+		<e><par n="parens"/></e>
+		<e><par n="comma"/></e>
+	</section>
+</dictionary>
