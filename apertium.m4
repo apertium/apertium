@@ -72,6 +72,40 @@ AS_HELP_STRING([--with-lang][$1],dnl
 ])
 
 
+# AP_SHARED()
+#
+# Check that APERTIUM_SHARED exists, and if so sets AP_SHSRC.
+#
+# Also sets up --with-shared if the user wants to use the source
+# code checkout instead of installed files.
+AC_DEFUN([AP_SHARED],
+[
+  AC_ARG_VAR([AP_SHSRC], [Path to apertium-shared sources])
+  AC_ARG_WITH([shared],
+    [dnl
+AS_HELP_STRING([--with-shared],dnl
+[Uninstalled source directory for apertium-shared, defines AP_SHSRC for Makefile, otherwise these are set to paths of installed files.])
+    ],
+	[
+	  # I actually don't know what to do if the user decides to build
+	  # in a directory other than src/, but it looks like AP_CHECK_LING
+	  # doesn't handle that case either.
+	  AP_SHSRC="$withval/src"
+	  echo "Using apertium-shared from $withval"
+	],
+	[
+	  if test x"$1" = x; then
+	      PKG_CHECK_MODULES([APERTIUM_SHARED], [apertium-shared])
+	  else
+	      PKG_CHECK_MODULES([APERTIUM_SHARED], [apertium-shared >= $1])
+	  fi
+	  AP_SHSRC=`pkg-config --variable=srcdir apertium-shared`
+	])
+  if test -z "$AP_SHSRC" || ! test -d "$AP_SHSRC"; then
+    AC_MSG_ERROR([Could not find sources dir for apertium-shared (AP_SHSRC="$AP_SHSRC")])
+  fi
+])
+
 # AP_MKINCLUDE()
 #
 # Creates the file ap_include.am and sets the variable ap_include to
@@ -114,7 +148,7 @@ modes/%.mode: modes.xml
 
 apertium_modesdir=\$(prefix)/share/apertium/modes/
 install-modes: modes.xml
-	apertium-gen-modes -f \@S|@< \$(prefix)/share/apertium/\$(BASENAME)
+	apertium-gen-modes -f -l \@S|@< \$(prefix)/share/apertium/\$(BASENAME)
 	\$(MKDIR_P) \$(DESTDIR)\$(apertium_modesdir)
 	modes=\`xmllint --xpath '//mode@<:@@install="yes"@:>@/@name' \@S|@< | sed 's/ *name="\(@<:@^"@:>@*\)"/\1.mode /g'\`; \\
 		if test -n "\$\$modes"; then \\
@@ -125,7 +159,8 @@ install-modes: modes.xml
 uninstall-modes: modes.xml
 	files=\`xmllint --xpath '//mode@<:@@install="yes"@:>@/@name' \@S|@< | sed 's/ *name="\(@<:@^"@:>@*\)"/\1.mode /g'\`; \\
 	if test -n "\$\$files"; then \\
-		dir=\$(DESTDIR)\$(apertium_modesdir); \$(am__uninstall_files_from_dir)
+		dir=\$(DESTDIR)\$(apertium_modesdir); \\
+		\$(am__uninstall_files_from_dir); \\
 	fi
 
 .deps/.d:

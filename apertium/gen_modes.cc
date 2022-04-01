@@ -36,8 +36,9 @@ using namespace std;
 void endProgram(char *name)
 {
   cout << basename(name) << ": " << endl;
-  cout << "USAGE: " << basename(name) << " [-fvh] modes.xml [install_path]" << endl;
+  cout << "USAGE: " << basename(name) << " [-flvh] modes.xml [install_path]" << endl;
   cout << "  -f, --full:      expect absolute installation path" << endl;
+  cout << "  -l, --local:     output to current directory rather than directory of modes.xml" << endl;
   cout << "  -v, --verbose:   print more detailed messages" << endl;
   cout << "  -h, --help:      display this help" << endl;
   exit(EXIT_FAILURE);
@@ -136,6 +137,8 @@ void set_debug_suffixes(pipeline& prog)
       cmd.debug_suffix.push_back("-tagger");
     } else if (starts_with(c, "apertium-pretransfer")) {
       cmd.debug_suffix.push_back("-pretransfer");
+    } else if (starts_with(c, "apertium-posttransfer")) {
+      cmd.debug_suffix.push_back("-posttransfer");
     } else if (starts_with(c, "lrx-proc")) {
       cmd.debug_suffix.push_back("-lex");
       cmd.debug_suffix.push_back("-lextor");
@@ -309,20 +312,22 @@ int main(int argc, char* argv[])
   static struct option long_options[] =
     {
      {"full",       0, 0, 'f'},
+     {"local",      0, 0, 'l'},
      {"verbose",    0, 0, 'v'},
      {"help",       0, 0, 'h'}
     };
 #endif
 
   bool full = false;
+  bool local = false;
   bool verbose = false;
 
   while(true) {
 #if HAVE_GETOPT_LONG
     int option_index;
-    int c = getopt_long(argc, argv, "fvh", long_options, &option_index);
+    int c = getopt_long(argc, argv, "flvh", long_options, &option_index);
 #else
-    int c = getopt(argc, argv, "fvh");
+    int c = getopt(argc, argv, "flvh");
 #endif
 
     if (c == -1) {
@@ -332,6 +337,10 @@ int main(int argc, char* argv[])
     switch(c) {
     case 'f':
       full = true;
+      break;
+
+    case 'l':
+      local = true;
       break;
 
     case 'v':
@@ -361,6 +370,10 @@ int main(int argc, char* argv[])
       cerr << basename(argv[0]) << " ERROR: Installation prefix is the same directory as modes.xml; give a different INSTALLDIR." << endl;
       exit(EXIT_FAILURE);
     }
+  }
+
+  if (local) {
+    dev_dir = ".";
   }
 
   fs::create_directories(dev_dir / "modes");
