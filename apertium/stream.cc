@@ -17,6 +17,8 @@
 
 #include "exception.h"
 
+#include <utility>
+
 namespace Apertium {
 Stream::Stream(TaggerFlags &Flags_)
     : TheFlags(Flags_) {}
