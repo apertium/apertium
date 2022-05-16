@@ -22,6 +22,7 @@ stuff) to create new postchunk tests."""
     inputs = [""]
     expectedOutputs = [""]
     expectedRetCodeFail = False
+    expectedCompRetCodeFail = False
 
     def alarmHandler(self, signum, frame):
         raise Alarm
@@ -57,8 +58,10 @@ stuff) to create new postchunk tests."""
         compileCmd = ["../apertium/apertium-preprocess-transfer",
                       self.t1xdata,
                       self.bindata]
-        self.assertEqual(call(compileCmd),
-                         0)
+        if self.expectedCompRetCodeFail:
+            self.assertNotEqual(call(compileCmd), 0)
+        else:
+            self.assertEqual(call(compileCmd), 0)
 
     def runTest(self):
         self.compile()
@@ -126,3 +129,8 @@ class EmptyTransferTest(TransferTest):
     t1xdata =         "data/empty.t1x"
     inputs =          ["^hun<prn><f>/ho<prn><f>$"]
     expectedOutputs = ["^default<default>{^ho<prn><f>$}$"]
+
+
+class BadAttrTest(TransferTest):
+    t1xdata = "data/bad-attr.t1x"
+    expectedCompRetCodeFail = True
