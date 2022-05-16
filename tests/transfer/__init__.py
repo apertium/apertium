@@ -55,16 +55,18 @@ stuff) to create new postchunk tests."""
         return b"".join(output).decode('utf-8')
 
     def compile(self):
-        compileCmd = ["../apertium/apertium-preprocess-transfer",
-                      self.t1xdata,
-                      self.bindata]
+        retCode = call(["../apertium/apertium-preprocess-transfer",
+						self.t1xdata,
+						self.bindata])
         if self.expectedCompRetCodeFail:
-            self.assertNotEqual(call(compileCmd), 0)
+            self.assertNotEqual(retCode, 0)
         else:
-            self.assertEqual(call(compileCmd), 0)
+            self.assertEqual(retCode, 0)
+        return retCode == 0
 
     def runTest(self):
-        self.compile()
+        if not self.compile():
+            return
         try:
             cmd = ["../apertium/apertium-transfer"] \
                 + self.flags                        \
