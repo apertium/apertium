@@ -5,8 +5,8 @@
 
 #define fileno _fileno
 
-#if defined(_WIN32) && defined(isatty)
-#undef isatty
+#if defined(_WIN32)
+#include <io.h>
 #define isatty _isatty
 #endif
 

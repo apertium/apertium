@@ -18,7 +18,7 @@ UString storeAndWriteWblank(InputFile& input, UFILE* output)
     mychar = input.get();
     if(input.eof())
     {
-      cerr << "ERROR: Unexpected EOF" << endl;
+      std::cerr << "ERROR: Unexpected EOF" << std::endl;
       exit(EXIT_FAILURE);
     }
 
@@ -55,7 +55,7 @@ void readAndWriteUntil(InputFile& input, UFILE* output, int const charcode)
   {
     if(input.eof())
     {
-      cerr << "ERROR: Unexpected EOF" << endl;
+      std::cerr << "ERROR: Unexpected EOF" << std::endl;
       exit(EXIT_FAILURE);
     }
     u_fputc(mychar, output);
@@ -85,7 +85,7 @@ void procWord(InputFile& input, UFILE* output, bool surface_forms, bool compound
   {
     if(input.eof())
     {
-      cerr << "ERROR: Unexpected EOF" << endl;
+      std::cerr << "ERROR: Unexpected EOF" << std::endl;
       exit(EXIT_FAILURE);
     }
 
@@ -180,7 +180,7 @@ void processStream(InputFile& input, UFILE* output, bool null_flush, bool surfac
           }
           else
           {
-            cerr << "ERROR: Wordbound blank isn't immediately followed by the Lexical Unit." << endl;
+            std::cerr << "ERROR: Wordbound blank isn't immediately followed by the Lexical Unit." << std::endl;
             exit(EXIT_FAILURE);
           }
         }

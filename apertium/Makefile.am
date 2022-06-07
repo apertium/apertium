@@ -138,6 +138,10 @@ cc_sources = a.cc \
 	     unigram_tagger.cc \
 	     xml_reader.cc
 
+if WINDOWS
+cc_sources += win32/regex.c
+endif
+
 library_includedir = $(includedir)/$(PACKAGE_NAME)-$(VERSION_API)/$(PACKAGE_NAME)
 library_include_HEADERS = $(h_sources)
 
@@ -216,13 +220,12 @@ apertium_DATA = deformat.xsl reformat.xsl new2old.xsl lexchoice.xsl \
 				tagger.dtd interchunk.dtd format.dtd  transfer.dtd postchunk.dtd modes.dtd \
 				tagger.rnc interchunk.rnc format.rnc  transfer.rnc postchunk.rnc modes.rnc
 
+LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
+
 apertium_cleanstream_SOURCES = apertium_cleanstream.cc
 apertium_pretransfer_SOURCES = apertium_pretransfer.cc
-apertium_pretransfer_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 apertium_posttransfer_SOURCES = apertium_posttransfer.cc
-apertium_posttransfer_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 apertium_multiple_translations_SOURCES = apertium-multiple-translations.cc
-apertium_multiple_translations_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 apertium_destxt_SOURCES = apertium_destxt.cc
 apertium_retxt_SOURCES = apertium_retxt.cc
 apertium_deshtml_SOURCES = apertium_deshtml.cc
@@ -248,53 +251,36 @@ apertium_repptx_SOURCES = apertium_repptx.cc
 apertium_desmediawiki_SOURCES = apertium_desmediawiki.cc
 apertium_remediawiki_SOURCES = apertium_remediawiki.cc
 apertium_prelatex_SOURCES = apertium_prelatex.cc
-apertium_prelatex_LDADD= -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 apertium_postlatex_SOURCES = apertium_postlatex.cc
-apertium_postlatex_LDADD= -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 apertium_postlatex_raw_SOURCES = apertium_postlatex_raw.cc
-apertium_postlatex_raw_LDADD= -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_tagger_SOURCES = apertium_tagger.cc
-apertium_tagger_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_perceptron_trace_SOURCES = apertium_perceptron_trace.cc
-apertium_perceptron_trace_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_tmxbuild_SOURCES = apertium_tmxbuild.cc
-apertium_tmxbuild_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_preprocess_transfer_SOURCES = transferpp.cc
-apertium_preprocess_transfer_LDADD = \
-                                     -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_filter_ambiguity_SOURCES = apertium_filter_ambiguity.cc
-apertium_filter_ambiguity_LDADD = \
-                                  -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_transfer_SOURCES = apertium_transfer.cc
-apertium_transfer_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_interchunk_SOURCES = apertium_interchunk.cc
-apertium_interchunk_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_postchunk_SOURCES = apertium_postchunk.cc
-apertium_postchunk_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_tagger_apply_new_rules_SOURCES = apertium_tagger_apply_new_rules.cc
-apertium_tagger_apply_new_rules_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_tagger_readwords_SOURCES = apertium_tagger_readwords.cc
-apertium_tagger_readwords_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_wblank_attach_SOURCES = wblank-attach.cc
 apertium_wblank_detach_SOURCES = wblank-detach.cc
 apertium_wblank_mode_SOURCES = wblank-mode.cc
 
 apertium_adapt_docx_SOURCES = adapt_docx.cc
-apertium_adapt_docx_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES) $(ICU_LIBS)
 
 apertium_gen_modes_SOURCES = gen_modes.cc
-apertium_gen_modes_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 if WINDOWS
 AM_CPPFLAGS = -I$(top_srcdir)/apertium/win32 -I$(top_srcdir) $(APERTIUM_CFLAGS) $(ICU_CFLAGS)
