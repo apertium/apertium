@@ -27,6 +27,7 @@
 #include <apertium/tagger_data_hmm.h>
 #include <apertium/tsx_reader.h>
 #include <lttoolbox/string_utils.h>
+#include <lttoolbox/lt_locale.h>
 
 using namespace Apertium;
 
@@ -56,6 +57,7 @@ void help(char *name) {
 }
 
 int main(int argc, char* argv[]) {
+  LtLocale::tryToSetLocale();
   string filein="";
   string fileout="";
   string filetsx="";

@@ -5,6 +5,7 @@
 #include <apertium/perceptron_tagger.h>
 #include <apertium/shell_utils.h>
 #include <apertium/stream_tagger.h>
+#include <lttoolbox/lt_locale.h>
 
 namespace Apertium {
 
@@ -104,5 +105,6 @@ int perceptron_trace(int argc, char* argv[])
 
 
 int main(int argc, char* argv[]) {
+  LtLocale::tryToSetLocale();
   return Apertium::perceptron_trace(argc, argv);
 }
