@@ -315,7 +315,9 @@ Transfer::processLu(xmlNode* element)
 
   in_lu = false;
 
-  if(last_lword == 1) {
+  // if word == nullptr then we're outputting a word
+  // inside an npar=0 macro and there's not much we can do
+  if(last_lword == 1 && word != nullptr) {
     out_wblank = word[0]->getWblank();
   }
 
