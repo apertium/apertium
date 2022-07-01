@@ -37,6 +37,7 @@ protected:
   string attrib_str(const UString& name);
   void parseError(UString const &message);
   void parseError(const string& message);
+  void warnAtLoc();
   void unexpectedTag();
   void stepToTag();
   void stepPastSelfClosingTag(UString const &tag);

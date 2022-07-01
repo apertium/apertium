@@ -121,61 +121,60 @@ TRXReader::insertTags(int const base, UString const &tags)
 void
 TRXReader::parse()
 {
-  procDefCats();
-  step();
-  while(name == "#text"_u || name == "#comment"_u)
-  {
-    step();
+  stepToNextTag();
+  if (name == "transfer"_u || name == "interchunk"_u || name == "postchunk"_u) {
+    stepToNextTag();
+  } else {
+    unexpectedTag();
+  }
+
+  if (name == "section-def-cats"_u) {
+    procDefCats();
+    stepToNextTag();
+  } else {
+    unexpectedTag();
   }
 
   if(name == "section-def-attrs"_u)
   {
     procDefAttrs();
-    step();
-    while(name == "#text"_u || name == "#comment"_u)
-    {
-      step();
-    }
+    stepToNextTag();
   }
 
   if(name == "section-def-vars"_u)
   {
     procDefVars();
-    step();
-    while(name == "#text"_u || name == "#comment"_u)
-    {
-      step();
-    }
+    stepToNextTag();
   }
 
   if(name == "section-def-lists"_u)
   {
     procDefLists();
-    step();
-    while(name == "#text"_u || name == "#comment"_u)
-    {
-      step();
-    }
+    stepToNextTag();
   }
 
   if(name == "section-def-macros"_u)
   {
     procDefMacros();
-    step();
-    while(name == "#text"_u || name == "#comment"_u)
-    {
-      step();
-    }
+    stepToNextTag();
   }
 
   if(name == "section-rules"_u)
   {
     procRules();
-    step();
-    while(name == "#text"_u || name == "#comment"_u)
-    {
-      step();
-    }
+    stepToNextTag();
+  }
+}
+
+void
+TRXReader::checkClip()
+{
+  UString part = attrib("part"_u);
+  auto& attrs = td.getAttrItems();
+  if (part.empty()) {
+    parseError("<clip> missing attribute part"_u);
+  } else if (attrs.find(part) == attrs.end()) {
+    parseError("Undefined attr-item "_u + part);
   }
 }
 
@@ -205,23 +204,20 @@ TRXReader::procRules()
       }
       else
       {
-        for(set<int>::iterator it = alive_states.begin(), limit = alive_states.end();
-            it != limit; it++)
-        {
-          if(td.seen_rules.find(*it) == td.seen_rules.end())
+        for (auto& it : alive_states) {
+          if(td.seen_rules.find(it) == td.seen_rules.end())
           {
             const int symbol = td.countToFinalSymbol(count);
-            const int fin = td.getTransducer().insertSingleTransduction(symbol, *it);
+            const int fin = td.getTransducer().insertSingleTransduction(symbol, it);
             td.getTransducer().setFinal(fin);
-            td.seen_rules[*it] = count;
+            td.seen_rules[it] = count;
           }
           else
           {
-            cerr << "Warning (" << xmlTextReaderGetParserLineNumber(reader);
-            cerr << "): "
-              << "Paths to rule " << count << " blocked by rule " << td.seen_rules[*it]
-              << "." << endl;
-
+            warnAtLoc();
+            cerr << "Paths to rule " << count
+                 << " blocked by rule " << td.seen_rules[it]
+                 << "." << endl;
           }
         }
       }
@@ -246,15 +242,13 @@ TRXReader::procRules()
 
         for(; range.first != range.second; range.first++)
         {
-          for(set<int>::iterator it = alive_states.begin(), limit = alive_states.end();
-              it != limit; it++)
-          {
+          for (auto& it : alive_states) {
             // mark of begin of word
-            int tmp = td.getTransducer().insertSingleTransduction('^', *it);
-            if(*it != td.getTransducer().getInitial())
+            int tmp = td.getTransducer().insertSingleTransduction('^', it);
+            if(it != td.getTransducer().getInitial())
             {
               // insert optional blank between two words
-              int alt = td.getTransducer().insertSingleTransduction(' ', *it);
+              int alt = td.getTransducer().insertSingleTransduction(' ', it);
               td.getTransducer().linkStates(alt, tmp, '^');
             }
 
@@ -276,28 +270,26 @@ TRXReader::procRules()
     }
     else if(name == "let"_u)
     {
-      int count = 0;
       int lineno = xmlTextReaderGetParserLineNumber(reader);
       while(name != "let"_u || type != XML_READER_TYPE_END_ELEMENT)
       {
-        step();
+        stepToNextTag();
         if(type == XML_ELEMENT_NODE)
         {
-          count++;
-
-          if(name == "clip"_u && attrib("side"_u) == "sl"_u)
-          {
-            cerr << "Warning (" << lineno;
-            cerr << "): assignment to 'sl' side has no effect." << endl;
+          if(name == "clip"_u) {
+            checkClip();
+            if (attrib("side"_u) == "sl"_u) {
+              cerr << "Warning (" << lineno;
+              cerr << "): assignment to 'sl' side has no effect." << endl;
+            }
           }
-        }
-
-        if(count != 0)
-        {
           break;
         }
       }
 
+    }
+    else if(name == "clip"_u) {
+      checkClip();
     }
   }
 }
@@ -327,7 +319,7 @@ TRXReader::procDefAttrs()
   while(type != XML_READER_TYPE_END_ELEMENT ||
         name != "section-def-attrs"_u)
   {
-    step();
+    stepToNextTag();
     if(name == "attr-item"_u)
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
@@ -351,14 +343,6 @@ TRXReader::procDefAttrs()
         attrname.clear();
       }
     }
-    else if(name == "#text"_u)
-    {
-      // do nothing
-    }
-    else if(name == "#comment"_u)
-    {
-      // do nothing
-    }
     else if(name == "section-def-attrs"_u)
     {
       // do nothing
@@ -373,22 +357,12 @@ TRXReader::procDefAttrs()
 void
 TRXReader::procDefCats()
 {
-  while(type == XML_READER_TYPE_END_ELEMENT || !(name == "transfer"_u || name == "interchunk"_u || name == "postchunk"_u))
-  {
-    step();
-    if(name != "#text"_u && name != "transfer"_u &&  name != "interchunk"_u &&
-       name != "postchunk"_u && name != "section-def-cats"_u && name != "#comment"_u)
-    {
-      unexpectedTag();
-    }
-  }
-
   UString catname;
 
   while(type != XML_READER_TYPE_END_ELEMENT ||
         name != "section-def-cats"_u)
   {
-    step();
+    stepToNextTag();
     if(name == "cat-item"_u)
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
@@ -414,14 +388,6 @@ TRXReader::procDefCats()
         catname.clear();
       }
     }
-    else if(name == "#text"_u)
-    {
-      // do nothing
-    }
-    else if(name == "#comment"_u)
-    {
-      // do nothing
-    }
     else if(name == "section-def-cats"_u)
     {
       // do nothing
@@ -439,21 +405,13 @@ TRXReader::procDefVars()
   while(type != XML_READER_TYPE_END_ELEMENT ||
         name != "section-def-vars"_u)
   {
-    step();
+    stepToNextTag();
     if(name == "def-var"_u)
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
         createVar(attrib("n"_u), attrib("v"_u));
       }
-    }
-    else if(name == "#text"_u)
-    {
-      // do nothing
-    }
-    else if(name == "#comment"_u)
-    {
-      // do nothing
     }
     else if(name == "section-def-vars"_u)
     {
@@ -474,7 +432,7 @@ TRXReader::procDefLists()
   while(type != XML_READER_TYPE_END_ELEMENT ||
 	name != "section-def-lists"_u)
   {
-    step();
+    stepToNextTag();
     if(name == "list-item"_u)
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
@@ -492,14 +450,6 @@ TRXReader::procDefLists()
       {
         listname.clear();
       }
-    }
-    else if(name == "#text"_u)
-    {
-      // do nothing
-    }
-    else if(name == "#comment"_u)
-    {
-      // do nothing
     }
     else if(name == "section-def-lists"_u)
     {
@@ -519,7 +469,7 @@ TRXReader::procDefMacros()
   while(type != XML_READER_TYPE_END_ELEMENT ||
 	name != "section-def-macros"_u)
   {
-    step();
+    stepToNextTag();
     if(name == "def-macro"_u)
     {
       if(type != XML_READER_TYPE_END_ELEMENT)

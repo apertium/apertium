@@ -16,6 +16,7 @@
 #include <apertium/tagger.h>
 
 #include "align.h"
+#include <lttoolbox/exception.h>
 #include "exception.h"
 #include "linebreak.h"
 #include "unigram_tagger.h"
@@ -161,8 +162,13 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
     switch (*TheFunctionType) {
     case Tagger:
       if (!TheFunctionTypeType) {
-        HMM HiddenMarkovModelTagger_(TheFlags);
-        g_FILE_Tagger(HiddenMarkovModelTagger_);
+        try {
+          PerceptronTagger percep(TheFlags);
+          g_StreamTagger(percep);
+        } catch (DeserialisationException) {
+          HMM HiddenMarkovModelTagger_(TheFlags);
+          g_FILE_Tagger(HiddenMarkovModelTagger_);
+        }
         break;
       }
       switch (*TheFunctionTypeType) {

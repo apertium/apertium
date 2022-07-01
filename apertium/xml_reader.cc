@@ -94,6 +94,13 @@ XMLReader::parseError(const std::string& message)
 }
 
 void
+XMLReader::warnAtLoc()
+{
+  cerr << "Warning at line " << xmlTextReaderGetParserLineNumber(reader)
+       << ", column " << xmlTextReaderGetParserColumnNumber(reader) << ": ";
+}
+
+void
 XMLReader::unexpectedTag()
 {
   parseError("unexpected '<"_u + name + ">' tag"_u);

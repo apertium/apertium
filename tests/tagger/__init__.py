@@ -334,6 +334,39 @@ class AmbiguityClassTest(unittest.TestCase):
             "'cat' must be output and tagged as an adjective or a noun.\n" +
             "Actual output:\n{}".format(subst_stdout))
 
+    @unittest.expectedFailure
+    def test_g_vs_plus(self):
+        inp = tmp("""
+^TV-karriere/TV<np><al><cmp>+karriere<n><m><sg><ind>/Tv<n><m><sg><ind><cmp>+karriere<n><m><sg><ind>$
+""".strip())
+        subst_stdout = check_output(
+            [APERTIUM_TAGGER, '-g', "data/nob.prob", inp],
+            stderr=self.devnull)
+        out = subst_stdout.split("\n")
+        wantanyof = {'^TV<np><al><cmp>+karriere<n><m><sg><ind>$',
+                     '^Tv<n><m><sg><ind><cmp>+karriere<n><m><sg><ind>$'}
+        acceptable = set(out).intersection(wantanyof)
+        msg = ("Couldn't find any of \n{}\nin output.\n" +
+               "Actual output:\n {}\n").format(wantanyof,
+                                               subst_stdout)
+        self.assertTrue(bool(acceptable), msg)
+
+    def test_undefined_mult_vs_plus(self):
+        inp = tmp("""
+^yz/y<n><f><cmp>+z<n><ut>$
+""".strip())
+        subst_stdout = check_output(
+            [APERTIUM_TAGGER, '-g', "data/nob.prob", inp],
+            stderr=self.devnull)
+        out = subst_stdout.split("\n")
+        wantanyof = {'^y<n><f><cmp>+z<n><ut>$',
+                     }
+        acceptable = set(out).intersection(wantanyof)
+        msg = ("Couldn't find any of \n{}\nin output.\n" +
+               "Actual output:\n {}\n").format(wantanyof,
+                                               subst_stdout)
+        self.assertTrue(bool(acceptable), msg)
+
 
 class FilterAmbiguityTest(unittest.TestCase):
     def test_unicode_tsx(self):

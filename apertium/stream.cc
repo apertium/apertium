@@ -17,6 +17,8 @@
 
 #include "exception.h"
 
+#include <utility>
+
 namespace Apertium {
 Stream::Stream(TaggerFlags &Flags_)
     : TheFlags(Flags_) {}
@@ -39,6 +41,10 @@ StreamedType Stream::get() {
     UChar32 c = TheCharacterStream.get();
     while (c != '/' && c != '$') {
       TheStreamedType.TheLexicalUnit->TheSurfaceForm += c;
+      if (c == '\\') {
+        c = TheCharacterStream.get();
+        TheStreamedType.TheLexicalUnit->TheSurfaceForm += c;
+      }
       c = TheCharacterStream.get();
     }
     if (c == '$') {

@@ -104,6 +104,7 @@ FileMorphoStream::lrlmClassify(UString const &str, int &ivwords)
   int floor = 0;
   int last_type = -1;
   int last_pos = 0;
+  int initial_iv = ivwords;
 
   ms.init(me->getInitial());
   for(int i = 0, limit = str.size(); i != limit; i++)
@@ -171,7 +172,7 @@ FileMorphoStream::lrlmClassify(UString const &str, int &ivwords)
       {
         if (debug)
         {
-          cerr<<"Warning: There is not coarse tag for the fine tag '"<< str.substr(floor) <<"'\n";
+          cerr<<"Warning: There is not coarse tag for the fine tag '"<< str.substr(floor) <<"' of '" << str << "'\n";
           cerr<<"         This is because of an incomplete tagset definition or a dictionary error\n";
         }
         vwords[ivwords]->add_tag(ca_tag_kundef, str.substr(floor) , td->getPreferRules());
@@ -202,7 +203,7 @@ FileMorphoStream::lrlmClassify(UString const &str, int &ivwords)
         {
           if (debug)
           {
-            cerr<<"Warning: There is not coarse tag for the fine tag '"<< str.substr(floor) <<"'\n";
+            cerr<<"Warning: There is not coarse tag for the fine tag '"<< str.substr(floor) <<"' of '" << str << "'\n";
             cerr<<"         This is because of an incomplete tagset definition or a dictionary error\n";
           }
           vwords[ivwords]->add_tag(ca_tag_kundef, str.substr(floor) , td->getPreferRules());
@@ -218,10 +219,21 @@ FileMorphoStream::lrlmClassify(UString const &str, int &ivwords)
     val = ca_tag_kundef;
     if (debug)
     {
-      cerr<<"Warning: There is not coarse tag for the fine tag '"<< str.substr(floor) <<"'\n";
+      cerr<<"Warning: There is not coarse tag for the fine tag '"<< str.substr(floor) <<"' of '" << str << "'\n";
       cerr<<"         This is because of an incomplete tagset definition or a dictionary error\n";
     }
-
+    if(ivwords > initial_iv) {
+      // We've partially added a multiword -- undo the previous add to avoid outputting a partial (chopped off) lexical form:
+      while(ivwords > initial_iv) {
+        delete vwords[ivwords];
+        vwords.pop_back();
+        ivwords--;
+      }
+      vwords[ivwords]->set_plus_cut(false);
+      vwords[ivwords]->erase_tag(last_type);
+      vwords[ivwords]->add_tag(last_type, str, td->getPreferRules());
+      return;
+    }
   }
   vwords[ivwords]->add_tag(val, str.substr(floor), td->getPreferRules());
 }

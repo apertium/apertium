@@ -123,7 +123,7 @@ class SuperblankTest(PostchunkTest):
                         "[blank1];; ^n_n4<SN><sg>{^worda<n><ND><m>$ ;[blank2] ^wordb# xyz<n><ND><f>$ ;[blank3]; ^wordc<n>$}$ ;[blank4]; ", #superblank rule 3 -> Output rule has one <b/>, print one blank, then flush all after rule output
                         "[blank1];; ^n_n<SN><sg>{^worda<n><ND><m>$ ;[blank2] ^wordb# xyz<n><ND><f>$}$ ;[blank3]; ^n_n4<SN><sg>{^worda<n><ND><m>$ ;[blank4] ^wordb# xyz<n><ND><f>$ ;[blank5]; ^wordc<n>$}$ ;[blank6]; ", #Multiple matching rules
                         "[blank1];; ^n_n2<SN><sg>{^worda<n><ND><m>$ ;[blank2] ^wordb# xyz<n><ND><f>$ ;[blank3]; ^wordc<n>$}$ ;[blank4]; ^n_k<SN><sgn>{^worda<nn><NDn><mn>$}$ ;[blank5]" ] #Matching rule followed by unknown word
-    
+
     expectedOutputs = [ "[blank1];; ^wordb# xyz<n><ND><f>$ ;[blank2] [blank2.1]; ^worda<n><ND><m>$ ^worda+wordb# xyz$ ;[blank3]; ",
                         "[blank1];; ^worda<nn><NDn><mn>$ ;[blank2] ^wordb# xyz<nn><NDn><fn>$ ;[blank3]; ",
                         "[blank1];; ^wordb# xyz<n><ND><f>$ ;[blank2] ^worda<n><ND><m>$ ;[blank3]; ^worda+wordb# xyz$ ^wordc<n>$ ;[blank4]; ",
@@ -138,3 +138,8 @@ class BincompatTest(SimplePostchunkTest):
 
     def compile(self):
         pass
+
+class EmptyTransferTest(PostchunkTest):
+    t2xdata =         "data/empty.t1x"
+    inputs =          ["^default<default>{^ho<prn><f>$}$"]
+    expectedOutputs = ["^ho<prn><f>$"]

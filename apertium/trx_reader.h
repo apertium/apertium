@@ -49,6 +49,8 @@ private:
   void procDefMacros();
   void procRules();
 
+  void checkClip();
+
   void insertCatItem(UString const &name, UString const &lemma,
 		     UString const &tags);
   void createVar(UString const &name, UString const &initial_value);

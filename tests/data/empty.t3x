@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- -*- nxml -*- -->
+<postchunk>
+  <section-def-cats>
+    <def-cat n="n">
+      <cat-item name="n"/>
+    </def-cat>
+    <def-cat n="hasmacro">
+      <cat-item name="hasmacro"/>
+    </def-cat>
+    <def-cat n="thing">
+      <cat-item name="thing"/>
+    </def-cat>
+    <def-cat n="nomacro">
+      <cat-item name="nomacro"/>
+    </def-cat>
+    <def-cat n="n_n">
+      <cat-item name="n_n"/>
+    </def-cat>
+    <def-cat n="n_n2">
+      <cat-item name="n_n2"/>
+    </def-cat>
+    <def-cat n="n_n3">
+      <cat-item name="n_n3"/>
+    </def-cat>
+    <def-cat n="n_n4">
+      <cat-item name="n_n4"/>
+    </def-cat>
+    <def-cat n="thing_wb">
+      <cat-item name="thing_wb"/>
+    </def-cat>
+  </section-def-cats>
+
+
+  <section-def-attrs>
+    <def-attr n="gen">
+      <attr-item tags="m"/>
+      <attr-item tags="mf"/>
+      <attr-item tags="nt"/>
+      <attr-item tags="f"/>
+      <attr-item tags="GD"/>
+    </def-attr>
+    <def-attr n="art">
+      <attr-item tags="def"/>
+      <attr-item tags="ind"/>
+    </def-attr>
+    <def-attr n="a_verb">
+      <attr-item tags="nomacro"/>
+      <attr-item tags="nomacro.pstv"/>
+    </def-attr>
+    <def-attr n="temps">
+      <attr-item tags="inf"/>
+      <attr-item tags="imp"/>
+      <attr-item tags="pres"/>
+      <attr-item tags="pret"/>
+      <attr-item tags="pp"/>
+    </def-attr>
+    <def-attr n="voice">
+      <attr-item tags="pasv"/>
+    </def-attr>
+    <def-attr n="nbr">
+      <attr-item tags="sg"/>
+      <attr-item tags="pl"/>
+      <attr-item tags="sp"/>
+      <attr-item tags="ND"/>
+    </def-attr>
+  </section-def-attrs>
+
+  <section-def-vars>
+    <def-var n="foo"/>
+  </section-def-vars>
+
+
+  <section-def-macros>
+    <def-macro n="out_adj" npar="1">
+      <choose><when>
+        <test><and>
+          <equal><clip pos="1" part="nbr"/><lit-tag v="sg"/></equal>
+          <equal><clip pos="1" part="art"/><lit v=""/></equal>
+        </and></test>
+        <let><clip pos="1" part="nbr"/><concat><clip pos="1" part="nbr"/><lit-tag v="def"/></concat></let>
+        <let><clip pos="1" part="gen"/><concat><lit v=""/></concat></let>
+      </when></choose>
+
+      <out><lu><clip pos="1" part="whole"/></lu></out>
+    </def-macro>
+
+    <def-macro n="default_to_chunk_number" npar="2"
+               c="arg1: lu, arg2: chunk">
+      <choose><when>
+        <test><and>
+          <not><equal><clip pos="2" part="nbr"/><lit v=""/></equal></not>
+          <equal><clip pos="1" part="nbr"/><lit-tag v="ND"/></equal>
+        </and></test>
+        <let><clip pos="1" part="nbr"/><clip pos="2" part="nbr"/></let>
+      </when></choose>
+    </def-macro>
+  </section-def-macros>
+
+
+  <section-rules>
+ </section-rules>
+</postchunk>

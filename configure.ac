@@ -2,7 +2,7 @@ AC_PREREQ(2.52)
 
 m4_define([PKG_VERSION_MAJOR], [3])
 m4_define([PKG_VERSION_MINOR], [8])
-m4_define([PKG_VERSION_PATCH], [0])
+m4_define([PKG_VERSION_PATCH], [1])
 
 AC_INIT([apertium], [PKG_VERSION_MAJOR.PKG_VERSION_MINOR.PKG_VERSION_PATCH], [apertium-stuff@lists.sourceforge.net], [apertium], [https://wiki.apertium.org/])
 
@@ -79,7 +79,9 @@ AC_LANG(C++)
 AC_HEADER_STDC
 AC_CHECK_HEADERS([stdlib.h string.h unistd.h stddef.h filesystem string_view])
 AC_CHECK_LIB([stdc++fs], [_ZNSt12experimental10filesystem2v112current_pathEv])
-AC_CHECK_HEADER([utf8.h], [], [AC_MSG_ERROR([You don't have utfcpp installed.])])
+AC_CHECK_HEADER([utf8cpp/utf8.h], [CPPFLAGS="-I/usr/include/utf8cpp/ $CPPFLAGS"], [
+  AC_CHECK_HEADER([utf8.h], [], [AC_MSG_ERROR([You don't have utfcpp installed.])])
+])
 
 AC_CHECK_DECLS([fread_unlocked, fwrite_unlocked, fgetc_unlocked, fputc_unlocked, fputs_unlocked, getopt, getopt_long])
 AC_CHECK_FUNCS([setlocale strdup getopt snprintf])
@@ -89,17 +91,14 @@ AM_CONDITIONAL([WINDOWS], [test x$version_type = xwindows])
 #AS_IF([test x$version_type = xwindows], [AC_DEFINE(HAVE_GETOPT_LONG,0)], [])
 
 # Checks for highest supported C++ standard
-AX_CHECK_COMPILE_FLAG([-std=c++20], [CXXFLAGS="$CXXFLAGS -std=c++20"], [
- AX_CHECK_COMPILE_FLAG([-std=c++2a], [CXXFLAGS="$CXXFLAGS -std=c++2a"], [
-  AX_CHECK_COMPILE_FLAG([-std=c++17], [CXXFLAGS="$CXXFLAGS -std=c++17"], [
-   AX_CHECK_COMPILE_FLAG([-std=c++1z], [CXXFLAGS="$CXXFLAGS -std=c++1z"], [
-    AX_CHECK_COMPILE_FLAG([-std=c++14], [CXXFLAGS="$CXXFLAGS -std=c++14"], [
-     AX_CHECK_COMPILE_FLAG([-std=c++1y], [CXXFLAGS="$CXXFLAGS -std=c++1y"], [])
-    ])
-   ])
-  ])
- ])
+for version in 23 2b 20 2a 17 1z 14 1y; do
+  version_flag="-std=c++${version}"
+  AX_CHECK_COMPILE_FLAG([${version_flag}], [break], [version_flag=none])
+done
+AS_IF([test "$version_flag" == none], [
+  AC_MSG_ERROR([Could not enable at least C++1y (C++14) - upgrade your compiler])
 ])
+CXXFLAGS="$CXXFLAGS ${version_flag}"
 
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <cstddef>

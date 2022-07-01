@@ -578,8 +578,9 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
     case FILTERIN: {
       const VMSet& set_op = get_set_operand();
       std::vector<std::string> &str_arr = stack.top().strArr();
+      In comp(set_op);
       str_arr.erase(std::remove_if(
-          str_arr.begin(), str_arr.end(), std::not1(In(set_op))));
+          str_arr.begin(), str_arr.end(), [&](const std::string& e){return !comp(e);} ));
     } break;
     /*
     case SETHAS: {
@@ -599,8 +600,9 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
     case SETHASALL: {
       const VMSet& set_op = get_set_operand();
       std::vector<std::string> str_arr = stack.pop_off().strArr();
+      In comp(set_op);
       stack.push(
-        std::find_if(str_arr.begin(), str_arr.end(), std::not1(In(set_op))) ==
+        std::find_if(str_arr.begin(), str_arr.end(), [&](const std::string& e){return !comp(e);} ) ==
         str_arr.end()
       );
     } break;

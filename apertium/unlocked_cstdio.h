@@ -40,8 +40,4 @@
 #define fread_unlocked fread
 #endif
 
-#ifdef _WIN32
-#include <utf8_fwrap.h>
-#endif
-
 #endif

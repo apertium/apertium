@@ -17,9 +17,9 @@ apertium_core_module = Extension(
 	language = 'c++',
     sources = ['apertium_core.i'],
     swig_opts=['-c++', '-I..', '-I@top_srcdir@/apertium', '-Wall'],
-    include_dirs= ['@top_srcdir@', '@top_srcdir@/apertium'],
+    include_dirs=['@top_srcdir@', '@top_srcdir@/apertium'] + '@LIBXML2_CFLAGS@'.replace('-I', '').split(),
     library_dirs=['@top_srcdir@/apertium/.libs'],
-	libraries = ['apertium@VERSION_MAJOR@'],
+    libraries = ['apertium@VERSION_MAJOR@'],
     extra_compile_args=compile_args,
     extra_link_args=link_args,
 )
@@ -35,5 +35,5 @@ setup(
     maintainer_email='@PACKAGE_BUGREPORT@',
     ext_modules=[apertium_core_module],
     py_modules=['apertium_core'],
-	data_files=[]
+    data_files=[],
 )

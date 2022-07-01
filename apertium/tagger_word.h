@@ -90,6 +90,11 @@ public:
    virtual void add_tag(TTag &t, const UString &lf, vector<UString> const &prefer_rules);
   virtual void add_tag(const uint64_t t, const UString& lf, const vector<ApertiumRE>& prefer_rules);
 
+   /** Remove tag from the set of all possible tags of the word.
+    *  @param t the coarse tag
+    */
+   virtual void erase_tag(TTag &t);
+
    /** Get the set of tags of this word.
     *  @return  set of tags.
     */

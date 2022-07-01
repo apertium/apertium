@@ -28,6 +28,7 @@ message () {
   echo " -o direction     translation direction using the translation memory,"
   echo "                  by default 'direction' is used instead"
   echo " -l               lists the available translation directions and exits"
+  echo " -V               print Apertium version"
   # This is wrong and should be deprecated, but until all tools consider \0 flush without -z then this helps to have
   echo " -z               force null-flush mode on all parts of the pipe"
   echo " direction        typically, LANG1-LANG2, but see modes.xml in language data"
@@ -447,7 +448,7 @@ while [[ $OPTIND -le $# ]]; do
 done
 
 
-while getopts ":uahlzf:d:m:o:nH" opt; do
+while getopts ":uahlVzf:d:m:o:nH" opt; do
   case "$opt" in
     f) FORMAT=$OPTARG ;;
     d) DATADIR=$OPTARG ;;
@@ -458,6 +459,7 @@ while getopts ":uahlzf:d:m:o:nH" opt; do
     H) FORMAT_OPTIONS+=(-o) ;;
     a) OPTION_TAGGER="-m" ;;
     l) LIST_MODES_AND_EXIT=true ;;
+	V) echo "${apertium_version}" && exit 0 ;;
     z) NULL_FLUSH+=(-z) ;;
     h) message ;;
     \?) echo "ERROR: Unknown option $OPTARG" >&2; message >&2 ;;

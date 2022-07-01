@@ -22,6 +22,7 @@ stuff) to create new postchunk tests."""
     inputs = [""]
     expectedOutputs = [""]
     expectedRetCodeFail = False
+    expectedCompRetCodeFail = False
 
     def alarmHandler(self, signum, frame):
         raise Alarm
@@ -54,14 +55,18 @@ stuff) to create new postchunk tests."""
         return b"".join(output).decode('utf-8')
 
     def compile(self):
-        compileCmd = ["../apertium/apertium-preprocess-transfer",
-                      self.t1xdata,
-                      self.bindata]
-        self.assertEqual(call(compileCmd),
-                         0)
+        retCode = call(["../apertium/apertium-preprocess-transfer",
+						self.t1xdata,
+						self.bindata])
+        if self.expectedCompRetCodeFail:
+            self.assertNotEqual(retCode, 0)
+        else:
+            self.assertEqual(retCode, 0)
+        return retCode == 0
 
     def runTest(self):
-        self.compile()
+        if not self.compile():
+            return
         try:
             cmd = ["../apertium/apertium-transfer"] \
                 + self.flags                        \
@@ -120,3 +125,14 @@ class BincompatTest(BasicTransferTest):
 
     def compile(self):
         pass
+
+
+class EmptyTransferTest(TransferTest):
+    t1xdata =         "data/empty.t1x"
+    inputs =          ["^hun<prn><f>/ho<prn><f>$"]
+    expectedOutputs = ["^default<default>{^ho<prn><f>$}$"]
+
+
+class BadAttrTest(TransferTest):
+    t1xdata = "data/bad-attr.t1x"
+    expectedCompRetCodeFail = True

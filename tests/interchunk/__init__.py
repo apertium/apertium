@@ -106,14 +106,14 @@ class SuperblankTest(InterchunkTest):
                         "[blank1];; ^test1<test1>{^worda<n><ND><m>$}$ ;[blank2] ^test3<test3>{^wordb# xyz<n><ND><f>$}$ ;[blank3]; ^test2<test2>{^wordc# xyz<n><ND><f>$}$ [blank4];;", #superblankrule4 -> Output rule has one <b/>, print one blank, then flush all after rule output
                         "[blank1];; ^test1<test1>{^worda<n><ND><m>$}$ ;[blank2] ^test2<test2>{^wordb# xyz<n><ND><f>$}$ ;[blank3]; ^test3<test3>{^wordc# xyz<n><ND><f>$}$ [blank4];; ^test1<test1>{^worda<n><ND><m>$}$ ;[blank5] ^test3<test3>{^wordb# xyz<n><ND><f>$}$ ;[blank6]; ^test2<test2>{^wordc# xyz<n><ND><f>$}$ [blank7];;", #Multiple matching rules -> superblankrule1 & superblankrule4
                         "[blank1];; ^test1<test1>{^worda<n><ND><m>$}$ ;[blank2] ^test2<test2>{^wordb# xyz<n><ND><f>$}$ ;[blank3]; ^test2x<test2z>{^wordc# xyz<n><ND><f>$}$ [blank4];; ^test2<test2x>{^wordb# xyz<n><ND><f>$}$ ;[blank5];"] #Rule followed by unknown
-    
+
     expectedOutputs = [ "[blank1];; ^test2<test2>{^wordb# xyz<n><ND><f>$}$ ;[blank2] ^test1<test1>{^worda<n><ND><m>$}$ ;[blank3]; ^test3<test3>{^wordc# xyz<n><ND><f>$}$ [blank4];;",
                         "[blank1];; ^test1<test1x>{^worda<n><ND><m>$}$ ;[blank2] ^test2<test2x>{^wordb# xyz<n><ND><f>$}$ ;[blank3]; ^test3<test3x>{^wordc# xyz<n><ND><f>$}$ [blank4];;",
                         "[blank1];; ^test2<test2>{^wordb# xyz<n><ND><f>$}$ ;[blank2] ^test2<test2>{^worda<n><ND><m>$}$ ;[blank3]; ^test2<test2>{^wordb# xyz<n><ND><f>$}$ ^test2<test2>{^worda<n><ND><m>$}$ ^test3<test3>{^wordc# xyz<n><ND><f>$}$ [blank4];;",
                         "[blank1];; ^test2<test2>{^wordb# xyz<n><ND><f>$}$^test3<test3>{^worda<n><ND><m>$}$^test1<test1>{^wordc# xyz<n><ND><f>$}$ ;[blank2]  ;[blank3];  [blank4];;",
                         "[blank1];; ^test3<test3>{^wordb# xyz<n><ND><f>$}$^test1<test1>{^worda<n><ND><m>$}$ ;[blank2] ^test2<test2>{^wordc# xyz<n><ND><f>$}$ ;[blank3];  [blank4];;",
                         "[blank1];; ^test2<test2>{^wordb# xyz<n><ND><f>$}$ ;[blank2] ^test1<test1>{^worda<n><ND><m>$}$ ;[blank3]; ^test3<test3>{^wordc# xyz<n><ND><f>$}$ [blank4];; ^test3<test3>{^wordb# xyz<n><ND><f>$}$^test1<test1>{^worda<n><ND><m>$}$ ;[blank5] ^test2<test2>{^wordc# xyz<n><ND><f>$}$ ;[blank6];  [blank7];;",
-                        "[blank1];; ^test2<test2>{^wordb# xyz<n><ND><f>$}$ ;[blank2] ^test1<test1>{^worda<n><ND><m>$}$ ;[blank3]; ^test2x<test2z>{^wordc# xyz<n><ND><f>$}$ [blank4];; ^test2<test2x>{^wordb# xyz<n><ND><f>$}$ ;[blank5];"] 
+                        "[blank1];; ^test2<test2>{^wordb# xyz<n><ND><f>$}$ ;[blank2] ^test1<test1>{^worda<n><ND><m>$}$ ;[blank3]; ^test2x<test2z>{^wordc# xyz<n><ND><f>$}$ [blank4];; ^test2<test2x>{^wordb# xyz<n><ND><f>$}$ ;[blank5];"]
 
 
 class BincompatTest(SimpleInterchunkTest):
@@ -121,3 +121,8 @@ class BincompatTest(SimpleInterchunkTest):
 
     def compile(self):
         pass
+
+class EmptyTransferTest(InterchunkTest):
+    t2xdata =         "data/empty.t1x"
+    inputs =          ["^default<default>{^ho<prn><f>$}$"]
+    expectedOutputs = ["^default<default>{^ho<prn><f>$}$"]

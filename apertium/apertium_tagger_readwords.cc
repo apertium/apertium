@@ -84,6 +84,7 @@ void help(char *name) {
 
 
 int main(int argc, char* argv[]) {
+  LtLocale::tryToSetLocale();
   string tsxfile="";
   string probfile="";
   int corpus_length=-1;

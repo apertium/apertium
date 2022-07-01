@@ -30,7 +30,7 @@
 #include <sys/types.h>
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include "apertium_config.h"
 #endif
 
 /* The `emacs' switch turns on certain matching commands

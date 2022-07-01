@@ -21,6 +21,8 @@
   <xsl:output method="xml" encoding="UTF-8"/>
   <xsl:param name="lang"/> <!-- language of the variant being generated -->
 
+  <xsl:preserve-space elements="*" />
+
 <xsl:template match="section-rules">
   <section-rules>
     <xsl:for-each select="./rule">
@@ -35,7 +37,7 @@
         </xsl:when>
 	<xsl:otherwise/>
       </xsl:choose>
-    </xsl:for-each>    
+    </xsl:for-each>
   </section-rules>
 </xsl:template>
 
@@ -53,20 +55,66 @@
         </xsl:when>
 	<xsl:otherwise/>
       </xsl:choose>
-    </xsl:for-each>    
+    </xsl:for-each>
   </section-def-macros>
 </xsl:template>
 
-
-<xsl:template match="transfer">
-<transfer>
-<xsl:copy-of select="section-def-cats"/>
-<xsl:copy-of select="section-def-attrs"/>
+<xsl:template match="transfer[@default]">
+<transfer default="{./@default}">
+<xsl:apply-templates select="./section-def-cats"/>
+<xsl:apply-templates select="./section-def-attrs"/>
 <xsl:copy-of select="section-def-vars"/>
 <xsl:copy-of select="section-def-lists"/>
 <xsl:apply-templates select="./section-def-macros"/>
-<xsl:apply-templates select="./section-rules"/> 
+<xsl:apply-templates select="./section-rules"/>
 </transfer>
+</xsl:template>
+
+<xsl:template match="transfer">
+<transfer>
+<xsl:apply-templates select="./section-def-cats"/>
+<xsl:apply-templates select="./section-def-attrs"/>
+<xsl:copy-of select="section-def-vars"/>
+<xsl:copy-of select="section-def-lists"/>
+<xsl:apply-templates select="./section-def-macros"/>
+<xsl:apply-templates select="./section-rules"/>
+</transfer>
+</xsl:template>
+
+<xsl:template match="interchunk">
+<interchunk>
+<xsl:apply-templates select="./section-def-cats"/>
+<xsl:apply-templates select="./section-def-attrs"/>
+<xsl:copy-of select="section-def-vars"/>
+<xsl:copy-of select="section-def-lists"/>
+<xsl:apply-templates select="./section-def-macros"/>
+<xsl:apply-templates select="./section-rules"/>
+</interchunk>
+</xsl:template>
+
+<xsl:template match="postchunk">
+<postchunk>
+<xsl:apply-templates select="./section-def-cats"/>
+<xsl:apply-templates select="./section-def-attrs"/>
+<xsl:copy-of select="section-def-vars"/>
+<xsl:copy-of select="section-def-lists"/>
+<xsl:apply-templates select="./section-def-macros"/>
+<xsl:apply-templates select="./section-rules"/>
+</postchunk>
+</xsl:template>
+
+<xsl:template match="lrx|rules|rule|def-seqs|def-seq|match|select|remove|or|repeat|seq|metalrx|def-macros|def-macro|macro|section-def-cats|def-cat|cat-item|section-def-attrs|def-attr|attr-item">
+	<xsl:copy>
+		<xsl:copy-of select="@*[not(local-name()='v')]"/>
+		<xsl:for-each select="./node()">
+			<xsl:choose>
+				<xsl:when test="./@v=$lang or count(./@v)=0">
+					<xsl:apply-templates select="."/>
+				</xsl:when>
+				<xsl:otherwise/>
+			</xsl:choose>
+		</xsl:for-each>
+	</xsl:copy>
 </xsl:template>
 
 </xsl:stylesheet>

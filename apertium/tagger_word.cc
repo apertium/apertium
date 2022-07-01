@@ -95,6 +95,11 @@ TaggerWord::match(UString const &s, UString const &pattern)
 }
 
 void
+TaggerWord::erase_tag(TTag &t){
+  tags.erase(t);
+}
+
+void
 TaggerWord::add_tag(TTag &t, const UString &lf, vector<UString> const &prefer_rules){
 
   //Tag is added only is it is not present yet
