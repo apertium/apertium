@@ -104,16 +104,23 @@
 </xsl:template>
 
 <xsl:template match="lrx|rules|rule|def-seqs|def-seq|match|select|remove|or|repeat|seq|metalrx|def-macros|def-macro|macro|section-def-cats|def-cat|cat-item|section-def-attrs|def-attr|attr-item">
-	<xsl:copy>
-		<xsl:copy-of select="@*[not(local-name()='v')]"/>
-		<xsl:for-each select="./node()">
-			<xsl:choose>
-				<xsl:when test="./@v=$lang or count(./@v)=0">
+	<xsl:choose>
+		<xsl:when test="./@v=$lang or count(./@v)=0">
+			<xsl:copy>
+				<xsl:copy-of select="@*[not(local-name()='v')]"/>
+				<xsl:for-each select="./node()">
 					<xsl:apply-templates select="."/>
-				</xsl:when>
-				<xsl:otherwise/>
-			</xsl:choose>
-		</xsl:for-each>
+				</xsl:for-each>
+			</xsl:copy>
+		</xsl:when>
+		<xsl:otherwise/>
+	</xsl:choose>
+</xsl:template>
+
+<xsl:template match="with-param|param">
+	<xsl:copy>
+		<xsl:copy-of select="@*"/>
+		<xsl:apply-templates select="node()"/>
 	</xsl:copy>
 </xsl:template>
 
