@@ -171,6 +171,7 @@ bin_PROGRAMS = apertium-cleanstream \
 	       apertium-deswxml \
 	       apertium-desxlsx \
 	       apertium-desxpresstag \
+		   apertium-extract-caps \
 	       apertium-filter-ambiguity \
 	       apertium-gen-modes \
 	       apertium-interchunk \
@@ -277,6 +278,8 @@ apertium_tagger_readwords_SOURCES = apertium_tagger_readwords.cc
 apertium_wblank_attach_SOURCES = wblank-attach.cc
 apertium_wblank_detach_SOURCES = wblank-detach.cc
 apertium_wblank_mode_SOURCES = wblank-mode.cc
+
+apertium_extract_caps_SOURCES = apertium_extract_caps.cc
 
 apertium_adapt_docx_SOURCES = adapt_docx.cc
 
