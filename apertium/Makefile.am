@@ -142,7 +142,7 @@ if WINDOWS
 cc_sources += win32/regex.c
 endif
 
-library_includedir = $(includedir)/$(PACKAGE_NAME)-$(VERSION_API)/$(PACKAGE_NAME)
+library_includedir = $(includedir)/$(PACKAGE_NAME)
 library_include_HEADERS = $(h_sources)
 
 GENERATEDSCRIPTS = apertium-gen-deformat apertium-gen-reformat \
@@ -154,9 +154,9 @@ GENERATEDSCRIPTS = apertium-gen-deformat apertium-gen-reformat \
                    apertium-validate-acx \
                    apertium-utils-fixlatex
 
-lib_LTLIBRARIES = libapertium3.la
-libapertium3_la_SOURCES = $(h_sources) $(cc_sources)
-libapertium3_la_LDFLAGS = -version-info $(SOVERSION) -release $(VERSION_API)
+lib_LTLIBRARIES = libapertium.la
+libapertium_la_SOURCES = $(h_sources) $(cc_sources)
+libapertium_la_LDFLAGS = -version-info $(VERSION_ABI)
 
 bin_PROGRAMS = apertium-cleanstream \
 	       apertium-deshtml \
@@ -212,7 +212,7 @@ bin_SCRIPTS = $(GENERATEDSCRIPTS)
 instdir = apertium
 
 apertiumdir = $(prefix)/share/apertium
-apertiuminclude = $(prefix)/include/apertium-$(VERSION_API)
+apertiuminclude = $(prefix)/include
 apertiumlib = $(prefix)/lib
 apertiumsysconf = $(prefix)/etc/apertium
 
@@ -221,7 +221,7 @@ apertium_DATA = deformat.xsl reformat.xsl new2old.xsl lexchoice.xsl \
 				tagger.dtd interchunk.dtd format.dtd  transfer.dtd postchunk.dtd modes.dtd \
 				tagger.rnc interchunk.rnc format.rnc  transfer.rnc postchunk.rnc modes.rnc
 
-LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
+LDADD = -lapertium $(lib_LTLIBRARIES)
 
 apertium_cleanstream_SOURCES = apertium_cleanstream.cc
 apertium_pretransfer_SOURCES = apertium_pretransfer.cc
