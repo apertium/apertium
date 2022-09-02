@@ -25,7 +25,7 @@ class TransferBase
 {
 protected:
   Alphabet alphabet;
-  MatchExe* me;
+  MatchExe* me = nullptr;
   MatchState ms;
   map<UString, ApertiumRE> attr_items;
   map<UString, UString> variables;
@@ -36,30 +36,30 @@ protected:
   vector<xmlNode*> macro_map;
   vector<xmlNode*> rule_map;
   vector<size_t> rule_lines;
-  xmlDoc* doc;
-  xmlNode* root_element;
+  xmlDoc* doc = nullptr;
+  xmlNode* root_element = nullptr;
 
   queue<UString> blank_queue;
   Buffer<TransferToken> input_buffer;
-  int lword;
+  int lword = 0;
   vector<UString*> tmpword;
   vector<UString*> tmpblank;
-  xmlNode* lastrule;
-  unsigned int nwords;
+  xmlNode* lastrule = nullptr;
+  unsigned int nwords = 0;
 
-  UFILE* output;
+  UFILE* output = nullptr;
 
-  int32_t any_char;
-  int32_t any_tag;
+  int32_t any_char = 0;
+  int32_t any_tag = 0;
 
-  bool in_let_var;
-  bool in_out;
+  bool in_let_var = false;
+  bool in_out = false;
   UString var_val;
   map<xmlNode *, TransferInstr> evalStringCache;
 
-  bool null_flush;
-  bool internal_null_flush;
-  bool trace;
+  bool null_flush = false;
+  bool internal_null_flush = false;
+  bool trace = false;
 
   void collectMacros(xmlNode *localroot);
   void collectRules(xmlNode *localroot);

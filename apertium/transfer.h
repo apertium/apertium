@@ -29,23 +29,23 @@ class Transfer : public TransferBase
 {
 private:
 
-  TransferWord **word;
-  int last_lword;
-  bool in_lu;
-  bool in_wblank;
+  TransferWord **word = nullptr;
+  int last_lword = 0;
+  bool in_lu = false;
+  bool in_wblank = false;
   UString out_wblank;
   map <UString, UString> var_out_wblank;
-  
+
   FSTProcessor fstp;
   FSTProcessor extended;
-  bool isExtended;
+  bool isExtended = false;
 
   enum OutputType{lu,chunk};
 
-  OutputType defaultAttrs;
-  bool preBilingual;
-  bool useBilingual;
-  bool trace_att;
+  OutputType defaultAttrs = lu;
+  bool preBilingual = false;
+  bool useBilingual = true;
+  bool trace_att = false;
   UString emptyblank;
 
   void readBil(string const &filename);

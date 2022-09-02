@@ -24,7 +24,6 @@
 using namespace std;
 
 Postchunk::Postchunk()
-  : word(0), in_wblank(false), inword(false)
 {}
 
 bool

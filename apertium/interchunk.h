@@ -27,10 +27,10 @@ using namespace std;
 class Interchunk : public TransferBase
 {
 private:
-  InterchunkWord **word;
-  int last_lword;
+  InterchunkWord **word = nullptr;
+  int last_lword = 0;
 
-  bool inword;
+  bool inword = false;
 
   void processLet(xmlNode *localroot);
   void processOut(xmlNode *localroot);

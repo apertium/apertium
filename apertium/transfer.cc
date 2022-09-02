@@ -24,9 +24,6 @@
 using namespace std;
 
 Transfer::Transfer()
-  : word(nullptr), last_lword(0), in_lu(false), in_wblank(false),
-    isExtended(false), defaultAttrs(lu), preBilingual(false),
-    useBilingual(true), trace_att(false)
 {}
 
 void

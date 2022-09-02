@@ -17,42 +17,16 @@
  * 02111-1307, USA.
  */
 
-#include <cstring>
-#include <string>
-#include <iostream>
-#include <cstdio>
-#include <list>
 #include <lttoolbox/ustring.h>
 #include <lttoolbox/lt_locale.h>
 #include <lttoolbox/input_file.h>
 #include <lttoolbox/string_utils.h>
 #include <lttoolbox/file_utils.h>
-
-#include <cstdlib>
-#include <iostream>
-#include <libgen.h>
-#include <string>
-#include <getopt.h>
+#include <lttoolbox/cli.h>
 
 #ifdef __MINGW32__
 #include <windows.h>
 #endif
-
-void endProgram(char* name)
-{
-  if (name != NULL) {
-    std::cout << basename(name) << ": Transfer capitalization information to word-bound blanks" << std::endl;
-    std::cout << "USAGE: " << basename(name) << " [-sh] [ input_file [ output_file ] ]" << std::endl;
-#if HAVE_GETOPT_LONG
-    std::cout << "  -s, --surface:              keep surface forms" << std::endl;
-    std::cout << "  -h, --help:                 print this message and exit" << std::endl;
-#else
-    std::cout << "  -s:     keep surface forms" << std::endl;
-    std::cout << "  -h:     print this message and exit" << std::endl;
-#endif
-  }
-  exit(EXIT_FAILURE);
-}
 
 UString read_until_slash(InputFile& input)
 {
@@ -91,50 +65,21 @@ std::pair<UString, UString> read_lu(InputFile& input)
 int main(int argc, char* argv[])
 {
   LtLocale::tryToSetLocale();
+  CLI cli("Transfer capitalization information to word-bound blanks");
+  cli.add_file_arg("input_file");
+  cli.add_file_arg("output_file");
+  cli.add_bool_arg('s', "surface", "keep surface forms");
+  cli.add_bool_arg('z', "null-flush", "flush output on the null character");
+  cli.add_bool_arg('h', "help", "print this message and exit");
+  cli.parse_args(argc, argv);
 
-  bool keep_surf = false;
-
-#if HAVE_GETOPT_LONG
-  int option_index=0;
-  static struct option long_options[] =
-    {
-     {"surface",    no_argument, 0, 's'},
-     {"null-flush", no_argument, 0, 'z'},
-     {"help",       no_argument, 0, 'h'},
-     {0, 0, 0, 0}
-    };
-#endif
-
-  while (true) {
-#if HAVE_GETOPT_LONG
-    int c = getopt_long(argc, argv, "szh", long_options, &option_index);
-#else
-    int c = getopt(argc, argv, "szh");
-#endif
-
-    if (c == -1) break;
-
-    switch (c) {
-    case 's':
-      keep_surf = true;
-      break;
-
-    case 'z':
-      break;
-
-    case 'h':
-    default:
-      endProgram(argv[0]);
-      break;
-    }
-  }
+  bool keep_surf = cli.get_bools()["surface"];
 
   InputFile input;
-  UFILE* output = u_finit(stdout, NULL, NULL);
-
-  if (optind < argc) input.open_or_exit(argv[optind++]);
-  if (optind < argc) output = openOutTextFile(argv[optind++]);
-  if (optind < argc) endProgram(argv[0]);
+  if (!cli.get_files()[0].empty()) {
+    input.open_or_exit(cli.get_files()[0].c_str());
+  }
+  UFILE* output = openOutTextFile(cli.get_files()[1]);
 
   while (!input.eof()) {
     write(input.readBlank(false), output);

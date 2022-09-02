@@ -16,143 +16,38 @@
  */
 #include <apertium/interchunk.h>
 #include <lttoolbox/lt_locale.h>
-
-#include <cstdlib>
-#include <iostream>
-#include <libgen.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <lttoolbox/string_utils.h>
-#include "getopt_long.h"
-
-#ifdef _MSC_VER
-#include <io.h>
-#include <fcntl.h>
-#endif
-
-using namespace std;
-
-void message(char *progname)
-{
-  cerr << "USAGE: " << basename(progname) << " [-tz] t2x preproc [input [output]]" << endl;
-  cerr << "  t2x        t2x rules file" << endl;
-  cerr << "  preproc    result of preprocess trules file" << endl;
-  cerr << "  input      input file, standard input by default" << endl;
-  cerr << "  output     output file, standard output by default" << endl;
-  cerr << "OPTIONS" <<endl;
-  cerr << "  -t         trace mode" << endl;
-  cerr << "  -z         flush buffer on '\0'" << endl;
-
-  exit(EXIT_FAILURE);
-}
-
-void testfile(string const &filename)
-{
-  struct stat mybuf;
-  if(stat(filename.c_str(), &mybuf) == -1)
-  {
-    cerr << "Error: can't stat file '";
-    cerr << filename << "'." << endl;
-    exit(EXIT_FAILURE);
-  }
-}
-
-void open_input(InputFile& input, const char* filename)
-{
-  if (!input.open(filename)) {
-    cerr << "Error: can't open input file '";
-    cerr << filename << "'." << endl;
-    exit(EXIT_FAILURE);
-  }
-}
-
-UFILE * open_output(const char* filename)
-{
-  UFILE* output = u_fopen(filename, "w", NULL, NULL);
-  if(!output)
-  {
-    cerr << "Error: can't open output file '";
-    cerr << filename << "'." << endl;
-    exit(EXIT_FAILURE);
-  }
-  return output;
-}
+#include <lttoolbox/cli.h>
+#include <lttoolbox/file_utils.h>
 
 int main(int argc, char *argv[])
 {
   LtLocale::tryToSetLocale();
+  CLI cli("process stream with interchunker");
+  cli.add_file_arg("t2x", false);
+  cli.add_file_arg("preproc", false);
+  cli.add_file_arg("input");
+  cli.add_file_arg("output");
+  cli.add_bool_arg('t', "trace", "trace mode");
+  cli.add_bool_arg('z', "null-flush", "flush buffer on '\\0'");
+  cli.add_bool_arg('h', "help", "show this message and exit");
+  cli.set_epilog("FILES:\n" \
+                 "  t2x        t2x rules file\n"                   \
+                 "  preproc    result of preprocess trules file\n" \
+                 "  input      input file, standard input by default\n" \
+                 "  output     output file, standard output by default");
+  cli.parse_args(argc, argv);
 
   Interchunk i;
 
-  int option_index=0;
-
-  while (true) {
-    static struct option long_options[] =
-    {
-      {"null-flush", no_argument, 0, 'z'},
-      {"trace", no_argument, 0, 't'},
-      {"help", no_argument, 0, 'h'},
-      {0, 0, 0, 0}
-    };
-
-    int c=getopt_long(argc, argv, "zth", long_options, &option_index);
-    if (c == -1)
-      break;
-
-    switch (c)
-    {
-      case 'z':
-        i.setNullFlush(true);
-        break;
-
-      case 't':
-        i.setTrace(true);
-        break;
-
-      case 'h':
-      default:
-        message(argv[0]);
-        break;
-    }
-  }
+  i.setNullFlush(cli.get_bools()["null-flush"]);
+  i.setTrace(cli.get_bools()["trace"]);
 
   InputFile input;
-  UFILE* output = u_finit(stdout, NULL, NULL);
-  const char* f1;
-  const char* f2;
-  switch(argc - optind + 1)
-  {
-    case 5:
-      output = open_output(argv[argc-1]);
-      open_input(input, argv[argc-2]);
-      testfile(argv[argc-3]);
-      testfile(argv[argc-4]);
-      f1 = argv[argc-4];
-      f2 = argv[argc-3];
-      break;
-
-    case 4:
-      open_input(input, argv[argc-1]);
-      testfile(argv[argc-2]);
-      testfile(argv[argc-3]);
-      f1 = argv[argc-3];
-      f2 = argv[argc-2];
-      break;
-
-    case 3:
-      testfile(argv[argc-1]);
-      testfile(argv[argc-2]);
-      f1 = argv[argc-2];
-      f2 = argv[argc-1];
-      break;
-
-    default:
-      message(argv[0]);
-      break;
+  if (!cli.get_files()[2].empty()) {
+    input.open_or_exit(cli.get_files()[2].c_str());
   }
-
-  i.read(f1, f2);
+  UFILE* output = openOutTextFile(cli.get_files()[3]);
+  i.read(cli.get_files()[0].c_str(), cli.get_files()[1].c_str());
   i.interchunk(input, output);
   return EXIT_SUCCESS;
 }
