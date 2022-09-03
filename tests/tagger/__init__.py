@@ -10,6 +10,9 @@ from os.path import abspath, dirname
 from subprocess import check_call, Popen, PIPE, CalledProcessError
 
 
+import signal
+
+
 # Utilities
 def tmp(contents):
     t = tempfile.NamedTemporaryFile(mode='w', delete=False)
@@ -378,3 +381,77 @@ class FilterAmbiguityTest(unittest.TestCase):
         self.assertEqual('^아/아<noun>$\n', output)
         stderr = open(stderrpath, 'r').read().strip()
         self.assertEqual('', stderr)
+
+class Alarm(Exception):
+    pass
+
+class PerceptronNullFlushTest(unittest.TestCase):
+
+    inputs = [
+        "^this/this<prn><dem><mf><sg>$ ^here/here<adv>$",
+        "^is/be<vbser><pres><p3><sg>$ ^a/a<det><ind><sg>$",
+        "^little/little<adj>/little<adv>$",
+        "^flushing/*flushing$ ^test/test<n><sg>/test<vblex><inf>/test<vblex><pres>/test<vblex><imp>$"
+    ]
+
+    outputs = [
+        "^this<prn><dem><mf><sg>$ ^here<adv>$",
+        "^be<vbser><pres><p3><sg>$ ^a<det><ind><sg>$",
+        "^little<adv>$",
+        "^*flushing$ ^test<n><sg>$"
+    ]
+
+
+    def alarmHandler(self, signum, frame):
+        raise Alarm
+
+    def withTimeout(self, seconds, cmd, *args, **kwds):
+        signal.signal(signal.SIGALRM, self.alarmHandler)
+        signal.alarm(seconds)
+        ret = cmd(*args, **kwds)
+        signal.alarm(0)         # reset the alarm
+        return ret
+
+    def communicateFlush(self, string):
+        self.proc.stdin.write(string.encode('utf-8'))
+        self.proc.stdin.write(b'\0')
+        self.proc.stdin.flush()
+
+        output = []
+        char = None
+        try:
+            char = self.withTimeout(2, self.proc.stdout.read, 1)
+        except Alarm:
+            pass
+        while char and char != b'\0':
+            output.append(char)
+            try:
+                char = self.withTimeout(2, self.proc.stdout.read, 1)
+            except Alarm:
+                break           # send what we got up till now
+
+        return b"".join(output).decode('utf-8')
+    
+    def test_null_flush(self):
+        try:
+            self.proc = Popen([APERTIUM_TAGGER, '-xg', '-z', "data/eng.prob"],
+                                stdin=PIPE,
+                                stdout=PIPE,
+                                stderr=PIPE)
+
+            for inp, exp in zip(self.inputs, self.outputs):
+                output = self.communicateFlush(inp+"[][\n]")
+                self.assertEqual(output, exp+"[][\n]")
+
+            self.proc.communicate() # let it terminate
+            self.proc.stdin.close()
+            self.proc.stdout.close()
+            self.proc.stderr.close()
+            retCode = self.proc.poll()
+            if self.expectedRetCodeFail:
+                self.assertNotEqual(retCode, 0)
+            else:
+                self.assertEqual(retCode, 0)
+        
+        finally:
+            pass
