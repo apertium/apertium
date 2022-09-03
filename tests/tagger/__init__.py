@@ -8,6 +8,7 @@ from os import devnull
 from os.path import join as pjoin
 from os.path import abspath, dirname
 from subprocess import check_call, Popen, PIPE, CalledProcessError
+from sys import stderr
 
 
 import signal
@@ -412,35 +413,38 @@ class PerceptronNullFlushTest(unittest.TestCase):
         signal.alarm(0)         # reset the alarm
         return ret
 
-    def communicateFlush(self, string):
-        self.proc.stdin.write(string.encode('utf-8'))
-        self.proc.stdin.write(b'\0')
-        self.proc.stdin.flush()
+    def communicateFlush(self, string, process):
+        if string:
+            process.stdin.write(string.encode('utf-8'))
+            process.stdin.write(b'\0')
+            process.stdin.flush()
 
         output = []
         char = None
         try:
-            char = self.withTimeout(2, self.proc.stdout.read, 1)
+            char = self.withTimeout(2, process.stdout.read, 1)
         except Alarm:
-            pass
+            print("Timeout before reading a single character!", file=stderr)
         while char and char != b'\0':
             output.append(char)
             try:
-                char = self.withTimeout(2, self.proc.stdout.read, 1)
+                char = self.withTimeout(2, process.stdout.read, 1)
             except Alarm:
+                print("Timeout before reading %s chars" % len(output),
+                        file=stderr)
                 break           # send what we got up till now
 
-        return b"".join(output).decode('utf-8')
+        return b"".join(output).decode('utf-8').replace('\r\n', '\n')
     
     def test_null_flush(self):
         try:
-            self.proc = Popen([APERTIUM_TAGGER, '-xg', '-z', "data/eng.prob"],
+            proc = Popen([APERTIUM_TAGGER, '-xg', '-z', "data/eng.prob"],
                                 stdin=PIPE,
                                 stdout=PIPE,
                                 stderr=PIPE)
 
             for inp, exp in zip(self.inputs, self.outputs):
-                output = self.communicateFlush(inp+"[][\n]")
+                output = self.communicateFlush(inp+"[][\n]", proc)
                 self.assertEqual(output, exp+"[][\n]")
 
             self.proc.communicate() # let it terminate
