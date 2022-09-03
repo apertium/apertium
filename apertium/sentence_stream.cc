@@ -50,6 +50,7 @@ void SentenceTagger::tag(Stream &in, std::ostream &out, bool sent_seg) {
       tagAndPutSentence(out);
       if (in.flush_()) {
         out << '\0';
+        out.flush();
         clearBuffers();
       } else {
         break;

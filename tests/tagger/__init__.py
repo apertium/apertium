@@ -435,7 +435,7 @@ class PerceptronNullFlushTest(unittest.TestCase):
                 break           # send what we got up till now
 
         return b"".join(output).decode('utf-8').replace('\r\n', '\n')
-    
+
     def test_null_flush(self):
         try:
             proc = Popen([APERTIUM_TAGGER, '-xg', '-z', "data/eng.prob"],
@@ -447,15 +447,12 @@ class PerceptronNullFlushTest(unittest.TestCase):
                 output = self.communicateFlush(inp+"[][\n]", proc)
                 self.assertEqual(output, exp+"[][\n]")
 
-            self.proc.communicate() # let it terminate
-            self.proc.stdin.close()
-            self.proc.stdout.close()
-            self.proc.stderr.close()
-            retCode = self.proc.poll()
-            if self.expectedRetCodeFail:
-                self.assertNotEqual(retCode, 0)
-            else:
-                self.assertEqual(retCode, 0)
-        
+            proc.communicate() # let it terminate
+            proc.stdin.close()
+            proc.stdout.close()
+            proc.stderr.close()
+            retCode = proc.poll()
+            self.assertEqual(retCode, 0)
+
         finally:
             pass
