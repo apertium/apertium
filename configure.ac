@@ -2,7 +2,7 @@ AC_PREREQ(2.52)
 
 m4_define([PKG_VERSION_MAJOR], [3])
 m4_define([PKG_VERSION_MINOR], [8])
-m4_define([PKG_VERSION_PATCH], [2])
+m4_define([PKG_VERSION_PATCH], [3])
 
 # Bump if the ABI (not API) changed in a backwards-incompatible manner
 m4_define([PKG_VERSION_ABI], [3])
@@ -68,7 +68,7 @@ fi
 
 AC_CHECK_FUNCS(strcasecmp)
 
-PKG_CHECK_MODULES(LTTOOLBOX, [lttoolbox >= 3.6.0], CPPFLAGS="$CPPFLAGS $LTTOOLBOX_CFLAGS"; LIBS="$LIBS $LTTOOLBOX_LIBS")
+PKG_CHECK_MODULES(LTTOOLBOX, [lttoolbox >= 3.7.1], CPPFLAGS="$CPPFLAGS $LTTOOLBOX_CFLAGS"; LIBS="$LIBS $LTTOOLBOX_LIBS")
 PKG_CHECK_MODULES(LIBXML2, [libxml-2.0 >= 2.6.17], CPPFLAGS="$CPPFLAGS $LIBXML2_CFLAGS"; LIBS="$LIBS $LIBXML2_LIBS")
 PKG_CHECK_MODULES(ICU, [icu-i18n, icu-io, icu-uc], CPPFLAGS="$CPPFLAGS $ICU_CFLAGS"; LIBS="$LIBS $ICU_LIBS")
 
@@ -91,12 +91,12 @@ AM_CONDITIONAL([WINDOWS], [test x$version_type = xwindows])
 #AS_IF([test x$version_type = xwindows], [AC_DEFINE(HAVE_GETOPT_LONG,0)], [])
 
 # Checks for highest supported C++ standard
-for version in 23 2b 20 2a 17 1z 14 1y; do
+for version in 23 2b 20 2a 17; do
   version_flag="-std=c++${version}"
   AX_CHECK_COMPILE_FLAG([${version_flag}], [break], [version_flag=none])
 done
 AS_IF([test "$version_flag" == none], [
-  AC_MSG_ERROR([Could not enable at least C++1y (C++14) - upgrade your compiler])
+  AC_MSG_ERROR([Could not enable at least C++17 - upgrade your compiler])
 ])
 CXXFLAGS="$CXXFLAGS ${version_flag}"
 
