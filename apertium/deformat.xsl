@@ -313,7 +313,7 @@ string get_tagName(string tag){
     <xsl:value-of select="$varname"/>
     <xsl:value-of select="string('[&quot;')"/>
     <xsl:value-of select="./@source"/>
-    <xsl:value-of select="string('&quot;] = &quot;')"/>
+    <xsl:value-of select="string('&quot;] = u&quot;')"/>
     <xsl:value-of select="./@target"/>
     <xsl:value-of select="string('&quot;_u;')"/>
   </xsl:for-each>
