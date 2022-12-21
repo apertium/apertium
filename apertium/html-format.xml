@@ -357,6 +357,20 @@
       <replace source="&amp;#xbb;" target="»"/>
 
       <replace source="&amp;rsquo;" target="'"/>
+		
+      <replace source="&amp;iexcl;" target="¡" prefer="yes"/>
+      <replace source="&amp;#161;" target="¡"/>
+	  <replace source="&amp;#xA1;" target="¡"/>
+	  <replace source="&amp;#xa1;" target="¡"/>
+	  <replace source="&amp;#x00A1;" target="¡"/>
+	  <replace source="&amp;#x00a1;" target="¡"/>
+	  
+	  <replace source="&amp;iquest;" target="¿" prefer="yes"/>
+      <replace source="&amp;#191;" target="¿"/>
+	  <replace source="&amp;#xBF;" target="¿"/>
+	  <replace source="&amp;#xbf;" target="¿"/>
+	  <replace source="&amp;#x00BF;" target="¿"/>
+	  <replace source="&amp;#x00bf;" target="¿"/>
 
 
       <!-- For Esperanto characters. Named entities like &circ; doesent work in browsers, so follow scheme of https://bertilow.com/html/esperantaj/html_uni.html -->
