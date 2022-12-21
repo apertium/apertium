@@ -13,6 +13,7 @@ import transfer
 import interchunk
 import postchunk
 import adaptdocx
+import capitalization
 
 if __name__ == "__main__":
     os.chdir(os.path.dirname(__file__))
@@ -23,7 +24,8 @@ if __name__ == "__main__":
                    interchunk,
                    postchunk,
                    adaptdocx,
-                   cleanstream]:
+                   cleanstream,
+                   capitalization]:
         suite = unittest.TestLoader().loadTestsFromModule(module)
         res = unittest.TextTestRunner(verbosity=2).run(suite)
         if(not(res.wasSuccessful())):

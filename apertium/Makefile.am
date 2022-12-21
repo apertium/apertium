@@ -4,6 +4,8 @@ h_sources = a.h \
 	    align.h \
 	    analysis.h \
 	    apertium_re.h \
+		caps_compiler.h \
+		caps_restorer.h \
 	    collection.h \
 	    constant_manager.h \
 	    deserialiser.h \
@@ -81,6 +83,8 @@ cc_sources = a.cc \
 	     align.cc \
 	     analysis.cc \
 	     apertium_re.cc \
+		 caps_compiler.cc \
+		 caps_restorer.cc \
 	     collection.cc \
 	     constant_manager.cc \
 	     endian_double_util.cc \
@@ -172,6 +176,8 @@ bin_PROGRAMS = apertium-cleanstream \
 	       apertium-desxlsx \
 	       apertium-desxpresstag \
 		   apertium-extract-caps \
+		   apertium-compile-caps \
+		   apertium-restore-caps \
 	       apertium-filter-ambiguity \
 	       apertium-gen-modes \
 	       apertium-interchunk \
@@ -280,6 +286,8 @@ apertium_wblank_detach_SOURCES = wblank-detach.cc
 apertium_wblank_mode_SOURCES = wblank-mode.cc
 
 apertium_extract_caps_SOURCES = apertium_extract_caps.cc
+apertium_compile_caps_SOURCES = apertium_compile_caps.cc
+apertium_restore_caps_SOURCES = apertium_restore_caps.cc
 
 apertium_adapt_docx_SOURCES = adapt_docx.cc
 

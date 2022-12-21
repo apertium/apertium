@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<capitalization>
+	<rules>
+		<rule weight="0.1">
+			<match select="aa"/>
+		</rule>
+		<rule weight="1.0">
+			<or>
+				<match lemma="iPhone" select="dix"/>
+				<match lemma="iPod" select="dix"/>
+			</or>
+		</rule>
+		<rule weight="0.9">
+			<match tags="np.*" select="Aa"/>
+		</rule>
+	</rules>
+</capitalization>
