@@ -1,0 +1,51 @@
+<!--
+   Copyright (C) 2022 Apertium
+
+   This program is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License as
+   published by the Free Software Foundation; either version 2 of the
+   License, or (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not <https://www.gnu.org/licenses/>.
+
+      DTD for the format of capitalization restoration rules
+-->
+
+<!ELEMENT capitalization (rules)*>
+
+<!ELEMENT rules (rule)*>
+
+<!ELEMENT rule (match|or|repeat|begin)*>
+<!ATTLIST rule
+  weight CDATA #IMPLIED
+  c CDATA #IMPLIED
+  v CDATA #IMPLIED
+>
+
+<!ELEMENT or (match|or|repeat|begin)*>
+
+<!ELEMENT repeat (match|or|repeat|begin)*>
+<!ATTLIST repeat
+  from CDATA #REQUIRED
+  upto CDATA #REQUIRED
+>
+
+<!ELEMENT begin EMPTY>
+
+<!ELEMENT match EMPTY>
+<!ATTLIST match
+  lemma CDATA #IMPLIED
+  tags CDATA #IMPLIED
+  surface CDATA #IMPLIED
+  srcsurf CDATA #IMPLIED
+  trgsurf CDATA #IMPLIED
+  srclem CDATA #IMPLIED
+  trglem CDATA #IMPLIED
+  select (dix|AA|Aa|aa) #IMPLIED
+>
