@@ -1,0 +1,44 @@
+.Dd December 22, 2022
+.Dt APERTIUM-EXTRACT-CAPS 1
+.Os Apertium
+.Sh NAME
+.Nm apertium-extract-caps
+.Nd tool to extract word capitalization to word-bound blanks for Apertium
+.Sh SYNOPSIS
+.Nm apertium-extract-caps
+.Op Fl s
+.Op Fl z
+.Op Ar input Op Ar output
+.Sh DESCRIPTION
+This is a tool intended to be run in an Apertium pipeline following
+the part-of-speech tagger.
+It records the capitalization of the input word and the dictionary
+entry in the source language in a word-bound blank so that it can
+be used by
+.Xr apertium-restore-caps 1
+to determine the appropriate capitalization in the target language.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl s
+include the surface form in the output (by default it will be discarded)
+.It Fl z
+flush buffer on the null character
+.El
+.Sh FILES
+These are the kinds of files that can be used with this command:
+.Bl -tag -width Ds
+.It Ar input , output
+Represent the input and output files.
+By default they are the standard input and standard output.
+.El
+.Sh SEE ALSO
+.Xr apertium-restore-caps 1 ,
+.Xr apertium-compile-caps 1 ,
+.Xr apertium-validate-crx 1 ,
+.Sh COPYRIGHT
+Copyright \(co 2022 Apertium
+This is free software.
+You may redistribute copies of it under the terms of
+.Lk https://www.gnu.org/licenses/gpl.html the GNU General Public License .
+.Sh BUGS
+Many... lurking in the dark and waiting for you!

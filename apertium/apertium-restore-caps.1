@@ -1,0 +1,47 @@
+.Dd December 22, 2022
+.Dt APERTIUM-RESTORE-CAPS 1
+.Os Apertium
+.Sh NAME
+.Nm apertium-restore-caps
+.Nd capitalization restoration module for Apertium
+.Sh SYNOPSIS
+.Nm apertium-restore-caps
+.Op Fl z
+.Ar rule_file
+.Op Ar input Op Ar output
+.Sh DESCRIPTION
+This is a tool intended to be run as the final step in an Apertium pipeline
+which determines the appropriate capitalization of each word on the basis
+of how it was capitalized in the input text as extracted by
+.Xr apertium-extract-caps 1
+earlier in the pipeline and the capitalization of the form listed in
+the bilingual dictionary.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl z
+flush buffer on the null character
+.El
+.Sh FILES
+These are the kinds of files that can be used with this command:
+.Bl -tag -width Ds
+.It Ar rule_file
+A file with extension
+.Pa .crx.bin
+that holds the result of
+compiling the rules using
+.Xr apertium-compile-caps 1 .
+.It Ar input , output
+Represent the input and output files.
+By default they are the standard input and standard output.
+.El
+.Sh SEE ALSO
+.Xr apertium-extract-caps 1 ,
+.Xr apertium-compile-caps 1 ,
+.Xr apertium-validate-crx 1 ,
+.Sh COPYRIGHT
+Copyright \(co 2022 Apertium
+This is free software.
+You may redistribute copies of it under the terms of
+.Lk https://www.gnu.org/licenses/gpl.html the GNU General Public License .
+.Sh BUGS
+Many... lurking in the dark and waiting for you!

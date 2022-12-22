@@ -4,6 +4,8 @@ h_sources = a.h \
 	    align.h \
 	    analysis.h \
 	    apertium_re.h \
+		caps_compiler.h \
+		caps_restorer.h \
 	    collection.h \
 	    constant_manager.h \
 	    deserialiser.h \
@@ -81,6 +83,8 @@ cc_sources = a.cc \
 	     align.cc \
 	     analysis.cc \
 	     apertium_re.cc \
+		 caps_compiler.cc \
+		 caps_restorer.cc \
 	     collection.cc \
 	     constant_manager.cc \
 	     endian_double_util.cc \
@@ -151,7 +155,7 @@ GENERATEDSCRIPTS = apertium-gen-deformat apertium-gen-reformat \
                    apertium-validate-modes \
                    apertium-validate-interchunk \
                    apertium-validate-postchunk apertium apertium-unformat \
-                   apertium-validate-acx \
+                   apertium-validate-acx apertium-validate-crx \
                    apertium-utils-fixlatex
 
 lib_LTLIBRARIES = libapertium.la
@@ -171,6 +175,9 @@ bin_PROGRAMS = apertium-cleanstream \
 	       apertium-deswxml \
 	       apertium-desxlsx \
 	       apertium-desxpresstag \
+		   apertium-extract-caps \
+		   apertium-compile-caps \
+		   apertium-restore-caps \
 	       apertium-filter-ambiguity \
 	       apertium-gen-modes \
 	       apertium-interchunk \
@@ -217,7 +224,7 @@ apertiumsysconf = $(prefix)/etc/apertium
 
 apertium_DATA = deformat.xsl reformat.xsl new2old.xsl lexchoice.xsl \
                 lexchoicebil.xsl \
-				tagger.dtd interchunk.dtd format.dtd  transfer.dtd postchunk.dtd modes.dtd \
+				tagger.dtd interchunk.dtd format.dtd  transfer.dtd postchunk.dtd modes.dtd crx.dtd \
 				tagger.rnc interchunk.rnc format.rnc  transfer.rnc postchunk.rnc modes.rnc
 
 LDADD = -lapertium $(lib_LTLIBRARIES)
@@ -277,6 +284,10 @@ apertium_tagger_readwords_SOURCES = apertium_tagger_readwords.cc
 apertium_wblank_attach_SOURCES = wblank-attach.cc
 apertium_wblank_detach_SOURCES = wblank-detach.cc
 apertium_wblank_mode_SOURCES = wblank-mode.cc
+
+apertium_extract_caps_SOURCES = apertium_extract_caps.cc
+apertium_compile_caps_SOURCES = apertium_compile_caps.cc
+apertium_restore_caps_SOURCES = apertium_restore_caps.cc
 
 apertium_adapt_docx_SOURCES = adapt_docx.cc
 
@@ -469,6 +480,13 @@ apertium-validate-acx: Makefile.am validate-header.sh
 	@echo "xmllint --relaxng \"$(prefix)\"/share/lttoolbox/acx.rng --schema \"$(prefix)\"/share/lttoolbox/acx.xsd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
 
+apertium-validate-crx: Makefile.am validate-header.sh
+	@echo "Creating apertium-validate-crx script"
+	@echo "#!/usr/bin/env bash" > $@
+	@cat validate-header.sh >> $@
+	@echo "xmllint --dtdvalid \"$(apertiumdir)\"/crx.dtd --noout \"\$$FILE1\"" >>$@
+	@chmod a+x $@
+
 apertium-validate-modes: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-modes script"
 	@echo "#!/usr/bin/env bash" > $@
@@ -551,7 +569,9 @@ man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
          apertium-postchunk.1 apertium-validate-interchunk.1 apertium-utils-fixlatex.1 \
          apertium-validate-postchunk.1 apertium-validate-modes.1 apertium-tagger-apply-new-rules.1 \
 	 apertium-validate-acx.1 apertium-multiple-translations.1 \
-	 apertium-unformat.1
+	 apertium-unformat.1 \
+	 apertium-validate-crx.1 \
+	 apertium-compile-caps.1 apertium-extract-caps.1 apertium-restore-caps.1
 
 EXTRA_DIST = gen-header.sh deformat-header.sh \
              reformat.xsl deformat.xsl new2old.xsl lexchoice.xsl lexchoicebil.xsl \
@@ -563,6 +583,6 @@ EXTRA_DIST = gen-header.sh deformat-header.sh \
              apertium-header.sh apertium-unformat-header.sh $(man_MANS) \
              xpresstag-format.xml \
              validate-header.sh transformdic-header.sh transformdicbil-header.sh \
-			 tagger.dtd interchunk.dtd format.dtd  transfer.dtd postchunk.dtd modes.dtd \
+			 tagger.dtd interchunk.dtd format.dtd  transfer.dtd postchunk.dtd modes.dtd crx.dtd \
 			 tagger.rnc interchunk.rnc format.rnc  transfer.rnc postchunk.rnc modes.rnc \
              utils-fixlatex-header.sh

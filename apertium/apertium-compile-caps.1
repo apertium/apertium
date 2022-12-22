@@ -1,0 +1,38 @@
+.Dd December 22, 2022
+.Dt APERTIUM-COMPILE-CAPS 1
+.Os Apertium
+.Sh NAME
+.Nm apertium-compile-caps
+.Nd capitalization restoration rule compiler for Apertium
+.Sh SYNOPSIS
+.Nm apertium-postchunk
+.Ar rule_file output_file
+.Sh DESCRIPTION
+This is the compiler for capitalization restoration (.crx) files.
+.Sh OPTIONS
+.El
+.Sh FILES
+These are the kinds of files that can be used with this command:
+.Bl -tag -width Ds
+.It Ar rule_file
+A rules file with extension
+.Pa .crx .
+.It Ar output_file
+A file with extension
+.Pa .crx.bin
+that will hold the result of
+compiling the
+.Ar rule_file
+file.
+.El
+.Sh SEE ALSO
+.Xr apertium-extract-caps 1 ,
+.Xr apertium-restore-caps 1 ,
+.Xr apertium-validate-crx 1 ,
+.Sh COPYRIGHT
+Copyright \(co 2022 Apertium
+This is free software.
+You may redistribute copies of it under the terms of
+.Lk https://www.gnu.org/licenses/gpl.html the GNU General Public License .
+.Sh BUGS
+Many... lurking in the dark and waiting for you!

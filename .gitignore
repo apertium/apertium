@@ -105,6 +105,7 @@ Makefile.in
 
 /tests/tagger/test-find-similar-ambiguity-class
 /tests/data/nno-nob.t3x.bin
+/tests/data/compiled.crx.bin
 
 /.ccls-cache/
 /tests/deslatex/run.log

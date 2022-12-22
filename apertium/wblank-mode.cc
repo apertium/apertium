@@ -61,6 +61,9 @@ int main(int argc, char* argv[]) {
 	// Don't change the mode twice
 	bool has_helpers = (mode.find("apertium-wblank-") != std::string::npos);
 
+  // apertium-restore-caps detaches wblanks
+  bool has_restore_caps = (mode.find("apertium-restore-caps") != std::string::npos);
+
 	// Convert old-style transfer to new-style
 	if (mode.find("lt-proc -b") == std::string::npos) {
 		mode = std::regex_replace(mode, std::regex(R"X(apertium-transfer\s+'([^']+)'\s+'([^']+)'\s+'([^']+autobil\.bin)')X"), "lt-proc -b '$3' | apertium-transfer -b '$1' '$2'");
@@ -92,7 +95,7 @@ int main(int argc, char* argv[]) {
 			if (tmp.find("automorf.bin") != std::string::npos || tmp.find("automorf.hfst") != std::string::npos) {
 				tmp += " | apertium-wblank-attach";
 			}
-			else if (tmp.find("autogen.bin") != std::string::npos || tmp.find("autogen.hfst") != std::string::npos) {
+			else if (!has_restore_caps && (tmp.find("autogen.bin") != std::string::npos || tmp.find("autogen.hfst") != std::string::npos)) {
 				tmp.insert(0, "apertium-wblank-detach | ");
 			}
 		}

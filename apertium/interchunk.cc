@@ -24,7 +24,6 @@
 using namespace std;
 
 Interchunk::Interchunk()
-  : word(0), last_lword(0), inword(false)
 {}
 
 bool

@@ -28,14 +28,14 @@ class Postchunk : public TransferBase
 {
 private:
 
-  InterchunkWord **word;
+  InterchunkWord **word = nullptr;
 
-  bool in_lu;
-  bool in_wblank;
+  bool in_lu = false;
+  bool in_wblank = false;
   UString out_wblank;
   map <UString, UString> var_out_wblank;
 
-  bool inword;
+  bool inword = false;
 
   UString evalCachedString(xmlNode* element);
   void processClip(xmlNode* element);

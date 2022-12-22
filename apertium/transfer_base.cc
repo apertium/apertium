@@ -7,10 +7,6 @@
 using namespace std;
 
 TransferBase::TransferBase()
-  : me(nullptr), doc(nullptr), root_element(nullptr),
-    lword(0), lastrule(nullptr), nwords(0), output(nullptr),
-    any_char(0), any_tag(0), in_let_var(false), in_out(false),
-    null_flush(false), internal_null_flush(false), trace(false)
 {}
 
 TransferBase::~TransferBase()
