@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<capitalization>
+	<rules>
+		<rule weight="1.2">
+			<repeat from="3" upto="5">
+				<match srcsurf="AA" select="AA"/>
+			</repeat>
+		</rule>
+		<rule weight="0.5">
+			<or>
+				<begin/>
+				<match tags="sent.*"/> <!-- sent or sent.clb -->
+			</or>
+			<match select="Aa"/>
+		</rule>
+		<rule weight="1.0">
+			<match trglem="*aA" select="dix"/>
+		</rule>
+	</rules>
+</capitalization>

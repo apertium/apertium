@@ -76,3 +76,14 @@ class RestoreCapsTest(unittest.TestCase):
 
         finally:
             pass
+
+class BeginRepeatTest(RestoreCapsTest):
+    ruleFile = 'data/begin-repeat.crx'
+    pairs = [
+        ('[1] [[c:AA/aa]]^the<det><def>/the$ [[c:AA/aa]]^big<adj><sint>/big$ [[c:AA/aa]]^dog<n><sg>/dog$',
+         '[1] [[c:AA/aa]]THE[[/]] [[c:AA/aa]]BIG[[/]] [[c:AA/aa]]DOG[[/]]'),
+        ('[2] [[c:aa/aa]]^the<det><def>/the$ [[c:AA/aa]]^big<adj><sint>/big$ [[c:AA/aa]]^dog<n><sg>/dog$',
+         '[2] [[c:aa/aa]]The[[/]] [[c:AA/aa]]big[[/]] [[c:AA/aa]]dog[[/]]'),
+        ('[3] ^something<n>/something$^.<sent>/.$ [[c:AA/aa]]^the<det><def>/the$',
+         '[3] Something. [[c:AA/aa]]The[[/]]'),
+    ]
