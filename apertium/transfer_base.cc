@@ -179,6 +179,7 @@ TransferBase::combineWblanks(const UString& first, const UString& second)
 UString
 TransferBase::copycase(const UString& src, const UString& dest)
 {
+  if (dictionary_case) return dest;
   auto loc = dest.find('<');
   auto loc2 = dest.rfind('>');
   if (loc == UString::npos || loc2 == UString::npos) {
@@ -618,4 +619,10 @@ void
 TransferBase::setTrace(bool val)
 {
   trace = val;
+}
+
+void
+TransferBase::setDictionaryCase(bool val)
+{
+  dictionary_case = val;
 }

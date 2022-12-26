@@ -433,7 +433,7 @@ Transfer::processChunk(xmlNode *localroot)
   }
 
   result += '^';
-  if(!caseofchunk.empty())
+  if(!caseofchunk.empty() && !dictionary_case)
   {
     if(!name.empty())
     {
@@ -653,6 +653,7 @@ Transfer::processLet(xmlNode *localroot)
 void
 Transfer::processModifyCase(xmlNode *localroot)
 {
+  if (dictionary_case) return;
   xmlNode *leftSide = NULL, *rightSide = NULL;
 
   for (auto i : children(localroot)) {

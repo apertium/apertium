@@ -60,6 +60,7 @@ protected:
   bool null_flush = false;
   bool internal_null_flush = false;
   bool trace = false;
+  bool dictionary_case = false;
 
   void collectMacros(xmlNode *localroot);
   void collectRules(xmlNode *localroot);
@@ -119,6 +120,7 @@ public:
   bool getNullFlush(void);
   void setNullFlush(bool null_flush);
   void setTrace(bool trace);
+  void setDictionaryCase(bool val);
 };
 
 #endif

@@ -58,7 +58,7 @@ private:
   void applyWord(UString const &word_str);
   int applyRule();
   TransferToken & readToken(InputFile& in);
-  static void unchunk(UString const &chunk, UFILE *output);
+  void unchunk(UString const &chunk, UFILE *output);
   static vector<UString> getVecTags(UString const &chunk);
   static int beginChunk(UString const &chunk);
   static int endChunk(UString const &chunk);

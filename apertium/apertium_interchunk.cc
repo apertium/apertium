@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
   cli.add_file_arg("input");
   cli.add_file_arg("output");
   cli.add_bool_arg('t', "trace", "trace mode");
+  cli.add_bool_arg('w', "dictionary-case", "ignore capitalization manipulation instructions");
   cli.add_bool_arg('z', "null-flush", "flush buffer on '\\0'");
   cli.add_bool_arg('h', "help", "show this message and exit");
   cli.set_epilog("FILES:\n" \
@@ -41,6 +42,7 @@ int main(int argc, char *argv[])
 
   i.setNullFlush(cli.get_bools()["null-flush"]);
   i.setTrace(cli.get_bools()["trace"]);
+  i.setDictionaryCase(cli.get_bools()["dictionary-case"]);
 
   InputFile input;
   if (!cli.get_files()[2].empty()) {

@@ -348,6 +348,7 @@ Postchunk::processLet(xmlNode *localroot)
 void
 Postchunk::processModifyCase(xmlNode *localroot)
 {
+  if (dictionary_case) return;
   xmlNode *leftSide = NULL, *rightSide = NULL;
 
   for (auto i : children(localroot)) {
@@ -851,11 +852,11 @@ Postchunk::unchunk(UString const &chunk, UFILE* output)
   bool uppercase_all = false;
   bool uppercase_first = false;
 
-  if(case_info == "AA"_u)
+  if(!dictionary_case && case_info == "AA"_u)
   {
     uppercase_all = true;
   }
-  else if(case_info == "Aa"_u)
+  else if(!dictionary_case && case_info == "Aa"_u)
   {
     uppercase_first = true;
   }

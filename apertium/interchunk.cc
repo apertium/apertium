@@ -271,6 +271,7 @@ Interchunk::processLet(xmlNode *localroot)
 void
 Interchunk::processModifyCase(xmlNode *localroot)
 {
+  if (dictionary_case) return;
   xmlNode *leftSide = NULL, *rightSide = NULL;
 
   for (auto i : children(localroot)) {

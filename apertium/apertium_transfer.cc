@@ -51,6 +51,7 @@ void message(char *progname)
   cerr << "  -c         case-sensitiveness while accessing bilingual dictionary" << endl;
   cerr << "  -t         trace (show rule numbers and patterns matched)" << endl;
   cerr << "  -T         trace, for apertium-transfer-tools (also sets -t)" << endl;
+  cerr << "  -w         ignore capitalization manipulation instructions" << endl;
   cerr << "  -z         null-flushing output on '\0'" << endl;
   cerr << "  -h         shows this message" << endl;
 
@@ -104,6 +105,7 @@ int main(int argc, char *argv[])
       {"no-bilingual",        no_argument, 0, 'n'},
       {"extended",      required_argument, 0, 'x'},
       {"case-sensitive",      no_argument, 0, 'c'},
+      {"dictionary-case",     no_argument, 0, 'w'},
       {"null-flush",          no_argument, 0, 'z'},
       {"trace",               no_argument, 0, 't'},
       {"trace_att",           no_argument, 0, 'T'},
@@ -111,7 +113,7 @@ int main(int argc, char *argv[])
       {0, 0, 0, 0}
     };
 
-    int c=getopt_long(argc, argv, "nbx:cztTh", long_options, &option_index);
+    int c=getopt_long(argc, argv, "nbx:cwztTh", long_options, &option_index);
     if (c==-1)
       break;
 
@@ -132,6 +134,10 @@ int main(int argc, char *argv[])
 
       case 'c':
         t.setCaseSensitiveness(true);
+        break;
+
+      case 'w':
+        t.setDictionaryCase(true);
         break;
 
       case 't':
