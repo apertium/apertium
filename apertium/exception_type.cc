@@ -38,8 +38,10 @@ ExceptionType::~ExceptionType() throw() {}
 
 const char *ExceptionType::what() const throw()
 {
-  std::string res;
-  utf8::utf16to8(what_.begin(), what_.end(), std::back_inserter(res));
-  return res.c_str();
+  // yep, this is a memory leak
+  // we could probably fix this by changing what_ from UString to std::string
+  std::string* res = new std::string();
+  utf8::utf16to8(what_.begin(), what_.end(), std::back_inserter(*res));
+  return res->c_str();
 }
 }

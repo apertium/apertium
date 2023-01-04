@@ -66,7 +66,7 @@ void
 Morpheme::read(InputFile& in)
 {
   UChar32 c = in.get();
-  while (c != '<' && c != '$' && c != '/' && c != '\0' && c != '+') {
+  while (c != '<' && c != '$' && c != '/' && c != '\0') {
     TheLemma += c;
     if (c == '\\') {
       if (in.eof() || in.peek() == '\0') {
