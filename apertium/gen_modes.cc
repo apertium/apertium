@@ -18,31 +18,18 @@
  */
 
 #include <lttoolbox/lt_locale.h>
-#include <cstdlib>
+#include <lttoolbox/cli.h>
+#include <lttoolbox/xml_walk_util.h>
 #include <iostream>
 #include <fstream>
 #include <lttoolbox/string_utils.h>
 #include <libgen.h>
-#include <getopt.h>
-#include <libxml/xmlreader.h>
 #include "filesystem.h"
 #include <vector>
 #include <map>
 #include <string>
-#include <set>
 
 using namespace std;
-
-void endProgram(char *name)
-{
-  cout << basename(name) << ": " << endl;
-  cout << "USAGE: " << basename(name) << " [-flvh] modes.xml [install_path]" << endl;
-  cout << "  -f, --full:      expect absolute installation path" << endl;
-  cout << "  -l, --local:     output to current directory rather than directory of modes.xml" << endl;
-  cout << "  -v, --verbose:   print more detailed messages" << endl;
-  cout << "  -h, --help:      display this help" << endl;
-  exit(EXIT_FAILURE);
-}
 
 struct program {
   string command;
@@ -79,8 +66,7 @@ void read_program(xmlNode* node, pipeline& pipe)
       step.debug_suffix.push_back("-" + xml2str(a));
     }
   }
-  for (auto arg = node->children; arg != nullptr; arg = arg->next) {
-    if (arg->type != XML_ELEMENT_NODE) continue;
+  for (auto arg : children(node)) {
     for (auto a = arg->properties; a != nullptr; a = a->next) {
       if (xmlEq(a->name, "name")) {
         bool is_file = xmlEq(arg->name, "file");
@@ -94,8 +80,7 @@ void read_program(xmlNode* node, pipeline& pipe)
 
 void read_modes(xmlNode* doc, map<string, pipeline>& modes)
 {
-  for (auto mode = doc->children; mode != nullptr; mode = mode->next) {
-    if (mode->type != XML_ELEMENT_NODE) continue;
+  for (auto mode : children(doc)) {
     pipeline pipe;
     pipe.install = false;
     pipe.debug = false;
@@ -108,11 +93,9 @@ void read_modes(xmlNode* doc, map<string, pipeline>& modes)
         pipe.debug = xmlEq(a->children->content, "yes");
       }
     }
-    for (auto pipe_x = mode->children; pipe_x != nullptr; pipe_x = pipe_x->next) {
-      if (pipe_x->type != XML_ELEMENT_NODE) continue;
+    for (auto pipe_x : children(mode)) {
       if (!xmlEq(pipe_x->name, "pipeline")) continue;
-      for (auto prog = pipe_x->children; prog != nullptr; prog = prog->next) {
-        if (prog->type != XML_ELEMENT_NODE) continue;
+      for (auto prog : children(pipe_x)) {
         read_program(prog, pipe);
       }
     }
@@ -173,11 +156,19 @@ void set_debug_suffixes(pipeline& prog)
         cmd.debug_suffix.push_back("-anmor");
       }
     } else if (starts_with(c, "lsx-proc")) {
-      cmd.debug_suffix.push_back("-autoseq");
+      if (c.rfind(" -p") != string::npos) {
+        cmd.debug_suffix.push_back("-pgen");
+      } else {
+        cmd.debug_suffix.push_back("-autoseq");
+      }
     } else if (starts_with(c, "rtx-proc")) {
       cmd.debug_suffix.push_back("-transfer");
     } else if (starts_with(c, "apertium-anaphora")) {
       cmd.debug_suffix.push_back("-anaph");
+    } else if (starts_with(c, "apertium-extract-caps")) {
+      cmd.debug_suffix.push_back("-decase");
+    } else if (starts_with(c, "apertium-restore-caps")) {
+      cmd.debug_suffix.push_back("-recase");
     } else {
       cmd.debug_suffix.push_back("-NAMEME");
     }
@@ -307,68 +298,30 @@ void gen_modes(map<string, pipeline>& modes, fs::path& install_dir, fs::path& de
 int main(int argc, char* argv[])
 {
   LtLocale::tryToSetLocale();
+  CLI cli("Generate mode command files from XML");
+  cli.add_bool_arg('f', "full", "expect absolute installation path");
+  cli.add_bool_arg('l', "local", "output to current directory rather than directory of modes.xml");
+  cli.add_bool_arg('v', "verbose", "print more detailed messages");
+  cli.add_bool_arg('h', "help", "print this message and exit");
+  cli.add_file_arg("modes.xml", false);
+  cli.add_file_arg("install_path", true);
+  cli.parse_args(argc, argv);
 
-#if HAVE_GETOPT_LONG
-  static struct option long_options[] =
-    {
-     {"full",       0, 0, 'f'},
-     {"local",      0, 0, 'l'},
-     {"verbose",    0, 0, 'v'},
-     {"help",       0, 0, 'h'}
-    };
-#endif
+  bool full = cli.get_bools()["full"];
+  bool local = cli.get_bools()["local"];
 
-  bool full = false;
-  bool local = false;
-  bool verbose = false;
-
-  while(true) {
-#if HAVE_GETOPT_LONG
-    int option_index;
-    int c = getopt_long(argc, argv, "flvh", long_options, &option_index);
-#else
-    int c = getopt(argc, argv, "flvh");
-#endif
-
-    if (c == -1) {
-      break;
-    }
-
-    switch(c) {
-    case 'f':
-      full = true;
-      break;
-
-    case 'l':
-      local = true;
-      break;
-
-    case 'v':
-      verbose = true;
-      break;
-
-    case 'h':
-    default:
-      endProgram(argv[0]);
-      break;
-    }
-  }
-
-  if ((argc - optind > 2) || (argc - optind == 0)) {
-    endProgram(argv[0]);
-  }
-  if ((argc - optind == 2) && !full) {
-    endProgram(argv[0]);
-  }
-
-  fs::path xml_path = argv[optind];
+  fs::path xml_path = cli.get_files()[0];
   fs::path dev_dir = xml_path.parent_path();
   fs::path install_dir{ dev_dir };
-  if (argc - optind != 1) {
-    install_dir = argv[optind+1];
-    if (install_dir == dev_dir) {
-      cerr << basename(argv[0]) << " ERROR: Installation prefix is the same directory as modes.xml; give a different INSTALLDIR." << endl;
-      exit(EXIT_FAILURE);
+
+  if (full) {
+    std::string output_path = cli.get_files()[1];
+    if (!output_path.empty()) {
+      install_dir = output_path;
+      if (install_dir == dev_dir) {
+        cerr << basename(argv[0]) << " ERROR: Installation prefix is the same directory as modes.xml; give a different INSTALLDIR." << endl;
+        exit(EXIT_FAILURE);
+      }
     }
   }
 
@@ -378,14 +331,10 @@ int main(int argc, char* argv[])
 
   fs::create_directories(dev_dir / "modes");
 
-  xmlDoc* doc = xmlReadFile(xml_path.string().c_str(), nullptr, 0);
-  if (doc == nullptr) {
-    cerr << "Error: Could not parse file '" << xml_path << "'." << endl;
-    exit(EXIT_FAILURE);
-  }
+  xmlNode* root = load_xml(xml_path.string().c_str());
 
   map<string, pipeline> modes;
-  read_modes(xmlDocGetRootElement(doc), modes);
+  read_modes(root, modes);
   gen_debug_modes(modes);
   gen_modes(modes, install_dir, dev_dir);
 }
