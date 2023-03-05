@@ -174,11 +174,25 @@ CapsRestorer::read_word(InputFile& input)
 
   UString src_caps = "aa/aa"_u;
   if (!cur.wblank.empty()) {
+    std::vector<UString> new_pieces;
     auto pieces = StringUtils::split(cur.wblank.substr(2, cur.wblank.size()-4), "; "_u);
     for (auto& it : pieces) {
       if (StringUtils::startswith(it, "c:"_u)) {
         src_caps = it.substr(2);
         break;
+      } else if (delete_wblanks) {
+        new_pieces.push_back(it);
+      }
+    }
+    if (delete_wblanks) {
+      std::cerr << "WBLANKS!\n";
+      UString new_wblank = StringUtils::join(new_pieces, "; "_u);
+      if (!new_wblank.empty()) {
+        cur.wblank = "[["_u;
+        cur.wblank += new_wblank;
+        cur.wblank += "]]"_u;
+      } else {
+        cur.wblank.clear();
       }
     }
   }

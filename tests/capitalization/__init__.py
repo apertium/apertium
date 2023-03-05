@@ -10,7 +10,7 @@ class Alarm(Exception):
 
 class RestoreCapsTest(unittest.TestCase):
     compileFlags = []
-    runFlags = []
+    runFlags = ['-k']
     ruleFile = 'data/basic.crx'
     pairs = [
         ('[[c:AA/AA]]^xyz<vblex>/XyZ$ ^qry<adj>/Qry$',
@@ -86,4 +86,14 @@ class BeginRepeatTest(RestoreCapsTest):
          '[2] [[c:aa/aa]]The[[/]] [[c:AA/aa]]big[[/]] [[c:AA/aa]]dog[[/]]'),
         ('[3] ^something<n>/something$^.<sent>/.$ [[c:AA/aa]]^the<det><def>/the$',
          '[3] Something. [[c:AA/aa]]The[[/]]'),
+    ]
+
+class StripWblanksTest(RestoreCapsTest):
+    runFlags = []
+    ruleFile = 'data/basic.crx'
+    pairs = [
+        ('[[c:AA/AA]]^xyz<vblex>/XyZ$ ^qry<adj>/Qry$',
+         'xyz qry'),
+        ('^iPhone<np><top>/iPhone$', 'iPhone'),
+        ('^Daniel<np><ant>/Daniel$', 'Daniel')
     ]

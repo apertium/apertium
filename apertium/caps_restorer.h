@@ -32,6 +32,8 @@ private:
   State initial_state;
   State current_state;
 
+  bool delete_wblanks = true;
+
   int32_t any_char = 0;
   int32_t any_upper = 0;
   int32_t any_lower = 0;
@@ -63,6 +65,7 @@ public:
 
   void load(FILE* input);
   void process(InputFile& input, UFILE* output);
+  void setDeleteWblanks(bool val) { delete_wblanks = val; } ;
 };
 
 #endif

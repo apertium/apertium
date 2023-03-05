@@ -24,6 +24,7 @@ int main(int argc, char** argv)
 {
   LtLocale::tryToSetLocale();
   CLI cli("compile capitalization restoration rules");
+  cli.add_bool_arg('k', "keep", "retain all wblanks");
   cli.add_bool_arg('z', "null-flush", "flush output on null character");
   cli.add_bool_arg('h', "help", "print this message and exit");
   cli.add_file_arg("rule_file", false);
@@ -32,6 +33,8 @@ int main(int argc, char** argv)
   cli.parse_args(argc, argv);
 
   CapsRestorer cr;
+
+  cr.setDeleteWblanks(!cli.get_bools()["keep"]);
 
   FILE* in = openInBinFile(cli.get_files()[0]);
   cr.load(in);
