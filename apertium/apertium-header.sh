@@ -689,7 +689,7 @@ set -e -o pipefail
 if [[ "$FORMAT" = "none" ]]; then
   cat "$INFILE"
 else
-  apertium-des$FORMAT "${FORMAT_OPTIONS[@]}" "$INFILE"
+  apertium-des"$FORMAT" "${FORMAT_OPTIONS[@]}" "$INFILE"
 fi | if [[ -z "$TRANSLATION_MEMORY_FILE" ]];
   then
     cat
@@ -703,8 +703,8 @@ fi | if [[ -z "$TRANSLATION_MEMORY_FILE" ]];
     fi
   else
     if [[ -z "$REDIR" ]]; then
-      apertium-re$FORMAT
+      apertium-re"$FORMAT"
     else
-      apertium-re$FORMAT > "$OUT_FILE"
+      apertium-re"$FORMAT" > "$OUT_FILE"
     fi
   fi
