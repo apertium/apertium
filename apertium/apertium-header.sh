@@ -396,6 +396,11 @@ translate_htmlalt () {
 }
 
 translate_line () {
+  check_transfuse
+  if [[ $USE_TRANSFUSE = "yes" ]]; then
+	tf-extract -f line "$INFILE" | run_mode_wblank_force_flush | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
+	return
+  fi
   # TODO: lt-proc inserts spaces before parts of mwe's that cross
   # lines, even though the parts get output as individual lu's
   apertium-destxt -n "$INFILE" | \
