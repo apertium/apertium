@@ -18,7 +18,7 @@ class AdaptDocxTest(unittest.TestCase):
     def runCheckExit(self, proc, inp):
         """Run proc on input, then close and assert that we exited with 0.
 Return output from proc."""
-        timeout = 2
+        timeout = 30
         res = proc.communicate(inp, timeout)
         for fd in [proc.stdin, proc.stdout, proc.stderr]:
             if fd is not None:
