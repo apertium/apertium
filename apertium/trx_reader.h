@@ -29,14 +29,10 @@ using namespace std;
 class TRXReader : public XMLReader
 {
 private:
-  struct LemmaTags
-  {
-    UString lemma;
-    UString tags;
-  };
-
-  multimap<UString, LemmaTags> cat_items;
+  map<UString, Transducer> defcats;
+  map<pair<int, UString>, int> states;
   TransferData td;
+  UFILE* blah = nullptr;
 
   void destroy();
   void clearTagIndex();
@@ -51,14 +47,11 @@ private:
 
   void checkClip();
 
-  void insertCatItem(UString const &name, UString const &lemma,
-		     UString const &tags);
   void createVar(UString const &name, UString const &initial_value);
   void insertListItem(UString const &name, UString const &value);
   void createMacro(UString const &name, int const val);
 
-  int insertLemma(int const base, UString const &lemma);
-  int insertTags(int const base, UString const &tags);
+  void insertCatItem(Transducer& trans, const UString& lemma, const UString& tags);
 
 protected:
   virtual void parse();

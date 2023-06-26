@@ -23,6 +23,7 @@
 #include <apertium/transfer_regex.h>
 #include <apertium/apertium_re.h>
 #include <i18n.h>
+#include <lttoolbox/string_utils.h>
 
 UString const TRXReader::ANY_TAG         = "<ANY_TAG>"_u;
 UString const TRXReader::ANY_CHAR        = "<ANY_CHAR>"_u;
@@ -33,90 +34,44 @@ TRXReader::TRXReader()
   td.getAlphabet().includeSymbol(ANY_CHAR);
 }
 
-int
-TRXReader::insertLemma(int const base, UString const &lemma)
+void
+TRXReader::insertCatItem(Transducer& trans, const UString& lemma, const UString& tags)
 {
-  int retval = base;
-  static int const any_char = td.getAlphabet()(ANY_CHAR);
-  if(lemma.empty())
-  {
-    retval = td.getTransducer().insertSingleTransduction(any_char, retval);
-    td.getTransducer().linkStates(retval, retval, any_char);
-    int another = td.getTransducer().insertSingleTransduction('\\', retval);
-    td.getTransducer().linkStates(another, retval, any_char);
-  }
-  else
-  {
-    for(unsigned int i = 0, limit = lemma.size();  i != limit; i++)
-    {
-      if(lemma[i] == '\\')
-      {
-        retval = td.getTransducer().insertSingleTransduction('\\', retval);
+  static const int any_char = td.getAlphabet()(ANY_CHAR);
+  static const int any_tag = td.getAlphabet()(ANY_TAG);
+  int state = 0;
+  if (lemma.empty()) {
+    state = trans.insertSingleTransduction(any_char, state);
+    trans.linkStates(state, state, any_char);
+    int another = trans.insertSingleTransduction('\\', state);
+    trans.linkStates(another, state, any_char);
+  } else {
+    for (size_t i = 0; i < lemma.size(); i++) {
+      if (lemma[i] == '\\') {
+        state = trans.insertSingleTransduction('\\', state);
         i++;
-        retval = td.getTransducer().insertSingleTransduction(int(lemma[i]),
-                                                             retval);
-      }
-      else if(lemma[i] == '*')
-      {
-        retval = td.getTransducer().insertSingleTransduction(any_char, retval);
-        td.getTransducer().linkStates(retval, retval, any_char);
-      }
-      else
-      {
-        retval = td.getTransducer().insertSingleTransduction(int(lemma[i]),
-                                                             retval);
+        state = trans.insertSingleTransduction(int(lemma[i]), state);
+      } else if (lemma[i] == '*') {
+        state = trans.insertSingleTransduction(any_char, state);
+        trans.linkStates(state, state, any_char);
+      } else {
+        state = trans.insertSingleTransduction(int(lemma[i]), state);
       }
     }
   }
-
-  return retval;
-}
-
-int
-TRXReader::insertTags(int const base, UString const &tags)
-{
-  int retval = base;
-  static int const any_tag = td.getAlphabet()(ANY_TAG);
-  if(tags.size() != 0)
-  {
-    for(unsigned int i = 0, limit = tags.size(); i < limit; i++)
-    {
-      if(tags[i] == '*')
-      {
-        retval = td.getTransducer().insertSingleTransduction(any_tag, retval);
-        td.getTransducer().linkStates(retval, retval, any_tag);
-        i++;
-      }
-      else
-      {
-        UString symbol = "<"_u;
-        for(unsigned int j = i; j != limit; j++)
-        {
-          if(tags[j] == '.')
-          {
-            symbol.append(tags.substr(i, j-i));
-            i = j;
-            break;
-          }
-        }
-
-        if(symbol == "<"_u)
-        {
-          symbol.append(tags.substr(i));
-          i = limit;
-        }
-        symbol += '>';
-        td.getAlphabet().includeSymbol(symbol);
-        retval = td.getTransducer().insertSingleTransduction(td.getAlphabet()(symbol), retval);
-      }
+  for (auto& tag : StringUtils::split_escaped(tags, '.')) {
+    if (tag == "*"_u) {
+      state = trans.insertSingleTransduction(any_tag, state);
+      trans.linkStates(state, state, any_tag);
+    } else {
+      UString sym = "<"_u;
+      sym += tag;
+      sym += '>';
+      td.getAlphabet().includeSymbol(sym);
+      state = trans.insertSingleTransduction(td.getAlphabet()(sym), state);
     }
   }
-  else
-  {
-    return base; // new line
-  }
-
-  return retval;
+  trans.setFinal(state);
 }
 
 void
@@ -187,7 +142,7 @@ void
 TRXReader::procRules()
 {
   int count = 0;
-  set<int> alive_states;
+  int state = 0;
 
   while(type != XML_READER_TYPE_END_ELEMENT ||
 	name != "section-rules"_u)
@@ -204,75 +159,49 @@ TRXReader::procRules()
     {
       if(type != XML_READER_TYPE_END_ELEMENT)
       {
-        alive_states.clear();
-        alive_states.insert(td.getTransducer().getInitial());
+        state = 0;
       }
       else
       {
-        for (auto& it : alive_states) {
-          if(td.seen_rules.find(it) == td.seen_rules.end())
-          {
-            const int symbol = td.countToFinalSymbol(count);
-            const int fin = td.getTransducer().insertSingleTransduction(symbol, it);
-            td.getTransducer().setFinal(fin);
-            td.seen_rules[it] = count;
-          }
-          else
-          {
-            warnAtLoc();
-            cerr << "Paths to rule " << count
-                 << " blocked by rule " << td.seen_rules[it]
-                 << "." << endl;
-          }
+        if(td.seen_rules.find(state) == td.seen_rules.end()) {
+          const int symbol = td.countToFinalSymbol(count);
+          const int fin = td.getTransducer().insertSingleTransduction(symbol, state);
+          td.getTransducer().setFinal(fin);
+          td.seen_rules[state] = count;
+        }
+        else {
+          warnAtLoc();
+          cerr << "Rule " << count << " has the same pattern as rule ";
+          cerr << td.seen_rules[state] << ". Skipping.\n";
         }
       }
     }
     else if(name == "pattern-item"_u)
     {
-      if(type != XML_READER_TYPE_END_ELEMENT)
-      {
-        pair<multimap<UString, LemmaTags>::iterator,
-             multimap<UString, LemmaTags>::iterator> range;
-
-        range = cat_items.equal_range(attrib("n"_u));
-
-        if(range.first == range.second)
-        {
-          I18n(APER_I18N_DATA, "apertium").error("APER1072", {"line", "column", "attrib"},
-            {xmlTextReaderGetParserLineNumber(reader),
-             xmlTextReaderGetParserColumnNumber(reader), icu::UnicodeString(attrib("n"_u).data())}, true);
-        }
-
-// new code
-
-        set<int> alive_states_new;
-
-        for(; range.first != range.second; range.first++)
-        {
-          for (auto& it : alive_states) {
-            // mark of begin of word
-            int tmp = td.getTransducer().insertSingleTransduction('^', it);
-            if(it != td.getTransducer().getInitial())
-            {
-              // insert optional blank between two words
-              int alt = td.getTransducer().insertSingleTransduction(' ', it);
-              td.getTransducer().linkStates(alt, tmp, '^');
-            }
-
-            // insert word
-            tmp = insertLemma(tmp, range.first->second.lemma);
-            tmp = insertTags(tmp, range.first->second.tags);
-
-            // insert mark of end of word
-            tmp = td.getTransducer().insertSingleTransduction('$', tmp);
-
-            // set as alive_state
-            alive_states_new.insert(tmp);
+      if(type != XML_READER_TYPE_END_ELEMENT) {
+        UString catname = attrib("n"_u);
+        auto key = std::make_pair(state, catname);
+        auto loc = states.find(key);
+        if (loc != states.end()) {
+          state = loc->second;
+        } else {
+          auto tloc = defcats.find(catname);
+          if (tloc == defcats.end()) {
+            I18n(APER_I18N_DATA, "apertium").error("APER1142", {"line", "column", "attrib"},
+              {xmlTextReaderGetParserLineNumber(reader),
+               xmlTextReaderGetParserColumnNumber(reader), icu::UnicodeString(attrib("n"_u).data())}, true);
           }
+          // mark of begin of word
+          int tmp = td.getTransducer().insertSingleTransduction('^', state);
+          if(state != 0) {
+            // insert optional blank between two words
+            int alt = td.getTransducer().insertSingleTransduction(' ', state);
+            td.getTransducer().linkStates(alt, tmp, '^');
+          }
+          state = td.getTransducer().insertTransducer(tmp, tloc->second);
+          state = td.getTransducer().insertSingleTransduction('$', state);
+          states[key] = state;
         }
-
-        // copy new alive states on alive_states set
-        alive_states = alive_states_new;
       }
     }
     else if(name == "let"_u)
@@ -362,6 +291,7 @@ void
 TRXReader::procDefCats()
 {
   UString catname;
+  Transducer trans;
 
   while(type != XML_READER_TYPE_END_ELEMENT ||
         name != "section-def-cats"_u)
@@ -373,11 +303,11 @@ TRXReader::procDefCats()
       {
         if(!attrib("tags"_u).empty())
         {
-          insertCatItem(catname, attrib("lemma"_u), attrib("tags"_u));
+          insertCatItem(trans, attrib("lemma"_u), attrib("tags"_u));
         }
         else
         {
-          insertCatItem(catname, attrib("name"_u), ""_u);
+          insertCatItem(trans, attrib("name"_u), ""_u);
         }
       }
     }
@@ -389,6 +319,9 @@ TRXReader::procDefCats()
       }
       else
       {
+        trans.minimize();
+        defcats[catname] = trans;
+        trans.clear();
         catname.clear();
       }
     }
@@ -506,14 +439,4 @@ void
 TRXReader::createVar(UString const &name, UString const &initial_value)
 {
   td.getVariables()[name] = initial_value;
-}
-
-void
-TRXReader::insertCatItem(UString const &name, UString const &lemma,
-                         UString const &tags)
-{
-  LemmaTags lt;
-  lt.lemma = lemma;
-  lt.tags = tags;
-  cat_items.insert(pair<UString, LemmaTags>(name, lt));
 }
