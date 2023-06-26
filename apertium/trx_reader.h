@@ -32,7 +32,6 @@ private:
   map<UString, Transducer> defcats;
   map<pair<int, UString>, int> states;
   TransferData td;
-  UFILE* blah = nullptr;
 
   void destroy();
   void clearTagIndex();
