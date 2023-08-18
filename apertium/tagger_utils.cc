@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <climits>
 #include <lttoolbox/string_utils.h>
+#include <i18n.h>
 
 
 void tagger_utils::fatal_error (UString const &s) {
@@ -166,30 +167,25 @@ tagger_utils::find_similar_ambiguity_class(TaggerData &td, set<TTag> &c) {
 void
 tagger_utils::require_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWord &word, int nw) {
   if (td.getOutput().has_not(tags)) {
-    UString errors;
-    errors = "A new ambiguity class was found. I cannot continue.\nWord '"_u;
-    errors += word.get_superficial_form();
-    errors += "' not found in the dictionary.\n"_u;
-    errors += "New ambiguity class: "_u;
-    errors += word.get_string_tags();
-    errors += '\n';
-    if (nw >= 0) {
-      std::ostringstream ws;
+    std::ostringstream ws;
+    if (nw >= 0)
       ws << (nw + 1);
-      errors += "Line number: "_u;
-      errors += to_ustring(ws.str().c_str());
-      errors += '\n';
-    }
-    errors += "Take a look at the dictionary, then retrain."_u;
-    fatal_error(errors);
+    else 
+      ws << "N/A";
+    
+    I18n(APER_I18N_DATA, "apertium").error("APER1104",
+      {"word", "class", "line"},
+      {icu::UnicodeString(word.get_superficial_form().data()),
+       icu::UnicodeString(word.get_string_tags().data()),
+       ws.str().c_str()}, true);
   }
 }
 
 static void _warn_absent_ambiguity_class(TaggerWord &word) {
-  cerr << "Error: A new ambiguity class was found. \n";
-  cerr << "Retraining the tagger is necessary so as to take it into account.\n";
-  cerr << "Word '" << word.get_superficial_form() << "'.\n";
-  cerr << "New ambiguity class: " << word.get_string_tags() << "\n";
+  I18n(APER_I18N_DATA, "apertium").error("APER1104",
+    {"word", "class"},
+    {icu::UnicodeString(word.get_superficial_form().data()),
+     icu::UnicodeString(word.get_string_tags().data())}, false);
 }
 
 set<TTag> &
@@ -236,7 +232,7 @@ istream& operator>> (istream& is, map <int, T> & f) {
     is>>i;     // warning: does not work if both
     is>>f[i];  // lines merged in a single one
   }
-  if (is.bad()) tagger_utils::fatal_error("reading map"_u);
+  if (is.bad()) I18n(APER_I18N_DATA, "apertium").error("APER1106", {}, {}, true);
   return is;
 }
 

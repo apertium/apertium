@@ -27,31 +27,26 @@
 #include <lttoolbox/string_utils.h>
 #include "apertium_config.h"
 #include <apertium/unlocked_cstdio.h>
+#include <i18n.h>
+#include <unicode/ustream.h>
 
 using namespace std;
 
 void usage(char *progname)
 {
-  cerr << "USAGE: " << basename(progname) << " [options] code1 code2 doc1 doc2 [output_file]" << endl;
-  cerr << "Options:" << endl;
-  cerr << "  -p percent    number 0 < n <= 1 to set margin of confidence of TU's " << endl;
-  cerr << "                (0.85 by default) in length terms" << endl;
-  cerr << "  -e edit       number 0 < n <= 1 to set margin of confidence of TU's " << endl;
-  cerr << "                (0.30 by default) in edit distance terms" << endl;
-  cerr << "  -l low-limit  ignore percent if the segment is less than lowlimit" <<endl;
-  cerr << "                (15 by default)" << endl;
-  cerr << "  -m max-edit   characters to be taken into account when aligning" << endl;
-  cerr << "                sentences (50 by default)" << endl;
-  cerr << "  -d diagonal   diagonal width for using edit distance, 10 by default" << endl;
-  cerr << "  -w window     window size of the edit distance with sentences" << endl;
-  cerr << "                (100 sentences by default)" << endl;
-  cerr << "  -s step       step for moving the window during the alingment" <<endl;
-  cerr << "                (75 sentences by default)" << endl;
-  cerr << "  -h help       display this help" << endl;
-  cerr << "Other parameters:" << endl;
-  cerr << "  code1, code2 codes of the languages (i.e. ISO-631 ones)" << endl;
-  cerr << "  doc1, doc2    unformatted docs to build the TMX file" << endl;
-  cerr << "  output_file   if not specified, the result will be printed to stdout" << endl;
+  I18n i18n {APER_I18N_DATA, "apertium"};
+  cerr << i18n.format("usage") << ": " << basename(progname)
+       << " [options] code1 code2 doc1 doc2 [output_file]" << endl;
+  cerr << i18n.format("options") << ":" << endl;
+  cerr << "  -p percent    " <<  i18n.format("percent_desc") << endl;
+  cerr << "  -e edit       " <<  i18n.format("edit_desc") << endl;
+  cerr << "  -l low-limit  " <<  i18n.format("low_limit_desc") <<endl;
+  cerr << "  -m max-edit   " <<  i18n.format("max_edit_desc") << endl;
+  cerr << "  -d diagonal   " <<  i18n.format("diagonal_desc") << endl;
+  cerr << "  -w window     " <<  i18n.format("window_desc") << endl;
+  cerr << "  -s step       " <<  i18n.format("step_desc") << endl;
+  cerr << "  -h help       " <<  i18n.format("help_desc") << endl;
+  cerr << i18n.format("tmxbuild_note") << endl;
 
   exit(EXIT_FAILURE);
 }

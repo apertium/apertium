@@ -18,6 +18,7 @@
 
 #include <lttoolbox/xml_walk_util.h>
 #include <lttoolbox/string_utils.h>
+#include <i18n.h>
 
 #include <iostream>
 
@@ -31,16 +32,20 @@ Postchunk::checkIndex(xmlNode *element, int index, int limit)
 {
   if(index > limit) // Note: Unlike transfer/interchunk, we allow index==limit!
   {
+    I18n(APER_I18N_DATA, "apertium").error("APER1091", {"file_name", "line_number"},
+                                                       {(char *) doc->URL, element->line}, false);
     cerr << "Error in " << (char *) doc->URL << ": line " << element->line << ": index > limit" << endl;
     return false;
   }
   if(index < 0) {
-    cerr << "Error in " << (char *) doc->URL << ": line " << element->line << ": index < 0" << endl;
+    I18n(APER_I18N_DATA, "apertium").error("APER1048", {"file_name", "line_number"},
+                                                       {(char *) doc->URL, element->line}, false);
     return false;
   }
   if(word[index] == 0)
   {
-    cerr << "Error in " << (char *) doc->URL << ": line " << element->line << ": Null access at word[index]" << endl;
+    I18n(APER_I18N_DATA, "apertium").error("APER1049", {"file_name", "line_number"},
+                                                       {(char *) doc->URL, element->line}, false);
     return false;
   }
   return true;
@@ -224,8 +229,7 @@ Postchunk::processMlu(xmlNode* element)
 UString
 Postchunk::processChunk(xmlNode* element)
 {
-  cerr << "Error: unexpected expression: '" << element->name << "'" << endl;
-  exit(EXIT_FAILURE);
+  I18n(APER_I18N_DATA, "apertium").error("APER1050", {"expression"}, {(char*)element->name}, true);
   return ""_u; // make the type checker happy
 }
 
@@ -294,7 +298,8 @@ Postchunk::processLet(xmlNode *localroot)
         bool match = word[ti.getPos()]->setChunkPart(attr_items[ti.getContent()], evalString(rightSide));
         if(!match && trace)
         {
-          cerr << "apertium-postchunk warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+          I18n(APER_I18N_DATA, "apertium").error("APER1092", {"tag", "line"},
+            {"<let>", localroot->line}, false);
         }
       }
         return;
@@ -339,7 +344,8 @@ Postchunk::processLet(xmlNode *localroot)
 					 evalString(rightSide));
     if(!match && trace)
     {
-      cerr << "apertium-postchunk warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+      I18n(APER_I18N_DATA, "apertium").error("APER1092", {"tag", "line"},
+            {"<let>", localroot->line}, false);
     }
     evalStringCache[leftSide] = TransferInstr(ti_clip_tl, part, pos, NULL);
   }
@@ -383,7 +389,8 @@ Postchunk::processModifyCase(xmlNode *localroot)
 
     if(!match && trace)
     {
-      cerr << "apertium-postchunk warning: <modify-case> on line " << localroot->line << " sometimes discards its value." << endl;
+      I18n(APER_I18N_DATA, "apertium").error("APER1092", {"tag", "line"},
+            {"<modify-case>", localroot->line}, false);
     }
   }
   else if(!xmlStrcmp(leftSide->name, (const xmlChar *) "var"))
@@ -412,7 +419,7 @@ Postchunk::processCallMacro(xmlNode *localroot)
 
   if (npar <= 0)
   {
-    throw "Postchunk::processCallMacro() assumes npar > 0, but got npar <= 0";
+    throw I18n(APER_I18N_DATA, "apertium").format("APER1093");
   }
 
   InterchunkWord **myword = NULL;
@@ -444,7 +451,8 @@ Postchunk::processCallMacro(xmlNode *localroot)
     }
   }
   else {
-    cerr << "Warning: Not calling macro \"" << n << "\" from line " << localroot->line << " (empty word?)" << endl;
+    I18n(APER_I18N_DATA, "apertium").error("APER1094", {"macro", "line"},
+      {icu::UnicodeString(n.data()), localroot->line}, false);
   }
 
   swap(myword, word);
@@ -623,7 +631,9 @@ Postchunk::postchunk(InputFile& in, UFILE* out)
 
       if(trace)
       {
-        cerr << endl << "apertium-postchunk: Rule " << val << " line " << lastrule_line;
+        cerr << endl
+             << I18n(APER_I18N_DATA, "apertium").format("postchunk_rule_line", {"value", "line"},
+                                                                              {val, to_string(lastrule_line).c_str()});
         for (auto& it : tmpword) {
           cerr << " " << *it;
         }
@@ -657,7 +667,7 @@ Postchunk::postchunk(InputFile& in, UFILE* out)
       break;
 
     default:
-      cerr << "Error: Unknown input token." << endl;
+      I18n(APER_I18N_DATA, "apertium").error("APER1051", {}, {}, false);
       return;
     }
   }

@@ -33,6 +33,8 @@
 #include <io.h>
 #include <fcntl.h>
 #endif
+#include <i18n.h>
+#include <unicode/ustream.h>
 
 using namespace Apertium;
 using namespace std;
@@ -43,7 +45,7 @@ int main(int argc, char *argv[])
 
   if(argc < 2 || argc > 4)
   {
-    cerr << "USAGE: " << basename(argv[0]) << " tsx_file [input [output]" << endl;
+    cerr << I18n(APER_I18N_DATA, "apertium").format("usage") << ": " << basename(argv[0]) << " tsx_file [input [output]" << endl;
     exit(EXIT_FAILURE);
   }
 
@@ -54,8 +56,7 @@ int main(int argc, char *argv[])
     case 4:
       output = u_fopen(argv[3], "w", NULL, NULL);
       if (!output) {
-        cerr << "Error: Unable to open '" << argv[3] << "' for writing." << endl;
-        exit(EXIT_FAILURE);
+        I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {argv[3]}, true);
       }
       // no break
     case 3:

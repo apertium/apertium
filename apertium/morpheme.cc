@@ -16,6 +16,7 @@
 #include "morpheme.h"
 
 #include "exception.h"
+#include <i18n.h>
 
 namespace Apertium {
 bool operator==(const Morpheme &a, const Morpheme &b) {
@@ -42,14 +43,10 @@ std::ostream& operator<<(std::ostream& out, const Morpheme &morph) {
 
 Morpheme::operator UString() const {
   if (TheTags.empty())
-    throw Exception::Morpheme::TheTags_empty("can't convert Morpheme "
-                                             "comprising empty Tag std::vector "
-                                             "to UString");
+    throw Exception::Morpheme::TheTags_empty(I18n(APER_I18N_DATA, "apertium").format("APER1056"));
 
   if (TheLemma.empty())
-    throw Exception::Morpheme::TheLemma_empty("can't convert Morpheme "
-                                              "comprising empty TheLemma "
-                                              "UString to UString");
+    throw Exception::Morpheme::TheLemma_empty(I18n(APER_I18N_DATA, "apertium").format("APER1057"));
 
   UString ustring_ = TheLemma;
 
@@ -70,39 +67,39 @@ Morpheme::read(InputFile& in)
     TheLemma += c;
     if (c == '\\') {
       if (in.eof() || in.peek() == '\0') {
-        throw Exception::Stream::UnexpectedEndOfFile("Unterminted lexical unit");
+        throw Exception::Stream::UnexpectedEndOfFile(I18n(APER_I18N_DATA, "apertium").format("APER1058"));
       }
       TheLemma += in.get();
     }
     c = in.get();
   }
   if (TheLemma.empty()) {
-    throw Exception::Morpheme::TheLemma_empty("empty lemma");
+    throw Exception::Morpheme::TheLemma_empty(I18n(APER_I18N_DATA, "apertium").format("APER1059"));
   }
   while (c == '<') {
     UString tg = in.readBlock('<', '>');
     if (tg.size() == 2) {
-      throw Exception::Morpheme::TheTags_empty("invalid tag <>");
+      throw Exception::Morpheme::TheTags_empty(I18n(APER_I18N_DATA, "apertium").format("APER1060"));
     }
     TheTags.push_back(tg.substr(1, tg.size()-2));
     c = in.get();
   }
   if (TheTags.empty()) {
-    throw Exception::Morpheme::TheTags_empty("morpheme has no tags");
+    throw Exception::Morpheme::TheTags_empty(I18n(APER_I18N_DATA, "apertium").format("APER1061"));
   }
   if (c == '#') {
     while (c != '<' && c != '$' && c != '/' && c != '\0' && c != '+') {
       TheLemma += c;
       if (c == '\\') {
         if (in.eof() || in.peek() == '\0') {
-          throw Exception::Stream::UnexpectedEndOfFile("trailing backslash");
+          throw Exception::Stream::UnexpectedEndOfFile(I18n(APER_I18N_DATA, "apertium").format("APER1062"));
         }
         TheLemma += in.get();
       }
       c = in.get();
     }
     if (c == '<') {
-      throw Exception::Stream::UnexpectedCharacter("unexpected < after lemma queue");
+      throw Exception::Stream::UnexpectedCharacter(I18n(APER_I18N_DATA, "apertium").format("APER1063"));
     }
   }
   in.unget(c);

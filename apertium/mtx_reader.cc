@@ -26,6 +26,7 @@
 #include <iostream>
 #include <sstream>
 #include <iterator>
+#include <i18n.h>
 
 // XML parsing function guideline
 // When control is pass to you, you might need to stepToTag
@@ -112,7 +113,8 @@ void MTXReader::procSetDef()
       std::string str = attrib_str("str"_u);
       vm_set.insert(tag.empty() ? str : tag);
     } else {
-      parseError("Expected set-member"_u);
+      I18n(APER_I18N_DATA, "apertium").error("APER1064", {"line", "column"},
+        {xmlTextReaderGetParserLineNumber(reader), xmlTextReaderGetParserColumnNumber(reader)}, true);
     }
     stepToNextTag();
   }
@@ -245,7 +247,8 @@ MTXReader::procIntExpr(bool allow_fail)
       if (allow_fail) {
         return false;
       }
-      parseError("Expected an integer expression."_u);
+      I18n(APER_I18N_DATA, "apertium").error("APER1065", {"line", "column"},
+        {xmlTextReaderGetParserLineNumber(reader), xmlTextReaderGetParserColumnNumber(reader)}, true);
     }
   }
   return true;
@@ -273,7 +276,8 @@ MTXReader::procStrArrExpr(bool allow_fail)
       if (allow_fail) {
         return false;
       }
-      parseError("Expected a string list expression."_u);
+      I18n(APER_I18N_DATA, "apertium").error("APER1066", {"line", "column"},
+        {xmlTextReaderGetParserLineNumber(reader), xmlTextReaderGetParserColumnNumber(reader)}, true);
     }
     stepToNextTag();
   }
@@ -333,7 +337,9 @@ bool MTXReader::tryProcArg(ExprType expr_type, bool allow_fail)
         return true;
       }
       if (!allow_fail) {
-        parseError("No such argument " + var_name);
+      I18n(APER_I18N_DATA, "apertium").error("APER1067", {"line", "column", "var"},
+        {xmlTextReaderGetParserLineNumber(reader),
+         xmlTextReaderGetParserColumnNumber(reader), var_name.c_str()}, true);
       }
     }
   }
@@ -348,7 +354,9 @@ bool MTXReader::tryProcVar(VM::StackValueType svt)
     VarNVMap::const_iterator slot_names_it = slot_names.find(var_name);
     if (slot_names_it != slot_names.end()) {
       if (slot_types[slot_names_it->second] != svt) {
-        parseError("Variable " + var_name + " has the wrong type");
+        I18n(APER_I18N_DATA, "apertium").error("APER1068", {"line", "column", "var"},
+          {xmlTextReaderGetParserLineNumber(reader),
+           xmlTextReaderGetParserColumnNumber(reader), var_name.c_str()}, true);
       }
       emitOpcode(VM::GETVAR);
       emitUInt(slot_names_it->second);
@@ -356,17 +364,23 @@ bool MTXReader::tryProcVar(VM::StackValueType svt)
       return true;
     }
 
-    parseError("Variable " + var_name + " has not been set.");
+        I18n(APER_I18N_DATA, "apertium").error("APER1069", {"line", "column", "var"},
+          {xmlTextReaderGetParserLineNumber(reader),
+           xmlTextReaderGetParserColumnNumber(reader), var_name.c_str()}, true);
   } else if (!in_global_defn && name == "macro"_u) {
     // Get template data
     std::string var_name = attrib_str("name"_u);
     VarNVMap::const_iterator template_name_it = template_slot_names.find(var_name);
     if (template_name_it == template_slot_names.end()) {
-      parseError("No such macro " + var_name);
+        I18n(APER_I18N_DATA, "apertium").error("APER1070", {"line", "column", "var"},
+          {xmlTextReaderGetParserLineNumber(reader),
+           xmlTextReaderGetParserColumnNumber(reader), var_name.c_str()}, true);
     }
     size_t templ_idx = template_name_it->second;
     if (template_slot_types[templ_idx] != svt) {
-      parseError("Macro " + var_name + " returns the wrong type");
+        I18n(APER_I18N_DATA, "apertium").error("APER1071", {"line", "column", "var"},
+          {xmlTextReaderGetParserLineNumber(reader),
+           xmlTextReaderGetParserColumnNumber(reader), var_name.c_str()}, true);
     }
     std::pair<VM::FeatureDefn, TemplateReplacements> &templ_defn = template_defns[templ_idx];
     // Get arg values
@@ -457,7 +471,9 @@ MTXReader::procStrExpr(bool allow_fail)
       if (allow_fail) {
         return false;
       }
-      parseError("Expected a string expression."_u);
+      I18n(APER_I18N_DATA, "apertium").error("APER1072", {"line", "column"},
+        {xmlTextReaderGetParserLineNumber(reader),
+         xmlTextReaderGetParserColumnNumber(reader)}, true);
     }
     assert(type == XML_READER_TYPE_END_ELEMENT);
     stepToNextTag();
@@ -558,7 +574,9 @@ MTXReader::procBoolExpr(bool allow_fail)
       if (allow_fail) {
         return false;
       }
-      parseError("Expected a boolean expression."_u);
+      I18n(APER_I18N_DATA, "apertium").error("APER1078", {"line", "column"},
+        {xmlTextReaderGetParserLineNumber(reader),
+         xmlTextReaderGetParserColumnNumber(reader)}, true);
     }
   }
   return true;
@@ -600,7 +618,9 @@ MTXReader::procAddrExpr()
       emitOpcode(VM::CLAMPADDR);
       stepToNextTag();
     } else {
-      parseError("Expected an address expression."_u);
+      I18n(APER_I18N_DATA, "apertium").error("APER1073", {"line", "column"},
+        {xmlTextReaderGetParserLineNumber(reader),
+         xmlTextReaderGetParserColumnNumber(reader)}, true);
     }
   }
 }
@@ -622,7 +642,9 @@ MTXReader::procWordoidArrExpr(bool allow_fail)
       if (allow_fail) {
         return false;
       }
-      parseError("Expected a wordoid array expression."_u);
+      I18n(APER_I18N_DATA, "apertium").error("APER1074", {"line", "column"},
+        {xmlTextReaderGetParserLineNumber(reader),
+         xmlTextReaderGetParserColumnNumber(reader)}, true);
     }
     stepToNextTag();
   }
@@ -644,7 +666,9 @@ MTXReader::procWordoidExpr(bool allow_fail)
       if (allow_fail) {
         return false;
       }
-      parseError("Expected a wordoid expression."_u);
+      I18n(APER_I18N_DATA, "apertium").error("APER1075", {"line", "column"},
+        {xmlTextReaderGetParserLineNumber(reader),
+         xmlTextReaderGetParserColumnNumber(reader)}, true);
     }
     assert(type == XML_READER_TYPE_END_ELEMENT);
     stepToNextTag();
@@ -676,7 +700,9 @@ MTXReader::getConstRef(
     exists = true;
     VarNVMap::iterator sit = const_map.find(const_name);
     if (sit == const_map.end()) {
-      parseError("No "_u + what + " named "_u + to_ustring(const_name.c_str()));
+        I18n(APER_I18N_DATA, "apertium").error("APER1078", {"line", "column", "what", "name"},
+          {xmlTextReaderGetParserLineNumber(reader),
+           xmlTextReaderGetParserColumnNumber(reader), icu::UnicodeString(what.data()), const_name.c_str()}, true);
     }
     return sit->second;
   }
@@ -701,7 +727,9 @@ MTXReader::getSetRef()
   bool has_attr;
   size_t set_ref = getSetRef(has_attr);
   if (!has_attr) {
-    parseError("Set required"_u);
+    I18n(APER_I18N_DATA, "apertium").error("APER1076", {"line", "column"},
+      {xmlTextReaderGetParserLineNumber(reader),
+       xmlTextReaderGetParserColumnNumber(reader)}, true);
   }
   return set_ref;
 }
@@ -718,7 +746,9 @@ MTXReader::getStrRef()
   bool has_attr;
   size_t str_ref = getStrRef(has_attr);
   if (!has_attr) {
-    parseError("String required"_u);
+    I18n(APER_I18N_DATA, "apertium").error("APER1077", {"line", "column"},
+      {xmlTextReaderGetParserLineNumber(reader),
+       xmlTextReaderGetParserColumnNumber(reader)}, true);
   }
   return str_ref;
 }
@@ -750,7 +780,9 @@ MTXReader::getInt(const UString& attr_name)
   bool has_attr;
   int i = getInt(attr_name, has_attr);
   if (!has_attr) {
-    parseError("String required");
+    I18n(APER_I18N_DATA, "apertium").error("APER1077", {"line", "column"},
+      {xmlTextReaderGetParserLineNumber(reader),
+       xmlTextReaderGetParserColumnNumber(reader)}, true);
   }
   return i;
 }
@@ -769,7 +801,9 @@ MTXReader::emitAttr(
   bool has_attr = false;
   GetT val = (this->*getter)(has_attr);
   if (!has_attr) {
-    parseError(what + " required");
+    I18n(APER_I18N_DATA, "apertium").error("APER1079", {"line", "column", "what"},
+      {xmlTextReaderGetParserLineNumber(reader),
+       xmlTextReaderGetParserColumnNumber(reader), icu::UnicodeString(what.data())}, true);
   }
   (this->*emitter)(val);
 }
@@ -809,7 +843,9 @@ MTXReader::procInst()
   val = getInt(has_int_lit);
   int num_operands = has_set_ref + has_str_ref + has_int_lit;
   if (num_operands > 1) {
-    parseError("Opcodes can have at most one operand."_u);
+    I18n(APER_I18N_DATA, "apertium").error("APER1080", {"line", "column"},
+      {xmlTextReaderGetParserLineNumber(reader),
+       xmlTextReaderGetParserColumnNumber(reader)}, true);
   } else if (num_operands == 1) {
     if (has_int_lit) {
       emitInt(val);
@@ -837,7 +873,9 @@ MTXReader::procOut()
     has_expr = true;
   }
   if (!has_expr) {
-    parseError("Expected a string, bool or int expression."_u);
+    I18n(APER_I18N_DATA, "apertium").error("APER1081", {"line", "column"},
+      {xmlTextReaderGetParserLineNumber(reader),
+       xmlTextReaderGetParserColumnNumber(reader)}, true);
   }
   stepToTag();
   assert(name == "out"_u && type == XML_READER_TYPE_END_ELEMENT);
@@ -968,7 +1006,9 @@ MTXReader::procForEach(ExprType expr_type)
 {
   std::string var_name = attrib_str("as"_u);
   if (var_name.empty()) {
-    parseError("'as' attribute required for for-each."_u);
+    I18n(APER_I18N_DATA, "apertium").error("APER1082", {"line", "column"},
+      {xmlTextReaderGetParserLineNumber(reader),
+       xmlTextReaderGetParserColumnNumber(reader)}, true);
   }
   size_t slot_idx = slot_counter++;
   slot_names[var_name] = slot_idx;
@@ -983,7 +1023,9 @@ MTXReader::procForEach(ExprType expr_type)
     has_expr = true;
   }
   if (!has_expr) {
-    parseError("Expected a string array or wordoid array expression."_u);
+    I18n(APER_I18N_DATA, "apertium").error("APER1083", {"line", "column"},
+      {xmlTextReaderGetParserLineNumber(reader),
+       xmlTextReaderGetParserColumnNumber(reader)}, true);
   }
 
   emitOpcode(VM::FOREACHINIT);
@@ -1035,7 +1077,9 @@ MTXReader::procVoidExpr(bool allow_fail)
     if (allow_fail) {
       return false;
     }
-    parseError("Expected a void expression."_u);
+    I18n(APER_I18N_DATA, "apertium").error("APER1084", {"line", "column"},
+      {xmlTextReaderGetParserLineNumber(reader),
+       xmlTextReaderGetParserColumnNumber(reader)}, true);
   }
   return true;
 }
@@ -1051,7 +1095,9 @@ MTXReader::procDefMacro()
 
   std::string var_name = attrib_str("as"_u);
   if (var_name.empty()) {
-    parseError("'as' attribute required for def-macro."_u);
+    I18n(APER_I18N_DATA, "apertium").error("APER1085", {"line", "column"},
+      {xmlTextReaderGetParserLineNumber(reader),
+       xmlTextReaderGetParserColumnNumber(reader)}, true);
   }
   template_slot_names[var_name] = template_slot_counter;
 
@@ -1095,7 +1141,9 @@ MTXReader::procDefMacro()
     has_expr = true;
   }
   if (!has_expr) {
-    parseError("Expected a non-void expression."_u);
+    I18n(APER_I18N_DATA, "apertium").error("APER1086", {"line", "column"},
+      {xmlTextReaderGetParserLineNumber(reader),
+       xmlTextReaderGetParserColumnNumber(reader)}, true);
   }
   assert(name == "def-macro"_u && type == XML_READER_TYPE_END_ELEMENT);
   stepToNextTag();
@@ -1152,7 +1200,9 @@ MTXReader::parse()
     stepToNextTag();
   }
   if (name != "metatag"_u) {
-    parseError("expected <metatag> tag"_u);
+    I18n(APER_I18N_DATA, "apertium").error("APER1087", {"line", "column"},
+      {xmlTextReaderGetParserLineNumber(reader),
+       xmlTextReaderGetParserColumnNumber(reader)}, true);
   }
   stepToNextTag();
   if (name == "coarse-tags"_u) {

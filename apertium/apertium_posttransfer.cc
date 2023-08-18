@@ -28,15 +28,18 @@
 #include <lttoolbox/string_utils.h>
 #include <lttoolbox/lt_locale.h>
 #include <lttoolbox/input_file.h>
+#include <i18n.h>
+#include <unicode/ustream.h>
 
 
 using namespace std;
 
 void usage(char *progname)
 {
-  cerr << "USAGE: " << basename(progname) << " [input_file [output_file]]" << endl;
-  cerr << "  -z         null-flushing output on '\0'" << endl;
-  cerr << "  -h         shows this message" << endl;
+  I18n i18n {APER_I18N_DATA, "apertium"};
+  cerr << i18n.format("usage") << ": " << basename(progname) << " [input_file [output_file]]" << endl;
+  cerr << "  -z         " << i18n.format("null_flush_desc") << endl;
+  cerr << "  -h         " << i18n.format("help_desc") << endl;
   exit(EXIT_FAILURE);
 }
 
@@ -121,8 +124,7 @@ int main(int argc, char *argv[])
 
   if(input.eof())
   {
-    cerr << "ERROR: Can't read file '" << argv[1] << "'" << endl;
-    exit(EXIT_FAILURE);
+    I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {argv[1]}, true);
   }
 
   processStream(input, output, null_flush);

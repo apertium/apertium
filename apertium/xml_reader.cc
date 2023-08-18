@@ -1,4 +1,5 @@
 #include <apertium/xml_reader.h>
+#include <i18n.h>
 
 
 XMLReader::XmlTextReaderResource::XmlTextReaderResource(
@@ -7,8 +8,7 @@ XMLReader::XmlTextReaderResource::XmlTextReaderResource(
 {
   reader = xmlReaderForFile(filename.c_str(), NULL, 0);
   if (reader == NULL) {
-    cerr << "Error: Cannot open '" << filename << "'." << endl;
-    exit(EXIT_FAILURE);
+		I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {filename.c_str()}, true);
   }
 }
 
@@ -36,7 +36,9 @@ XMLReader::step()
   int retval = xmlTextReaderRead(reader);
   if (retval != 1)
   {
-    parseError("unexpected EOF"_u);
+    I18n(APER_I18N_DATA, "apertium").error("APER1157", {"line", "column"},
+      {xmlTextReaderGetParserLineNumber(reader),
+       xmlTextReaderGetParserColumnNumber(reader)}, true);
   }
   name = XMLParseUtil::readName(reader);
   type = xmlTextReaderNodeType(reader);
@@ -103,7 +105,9 @@ XMLReader::warnAtLoc()
 void
 XMLReader::unexpectedTag()
 {
-  parseError("unexpected '<"_u + name + ">' tag"_u);
+  I18n(APER_I18N_DATA, "apertium").error("APER1146", {"line", "column", "tag"},
+    {xmlTextReaderGetParserLineNumber(reader),
+     xmlTextReaderGetParserColumnNumber(reader), icu::UnicodeString(name.data())}, true);
 }
 
 void

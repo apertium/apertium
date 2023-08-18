@@ -175,10 +175,12 @@ CapsCompiler::compile_match(xmlNode* node, int32_t state)
   UString select = getattr(node, CAPS_COMPILER_SELECT_ATTR);
 
   if (lemma != "*"_u && tlcaps != "*"_u) {
-    error_and_die(node, "Attribute lemma conflicts with attribute trglem");
+    I18n(APER_I18N_DATA, "apertium").error("APER1029", {"file_name", "line_number"},
+                                                       {(char*)node->doc->URL, node->line}, true);
   }
   if (surf != "*"_u && tscaps != "*"_u) {
-    error_and_die(node, "Attribute surface conflicts with attribute trgsurf");
+    I18n(APER_I18N_DATA, "apertium").error("APER1030", {"file_name", "line_number"},
+                                                       {(char*)node->doc->URL, node->line}, true);
   }
 
   state = compile_caps_specifier(sscaps, state);
@@ -238,7 +240,8 @@ CapsCompiler::compile_match(xmlNode* node, int32_t state)
   } else if (select == CAPS_COMPILER_DIX_VAL) {
     state = trans.insertSingleTransduction(dix_sym, state);
   } else {
-    error_and_die(node, "Unknown select value '%S'", select.c_str());
+    I18n(APER_I18N_DATA, "apertium").error("APER1031", {"file_name", "line_number", "select"},
+                                                       {(char*)node->doc->URL, node->line, (char*)select.c_str()}, true);
   }
 
   return state;
@@ -265,9 +268,11 @@ CapsCompiler::compile_repeat(xmlNode* node, int32_t start_state)
   int from = StringUtils::stoi(xfrom);
   int upto = StringUtils::stoi(xupto);
   if(from < 0 || upto < 0) {
-    error_and_die(node, "Number of repetitions cannot be negative.");
+    I18n(APER_I18N_DATA, "apertium").error("APER1032", {"file_name", "line_number"},
+                                                       {(char*)node->doc->URL, node->line}, true);
   } else if(from > upto) {
-    error_and_die(node, "Lower bound on number of repetitions cannot be larger than upper bound.");
+    I18n(APER_I18N_DATA, "apertium").error("APER1033", {"file_name", "line_number"},
+                                                       {(char*)node->doc->URL, node->line}, true);
   }
   int count = upto - from;
   Transducer temp = trans;

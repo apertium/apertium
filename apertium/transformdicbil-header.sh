@@ -7,7 +7,7 @@ FILE1=$1;
 FILE2=$2;
 
 if [ ! -e $1 ]
-then echo "ERROR: '$1' file not found";
+then echo icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1000" "file_name" "$1";
      exit 1;
 fi
 

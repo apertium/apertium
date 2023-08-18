@@ -18,24 +18,22 @@
 #include <lttoolbox/lt_locale.h>
 #include <lttoolbox/cli.h>
 #include <lttoolbox/file_utils.h>
+#include <i18n.h>
 
 int main(int argc, char *argv[])
 {
+  I18n i18n {APER_I18N_DATA, "apertium"};
   LtLocale::tryToSetLocale();
-  CLI cli("process stream with interchunker");
+  CLI cli(i18n.format("interchunck_desc"));
   cli.add_file_arg("t2x", false);
   cli.add_file_arg("preproc", false);
   cli.add_file_arg("input");
   cli.add_file_arg("output");
-  cli.add_bool_arg('t', "trace", "trace mode");
-  cli.add_bool_arg('w', "dictionary-case", "ignore capitalization manipulation instructions");
-  cli.add_bool_arg('z', "null-flush", "flush buffer on '\\0'");
-  cli.add_bool_arg('h', "help", "show this message and exit");
-  cli.set_epilog("FILES:\n" \
-                 "  t2x        t2x rules file\n"                   \
-                 "  preproc    result of preprocess trules file\n" \
-                 "  input      input file, standard input by default\n" \
-                 "  output     output file, standard output by default");
+  cli.add_bool_arg('t', "trace", i18n.format("trace_desc"));
+  cli.add_bool_arg('w', "dictionary-case", i18n.format("dictionary_case_desc"));
+  cli.add_bool_arg('z', "null-flush", i18n.format("null_flush_desc"));
+  cli.add_bool_arg('h', "help", i18n.format("help_desc"));
+  cli.set_epilog(i18n.format("chunck_epilog"));
   cli.parse_args(argc, argv);
 
   Interchunk i;

@@ -6,6 +6,8 @@
 #include <apertium/shell_utils.h>
 #include <apertium/stream_tagger.h>
 #include <lttoolbox/lt_locale.h>
+#include <i18n.h>
+#include <unicode/ustream.h>
 
 namespace Apertium {
 
@@ -29,9 +31,9 @@ int perceptron_trace(int argc, char* argv[])
     PerceptronSpec spec;
     MTXReader mtx_reader(spec);
     mtx_reader.read(argv[2]);
-    std::cout << "== Macro definitions ==\n";
+    std::cout << "== " << I18n(APER_I18N_DATA, "apertium").format("macro_definitions") << " ==\n";
     mtx_reader.printTmplDefns();
-    std::cout << "== Spec ==\n";
+    std::cout << "== " << I18n(APER_I18N_DATA, "apertium").format("spec") << " ==\n";
     std::cout << spec;
   }
   else if (argc == 5 && std::string(argv[1]) == "path")
@@ -88,15 +90,7 @@ int perceptron_trace(int argc, char* argv[])
   }
   else
   {
-    std::cout << "Run with one of:\n";
-    std::cout << argv[0] << " model <binary model file>\n";
-    std::cout << "Output features and weights from a model file.\n";
-    std::cout << argv[0] << " mtx <mtx file>\n";
-    std::cout << "Output macros and features from an mtx file.\n";
-    std::cout << argv[0] << " path <mtx file> <untagged> <tagged>\n";
-    std::cout << "Trace a particular path through giving which features fire "
-               << "and the resulting score. Useful for interactively "
-               << "designing feature sets.\n";
+    std::cout << I18n(APER_I18N_DATA, "apertium").format("perceptron_trace_desc", {"program_name"}, {argv[0]});
   }
   return 0;
 }

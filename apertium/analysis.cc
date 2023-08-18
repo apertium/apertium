@@ -17,6 +17,8 @@
 
 #include "exception.h"
 
+#include <i18n.h>
+
 namespace Apertium {
 std::ostream &operator<<(std::ostream &Stream_, const Analysis &Analysis_) {
   ::operator<<(Stream_, static_cast<UString>(Analysis_));
@@ -35,9 +37,7 @@ bool operator<(const Analysis &a, const Analysis &b) {
 
 Analysis::operator UString() const {
   if (TheMorphemes.empty())
-    throw Exception::Analysis::TheMorphemes_empty(
-        "can't convert Analysis comprising empty Morpheme std::vector to "
-        "UString");
+    throw Exception::Analysis::TheMorphemes_empty(I18n(APER_I18N_DATA, "apertium").format("APER1015"));
 
   std::vector<Morpheme>::const_iterator Morpheme_ = TheMorphemes.begin();
   UString UString_ = *Morpheme_;
@@ -62,7 +62,7 @@ Analysis::read(InputFile& in)
     c = in.get();
   } while (c == '+');
   if (in.eof() || c == '\0') {
-    throw Exception::Stream::UnexpectedEndOfFile("Unterminated lexical unit");
+    throw Exception::Stream::UnexpectedEndOfFile(I18n(APER_I18N_DATA, "apertium").format("APER1016"));
   }
   in.unget(c); // leave $ or / for caller
 }

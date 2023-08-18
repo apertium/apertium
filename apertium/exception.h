@@ -29,6 +29,7 @@ namespace Exception {
     EXCEPTION_TYPE(const std::stringstream &what_) : ExceptionType(what_) {}   \
     EXCEPTION_TYPE(const UChar *const what_) : ExceptionType(what_) {}         \
     EXCEPTION_TYPE(const UString &what_) : ExceptionType(what_) {}             \
+    EXCEPTION_TYPE(const icu::UnicodeString &what_) : ExceptionType(what_) {}  \
     ~EXCEPTION_TYPE() throw() {}                                               \
   };
 

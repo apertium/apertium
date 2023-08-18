@@ -16,6 +16,8 @@
 #include "a.h"
 
 #include "exception.h"
+#include <i18n.h>
+#include <unicode/ustring.h>
 
 namespace Apertium {
 bool operator==(const a &a_, const a &b_) {
@@ -33,14 +35,10 @@ a::a() : TheTags(), TheMorphemes() {}
 
 a::a(const Analysis &Analysis_) : TheTags(), TheMorphemes() {
   if (Analysis_.TheMorphemes.empty())
-    throw Exception::Analysis::TheMorphemes_empty("can't convert const "
-                                                  "Analysis & comprising empty "
-                                                  "Morpheme std::vector to a");
+    throw Exception::Analysis::TheMorphemes_empty(I18n(APER_I18N_DATA, "apertium").format("APER1013", {"letter"}, {"a"}));
 
   if (Analysis_.TheMorphemes.front().TheTags.empty())
-    throw Exception::Morpheme::TheTags_empty("can't convert const Analysis & "
-                                             "comprising Morpheme comprising "
-                                             "empty Tag std::vector to a");
+    throw Exception::Morpheme::TheTags_empty(I18n(APER_I18N_DATA, "apertium").format("APER1014", {"letter"}, {"a"}));
 
   TheTags = Analysis_.TheMorphemes.front().TheTags;
   TheMorphemes = std::vector<Morpheme>(Analysis_.TheMorphemes.begin() + 1,

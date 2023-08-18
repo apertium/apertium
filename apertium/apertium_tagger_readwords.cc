@@ -25,6 +25,8 @@
 
 #include <cstdlib>
 #include <lttoolbox/string_utils.h>
+#include <i18n.h>
+#include <unicode/ustream.h>
 
 
 using namespace std;
@@ -35,8 +37,7 @@ bool check_ambclasses;
 
 void check_file(FILE *f, const string& path) {
   if (!f) {
-    cerr<<"Error: cannot open file '"<<path<<"'\n";
-    exit(EXIT_FAILURE);
+		I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {path.c_str()}, true);
   }
 }
 
@@ -55,9 +56,9 @@ void readwords (int corpus_length) {
       int k=tagger_data_hmm.getOutput()[word->get_tags()];
 
       if ((k>=tagger_data_hmm.getM())||(k<0)) {
-	cerr<<"Error: Ambiguity class number out of range: "<<k<<"\n";
-	cerr<<"Word: "<< word->get_superficial_form() << "\n";
-	cerr<<"Ambiguity class: "<< word->get_string_tags() << "\n";
+		    I18n(APER_I18N_DATA, "apertium").error("APER1025", {"number", "word", "class"},
+                                                           {k, icu::UnicodeString(word->get_superficial_form().data()),
+                                                           icu::UnicodeString(word->get_string_tags().data())}, false);
       }
     }
 
@@ -68,18 +69,19 @@ void readwords (int corpus_length) {
 
     word=lexmorfo.get_next_word();
   }
-  cerr<<nwords<<" were readed\n";
+  cerr << I18n(APER_I18N_DATA, "apertium").format("readed_words", {"number_of_words"}, {nwords}) << "\n";
 }
 
 
 void help(char *name) {
-  cerr<<"USAGE:\n";
+  I18n i18n {APER_I18N_DATA, "apertium"};
+  cerr<< i18n.format("usage") << ":\n";
   cerr<<name<<" {--tsxfile file.tsx | --probfile file.prob} [--clength <corpus_length>] < file.crp \n\n";
 
-  cerr<<"ARGUMENTS: \n"
-      <<"   --tsxfile|-x: Specify a tagger specification file\n"
-      <<"   --probfile|-p: Specify a tagger parameter file\n"
-      <<"   --clength|-l: Specify the length of the corpus to process\n";
+  cerr<< i18n.format("arguments") << ": \n"
+      <<"   --tsxfile|-x: " <<  i18n.format("readwords_tsxfile") << "Specify a tagger specification file\n"
+      <<"   --probfile|-p: " <<  i18n.format("probfile_desc") << "\n"
+      <<"   --clength|-l: " <<  i18n.format("clength_desc") << "\n";
 }
 
 
@@ -92,9 +94,10 @@ int main(int argc, char* argv[]) {
   int c;
   int option_index=0;
 
-  cerr<<"LOCALE: "<<setlocale(LC_ALL,"")<<"\n";
+  I18n i18n {APER_I18N_DATA, "apertium"};
+  cerr << i18n.format("locale") << ": " << setlocale(LC_ALL,"") << "\n";
 
-  cerr<<"Command line: ";
+  cerr << i18n.format("command_line") << ": ";
   for(int i=0; i<argc; i++)
     cerr<<argv[i]<<" ";
   cerr<<"\n";
@@ -118,9 +121,8 @@ int main(int argc, char* argv[]) {
     case 'l':
       corpus_length=atoi(optarg);
       if(corpus_length<=0) {
-	cerr<<"Error: corpus length provided with --clength must be a positive integer\n";
-	help(argv[0]);
-	exit(EXIT_FAILURE);
+	      help(argv[0]);
+        I18n(APER_I18N_DATA, "apertium").error("APER1026", {}, {}, true);
       }
       break;
     case 'x':
@@ -158,33 +160,31 @@ int main(int argc, char* argv[]) {
   }
 
   if((tsxfile=="") && (probfile=="")) {
-    cerr<<"Error: You have provided neither a tagger specification file (.tsx) nor a tagger probability file (.prob). Use --tsxfile or --probfile to provide one of them\n";
     help(argv[0]);
-    exit(EXIT_FAILURE);
+    I18n(APER_I18N_DATA, "apertium").error("APER1027", {}, {}, true);
   }
 
   if((tsxfile!="") && (probfile!="")) {
-    cerr<<"Error: You provided a tagger specification file and a tagger probability file. Only one of them can be provided, not both\n";
     help(argv[0]);
-    exit(EXIT_FAILURE);
+    I18n(APER_I18N_DATA, "apertium").error("APER1028", {}, {}, true);
   }
 
   if (tsxfile!="") {
-    cerr<<"Reading tagger specification from file '"<<tsxfile<<"' ..."<<flush;
+    cerr << i18n.format("reading_from_file", {"file_name"}, {tsxfile.c_str()}) << flush;
     TSXReader treader;
     treader.read(tsxfile);
     tagger_data_hmm=treader.getTaggerData();
-    cerr<<"done.\n";
+    cerr <<i18n.format("done") << "\n";
     check_ambclasses=false;
   }
 
   if (probfile!="") {
-    cerr<<"Reading tagger parameters from file '"<<probfile<<"' ..."<<flush;
+    cerr << i18n.format("reading_from_file", {"file_name"}, {tsxfile.c_str()}) << flush;
     FILE* fin=NULL;
     fin=fopen(probfile.c_str(), "r");
     check_file(fin, probfile);
     tagger_data_hmm.read(fin);
-    cerr<<"done.\n";
+    cerr <<i18n.format("done") << "\n";
     fclose(fin);
     check_ambclasses=true;
   }

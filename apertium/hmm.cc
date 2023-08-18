@@ -32,6 +32,8 @@
 #include <algorithm>
 #include <lttoolbox/string_utils.h>
 #include <apertium/file_morpho_stream.h>
+#include <i18n.h>
+#include <unicode/ustream.h>
 
 inline bool p_isnan(double v) {
 #if __cplusplus >= 201103L
@@ -295,11 +297,10 @@ HMM::init_probabilities_from_tagged_text(MorphoStream &stream_tagged,
     cerr<<" -- "<<*word_untagged<<"\n";
 
     if (word_tagged->get_superficial_form()!=word_untagged->get_superficial_form()) {
-      cerr<<"\nTagged text (.tagged) and analyzed text (.untagged) streams are not aligned.\n";
-      cerr<<"Take a look at tagged text (.tagged).\n";
-      cerr<<"Perhaps this is caused by a multiword unit that is not a multiword unit in one of the two files.\n";
-      cerr<<*word_tagged<<" -- "<<*word_untagged<<"\n";
-      exit(1);
+      cerr << "\n";
+      I18n(APER_I18N_DATA, "apertium").error("APER1038", {"word_tagged", "word_untagged"},
+                          {icu::UnicodeString(word_tagged->get_superficial_form().data()),
+                           icu::UnicodeString(word_untagged->get_superficial_form().data())}, true);
     }
 
     if (++nw%100==0) cerr<<'.'<<flush;
@@ -307,14 +308,14 @@ HMM::init_probabilities_from_tagged_text(MorphoStream &stream_tagged,
     tag2 = tag1;
 
     if (word_untagged==NULL) {
-      cerr<<"word_untagged==NULL\n";
-      exit(1);
+      I18n(APER_I18N_DATA, "apertium").error("APER1039", {}, {}, true);
     }
 
     if (word_tagged->get_tags().size()==0) // Unknown word
       tag1 = -1;
     else if (word_tagged->get_tags().size()>1) // Ambiguous word
-      cerr<<"Error in tagged text. An ambiguous word was found: "<<word_tagged->get_superficial_form()<<"\n";
+      I18n(APER_I18N_DATA, "apertium").error("APER1040", {"word"},
+                                            {icu::UnicodeString(word_tagged->get_superficial_form().data())}, false);
     else
       tag1 = *(word_tagged->get_tags()).begin();
 
@@ -416,7 +417,8 @@ void
 HMM::post_ambg_class_scan() {
   int N = (tdhmm.getTagIndex()).size();
   int M = (tdhmm.getOutput()).size();
-  cerr << N << " states and " << M <<" ambiguity classes\n";
+  cerr << I18n(APER_I18N_DATA, "apertium").format("num_of_states_and_ambiguity_classes",
+                                                 {"states", "classes"}, {N, M}) << endl;
 
   tdhmm.setProbabilities(N, M);
 }
@@ -573,10 +575,9 @@ HMM::train(MorphoStream &morpho_stream) {
   }
 
   if ((pending.size()>1) || ((tag!=eos)&&(tag != (tdhmm.getTagIndex())["TAG_kEOF"_u]))) {
-    cerr << "Warning: The last tag is not the end-of-sentence-tag "
-          << "but rather " << tdhmm.getArrayTags()[tag] << ". Line: " << nw
-	  << ". Pending: " << pending.size() << ". Tags: ";
-    cerr << "\n";
+    I18n(APER_I18N_DATA, "apertium").error("APER1041", {"tag", "line", "pending"},
+                                                       {icu::UnicodeString(tdhmm.getArrayTags()[tag].data()),
+                                                        nw, to_string(pending.size()).c_str()}, false);
   }
 
   int N = tdhmm.getN();
@@ -597,7 +598,7 @@ HMM::train(MorphoStream &morpho_stream) {
       j = jt->first;
       if (xsi[i][j]>0) {
         if (gamma[i]==0) {
-          cerr<<"Warning: gamma["<<i<<"]=0\n";
+          I18n(APER_I18N_DATA, "apertium").error("APER1042", {"index"}, {i}, false);
           gamma[i]=DBL_MIN;
         }
 
@@ -740,7 +741,9 @@ HMM::tagger(MorphoStream &morpho_stream, UFILE* Output) {
 	loli -= log(prob);
       else {
         if (TheFlags.getDebug())
-	  cerr<<"Problem with word '"<<word->get_superficial_form()<<"' "<<word->get_string_tags()<<"\n";
+          I18n(APER_I18N_DATA, "apertium").error("APER1043", {"word", "tags"},
+                                                {icu::UnicodeString(word->get_superficial_form().data()),
+                                                 icu::UnicodeString(word->get_string_tags().data())}, false);
       }
       for (unsigned t=0; t<best[nwpend%2][tag].size(); t++) {
 	if (TheFlags.getFirst()) {
@@ -778,8 +781,7 @@ HMM::tagger(MorphoStream &morpho_stream, UFILE* Output) {
   }
 
   if ((tags.size()>1)&&(TheFlags.getDebug())) {
-    cerr << "Error: The text to disambiguate has finished, but there are ambiguous words that has not been disambiguated.\n";
-    cerr << "This message should never appears. If you are reading this ..... these are very bad news.\n";
+    I18n(APER_I18N_DATA, "apertium").error("APER1043", {}, {}, false);
   }
 }
 

@@ -5,7 +5,7 @@
 #include <iomanip>
 #include <lttoolbox/string_utils.h>
 #include <utf8.h>
-
+#include <i18n.h>
 
 namespace Apertium {
 
@@ -737,9 +737,10 @@ PerceptronSpec::Machine::getValue()
 void
 PerceptronSpec::Machine::unimplemented_opcode(std::string opstr) {
   int bytecode_idx = bytecode_iter - feat.begin();
-  std::stringstream msg;
-  msg << "Unimplemented opcode: " << opstr;
-  msg << " at " << (is_feature ? "feature" : "global") << " #" << feat_idx << " address #" << bytecode_idx;
+  icu::UnicodeString msg = I18n(APER_I18N_DATA, "apertium").format("APER1088",
+    {"opstr", "feature", "feat_idx", "bytecode_idx"},
+    {opstr.c_str(), (is_feature ? "feature" : "global"),
+     to_string(feat_idx).c_str(), to_string(bytecode_idx).c_str()});
   throw Apertium::Exception::apertium_tagger::UnimplementedOpcode(msg);
 }
 

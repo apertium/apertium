@@ -3,6 +3,7 @@
 #include <lttoolbox/string_utils.h>
 #include <lttoolbox/compression.h>
 #include <apertium/trx_reader.h>
+#include <i18n.h>
 
 using namespace std;
 
@@ -26,8 +27,7 @@ TransferBase::read(const char* transferfile, const char* datafile)
 {
   doc = xmlReadFile(transferfile, NULL, 0);
   if (doc == NULL) {
-    cerr << "Error: Could not parse file '" << transferfile << "'." << endl;
-    exit(EXIT_FAILURE);
+    I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {transferfile}, true);
   }
   root_element = xmlDocGetRootElement(doc);
 
@@ -42,8 +42,7 @@ TransferBase::read(const char* transferfile, const char* datafile)
 
   FILE* in = fopen(datafile, "rb");
   if (!in) {
-    cerr << "Error: Could not open file '" << datafile << "' for reading." << endl;
-    exit(EXIT_FAILURE);
+    I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {datafile}, true);
   }
 
   alphabet.read(in);
@@ -203,7 +202,7 @@ UString
 TransferBase::evalString(xmlNode* element)
 {
   if (!element) {
-    throw "evalString() was called on a NULL element";
+    throw I18n(APER_I18N_DATA, "apertium").format("APER1134");
   }
   if (evalStringCache.find(element) != evalStringCache.end()) {
     return evalCachedString(element);
@@ -243,8 +242,7 @@ TransferBase::evalString(xmlNode* element)
   } else if (!xmlStrcmp(element->name, (const xmlChar*) "chunk")) {
     return processChunk(element);
   } else {
-    cerr << "Error: unexpected expression: '" << element->name << "'" << endl;
-    exit(EXIT_FAILURE);
+    I18n(APER_I18N_DATA, "apertium").error("APER1050", {"expression"}, {(char*)element->name}, true);
   }
   return evalCachedString(element);
 }

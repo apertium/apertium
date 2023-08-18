@@ -18,6 +18,7 @@
 #include "exception.h"
 
 #include <utility>
+#include <i18n.h>
 
 namespace Apertium {
 Stream::Stream(TaggerFlags &Flags_)
@@ -48,13 +49,13 @@ StreamedType Stream::get() {
       c = TheCharacterStream.get();
     }
     if (c == '$') {
-      throw Exception::Analysis::TheMorphemes_empty("lexical unit has no analyses");
+      throw Exception::Analysis::TheMorphemes_empty(I18n(APER_I18N_DATA, "apertium").format("APER1101"));
     } else if (TheStreamedType.TheLexicalUnit->TheSurfaceForm.empty()) {
-      throw Exception::Stream::UnexpectedCharacter("unexpected /, surface form is empty");
+      throw Exception::Stream::UnexpectedCharacter(I18n(APER_I18N_DATA, "apertium").format("APER1102"));
     }
     c = TheCharacterStream.get();
     if (c == '$') {
-      throw Exception::Analysis::TheMorphemes_empty("lexical unit has no analyses");
+      throw Exception::Analysis::TheMorphemes_empty(I18n(APER_I18N_DATA, "apertium").format("APER1101"));
     } else if (c == '*') {
       TheCharacterStream.readBlock(c, '$');
     } else {
@@ -65,7 +66,7 @@ StreamedType Stream::get() {
         c = TheCharacterStream.get();
       } while (c == '/');
       if (c != '$') {
-        throw Exception::Stream::UnexpectedEndOfFile("unterminated lexical unit");
+        throw Exception::Stream::UnexpectedEndOfFile(I18n(APER_I18N_DATA, "apertium").format("APER1103"));
       }
     }
   }

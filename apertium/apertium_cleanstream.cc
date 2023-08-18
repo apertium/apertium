@@ -29,6 +29,7 @@
 #ifdef __MINGW32__
 #include <windows.h>
 #endif
+#include <i18n.h>
 
 using namespace std;
 
@@ -63,7 +64,7 @@ main (int argc, char** argv)
     c = input.get();
     if (c == '^') {
       if (intoken) {
-        cerr << "Error: unescaped '^': " << buf << "^" << endl;
+        I18n(APER_I18N_DATA, "apertium").error("APER1001", {"buf"}, {icu::UnicodeString(buf.data())}, false);
         buf += "\\^"_u;
       } else {
         intoken = true;
@@ -79,7 +80,7 @@ main (int argc, char** argv)
         write(buf, output);
         buf.clear();
       } else {
-        cerr << "Error: stray '$'" << endl;
+        I18n(APER_I18N_DATA, "apertium").error("APER1002", {}, {}, false);
       }
     } else if(c == '\\') {
       c = input.get();

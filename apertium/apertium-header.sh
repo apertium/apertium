@@ -17,23 +17,8 @@
 # along with this program; if not, see <https://www.gnu.org/licenses/>.
 
 message () {
-  echo "USAGE: $(basename "$0") [-d datadir] [-f format] [-u] <direction> [in [out]]"
-  echo " -d datadir       directory of linguistic data"
-  echo " -f format        one of: txt (default), html, rtf, odt, odp, docx, wxml, xlsx, pptx,"
-  echo "                  xpresstag, html-noent, html-alt, latex, latex-raw, line"
-  echo " -a               display ambiguity"
-  echo " -u               don't display marks '*' for unknown words"
-  echo " -n               don't insert period before possible sentence-ends"
-  echo " -m memory.tmx    use a translation memory to recycle translations"
-  echo " -o direction     translation direction using the translation memory,"
-  echo "                  by default 'direction' is used instead"
-  echo " -l               lists the available translation directions and exits"
-  echo " -V               print Apertium version"
-  # This is wrong and should be deprecated, but until all tools consider \0 flush without -z then this helps to have
-  echo " -z               force null-flush mode on all parts of the pipe"
-  echo " direction        typically, LANG1-LANG2, but see modes.xml in language data"
-  echo " in               input file (stdin by default)"
-  echo " out              output file (stdout by default)"
+  # -z option is wrong and should be deprecated, but until all tools consider \0 flush without -z then this helps to have
+  icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "apertium_desc" "basename" "$(basename "$0")"
   exit 1
 }
 
@@ -47,7 +32,7 @@ locale_utf8 () {
   export LC_CTYPE
   LC_CTYPE=$(locale -a|grep -i "utf[.-]*8"|head -1)
   if [[ -z ${LC_CTYPE} ]]; then
-    echo "Error: Install an UTF-8 locale in your system"
+    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1158"
     exit 1
   fi
 }
@@ -57,7 +42,7 @@ check_encoding () {
   local encoding
   encoding=$(file -b --mime-encoding "${file}")
   if [[ "${encoding}" != utf-8 && "${encoding}" != us-ascii ]]; then
-    echo "Input seems to be non-UTF-8, please convert to UTF-8 (e.g. with 'iconv -f ${encoding} -t utf-8')" >&2
+    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1159" "encoding" "$encoding" >&2
     exit 1
   fi
 }
@@ -67,7 +52,7 @@ check_transfuse () {
   has_tf=$(command -v tf-extract)
   if [[ "$APERTIUM_TRANSFUSE" = "1" || "$APERTIUM_TRANSFUSE" = "yes" ]]; then
     if [[ -z "$has_tf" ]]; then
-      echo "APERTIUM_TRANSFUSE=$APERTIUM_TRANSFUSE but couldn't find Transfuse's tf-extract in PATH"
+      icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1159" "APERTIUM_TRANSFUSE" "$APERTIUM_TRANSFUSE"
       exit 1
     fi
   fi
@@ -111,19 +96,19 @@ run_mode_wblank_force_flush () {
 
 test_zip () {
   if ! command -v zip &>/dev/null; then
-    echo "Error: Install 'zip' command in your system";
+    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1161" "command" "zip"
     exit 1;
   fi
 
   if ! command -v unzip &>/dev/null; then
-    echo "Error: Install 'unzip' command in your system";
+    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1161" "command" "unzip"
     exit 1;
   fi
 }
 
 test_gawk () {
   if ! command -v gawk &>/dev/null; then
-    echo "Error: Install 'gawk' in your system"
+    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1161" "command" "gawk"
     exit 1
   fi
 }
@@ -462,8 +447,8 @@ while getopts ":uahlVzf:d:m:o:nH" opt; do
 	V) echo "${apertium_version}" && exit 0 ;;
     z) NULL_FLUSH+=(-z) ;;
     h) message ;;
-    \?) echo "ERROR: Unknown option $OPTARG" >&2; message >&2 ;;
-    *) echo "ERROR: $OPTARG requires an argument" >&2; message >&2 ;;
+    \?) icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1108" "opt" "$OPTARG" >&2; message >&2 ;;
+    *) icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1162" "opt" "$OPTARG" >&2; message >&2 ;;
   esac
 done
 shift $(( OPTIND-1 ))
@@ -493,29 +478,28 @@ case "$#" in
 esac
 
 if [[ ! -e "$INFILE" ]]; then
-  echo "Error: file '$INFILE' not found." >&2
+  icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1000" "file_name" "$INFILE" >&2
   message >&2
 elif [[ ! -r "$INFILE" ]]; then
-  echo "Error: file '$INFILE' is not readable by you." >&2
+  icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1000" "file_name" "$INFILE" >&2
   message >&2
 fi
 
 if [[ -n $TRANSLATION_MEMORY_FILE ]]; then
   if ! lt-tmxcomp "$TRANSLATION_MEMORY_DIRECTION" "$TRANSLATION_MEMORY_FILE" "$TMCOMPFILE" >/dev/null; then
-    echo "Error: Cannot compile TM '$TRANSLATION_MEMORY_FILE'" >&2
-    echo"   hint: use -o parameter" >&2
+    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1163" "file" "$TRANSLATION_MEMORY_FILE" >&2
     message >&2
   fi
 fi
 
 if [[ ! -d "$DATADIR/modes" ]]; then
-  echo "Error: Directory '$DATADIR/modes' does not exist." >&2
+  icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1164" "directory" "$DATADIR/modes" >&2
   message >&2
 fi
 
 if [[ ! -e "$DATADIR/modes/$PAIR.mode" ]]; then
   {
-    echo -n "Error: Mode $PAIR does not exist"
+    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1164" "mode" "$PAIR"
     c=$(find "$DATADIR/modes" -name '*.mode' | wc -l)
     if [[ "$c" -le 1 ]]; then
       echo "."
@@ -637,7 +621,7 @@ case "$FORMAT" in
     OPTION="-n";
     MILOCALE=$(locale -a | grep -E -i -v -m1 'utf|^C|^POSIX$')
     if [[ -z "$MILOCALE" ]]; then
-      echo "Error: Install a ISO-8859-1 compatible locale in your system";
+      icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1166";
       exit 1;
     fi
     export LC_CTYPE=$MILOCALE
@@ -674,7 +658,7 @@ case "$FORMAT" in
 
 
   *) # Por defecto asumimos txt
-    echo "$0 WARNING: Unknown format ${FORMAT}, treating as 'txt'" >&2
+    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1167" "arg" "format" "$0" "${FORMAT}" >&2
     FORMAT="txt"
     OPTION="-g"
     ;;

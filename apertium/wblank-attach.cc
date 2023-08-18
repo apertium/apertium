@@ -21,6 +21,8 @@
 #include <vector>
 #include <algorithm>
 #include <array>
+#include <i18n.h>
+#include <unicode/ustream.h>
 
 void trim_wb(std::string& wb) {
 	while (!wb.empty() && (wb.back() == ';' || wb.back() == ' ')) {
@@ -35,9 +37,7 @@ void trim_wb(std::string& wb) {
 int main(int argc, char* argv[]) {
 	// Ignore -z, but anything else just show what this tool does
 	if (argc > 1 && argv[1][1] != 'z') {
-		std::cout << "Distributes word-bound blanks across all tokens they encompass, turning [[A]]^...$^...$[[/]] into [[A]]^...$[[A]]^...$\n";
-		std::cout << "Also merges word-bound blanks, turning [[A]][[B]]^...$^...$[[/]][[/]] into [[A; B]]^...$\n";
-		std::cout << "Word-bound blanks will be deduplicated, but order will be preserved amongst unique elements.\n";
+		std::cout << I18n(APER_I18N_DATA, "wblank_attach_desc").format("APER1047");
 		return 0;
 	}
 
@@ -80,7 +80,7 @@ int main(int argc, char* argv[]) {
 		if (c == '\0') {
 			in_token = in_blank = false;
 			if (!wbs.empty()) {
-				std::cerr << "tf-apertium-spread warning: Null-flush found, but had open word-bound blanks on line " << line << ":";
+				I18n(APER_I18N_DATA, "apertium").error("APER1154", {"line"}, {std::to_string(line).c_str()}, false);
 				for (auto& wb : wbs) {
 					std::cerr << ' ' << wb;
 				}
@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
 				wbs.clear();
 			}
 			if (!blank.empty()) {
-				std::cerr << "tf-apertium-spread warning: Null-flush found, but had an open blank on line " << line << std::endl;
+				I18n(APER_I18N_DATA, "apertium").error("APER1154", {"line"}, {std::to_string(line).c_str()}, false);
 				std::cout << blank;
 				blank.clear();
 				unesc.clear();
@@ -142,7 +142,7 @@ int main(int argc, char* argv[]) {
 			in_blank = false;
 			if (blank[0] == '[' && blank[1] == '[' && blank[2] == '/' && blank[3] == ']' && blank[4] == ']') {
 				if (wb_stack.empty()) {
-					std::cerr << "tf-apertium-spread warning: Too many [[/]] on line " << line << std::endl;
+					I18n(APER_I18N_DATA, "apertium").error("APER1155", {"line"}, {std::to_string(line).c_str()}, false);
 				}
 				else {
 					for (size_t i = 0 ; i < wb_stack.back() ; ++i) {
@@ -177,14 +177,14 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (!wbs.empty()) {
-		std::cerr << "tf-apertium-spread warning: End of input reached, but had open word-bound blanks:";
+		I18n(APER_I18N_DATA, "apertium").error("APER1154", {"line"}, {"NULL"}, false);
 		for (auto& wb : wbs) {
 			std::cerr << ' ' << wb;
 		}
 		std::cerr << std::endl;
 	}
 	if (!blank.empty()) {
-		std::cerr << "tf-apertium-spread warning: End of input reached, but had an open blank." << std::endl;
+		I18n(APER_I18N_DATA, "apertium").error("APER1156", {}, {}, false);
 		std::cout << blank;
 	}
 }

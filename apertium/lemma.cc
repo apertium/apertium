@@ -16,6 +16,7 @@
 #include "lemma.h"
 
 #include "exception.h"
+#include <i18n.h>
 
 namespace Apertium {
 bool operator==(const Lemma &a_, const Lemma &b_) {
@@ -31,22 +32,18 @@ Lemma::Lemma() : TheLemma() {}
 Lemma::Lemma(const Analysis &Analysis_) : TheLemma() {
   if (Analysis_.TheMorphemes.empty())
     throw Exception::Analysis::TheMorphemes_empty(
-        "can't convert const Analysis & comprising empty Morpheme std::vector "
-        "to Lemma");
+        I18n(APER_I18N_DATA, "apertium").format("APER1013", {"letter"}, {"Lemma"}));
 
   if (Analysis_.TheMorphemes.front().TheLemma.empty())
     throw Exception::Morpheme::TheLemma_empty(
-        "can't convert const Analysis & comprising Morpheme comprising empty "
-        "Lemma UString to Lemma");
+        I18n(APER_I18N_DATA, "apertium").format("APER1054"));
 
   TheLemma = Analysis_.TheMorphemes.front().TheLemma;
 }
 
 Lemma::Lemma(const Morpheme &Morpheme_) : TheLemma() {
   if (Morpheme_.TheLemma.empty())
-    throw Exception::Morpheme::TheLemma_empty("can't convert const Morpheme & "
-                                              "comprising empty Lemma "
-                                              "UString to Lemma");
+    throw Exception::Morpheme::TheLemma_empty(I18n(APER_I18N_DATA, "apertium").format("APER1055"));
 
   TheLemma = Morpheme_.TheLemma;
 }

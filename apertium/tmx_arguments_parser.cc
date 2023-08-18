@@ -13,6 +13,7 @@
 #include <lttoolbox/string_utils.h>
 #include <iostream>
 #include <stdlib.h>
+#include <i18n.h>
 
 // Could be better.
 bool alphabetic( char c)
@@ -27,16 +28,16 @@ bool Arguments::read( int argc, char **argv )
     std::string p = argv[i];
     if (p.empty() || p[0]!='-')
     {
-      std::cerr << p << ": unable to parse argument\n";
-      throw "argument error";
+      I18n(APER_I18N_DATA, "apertium").error("APER1126", {}, {}, false);
+      throw I18n(APER_I18N_DATA, "apertium").format("APER1124");
       return false;
     }
     p.erase(0,1);
 
     if (p.empty())
     {
-      std::cerr << "Empty argument\n";
-      throw "argument error";
+      I18n(APER_I18N_DATA, "apertium").error("APER1127", {}, {}, false);
+      throw I18n(APER_I18N_DATA, "apertium").format("APER1124");
       return false;
     }
 
@@ -86,8 +87,8 @@ bool Arguments::read( int argc, char **argv, std::vector<const char*>& remains )
 
     if (p.empty())
     {
-      std::cerr << "Empty argument\n";
-      throw "argument error";
+      I18n(APER_I18N_DATA, "apertium").error("APER1127", {}, {}, false);
+      throw I18n(APER_I18N_DATA, "apertium").format("APER1124");
       return false;
     }
 
@@ -130,8 +131,8 @@ bool Arguments::getNumericParam( const std::string& name, int& num )
 
   if (it->second.kind != AnyData::Int)
   {
-    std::cerr << "Argument -" << name << ": integer expected.\n";
-    throw "argument error";
+    I18n(APER_I18N_DATA, "apertium").error("APER1128", {"arg"}, {name.c_str()}, false);
+    throw I18n(APER_I18N_DATA, "apertium").format("APER1124");
   }
 
   num = it->second.dInt;
@@ -149,7 +150,7 @@ bool Arguments::getSwitchConst( const ArgName& name, bool& sw ) const
   }
   else if (! it->second.dString.empty())
   {
-    std::cerr << "Argument -" << name << ": value is not allowed.\n";
+    I18n(APER_I18N_DATA, "apertium").error("APER1129", {"arg"}, {name.c_str()}, false);
     return false;
   }
   else
@@ -179,8 +180,8 @@ bool Arguments::getSwitchCompact( const ArgName& name )
   }
   else
   {
-    std::cerr << "No value is allowed for argument -" << name << ".\n";
-    throw "argument error";
+    I18n(APER_I18N_DATA, "apertium").error("APER1130", {"arg"}, {name.c_str()}, false);
+    throw I18n(APER_I18N_DATA, "apertium").format("APER1124");
   }
 }
 
@@ -188,7 +189,7 @@ void Arguments::checkEmptyArgs() const
 {
   if (!empty())
   {
-    std::cerr << "Invalid argument: ";
+    I18n(APER_I18N_DATA, "apertium").error("APER1131", {}, {}, false);
 
     for ( Arguments::const_iterator it=begin(); it!=end(); ++it )
     {
@@ -199,6 +200,6 @@ void Arguments::checkEmptyArgs() const
     }
     std::cerr << std::endl;
 
-    throw "argument error";
+    throw I18n(APER_I18N_DATA, "apertium").format("APER1124");
   }
 }

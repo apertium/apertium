@@ -294,9 +294,9 @@ apertium_adapt_docx_SOURCES = adapt_docx.cc
 apertium_gen_modes_SOURCES = gen_modes.cc
 
 if WINDOWS
-AM_CPPFLAGS = -I$(top_srcdir)/apertium/win32 -I$(top_srcdir) $(APERTIUM_CFLAGS) $(ICU_CFLAGS)
+AM_CPPFLAGS = -I$(top_srcdir)/apertium/win32 -I$(top_srcdir) $(APERTIUM_CFLAGS) $(ICU_CFLAGS) -DAPER_I18N_DATA='"$(APER_I18N_DATA)"' -DLTTB_I18N_DATA='"$(LTTB_I18N_DATA)"'
 else
-AM_CPPFLAGS = -I$(top_srcdir) $(APERTIUM_CFLAGS) $(ICU_CFLAGS)
+AM_CPPFLAGS = -I$(top_srcdir) $(APERTIUM_CFLAGS) $(ICU_CFLAGS) -DAPER_I18N_DATA='"$(APER_I18N_DATA)"' -DLTTB_I18N_DATA='"$(LTTB_I18N_DATA)"'
 endif
 CLEANFILES = *~ apertium_destxt.cc apertium_retxt.cc apertium_deshtml.cc \
              apertium_rehtml.cc apertium_desrtf.cc apertium_rertf.cc \

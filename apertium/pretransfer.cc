@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <string>
+#include <i18n.h>
 
 UString storeAndWriteWblank(InputFile& input, UFILE* output)
 {
@@ -18,8 +19,7 @@ UString storeAndWriteWblank(InputFile& input, UFILE* output)
     mychar = input.get();
     if(input.eof())
     {
-      std::cerr << "ERROR: Unexpected EOF" << std::endl;
-      exit(EXIT_FAILURE);
+      I18n(APER_I18N_DATA, "apertium").error("APER1095", {}, {}, true);
     }
 
     content += mychar;
@@ -55,8 +55,7 @@ void readAndWriteUntil(InputFile& input, UFILE* output, int const charcode)
   {
     if(input.eof())
     {
-      std::cerr << "ERROR: Unexpected EOF" << std::endl;
-      exit(EXIT_FAILURE);
+      I18n(APER_I18N_DATA, "apertium").error("APER1095", {}, {}, true);
     }
     u_fputc(mychar, output);
     if(mychar == '\\')
@@ -85,8 +84,7 @@ void procWord(InputFile& input, UFILE* output, bool surface_forms, bool compound
   {
     if(input.eof())
     {
-      std::cerr << "ERROR: Unexpected EOF" << std::endl;
-      exit(EXIT_FAILURE);
+      I18n(APER_I18N_DATA, "apertium").error("APER1095", {}, {}, true);
     }
 
     switch(mychar)
@@ -180,8 +178,7 @@ void processStream(InputFile& input, UFILE* output, bool null_flush, bool surfac
           }
           else
           {
-            std::cerr << "ERROR: Wordbound blank isn't immediately followed by the Lexical Unit." << std::endl;
-            exit(EXIT_FAILURE);
+            I18n(APER_I18N_DATA, "apertium").error("APER1096", {}, {}, true);
           }
         }
         else

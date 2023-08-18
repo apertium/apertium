@@ -23,12 +23,7 @@ case $# in
     SALIDA=$5
     ;;
   *)
-    echo "USAGE: $(basename $0) <datadir> <translation> [format [infile [outfile]]]"
-    echo " datadir          Directory of linguistic data"
-    echo " translation      LANG1-LANG2"
-    echo " format           one of: txt (default), txtu, html, htmlu, rtf, rtfu"
-    echo " infile           input file (stdin by default)"
-    echo " outfile          output file (stdout by default)"
+    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "trans_desc" "basename" "$(basename "$0")"
     exit 1;
 esac
 

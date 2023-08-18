@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <map>
 #include <set>
+#include <i18n.h>
 
 namespace Apertium {
 
@@ -183,14 +184,13 @@ bool PerceptronTagger::trainSentence(
         return true;
       } else {
         std::stringstream what_;
-        what_ << "Tagged analysis unavailable in untagged/ambigous input.\n";
-        what_ << "Available:\n";
         for (analys_it = analyses.begin(); analys_it != analyses.end(); analys_it++) {
           what_ << *analys_it << "\n";
         }
-        what_ << "Required: " << *tagged_tok << "\n";
-        what_ << "Rerun with --skip-on-error to skip this sentence.";
-        throw Apertium::Exception::PerceptronTagger::CorrectAnalysisUnavailable(what_);
+        icu::UnicodeString msg = I18n(APER_I18N_DATA, "apertium").format("APER1089",
+        {"available", "required"}, {what_.str().c_str(),
+        icu::UnicodeString(static_cast<UString>(*tagged_tok).data())});
+        throw Apertium::Exception::PerceptronTagger::CorrectAnalysisUnavailable(msg);
       }
     }
     // Apply the beam
@@ -259,10 +259,10 @@ void PerceptronTagger::train(
   }
   avg_weights.average();
   if (avail_skipped) {
-    std::cerr << "Skipped " << tc.skipped << " sentences due to token "
-               << "misalignment and " << avail_skipped << " sentences due to "
-               << "tagged token being unavailable in untagged file out of "
-               << tc.sentences.size() << " total sentences.\n";
+    I18n(APER_I18N_DATA, "apertium").error("APER1090",
+      {"skipped", "avail_skipped", "total"},
+      {to_string(tc.skipped).c_str(), to_string(avail_skipped).c_str(),
+       to_string(tc.sentences.size()).c_str()}, false);
   }
   //std::cerr << *this;
 }

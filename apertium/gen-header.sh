@@ -14,14 +14,14 @@ FILE2=$2;
 
 if [ $# = 2 ]
 then if [ ! -e "$1" ]
-     then echo "ERROR: '$1' file not found";
+     then echo icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1000" "file_name" "$1";
           exit 1;
      fi
 fi
 
 if [ $# = 3 ]
 then if [ ! -e "$2" ]
-     then echo "ERROR: '$2' file not found";
+     then echo icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1000" "file_name" "$2";
           exit 1;
      fi
      FLEXOPTS="-Cfer";

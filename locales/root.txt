@@ -1,0 +1,451 @@
+root{
+    adapt_docx_desc{"makes some changes to .xml files from .docx components\n"
+                    "- moves word boundaries to 'legal' positions\n"
+                    "Gets input file name from stdin (or from -f), writes to stdout"}
+    usage{"USAGE"}
+    options{"Options"}
+    arguments{"ARGUMENTS"}
+    name_desc{"writes \"< file name=\"filename\">\" to output"}
+    file_desc{"gets file name as parameter"}
+    pretty_desc{"outputs xml with a pretty format"}
+    paragraphs_found{"paragraphs found"}
+    file_name{"file name"}
+
+    compile_caps_desc{"compile capitalization restoration rules"}
+    help_desc{"print this message and exit"}
+
+    deshtml_desc{"html format processor."};
+
+    extract_caps_desc{"Transfer capitalization information to word-bound blanks"}
+    surface_desc{"keep surface forms"}
+    null_flush_desc{"flush output on the null character"}
+
+    interchunck_desc{"process stream with interchunker"}
+    trace_desc{"trace mode (show rule numbers and patterns matched)"}
+    dictionary_case_desc{"ignore capitalization manipulation instructions"}
+    chunck_epilog{"FILES:\n"
+                       "  t2x        t2x rules file\n"
+                       "  preproc    result of preprocess trules file\n"
+                       "  input      input file, standard input by default\n"
+                       "  output     output file, standard output by default"}
+
+    macro_definitions{"Macro definitions"}
+    spec{"Spec"}
+    perceptron_trace_desc{"Run with one of:\n"
+                          "{program_name} model <binary model file>\n"
+                          "Output features and weights from a model file.\n"
+                          "{program_name} mtx <mtx file>\n"
+                          "Output macros and features from an mtx file.\n"
+                          "{program_name} path <mtx file> <untagged> <tagged>\n"
+                          "Trace a particular path through giving which features fire "
+                          "and the resulting score. Useful for interactively "
+                          "designing feature sets.\n"}
+    postchunck_desc{"process stream with postchunker"}
+
+    no_surface_forms_desc{"assume no surface forms"}
+    compounds_desc{"treat ~ as compound separator"}
+
+    restore_caps_desc{"compile capitalization restoration rules"}
+    keep_desc{"retain all wblanks"}
+
+    tagger_apply_new_rules_desc{"Forbid and enforce rules are applied to the given HMM parameters"}
+    hmm_filein_desc{"To specify the file with the HMM parameter to process"}
+    hmm_fileout_desc{"To specify the file to which the HMM will be written"}
+    hmm_tsxfile_desc{"File containing the rules to apply"}
+    tagger_apply_new_rules_note{"NOTE: Parameters are read from and written to the files provided"}
+
+    reading_from_file{"Reading from file \"{file_name}\" ... "}
+    writing_to_file{"Writing to file \"{file_name}\" ... "}
+    done{"done."}
+    readed_words{"{number_of_words} were readed."}
+
+    probfile_desc{"Specify a tagger parameter file"}
+    clength_desc{"Specify the length of the corpus to process"}
+    locale{"LOCALE"}
+    command_line{"Command line"}
+    tagger_note{"Try \"apertium-tagger --help\" for more information."}
+    percent_desc{"number 0 < n <= 1 to set margin of confidence of TU's \n"
+                 "                (0.85 by default) in length terms."}
+    edit_desc{"number 0 < n <= 1 to set margin of confidence of TU's \n"
+              "                (0.30 by default) in edit distance terms"}
+    low_limit_desc{"ignore percent if the segment is less than lowlimit \n"
+                   "                (15 by default)"}
+    max_edit_desc{"characters to be taken into account when aligning \n"
+                  "                sentences (50 by default)"}
+    diagonal_desc{"diagonal width for using edit distance, 10 by default"}
+    window_desc{"window size of the edit distance with sentences \n"
+                "                (100 sentences by default)"}
+    step_desc{"step for moving the window during the alingment \n"
+              "                (75 sentences by default)"}
+    tmxbuild_note{"Other parameters:\n"
+                  "  code1, code2 codes of the languages (i.e. ISO-631 ones)\n"
+                  "  doc1, doc2    unformatted docs to build the TMX file\n"
+                  "  output_file   if not specified, the result will be printed to stdout"}
+    trace_att_desc{"trace, for apertium-transfer-tools (also sets -t)"}
+    from_bilingual_desc{"input from lexical transfer"}
+    no_bilingual_desc{"don't use bilingual dictionary"}
+    extended_desc{"extended mode with user dictionary"}
+    case_sensitive_desc{"case-sensitiveness while accessing bilingual dictionary"}
+    trules_desc{"transfer rules file"}
+    preproc_desc{"result of preprocess trules file"}
+    biltrans_desc{"bilingual letter transducer file"}
+    input_desc{"input file, standard input by default"}
+    output_desc{"output file, standard output by default"}
+    
+    apertium_desc{"USAGE: {basename} [-d datadir] [-f format] [-u] <direction> [in [out]]\n"
+                  " -d datadir       directory of linguistic data\n"
+                  " -f format        one of: txt (default), html, rtf, odt, odp, docx, wxml, xlsx, pptx,\n"
+                  "                  xpresstag, html-noent, html-alt, latex, latex-raw, line\n"
+                  " -a               display ambiguity\n"
+                  " -u               don't display marks '*' for unknown words\n"
+                  " -n               don't insert period before possible sentence-ends\n"
+                  " -m memory.tmx    use a translation memory to recycle translations\n"
+                  " -o direction     translation direction using the translation memory,\n"
+                  "                  by default 'direction' is used instead\n"
+                  " -l               lists the available translation directions and exits\n"
+                  " -V               print Apertium version\n"
+                  " -z               force null-flush mode on all parts of the pipe\n"
+                  " direction        typically, LANG1-LANG2, but see modes.xml in language data\n"
+                  " in               input file (stdin by default)\n"
+                  " out              output file (stdout by default)"}
+
+    gen_modes_desc{"Generate mode command files from XML"}
+    full_desc{"expect absolute installation path"}
+    local_desc{"output to current directory rather than directory of modes.xml"}
+    verbose_desc{"print more detailed messages"}
+    num_of_states_and_ambiguity_classes{"{states} states and {classes} ambiguity classes."}
+
+    interchunk_rule_line{"apertium-interchunk: Rule {value} line {line}"}
+    postchunk_rule_line{"apertium-postchunk: Rule {value} line {line}"}
+
+    tagger_cc_note{"Mandatory arguments to long options are mandatory for short options too."}
+    tagger_debug_desc{"with -g, print error messages about the input"}
+    tagger_first_desc{"with -g, reorder each lexical unit's analyses so that the chosen one is first"}
+    tagger_mark_desc{"with -g, mark disambiguated lexical units"}
+    tagger_show_superficial_desc{"with -g, output each lexical unit's surface form"}
+    tagger_null_flush_desc{"with -g, flush output on the null character"}
+    tagger_unigram_desc{"use unigram algorithm MODEL from <https://coltekin.net/cagri/papers/trmorph-tools.pdf>"}
+    tagger_sliding_window_desc{"use the Light Sliding Window algorithm"}
+    tagger_perceptron_desc{"use the averaged perceptron algorithm"}
+    tagger_skip_on_error_desc{"with -xs, ignore certain types of errors with the training corpus"}
+    tagger_desc{"disambiguate the input"}
+    tagger_retrain_desc{"with -u: exit;\notherwise: retrain the tagger with ITERATIONS unsupervised iterations"}
+    tagger_supervised_desc{"with -u: train the tagger with a hand-tagged corpus;\nwith -w: exit;\notherwise: initialise the tagger with a hand-tagged corpus and retrain it with ITERATIONS tagger_unsupervised iterations"}
+    tagger_train_desc{"with -u: exit;\notherwise: train the tagger with ITERATIONS unsupervised iterations"}
+    apertium_tagger_desc{"  -d, --debug             with -g, print error messages about the input\
+  -f, --first             with -g, reorder each lexical unit's analyses so that\
+                            the chosen one is first\
+  -m, --mark              with -g, mark disambiguated lexical units\
+  -p, --show-superficial  with -g, output each lexical unit's surface form\
+  -z, --null-flush        with -g, flush the output after getting each null\
+                            character\
+\
+  -u, --unigram=MODEL  use unigram algorithm MODEL from\
+                         <https://coltekin.net/cagri/papers/trmorph-tools.pdf>\
+\
+  -w, --sliding-window  use the Light Sliding Window algorithm\
+  -x, --perceptron      use the averaged perceptron algorithm\
+  -e, --skip-on-error   with -xs, ignore certain types of errors with the\
+                          training corpus\
+\
+  -g, --tagger  disambiguate the input\
+\
+  -r, --retrain=ITERATIONS     with -u: exit;\
+                                 otherwise: retrain the tagger with ITERATIONS\
+                                 unsupervised iterations\
+  -s, --supervised=ITERATIONS  with -u: train the tagger with a hand-tagged\
+                                 corpus;\
+                                 with -w: exit;\
+                                 otherwise: initialise the tagger with a\
+                                 hand-tagged corpus and retrain it with\
+                                 ITERATIONS unsupervised iterations\
+  -t, --train=ITERATIONS       with -u: exit;\
+                                 otherwise: train the tagger with ITERATIONS\
+                                 unsupervised iterations\
+"}
+    tmx_aligner_tool_desc{"Usage (either):\n\
+    alignerTool [ common_arguments ] [ -hand=hand_align_file ] dictionary_file source_text target_text\n\
+\n\
+or:\n\
+    alignerTool [ common_arguments ] -batch dictionary_file batch_file\n\
+\n\
+where\n\
+common_arguments ::= [ -text ] [ -bisent ] [ -utf ] [ -cautious ] [ -realign [ -autodict=filename ] ]\n\
+    [ -thresh=n ] [ -ppthresh=n ] [ -headerthresh=n ] [ -topothresh=n ]\n\
+\n\
+Arguments:\n\
+\n\
+-text\n\
+	The output should be in text format, rather than the default (numeric) ladder format.\n\
+\n\
+-bisent\n\
+	Only bisentences (one-to-one alignment segments) are printed. In non-text mode, their\n\
+	starting rung is printed.\n\
+\n\
+-cautious\n\
+	In -bisent mode, only bisentences for which both the preceding and the following\n\
+	segments are one-to-one are printed. In the default non-bisent mode, only rungs\n\
+	for which both the preceding and the following segments are one-to-one are printed.\n\
+\n\
+-hand=file\n\
+	When this argument is given, the precision and recall of the alignment is calculated\n\
+	based on the manually built ladder file. Information like the following is written\n\
+	on the standard error: \n\
+	53 misaligned out of 6446 correct items, 6035 bets.\n\
+	Precision: 0.991218, Recall: 0.928017\n\
+	\n\
+        Note that by default, 'item' means rung. The switch -bisent also changes the semantics\n\
+	of the scoring from rung-based to bisentence-based and in this case 'item' means bisentences.\n\
+	See File formats about the format of this input align file.\n\
+\n\
+-autodict=filename\n\
+	The dictionary built during realign is saved to this file. By default, it is not saved.\n\
+\n\
+-utf\n\
+	The system uses the character counts of the sentences as information for the\n\
+	pairing of sentences. By default, it assumes one-byte character encoding such\n\
+	as ISO Latin-1 when calculating these counts. If our text is in UTF-8 format,\n\
+	byte counts and character counts are different, and we must use the -utf switch\n\
+	to force the system to properly calculate character counts.\n\
+	Note: UTF-16 input is not supported.\n\
+\n\
+Postfiltering options:\n\
+There are various postprocessors which remove implausible rungs based on various heuristics.\n\
+\n\
+-thresh=n\n\
+	Don't print out segments with score lower than n/100.\n\
+\n\
+-ppthresh=n\n\
+	Filter rungs with less than n/100 average score in their vicinity.\n\
+\n\
+-headerthresh=n\n\
+	Filter all rungs at the start and end of texts until finding a reliably\n\
+	plausible region.\n\
+\n\
+-topothresh=n\n\
+	Filter rungs with less than n percent of one-to-one segments in their vicinity.\n\
+\n\
+"}
+    wblank_attach_desc{
+      "Distributes word-bound blanks across all tokens they encompass, turning [[A]]^...$^...$[[/]] into [[A]]^...$[[A]]^...$\n"
+      "Also merges word-bound blanks, turning [[A]][[B]]^...$^...$[[/]][[/]] into [[A; B]]^...$\n"
+      "Word-bound blanks will be deduplicated, but order will be preserved amongst unique elements.\n"}
+    wblank_detach_desc{
+      "Closes all word-bound blanks, turning [[...]]^...$ into [[...]]^...$[[/]]\n"
+      "This tool does not merge across whitespace or do any other heuristics wrt. which word-bound blanks should have their spans combined.\n"}
+      
+      deformat_desc{"USAGE: {first_line}\n"
+                  "  -a: apertium standard mode\n"
+                  "  -A: apertium optimized mode (default mode)\n"
+                  "  -m: matxin standard mode\n"
+                  "  -M: matxin optimized mode"}
+      trans_desc{"USAGE: <datadir> <translation> [format [infile [outfile]]]\n"
+                  " datadir          Directory of linguistic data\n"
+                  " translation      LANG1-LANG2\n"
+                  " format           one of: txt (default), txtu, html, htmlu, rtf, rtfu\n"
+                  " infile           input file (stdin by default)\n"
+                  " outfile          output file (stdout by default)"}
+    some_failed_assertion{"some failed assertion: {what}"}
+    APER1000{"ERROR APER1000: Unable to access \"{file_name}\"."}
+    APER1001{"ERROR APER1001: Unescaped \"^\": {buf}^"}
+    APER1002{"ERROR APER1002: Stray \"$\""}
+    APER1003{"ERROR APER1003: Illegal regular expression for escape characters."}
+    APER1004{"ERROR APER1004: Illegal regular expression for tag-names."}
+    APER1005{"ERROR APER1005: Input in flex scanner failed."}
+    APER1006{"ERROR APER1006: Fatal flex scanner internal error--no action found."}
+    APER1007{"ERROR APER1007: Fatal flex scanner internal error--end of buffer missed."}
+    APER1008{"ERROR APER1008: Fatal error - scanner input buffer overflow."}
+    APER1009{"ERROR APER1009: Out of dynamic memory in {function}."}
+    APER1010{"ERROR APER1010: Bad buffer in {function}."}
+    APER1011{"ERROR APER1011: Out of memory expanding start-condition stack."}
+    APER1012{"ERROR APER1012: Start-condition stack underflow."}
+    APER1013{"ERROR APER1013: Can't convert const Analysis & comprising empty Morpheme std::vector to {letter}."}
+    APER1014{"ERROR APER1014: Can't convert const Analysis & comprising Morpheme comprising empty Tag std::vector to {letter}."}
+    APER1015{"ERROR APER1015: Can't convert Analysis comprising empty Morpheme std::vector to UString."}
+    APER1016{"ERROR APER1016: Unterminated lexical unit."}
+    APER1017{"ERROR APER1017: Reading regexp."}
+    APER1018{"ERROR APER1018: Unable to compile regular expression \"{exp}\".\n"
+             "Error code: {error}"}
+    APER1019{"ERROR APER1019: Cannot write empty regexp."}
+    APER1020{"ERROR APER1020: Unable to apply regexp.\n"
+             "Error code: {error}"}
+    APER1021{"ERROR APER1021: Unable to extract substring from regexp match.\n"
+             "Error code: {error}"}
+    APER1022{"ERROR APER1022: You did not provide an input file (.prob). Use --filein to do that."}
+    APER1023{"ERROR APER1023: You did not provide an output file (.prob). Use --fileout to do that."}
+    APER1024{"ERROR APER1024: You did not provide a tagger definition file (.tsx). Use --filetsx to do that."}
+    APER1025{"ERROR APER1025: Ambiguity class number out of range: {number}\n"
+             "Word: {word}\n"
+             "Ambiguity class: : {class}"}
+    APER1026{"ERROR APER1026: Corpus length provided with --clength must be a positive integer."}
+    APER1027{"ERROR APER1027: You have provided neither a tagger specification file (.tsx) nor a tagger probability file (.prob). Use --tsxfile or --probfile to provide one of them."}
+    APER1028{"ERROR APER1028: You provided a tagger specification file and a tagger probability file. Only one of them can be provided, not both."}
+    APER1029{"ERROR APER1029: In {file_name} on line {line_number}: Attribute lemma conflicts with attribute trglem."}
+    APER1030{"ERROR APER1030: In {file_name} on line {line_number}: Attribute surface conflicts with attribute trgsurf."}
+    APER1031{"ERROR APER1031: In {file_name} on line {line_number}: Unknown select value \"{select}\"."}
+    APER1032{"ERROR APER1032: In {file_name} on line {line_number}: Number of repetitions cannot be negative."}
+    APER1033{"ERROR APER1033: In {file_name} on line {line_number}: Lower bound on number of repetitions cannot be larger than upper bound."}
+    APER1034{"WARNING APER1034: There is not coarse tag for the fine tag \"{substr}\" of \"{str}\"\n"
+             "                  This is because of an incomplete tagset definition or a dictionary error"}
+    APER1035{"WARNING APER1035: kIGNORE was returned while reading a word.\n"
+             "                  Word being read: {word}\n"
+             "                  Debug: {str}"}
+    APER1036{"WARNING APER1036: Debug mode name {debug_name} generated multiple times, disregarding result from {mode_name} step {step_num}."}
+    APER1037{"ERROR APER1037: {program}:Installation prefix is the same directory as modes.xml; give a different INSTALLDIR."}
+    APER1038{"ERROR APER1038: Tagged text (.tagged) and analyzed text (.untagged) streams are not aligned.\n"
+             "Take a look at tagged text (.tagged).\n"
+             "Perhaps this is caused by a multiword unit that is not a multiword unit in one of the two files.\n"
+             "{word_tagged} -- {word_untagged}"}
+    APER1039{"ERROR APER1039: word_untagged==NULL"}
+    APER1040{"ERROR APER1040: Error in tagged text. An ambiguous word was found: {word}"}
+    APER1041{"WARNING APER1041: The last tag is not the end-of-sentence-tag but rather {tag}. Line: {line}. Pending: {pending}. Tags: "}
+    APER1042{"WARNING APER1042: gamma[{index}]=0"}
+    APER1043{"WARNING APER1043: Problem with word \"{word}\" {tags}"}
+    APER1044{"WARNING APER1044: The text to disambiguate has finished, but there are ambiguous words that has not been disambiguated.\n"
+             "This message should never appears. If you are reading this ..... these are very bad news."}
+    APER1045{"ERROR APER1045: Can't convert const Morpheme & comprising empty Tag std::vector to {letter}."}
+    APER1046{"ERROR APER1046: Can't convert const Analysis & comprising Morpheme comprising empty Tag std::vector to {letter}."}
+    APER1047{"ERROR APER1047: In {file_name} on line {line_number}: index >= limit"}
+    APER1048{"ERROR APER1048: In {file_name} on line {line_number}: index < 0"}
+    APER1049{"ERROR APER1049: In {file_name} on line {line_number}: Null access at word[index]"}
+    APER1050{"ERROR APER1050: Unexpected expression: \"{expression}\""}
+    APER1051{"ERROR APER1051: Unknown input token."}
+    APER1052{"WARNING APER1052: apertium-interchunck: on line {line_number}: sometimes discards its value."}
+    APER1053{"WARNING APER1053: apertium-interchunck: on line {line_number}: {tag} sometimes discards its value."}
+    APER1054{"ERROR APER1054: Can't convert const Analysis & comprising Morpheme comprising empty Lemma UString to Lemma."}
+    APER1055{"ERROR APER1055: Can't convert const Morpheme & comprising empty Lemma UString to Lemma."}
+    APER1056{"ERROR APER1056: Can't convert Morpheme comprising empty Tag std::vector to UString."}
+    APER1057{"ERROR APER1057: Can't convert Morpheme comprising empty TheLemma UString to UString."}
+    APER1058{"ERROR APER1058: Unterminted lexical unit."}
+    APER1059{"ERROR APER1059: empty lemma."}
+    APER1060{"ERROR APER1060: invalid tag <>."}
+    APER1061{"ERROR APER1061: morpheme has no tags."}
+    APER1062{"ERROR APER1062: trailing backslash."}
+    APER1063{"ERROR APER1063: unexpected < after lemma queue."}
+    APER1064{"ERROR APER1064: On line {line}, column {column}: Expected set-member."}
+    APER1065{"ERROR APER1065: On line {line}, column {column}: Expected an integer expression."}
+    APER1066{"ERROR APER1066: On line {line}, column {column}: Expected a string list expression."}
+    APER1067{"ERROR APER1067: On line {line}, column {column}: No such argument {var}."}
+    APER1068{"ERROR APER1068: On line {line}, column {column}: Variable {var} has the wrong type."}
+    APER1069{"ERROR APER1069: On line {line}, column {column}: Variable {var} has not been set."}
+    APER1070{"ERROR APER1070: On line {line}, column {column}: No such macro {var}."}
+    APER1071{"ERROR APER1071: On line {line}, column {column}: Macro {var} returns the wrong type."}
+    APER1072{"ERROR APER1072: On line {line}, column {column}: Expected a string expression."}
+    APER1073{"ERROR APER1073: On line {line}, column {column}: Expected an address expression."}
+    APER1074{"ERROR APER1074: On line {line}, column {column}: Expected a wordoid array expression."}
+    APER1075{"ERROR APER1075: On line {line}, column {column}: Expected a wordoid expression."}
+    APER1076{"ERROR APER1076: On line {line}, column {column}: Set required."}
+    APER1077{"ERROR APER1077: On line {line}, column {column}: String required."}
+    APER1078{"ERROR APER1078: On line {line}, column {column}: No {what} named {name}."}
+    APER1079{"ERROR APER1079: On line {line}, column {column}: {what} required."}
+    APER1080{"ERROR APER1080: On line {line}, column {column}: Opcodes can have at most one operand."}
+    APER1081{"ERROR APER1081: On line {line}, column {column}: Expected a string, bool or int expression."}
+    APER1082{"ERROR APER1082: On line {line}, column {column}: \"as\" attribute required for for-each."}
+    APER1083{"ERROR APER1083: On line {line}, column {column}: Expected a string array or wordoid array expression."}
+    APER1084{"ERROR APER1084: On line {line}, column {column}: Expected a void expression."}
+    APER1085{"ERROR APER1085: On line {line}, column {column}: \"as\" attribute required for def-macro."}
+    APER1086{"ERROR APER1086: On line {line}, column {column}: Expected a non-void expression."}
+    APER1087{"ERROR APER1087: On line {line}, column {column}: expected <metatag> tag."}
+    APER1088{"ERROR APER1088: Unimplemented opcode: {opstr} at {feature} #{feat_idx} address #{bytecode_idx}"}
+    APER1089{"ERROR APER1089: Tagged analysis unavailable in untagged/ambigous input.\n"
+             "Available:\n"
+             "{available}"
+             "Required: {required}\n"
+             "Rerun with --skip-on-error to skip this sentence.\n"}
+    APER1090{"ERROR APER1090: Skipped {skipped} sentences due to token misalignment and {avail_skipped} sentences due to tagged token being unavailable in untagged file out of {total} total sentences."}
+    APER1091{"ERROR APER1091: In {file_name} on line {line_number}: index > limit"}
+    APER1092{"WARNING APER1092: apertium-postchunk: on line {line_number}: {tag} sometimes discards its value."}
+    APER1093{"ERROR APER1093: Postchunk::processCallMacro() assumes npar > 0, but got npar <= 0"}
+    APER1094{"WARNING APER1094: Not calling macro \"{macro}\" from line {line} (empty word?)"}
+    APER1095{"ERROR APER1095: Unexpected EOF"}
+    APER1096{"ERROR APER1096: Wordbound blank isn't immediately followed by the Lexical Unit."}
+    APER1097{"WARNING APER1097: Streams diverged at line {tagged_line}\n"
+             "Untagged token: {untagged_token}\n"
+             "Tagged token: {tagged_token}\n"
+             "Rerun with --skip-on-error to skip this sentence."}
+    APER1098{"ERROR APER1098: One stream has ended prematurely.\n"
+             "Please check if they are aligned.\n"}
+    APER1099{"ERROR APER1099: Expected one of this file arguments {expected}, got {actual}"}
+    APER1100{"ERROR APER1100: Failed operation in {metavar} file \"{filename}\""}
+    APER1101{"ERROR APER1101: lexical unit has no analyses"}
+    APER1102{"ERROR APER1102: unexpected /, surface form is empty"}
+    APER1103{"ERROR APER1103: unterminated lexical unit"}
+    APER1104{"ERROR APER1104: A new ambiguity class was found. I cannot continue.\n"
+             "Word \"{word}\" not found in the dictionary.\n"
+             "New ambiguity class: {class}\n"
+             "Line Number: {line}\n"
+             "Take a look at the dictionary, then retrain."}
+    APER1105{"WARNING APER1105: A new ambiguity class was found. \n"
+             "Retraining the tagger is necessary so as to take it into account.\n"
+             "Word \"{word}\".\n"
+             "New ambiguity class: {class}"}
+    APER1106{"ERROR APER1106: reading map"}
+    APER1107{"ERROR APER1107: invalid argument \"{optarg}\" for \"--unigram\"\n"
+             "Valid arguments are:\n"
+             "  - '1'\n"
+             "  - '2'\n"
+             "  - '3'"}
+    APER1108{"ERROR APER1108: invalid option -- \"{opt}\""}
+    APER1109{"ERROR APER1109: unexpected \"{opt1}\" following \"{opt2}\""}
+    APER1110{"ERROR APER1110: invalid argument \"{arg}\" for \"{opt}\""}
+    APER1111{"ERROR APER1111: can't convert {metavar} \"{val}\" to unsigned long"}
+    APER1112{"ERROR APER1112: can't convert {metavar} of size 1 to unsigned long"}
+    APER1113{"ERROR APER1113: can't convert {metavar} \"{val}\" to unsigned long, not in unsigned long range"}
+    APER1114{"ERROR APER1114: can't deserialise SERIALISED_TAGGER file \"{file}\" Reason: {what}"}
+    APER1115{"ERROR APER1115: no space in line"}
+    APER1116{"ERROR APER1116: too much data in line"}
+    APER1117{"ERROR APER1117: Batch mode requires exactly two file arguments."}
+    APER1118{"ERROR APER1118: -batch and -{arg} are incompatible switches."}
+    APER1119{"ERROR APER1119: -{arg} switch requires a filename value."}
+    APER1120{"ERROR APER1120: Nonbatch mode requires exactly three file arguments."}
+    APER1121{"ERROR APER1121: Batch file has incorrect format."}
+    APER1122{"ERROR APER1122: data error."}
+    APER1123{"ERROR APER1123: unimplemented."}
+    APER1124{"ERROR APER1124: argument error."}
+    APER1125{"ERROR APER1125: hopelessly bad trail."}
+    APER1126{"ERROR APER1126: unable to parse argument \"p\"."}
+    APER1127{"ERROR APER1127: Empty argument"}
+    APER1128{"ERROR APER1128: Argument -{arg}: integer expected."}
+    APER1129{"ERROR APER1129: Argument -{arg}: value is not allowed."}
+    APER1130{"ERROR APER1130: No value is allowed for argument -{arg}."}
+    APER1131{"ERROR APER1131: Invalid argument: "}
+    APER1132{"WARNING APER1132: conflict in tree"}
+    APER1133{"ERROR APER1133: Incorrect bicorpus file: {records} records in line {line}"}
+    APER1134{"ERROR APER1134: evalString() was called on a NULL element"}
+    APER1135{"ERROR APER1135: You must specify either 'name' or 'namefrom' for the 'chunk' element"}
+    APER1136{"WARNING APER1136: apertium-transfer: on line {line_number}: {tag} sometimes discards its value."}
+    APER1137{"ERROR APER1137: Transfer::processLet() bad access on pos >= lword"}
+    APER1138{"ERROR APER1138: Transfer::processLet() null access on word[pos]"}
+    APER1139{"ERROR APER1139: On line {line}: processCallMacro() number of arguments >= npar"}
+    APER1140{"ERROR APER1140: On line {line}, column {column}: <clip> missing attribute part."}
+    APER1141{"ERROR APER1141: On line {line}, column {column}: Undefined attr-item {part}."}
+    APER1142{"ERROR APER1142: On line {line}, column {column}: Undefined cat-item {attrib}."}
+    APER1143{"WARNING APER1143: On line {line}: assignment to 'sl' side has no effect."}
+    APER1144{"ERROR APER1144: On line {line}, column {column}: Macro \"{macro}\" defined at least twice"}
+    APER1145{"ERROR APER1145: On line {line}, column {column}: \"{tag}\" already defined."}
+    APER1146{"ERROR APER1146: On line {line}, column {column}: Unexpected \"{tag}\" open tag."}
+    APER1147{"ERROR APER1147: On line {line}, column {column}: <label-item> tag expected."}
+    APER1148{"ERROR APER1148: can't serialise without first selecting a model."}
+    APER1149{"ERROR APER1149: can't read tagger without first selecting a model."}
+    APER1150{"ERROR APER1150: can't score analysis without first selecting a model."}
+    APER1151{"ERROR APER1151: can't train model without first selecting a model."}
+    APER1152{"ERROR APER1152: can't multiplyModel() without first selecting a model."}
+    APER1153{"ERROR APER1153: can't train LexicalUnit comprising empty Analysis std::vector."}
+    APER1154{"WARNING APER1154: tf-apertium-spread: Null-flush found, but had open word-bound blanks on line {line}:"}
+    APER1155{"WARNING APER1155: tf-apertium-spread: Too many [[/]] on line  {line}:"}
+    APER1156{"WARNING APER1156: tf-apertium-spread: End of input reached, but had an open blank."}
+    APER1157{"ERROR APER1157: On line {line}, column {column}: unexpected EOF."}
+    APER1158{"ERROR APER1158: Install an UTF-8 locale in your system."}
+    APER1159{"ERROR APER1159: Input seems to be non-UTF-8, please convert to UTF-8 (e.g. with \"iconv -f {encoding} -t utf-8\")."}
+    APER1160{"ERROR APER1160: APERTIUM_TRANSFUSE={APERTIUM_TRANSFUSE} but couldn't find Transfuse's tf-extract in PATH."}
+    APER1161{"ERROR APER1161: Install \"{command}\" command in your system."}
+    APER1162{"ERROR APER1162: {opt} requires an argument."}
+    APER1163{"ERROR APER1163: Cannot compile TM {file}\n"
+             "   hint: use -o parameter"}
+    APER1164{"ERROR APER1164: Directory \"{directory}\" does not exist."}
+    APER1165{"ERROR APER1165: Mode {mode} does not exist."}
+    APER1166{"ERROR APER1166: Install a ISO-8859-1 compatible locale in your system."}
+    APER1167{"WARNING APER1167: {arg}: Unknown format {format}, treating as \"txt\"."}
+    APER1168{"ERROR APER1168: some unknown failed assertion..."}
+    APER1169{"ERROR APER1169: Align failed for {file}"}
+}
