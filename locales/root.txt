@@ -9,7 +9,6 @@ root{
     file_desc{"gets file name as parameter"}
     pretty_desc{"outputs xml with a pretty format"}
     paragraphs_found{"paragraphs found"}
-    file_name{"file name"}
 
     compile_caps_desc{"compile capitalization restoration rules"}
     help_desc{"print this message and exit"}

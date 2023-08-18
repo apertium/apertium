@@ -7,7 +7,7 @@ FILE1=$2;
 FILE2=$3;
 
 if [ ! -e $2 ]
-     then echo icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1000" "file_name" "$2";
+     then icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1000" "file_name" "$2";
      exit 1;
 fi
 
@@ -16,5 +16,5 @@ then xsltproc $XSLTPROC_OPTIONS_LR $STYLESHEET $FILE1 >$FILE2
 elif [ $1 = "rl" ]
 then xsltproc $XSLTPROC_OPTIONS_RL $STYLESHEET $FILE1 >$FILE2
 else
-  then echo icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1108" "opt" "$1";
+  then icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1108" "opt" "$1";
 fi

@@ -9,7 +9,7 @@ OUTPUT_FILE="/dev/stdout"
 
 message ()
 {
-  icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "unformat_desc" "basename" "$(basename "$0")"\
+  icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "unformat_desc" "basename" "$(basename "$0")"
   exit 1;
 }
 
