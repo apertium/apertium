@@ -24,6 +24,7 @@
 #include <apertium/apertium_re.h>
 #include <i18n.h>
 #include <lttoolbox/string_utils.h>
+#include <i18n.h>
 
 UString const TRXReader::ANY_TAG         = "<ANY_TAG>"_u;
 UString const TRXReader::ANY_CHAR        = "<ANY_CHAR>"_u;
