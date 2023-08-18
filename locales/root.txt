@@ -234,18 +234,22 @@ There are various postprocessors which remove implausible rungs based on various
       "Closes all word-bound blanks, turning [[...]]^...$ into [[...]]^...$[[/]]\n"
       "This tool does not merge across whitespace or do any other heuristics wrt. which word-bound blanks should have their spans combined.\n"}
       
-      deformat_desc{"USAGE: {first_line}\n"
+    deformat_desc{"USAGE: {first_line}\n"
                   "  -a: apertium standard mode\n"
                   "  -A: apertium optimized mode (default mode)\n"
                   "  -m: matxin standard mode\n"
                   "  -M: matxin optimized mode"}
-      trans_desc{"USAGE: <datadir> <translation> [format [infile [outfile]]]\n"
+    trans_desc{"USAGE: <datadir> <translation> [format [infile [outfile]]]\n"
                   " datadir          Directory of linguistic data\n"
                   " translation      LANG1-LANG2\n"
                   " format           one of: txt (default), txtu, html, htmlu, rtf, rtfu\n"
                   " infile           input file (stdin by default)\n"
                   " outfile          output file (stdout by default)"}
     some_failed_assertion{"some failed assertion: {what}"}
+    unformat_desc{"USAGE: {basename} [-f format] [in [out]]\n"
+                  " -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx, pptx\n"
+                  " in               input file (stdin by default)\n"
+                  " out              output file (stdout by default)"}
     APER1000{"ERROR APER1000: Unable to access \"{file_name}\"."}
     APER1001{"ERROR APER1001: Unescaped \"^\": {buf}^"}
     APER1002{"ERROR APER1002: Stray \"$\""}

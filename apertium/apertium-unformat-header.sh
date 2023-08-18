@@ -9,10 +9,7 @@ OUTPUT_FILE="/dev/stdout"
 
 message ()
 {
-  echo "USAGE: $(basename "$0") [-f format] [in [out]]"
-  echo " -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx, pptx"
-  echo " in               input file (stdin by default)"
-  echo " out              output file (stdout by default)"
+  icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "unformat_desc" "basename" "$(basename "$0")"\
   exit 1;
 }
 
@@ -21,7 +18,7 @@ locale_utf8 ()
   LC_CTYPE=$(locale -a|grep -i "utf[.]*8"|head -1)
   export LC_CTYPE
   if [ "$LC_CTYPE" = "" ]
-  then echo "Error: Install an UTF-8 locale in your system";
+  then icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1158";
        exit 1;
   fi
 }
@@ -29,12 +26,12 @@ locale_utf8 ()
 test_zip ()
 {
   if ! command -v zip &>/dev/null; then
-    echo "Error: Install 'zip' command in your system";
+    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1161" "command" "zip";
     exit 1;
   fi
 
   if ! command -v unzip &>/dev/null; then
-    echo "Error: Install 'unzip' command in your system";
+    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1161" "command" "unzip";
     exit 1;
   fi
 }
@@ -42,7 +39,7 @@ test_zip ()
 test_gawk ()
 {
   if ! command -v gawk &>/dev/null; then
-    echo "Error: Install 'gawk' in your system"
+    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1161" "command" "gawk"
     exit 1
   fi
 }
@@ -146,8 +143,8 @@ unformat_xlsx ()
 while getopts "f:" opt; do
     case "$opt" in
         f) FORMAT=$OPTARG ;;
-        \?) echo "ERROR: Unknown option $OPTARG" >&2; message >&2 ;;
-        :) echo "ERROR: $OPTARG requires an argument" >&2; message >&2 ;;
+        \?) icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1108" "opt" "$OPTARG" >&2; message >&2 ;;
+        :) icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1162" "opt" "$OPTARG" >&2; message >&2 ;;
     esac
 done
 
@@ -158,14 +155,14 @@ case "$#" in
        OUTPUT_FILE=$2;
        INPUT_FILE=$1;
        if [ ! -e "$INPUT_FILE" ];
-       then echo "Error: file '$INPUT_FILE' not found."
+       then icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1000" "file_name" "$INPUT_FILE"
             message;
        fi
        ;;
      1)
        INPUT_FILE=$1;
        if [ ! -e "$INPUT_FILE" ];
-       then echo "Error: file '$INPUT_FILE' not found."
+       then icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1000" "file_name" "$INPUT_FILE"
             message;
        fi
        ;;
@@ -187,7 +184,7 @@ case "$FORMATADOR" in
         rtf)
                 MILOCALE=$(locale -a | grep -E -i -v -m1 'utf|^C|^POSIX$')
 		if [ "$MILOCALE" = "" ]
-		then echo "Error: Install a ISO-8859-1 compatible locale in your system";
+		then icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1166";
 	             exit 1;
 	        fi
 	        export LC_CTYPE=$MILOCALE

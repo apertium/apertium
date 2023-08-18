@@ -25,7 +25,7 @@ MODE="apertium" # default mode
 
 if [ $# = 3 ]
 then if [ ! -e "$2" ]
-     then echo icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1000" "file_name" "$2";
+     then icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1000" "file_name" "$2";
           exit 1;
      fi
 
