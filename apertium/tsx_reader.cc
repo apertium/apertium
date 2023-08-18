@@ -100,7 +100,9 @@ TSXReader::newDefTag(UString const &tag)
 {
   if(tag_index->find("TAG_"_u + tag) != tag_index->end())
   {
-    parseError("'"_u + tag + "' already defined"_u);
+    I18n(APER_I18N_DATA, "apertium").error("APER1145", {"line", "column", "tag"},
+      {xmlTextReaderGetParserLineNumber(reader),
+       xmlTextReaderGetParserColumnNumber(reader), icu::UnicodeString(tag.data())}, true);
   }
 
   array_tags->push_back(tag);
