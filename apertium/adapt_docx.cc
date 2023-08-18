@@ -234,7 +234,7 @@ Paragraph::Paragraph(xmlNode *_root)
 void showParagraphs(xmlNode *root)
 {
 	vector<xmlNode*> pp = Walker::findAll(root, "p", true);
-	cout << pp.size() << " " << I18n(APER_I18N_DATA, "apertium").format("paragraphs_found") << endl;
+	cout << I18n(APER_I18N_DATA, "apertium").format("paragraphs_found", {"num"}, {to_string(pp.size()).c_str()}) << endl;
 	for (auto it1 = pp.begin(); it1 != pp.end(); it1++) {
 		Paragraph p(*it1);
 		bool first = true;
