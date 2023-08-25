@@ -252,16 +252,6 @@ There are various postprocessors which remove implausible rungs based on various
     APER1000{"ERROR APER1000: Unable to access \"{file_name}\"."}
     APER1001{"ERROR APER1001: Unescaped \"^\": {buf}^"}
     APER1002{"ERROR APER1002: Stray \"$\""}
-    APER1003{"ERROR APER1003: Illegal regular expression for escape characters."}
-    APER1004{"ERROR APER1004: Illegal regular expression for tag-names."}
-    APER1005{"ERROR APER1005: Input in flex scanner failed."}
-    APER1006{"ERROR APER1006: Fatal flex scanner internal error--no action found."}
-    APER1007{"ERROR APER1007: Fatal flex scanner internal error--end of buffer missed."}
-    APER1008{"ERROR APER1008: Fatal error - scanner input buffer overflow."}
-    APER1009{"ERROR APER1009: Out of dynamic memory in {function}."}
-    APER1010{"ERROR APER1010: Bad buffer in {function}."}
-    APER1011{"ERROR APER1011: Out of memory expanding start-condition stack."}
-    APER1012{"ERROR APER1012: Start-condition stack underflow."}
     APER1013{"ERROR APER1013: Can't convert const Analysis & comprising empty Morpheme std::vector to {letter}."}
     APER1014{"ERROR APER1014: Can't convert const Analysis & comprising Morpheme comprising empty Tag std::vector to {letter}."}
     APER1015{"ERROR APER1015: Can't convert Analysis comprising empty Morpheme std::vector to UString."}
