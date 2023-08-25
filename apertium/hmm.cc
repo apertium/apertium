@@ -781,7 +781,7 @@ HMM::tagger(MorphoStream &morpho_stream, UFILE* Output) {
   }
 
   if ((tags.size()>1)&&(TheFlags.getDebug())) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1043", {}, {}, false);
+    I18n(APER_I18N_DATA, "apertium").error("APER1044", {}, {}, false);
   }
 }
 
