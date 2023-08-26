@@ -412,7 +412,7 @@ void process(string fileName, bool outputsName, bool pretty)
 	int sizeBuffer;
 	xmlDocDumpFormatMemory(document, &buffer, &sizeBuffer, pretty ? 1: 0);
 	if (outputsName)
-		cout << "<" << I18n(APER_I18N_DATA, "apertium").format("file_name") << "=\"" << fileName << "\"/> ";
+		cout << "<file name=\"" << fileName << "\"/> ";
 	const unsigned char *p = buffer;
 	p = printNl2spc(p);
 	if (pretty)
