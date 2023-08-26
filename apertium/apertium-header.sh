@@ -52,7 +52,7 @@ check_transfuse () {
   has_tf=$(command -v tf-extract)
   if [[ "$APERTIUM_TRANSFUSE" = "1" || "$APERTIUM_TRANSFUSE" = "yes" ]]; then
     if [[ -z "$has_tf" ]]; then
-      icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1159" "APERTIUM_TRANSFUSE" "$APERTIUM_TRANSFUSE"
+      icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1160" "APERTIUM_TRANSFUSE" "$APERTIUM_TRANSFUSE"
       exit 1
     fi
   fi
@@ -504,7 +504,7 @@ fi
 
 if [[ ! -e "$DATADIR/modes/$PAIR.mode" ]]; then
   {
-    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1164" "mode" "$PAIR"
+    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1165" "mode" "$PAIR"
     c=$(find "$DATADIR/modes" -name '*.mode' | wc -l)
     if [[ "$c" -le 1 ]]; then
       echo "."

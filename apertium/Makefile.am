@@ -548,6 +548,7 @@ apertium-unformat: Makefile.am apertium-unformat-header.sh
 	@echo "Creating apertium-unformat script"
 	@echo "#!/usr/bin/env bash" > $@
 	@echo "APERTIUM_PATH=\"$(prefix)/bin\"" >>$@
+	@echo 'APERTIUM_DATADIR="$${APERTIUM_DATADIR:-$(prefix)/share/apertium}"' >>$@
 	@cat apertium-unformat-header.sh >>$@
 	@chmod a+x $@
 
