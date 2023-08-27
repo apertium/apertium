@@ -1,3 +1,5 @@
+PATH="${APERTIUM_PATH}:${PATH}"
+
 if [ $# != 2 ]
 then if [ $# != 3 ]
      then icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" \

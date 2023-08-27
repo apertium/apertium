@@ -13,8 +13,8 @@ root{
     compile_caps_desc{"compile capitalization restoration rules"}
     help_desc{"print this message and exit"}
 
-    deshtml_desc{"html format processor."};
-
+    deshtml_desc{"html format processor."}
+    
     extract_caps_desc{"Transfer capitalization information to word-bound blanks"}
     surface_desc{"keep surface forms"}
     null_flush_desc{"flush output on the null character"}
@@ -22,14 +22,17 @@ root{
     interchunck_desc{"process stream with interchunker"}
     trace_desc{"trace mode (show rule numbers and patterns matched)"}
     dictionary_case_desc{"ignore capitalization manipulation instructions"}
-    chunck_epilog{"FILES:\n"
+    interchunk_epilog{"FILES:\n"
                        "  t2x        t2x rules file\n"
                        "  preproc    result of preprocess trules file\n"
                        "  input      input file, standard input by default\n"
                        "  output     output file, standard output by default"}
+    postchunk_epilog{"FILES:\n"
+                       "  t3x        t3x rules file\n"
+                       "  preproc    result of preprocess trules file\n"
+                       "  input      input file, standard input by default\n"
+                       "  output     output file, standard output by default"}
 
-    macro_definitions{"Macro definitions"}
-    spec{"Spec"}
     perceptron_trace_desc{"Run with one of:\n"
                           "{program_name} model <binary model file>\n"
                           "Output features and weights from a model file.\n"
@@ -236,8 +239,8 @@ There are various postprocessors which remove implausible rungs based on various
     deformat_desc{"USAGE: {first_line}\n"
                   "  -a: apertium standard mode\n"
                   "  -A: apertium optimized mode (default mode)\n"
-                  "  -m: matxin standard mode\n"
-                  "  -M: matxin optimized mode"}
+                  "  -m: matxin standard mode\n"}
+    gen_desc{"USAGE: {first_line}\n"}
     trans_desc{"USAGE: <datadir> <translation> [format [infile [outfile]]]\n"
                   " datadir          Directory of linguistic data\n"
                   " translation      LANG1-LANG2\n"
@@ -249,7 +252,7 @@ There are various postprocessors which remove implausible rungs based on various
                   " -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx, pptx\n"
                   " in               input file (stdin by default)\n"
                   " out              output file (stdout by default)"}
-    APER1000{"ERROR APER1000: Unable to access \"{file_name}\"."}
+    APER1000{"ERROR APER1000: Unable to access file \"{file_name}\"."}
     APER1001{"ERROR APER1001: Unescaped \"^\": {buf}^"}
     APER1002{"ERROR APER1002: Stray \"$\""}
     APER1013{"ERROR APER1013: Can't convert const Analysis & comprising empty Morpheme std::vector to {letter}."}
@@ -303,7 +306,6 @@ There are various postprocessors which remove implausible rungs based on various
     APER1049{"ERROR APER1049: In {file_name} on line {line_number}: Null access at word[index]"}
     APER1050{"ERROR APER1050: Unexpected expression: \"{expression}\""}
     APER1051{"ERROR APER1051: Unknown input token."}
-    APER1052{"WARNING APER1052: apertium-interchunck: on line {line_number}: sometimes discards its value."}
     APER1053{"WARNING APER1053: apertium-interchunck: on line {line_number}: {tag} sometimes discards its value."}
     APER1054{"ERROR APER1054: Can't convert const Analysis & comprising Morpheme comprising empty Lemma UString to Lemma."}
     APER1055{"ERROR APER1055: Can't convert const Morpheme & comprising empty Lemma UString to Lemma."}
@@ -375,9 +377,9 @@ There are various postprocessors which remove implausible rungs based on various
     APER1106{"ERROR APER1106: reading map"}
     APER1107{"ERROR APER1107: invalid argument \"{optarg}\" for \"--unigram\"\n"
              "Valid arguments are:\n"
-             "  - '1'\n"
-             "  - '2'\n"
-             "  - '3'"}
+             "  - \"1\"\n"
+             "  - \"2\"\n"
+             "  - \"3\""}
     APER1108{"ERROR APER1108: invalid option -- \"{opt}\""}
     APER1109{"ERROR APER1109: unexpected \"{opt1}\" following \"{opt2}\""}
     APER1110{"ERROR APER1110: invalid argument \"{arg}\" for \"{opt}\""}
@@ -396,7 +398,7 @@ There are various postprocessors which remove implausible rungs based on various
     APER1123{"ERROR APER1123: unimplemented."}
     APER1124{"ERROR APER1124: argument error."}
     APER1125{"ERROR APER1125: hopelessly bad trail."}
-    APER1126{"ERROR APER1126: unable to parse argument \"p\"."}
+    APER1126{"ERROR APER1126: unable to parse argument \"{arg}\"."}
     APER1127{"ERROR APER1127: Empty argument"}
     APER1128{"ERROR APER1128: Argument -{arg}: integer expected."}
     APER1129{"ERROR APER1129: Argument -{arg}: value is not allowed."}
@@ -405,7 +407,7 @@ There are various postprocessors which remove implausible rungs based on various
     APER1132{"WARNING APER1132: conflict in tree"}
     APER1133{"ERROR APER1133: Incorrect bicorpus file: {records} records in line {line}"}
     APER1134{"ERROR APER1134: evalString() was called on a NULL element"}
-    APER1135{"ERROR APER1135: You must specify either 'name' or 'namefrom' for the 'chunk' element"}
+    APER1135{"ERROR APER1135: You must specify either \"name\" or \"'namefrom\" for the \"chunk\" element"}
     APER1136{"WARNING APER1136: apertium-transfer: on line {line_number}: {tag} sometimes discards its value."}
     APER1137{"ERROR APER1137: Transfer::processLet() bad access on pos >= lword"}
     APER1138{"ERROR APER1138: Transfer::processLet() null access on word[pos]"}
@@ -441,4 +443,6 @@ There are various postprocessors which remove implausible rungs based on various
     APER1167{"WARNING APER1167: {arg}: Unknown format {format}, treating as \"txt\"."}
     APER1168{"ERROR APER1168: some unknown failed assertion..."}
     APER1169{"ERROR APER1169: Align failed for {file}"}
+    APER1170{"ERROR APER1170: On line {line}, column {column}: Expected a boolean expression."}
+    APER1171{"WARNING APER1171: tf-apertium-spread: Null-flush found, but had an open blank on line {line}:"}
 }

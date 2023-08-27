@@ -37,7 +37,7 @@ void trim_wb(std::string& wb) {
 int main(int argc, char* argv[]) {
 	// Ignore -z, but anything else just show what this tool does
 	if (argc > 1 && argv[1][1] != 'z') {
-		std::cout << I18n(APER_I18N_DATA, "wblank_attach_desc").format("APER1047");
+		std::cout << I18n(APER_I18N_DATA, "apertium").format("wblank_attach_desc");
 		return 0;
 	}
 
@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
 				wbs.clear();
 			}
 			if (!blank.empty()) {
-				I18n(APER_I18N_DATA, "apertium").error("APER1154", {"line"}, {std::to_string(line).c_str()}, false);
+				I18n(APER_I18N_DATA, "apertium").error("APER1171", {"line"}, {std::to_string(line).c_str()}, false);
 				std::cout << blank;
 				blank.clear();
 				unesc.clear();

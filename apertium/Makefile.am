@@ -448,6 +448,8 @@ apertium_postlatex_raw.cc: apertium-postlatex-raw.l
 apertium-validate-tagger: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-tagger script"
 	@echo "#!/usr/bin/env bash" > $@
+	@echo 'APERTIUM_PATH="$${APERTIUM_PATH:-$(prefix)/bin}"' >>$@
+	@echo 'APERTIUM_DATADIR="$${APERTIUM_DATADIR:-$(prefix)/share/apertium}"' >>$@
 	@cat validate-header.sh >> $@
 	@echo "xmllint --dtdvalid \"$(apertiumdir)\"/tagger.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
@@ -455,6 +457,8 @@ apertium-validate-tagger: Makefile.am validate-header.sh
 apertium-validate-transfer: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-transfer script"
 	@echo "#!/usr/bin/env bash" > $@
+	@echo 'APERTIUM_PATH="$${APERTIUM_PATH:-$(prefix)/bin}"' >>$@
+	@echo 'APERTIUM_DATADIR="$${APERTIUM_DATADIR:-$(prefix)/share/apertium}"' >>$@
 	@cat validate-header.sh >> $@
 	@echo "xmllint --dtdvalid \"$(apertiumdir)\"/transfer.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
@@ -462,6 +466,8 @@ apertium-validate-transfer: Makefile.am validate-header.sh
 apertium-validate-interchunk: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-interchunk script"
 	@echo "#!/usr/bin/env bash" > $@
+	@echo 'APERTIUM_PATH="$${APERTIUM_PATH:-$(prefix)/bin}"' >>$@
+	@echo 'APERTIUM_DATADIR="$${APERTIUM_DATADIR:-$(prefix)/share/apertium}"' >>$@
 	@cat validate-header.sh >> $@
 	@echo "xmllint --dtdvalid \"$(apertiumdir)\"/interchunk.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
@@ -469,6 +475,8 @@ apertium-validate-interchunk: Makefile.am validate-header.sh
 apertium-validate-postchunk: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-postchunk script"
 	@echo "#!/usr/bin/env bash" > $@
+	@echo 'APERTIUM_PATH="$${APERTIUM_PATH:-$(prefix)/bin}"' >>$@
+	@echo 'APERTIUM_DATADIR="$${APERTIUM_DATADIR:-$(prefix)/share/apertium}"' >>$@
 	@cat validate-header.sh >> $@
 	@echo "xmllint --dtdvalid \"$(apertiumdir)\"/postchunk.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
@@ -476,6 +484,8 @@ apertium-validate-postchunk: Makefile.am validate-header.sh
 apertium-validate-acx: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-acx script"
 	@echo "#!/usr/bin/env bash" > $@
+	@echo 'APERTIUM_PATH="$${APERTIUM_PATH:-$(prefix)/bin}"' >>$@
+	@echo 'APERTIUM_DATADIR="$${APERTIUM_DATADIR:-$(prefix)/share/apertium}"' >>$@
 	@cat validate-header.sh >> $@
 	@echo "xmllint --relaxng \"$(prefix)\"/share/lttoolbox/acx.rng --schema \"$(prefix)\"/share/lttoolbox/acx.xsd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
@@ -483,6 +493,8 @@ apertium-validate-acx: Makefile.am validate-header.sh
 apertium-validate-crx: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-crx script"
 	@echo "#!/usr/bin/env bash" > $@
+	@echo 'APERTIUM_PATH="$${APERTIUM_PATH:-$(prefix)/bin}"' >>$@
+	@echo 'APERTIUM_DATADIR="$${APERTIUM_DATADIR:-$(prefix)/share/apertium}"' >>$@
 	@cat validate-header.sh >> $@
 	@echo "xmllint --dtdvalid \"$(apertiumdir)\"/crx.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
@@ -490,6 +502,8 @@ apertium-validate-crx: Makefile.am validate-header.sh
 apertium-validate-modes: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-modes script"
 	@echo "#!/usr/bin/env bash" > $@
+	@echo 'APERTIUM_PATH="$${APERTIUM_PATH:-$(prefix)/bin}"' >>$@
+	@echo 'APERTIUM_DATADIR="$${APERTIUM_DATADIR:-$(prefix)/share/apertium}"' >>$@
 	@cat validate-header.sh >> $@
 	@echo "xmllint --dtdvalid \"$(apertiumdir)\"/modes.dtd --noout \"\$$FILE1\"" >>$@
 	@chmod a+x $@
@@ -498,6 +512,8 @@ apertium-validate-modes: Makefile.am validate-header.sh
 apertium-validate-dictionary: Makefile.am validate-header.sh
 	@echo "Creating apertium-validate-dictionary script"
 	@echo "#!/usr/bin/env bash" > $@
+	@echo 'APERTIUM_PATH="$${APERTIUM_PATH:-$(prefix)/bin}"' >>$@
+	@echo 'APERTIUM_DATADIR="$${APERTIUM_DATADIR:-$(prefix)/share/apertium}"' >>$@
 	@cat validate-header.sh >> $@
 	@echo "# xsd is a non-final command, so just treated as a warning when compiling:" >> $@
 	@echo "xmllint --schema \"$(prefix)\"/share/lttoolbox/dix.xsd --noout \"\$$FILE1\" 2>&1 | grep -ve ' validates$$' -e ' fails to validate$$'" >> $@
@@ -507,6 +523,8 @@ apertium-validate-dictionary: Makefile.am validate-header.sh
 apertium-gen-deformat: Makefile.am deformat-header.sh
 	@echo "Creating apertium-gen-deformat script"
 	@echo "#!/usr/bin/env bash" > $@
+	@echo 'APERTIUM_PATH="$${APERTIUM_PATH:-$(prefix)/bin}"' >>$@
+	@echo 'APERTIUM_DATADIR="$${APERTIUM_DATADIR:-$(prefix)/share/apertium}"' >>$@
 	@cat deformat-header.sh >> $@
 	@echo "xmllint --dtdvalid \"$(apertiumdir)\"/format.dtd --noout \"\$$FILE1\" && \\" >> $@
 	@if [ `basename xsltproc` == xsltproc ]; \
@@ -521,6 +539,8 @@ apertium-gen-deformat: Makefile.am deformat-header.sh
 apertium-gen-reformat: Makefile.am gen-header.sh
 	@echo "Creating apertium-gen-reformat script"
 	@echo "#!/usr/bin/env bash" > $@
+	@echo 'APERTIUM_PATH="$${APERTIUM_PATH:-$(prefix)/bin}"' >>$@
+	@echo 'APERTIUM_DATADIR="$${APERTIUM_DATADIR:-$(prefix)/share/apertium}"' >>$@
 	@cat gen-header.sh >> $@
 	@echo "xmllint --dtdvalid \"$(apertiumdir)\"/format.dtd --noout \"\$$FILE1\" && \\" >> $@
 	@echo "xsltproc \"$(apertiumdir)\"/reformat.xsl \"\$$FILE1\" >/tmp/\$$\$$.reformat.l && \\" >> $@

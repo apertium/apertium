@@ -132,7 +132,7 @@ TRXReader::checkClip()
       {xmlTextReaderGetParserLineNumber(reader),
        xmlTextReaderGetParserColumnNumber(reader)}, true);
   } else if (attrs.find(part) == attrs.end()) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1072", {"line", "column", "part"},
+    I18n(APER_I18N_DATA, "apertium").error("APER1141", {"line", "column", "part"},
       {xmlTextReaderGetParserLineNumber(reader),
        xmlTextReaderGetParserColumnNumber(reader), icu::UnicodeString(part.data())}, true);
   }
@@ -189,7 +189,7 @@ TRXReader::procRules()
           if (tloc == defcats.end()) {
             I18n(APER_I18N_DATA, "apertium").error("APER1142", {"line", "column", "attrib"},
               {xmlTextReaderGetParserLineNumber(reader),
-               xmlTextReaderGetParserColumnNumber(reader), icu::UnicodeString(attrib("n"_u).data())}, true);
+               xmlTextReaderGetParserColumnNumber(reader), icu::UnicodeString(catname.data())}, true);
           }
           // mark of begin of word
           int tmp = td.getTransducer().insertSingleTransduction('^', state);
@@ -422,9 +422,10 @@ TRXReader::createMacro(UString const &name, int const value)
 {
   if(td.getMacros().find(name) != td.getMacros().end())
   {
-    I18n(APER_I18N_DATA, "apertium").error("APER1144", {"line", "column"},
+    I18n(APER_I18N_DATA, "apertium").error("APER1144", {"line", "column", "macro"},
         {xmlTextReaderGetParserLineNumber(reader),
-         xmlTextReaderGetParserColumnNumber(reader)}, true);
+         xmlTextReaderGetParserColumnNumber(reader),
+         icu::UnicodeString(name.data())}, true);
   }
   td.getMacros()[name] = value;
 }

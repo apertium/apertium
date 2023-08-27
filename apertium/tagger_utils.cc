@@ -182,7 +182,7 @@ tagger_utils::require_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWor
 }
 
 static void _warn_absent_ambiguity_class(TaggerWord &word) {
-  I18n(APER_I18N_DATA, "apertium").error("APER1104",
+  I18n(APER_I18N_DATA, "apertium").error("APER1105",
     {"word", "class"},
     {icu::UnicodeString(word.get_superficial_form().data()),
      icu::UnicodeString(word.get_string_tags().data())}, false);

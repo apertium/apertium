@@ -31,9 +31,9 @@ int perceptron_trace(int argc, char* argv[])
     PerceptronSpec spec;
     MTXReader mtx_reader(spec);
     mtx_reader.read(argv[2]);
-    std::cout << "== " << I18n(APER_I18N_DATA, "apertium").format("macro_definitions") << " ==\n";
+    std::cout << "== Macro definitions ==\n";
     mtx_reader.printTmplDefns();
-    std::cout << "== " << I18n(APER_I18N_DATA, "apertium").format("spec") << " ==\n";
+    std::cout << "== Spec ==\n";
     std::cout << spec;
   }
   else if (argc == 5 && std::string(argv[1]) == "path")

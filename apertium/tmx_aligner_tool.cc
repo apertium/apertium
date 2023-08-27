@@ -538,7 +538,7 @@ int main_alignerTool(int argC, char* argV[])
     {
       if (batchMode)
       {
-      I18n(APER_I18N_DATA, "apertium").error("APER1047", {"arg"}, {handArgumentname.c_str()}, false);
+      I18n(APER_I18N_DATA, "apertium").error("APER1118", {"arg"}, {handArgumentname.c_str()}, false);
         throw I18n(APER_I18N_DATA, "apertium").format("APER1124");
       }
       else

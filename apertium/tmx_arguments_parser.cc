@@ -28,7 +28,7 @@ bool Arguments::read( int argc, char **argv )
     std::string p = argv[i];
     if (p.empty() || p[0]!='-')
     {
-      I18n(APER_I18N_DATA, "apertium").error("APER1126", {}, {}, false);
+      I18n(APER_I18N_DATA, "apertium").error("APER1126", {"arg"}, {p.c_str()}, false);
       throw I18n(APER_I18N_DATA, "apertium").format("APER1124");
       return false;
     }

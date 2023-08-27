@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
   cli.add_bool_arg('w', "dictionary-case", i18n.format("dictionary_case_desc"));
   cli.add_bool_arg('z', "null-flush", i18n.format("null_flush_desc"));
   cli.add_bool_arg('h', "help", i18n.format("help_desc"));
-  cli.set_epilog(i18n.format("chunck_epilog"));
+  cli.set_epilog(i18n.format("interchunk_epilog"));
   cli.parse_args(argc, argv);
 
   Interchunk i;

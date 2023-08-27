@@ -306,7 +306,7 @@ Interchunk::processModifyCase(xmlNode *localroot)
     bool match = word[pos]->setChunkPart(attr_items[part], result);
     if(!match && trace)
     {
-      I18n(APER_I18N_DATA, "apertium").error("APER1052", {"tag", "line"}, {"<modify-case>", localroot->line}, false);
+      I18n(APER_I18N_DATA, "apertium").error("APER1053", {"tag", "line"}, {"<modify-case>", localroot->line}, false);
     }
   }
   else if(!xmlStrcmp(leftSide->name, (const xmlChar *) "var"))

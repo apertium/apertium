@@ -574,7 +574,7 @@ MTXReader::procBoolExpr(bool allow_fail)
       if (allow_fail) {
         return false;
       }
-      I18n(APER_I18N_DATA, "apertium").error("APER1078", {"line", "column"},
+      I18n(APER_I18N_DATA, "apertium").error("APER1170", {"line", "column"},
         {xmlTextReaderGetParserLineNumber(reader),
          xmlTextReaderGetParserColumnNumber(reader)}, true);
     }
