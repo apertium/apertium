@@ -14,7 +14,7 @@ root{
     help_desc{"print this message and exit"}
 
     deshtml_desc{"html format processor."}
-    
+
     extract_caps_desc{"Transfer capitalization information to word-bound blanks"}
     surface_desc{"keep surface forms"}
     null_flush_desc{"flush output on the null character"}
@@ -93,7 +93,7 @@ root{
     biltrans_desc{"bilingual letter transducer file"}
     input_desc{"input file, standard input by default"}
     output_desc{"output file, standard output by default"}
-    
+
     apertium_desc{"USAGE: {basename} [-d datadir] [-f format] [-u] <direction> [in [out]]\n"
                   " -d datadir       directory of linguistic data\n"
                   " -f format        one of: txt (default), html, rtf, odt, odp, docx, wxml, xlsx, pptx,\n"
@@ -235,7 +235,7 @@ There are various postprocessors which remove implausible rungs based on various
     wblank_detach_desc{
       "Closes all word-bound blanks, turning [[...]]^...$ into [[...]]^...$[[/]]\n"
       "This tool does not merge across whitespace or do any other heuristics wrt. which word-bound blanks should have their spans combined.\n"}
-      
+
     deformat_desc{"USAGE: {first_line}\n"
                   "  -a: apertium standard mode\n"
                   "  -A: apertium optimized mode (default mode)\n"
@@ -255,6 +255,7 @@ There are various postprocessors which remove implausible rungs based on various
     APER1000{"ERROR APER1000: Unable to access file \"{file_name}\"."}
     APER1001{"ERROR APER1001: Unescaped \"^\": {buf}^"}
     APER1002{"ERROR APER1002: Stray \"$\""}
+    APER1012{"ERROR APER1012: In {file_name} on line {line_number}: Unexpected tag <{tag}>."}
     APER1013{"ERROR APER1013: Can't convert const Analysis & comprising empty Morpheme std::vector to {letter}."}
     APER1014{"ERROR APER1014: Can't convert const Analysis & comprising Morpheme comprising empty Tag std::vector to {letter}."}
     APER1015{"ERROR APER1015: Can't convert Analysis comprising empty Morpheme std::vector to UString."}
@@ -272,7 +273,7 @@ There are various postprocessors which remove implausible rungs based on various
     APER1024{"ERROR APER1024: You did not provide a tagger definition file (.tsx). Use --filetsx to do that."}
     APER1025{"ERROR APER1025: Ambiguity class number out of range: {number}\n"
              "Word: {word}\n"
-             "Ambiguity class: : {class}"}
+             "Ambiguity class: {class}"}
     APER1026{"ERROR APER1026: Corpus length provided with --clength must be a positive integer."}
     APER1027{"ERROR APER1027: You have provided neither a tagger specification file (.tsx) nor a tagger probability file (.prob). Use --tsxfile or --probfile to provide one of them."}
     APER1028{"ERROR APER1028: You provided a tagger specification file and a tagger probability file. Only one of them can be provided, not both."}
@@ -294,7 +295,7 @@ There are various postprocessors which remove implausible rungs based on various
              "{word_tagged} -- {word_untagged}"}
     APER1039{"ERROR APER1039: word_untagged==NULL"}
     APER1040{"ERROR APER1040: Error in tagged text. An ambiguous word was found: {word}"}
-    APER1041{"WARNING APER1041: The last tag is not the end-of-sentence-tag but rather {tag}. Line: {line}. Pending: {pending}. Tags: "}
+    APER1041{"WARNING APER1041: The last tag is not the end-of-sentence-tag but rather {tag}. Line: {line}. Pending: {pending}."}
     APER1042{"WARNING APER1042: gamma[{index}]=0"}
     APER1043{"WARNING APER1043: Problem with word \"{word}\" {tags}"}
     APER1044{"WARNING APER1044: The text to disambiguate has finished, but there are ambiguous words that has not been disambiguated.\n"
@@ -418,7 +419,7 @@ There are various postprocessors which remove implausible rungs based on various
     APER1143{"WARNING APER1143: On line {line}: assignment to 'sl' side has no effect."}
     APER1144{"ERROR APER1144: On line {line}, column {column}: Macro \"{macro}\" defined at least twice"}
     APER1145{"ERROR APER1145: On line {line}, column {column}: \"{tag}\" already defined."}
-    APER1146{"ERROR APER1146: On line {line}, column {column}: Unexpected \"{tag}\" open tag."}
+    APER1146{"ERROR APER1146: On line {line}, column {column}: Unexpected \"{tag}\" tag."}
     APER1147{"ERROR APER1147: On line {line}, column {column}: <label-item> tag expected."}
     APER1148{"ERROR APER1148: can't serialise without first selecting a model."}
     APER1149{"ERROR APER1149: can't read tagger without first selecting a model."}

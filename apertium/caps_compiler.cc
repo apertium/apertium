@@ -132,7 +132,9 @@ CapsCompiler::compile_node(xmlNode* node, int32_t state)
   else if (inner_name == CAPS_COMPILER_BEGIN_ELEM)
     return trans.insertSingleTransduction(alpha(null_boundary, 0), state);
   else {
-    error_and_die(node, "Unexpected tag <%S>", inner_name.c_str());
+    I18n(APER_I18N_DATA, "apertium").error("APER1012", {"file_name", "line_number", "tag"},
+      {(char*) node->doc->URL,
+       std::to_string(node->line).c_str(), icu::UnicodeString(inner_name.data())}, false);
     return 0;
   }
 }
