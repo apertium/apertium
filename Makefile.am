@@ -25,6 +25,6 @@ install-data-local:
 test: check
 
 
-export LTTB_I18N_DATA=$(datadir)/lttoolbox/lttoolbox.dat
+export ALT_I18N_DATA=$(datadir)/lttoolbox/lttoolbox.dat
 export LOCALES_DIR=$(datadir)/$(PACKAGE_NAME)
-export APER_I18N_DATA=$(LOCALES_DIR)/apertium.dat
+export APR_I18N_DATA=$(LOCALES_DIR)/apertium.dat

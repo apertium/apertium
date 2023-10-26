@@ -1,6 +1,6 @@
 #include <apertium/exception.h>
 #include <apertium/shell_utils.h>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 #ifdef _MSC_VER
 #include <fcntl.h>
@@ -22,7 +22,7 @@ void expect_file_arguments(int actual, int lower, int upper) {
         what_ << "or ";
       }
     }
-    icu::UnicodeString msg = I18n(APER_I18N_DATA, "apertium").format("APER1099",
+    icu::UnicodeString msg = I18n(APR_I18N_DATA, "apertium").format("APR80990",
       {"expected", "actual"}, {what_.str().c_str(),actual});
     throw Exception::Shell::UnexpectedFileArgumentCount(msg);
   }
@@ -67,7 +67,7 @@ FILE *try_open_file(const char *metavar, const char *filename,
                            const char *flags) {
   FILE *f = std::fopen(filename, flags);
   if (f == NULL) {
-    throw Exception::Shell::FopenError(I18n(APER_I18N_DATA, "apertium").format("APER1100",
+    throw Exception::Shell::FopenError(I18n(APR_I18N_DATA, "apertium").format("APR81000",
       {"metavar", "filename"}, {metavar, filename}));
   }
   return f;
@@ -78,7 +78,7 @@ UFILE* try_open_file_utf8(const char *metavar, const char *filename,
   UFILE* f = u_fopen(filename, flags, NULL, NULL);
   if (f == NULL) {
     std::stringstream what_;
-    throw Exception::Shell::FopenError(I18n(APER_I18N_DATA, "apertium").format("APER1100",
+    throw Exception::Shell::FopenError(I18n(APR_I18N_DATA, "apertium").format("APR81000",
       {"metavar", "filename"}, {metavar, filename}));
   }
   return f;
@@ -88,7 +88,7 @@ void try_close_file(const char *metavar, const char *filename,
                            FILE *file) {
   if (std::fclose(file) != 0) {
     std::stringstream what_;
-    throw Exception::Shell::FcloseError(I18n(APER_I18N_DATA, "apertium").format("APER1100",
+    throw Exception::Shell::FcloseError(I18n(APR_I18N_DATA, "apertium").format("APR81000",
       {"metavar", "filename"}, {metavar, filename}));
   }
 }

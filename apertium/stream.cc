@@ -18,7 +18,7 @@
 #include "exception.h"
 
 #include <utility>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 namespace Apertium {
 Stream::Stream(TaggerFlags &Flags_)
@@ -49,13 +49,13 @@ StreamedType Stream::get() {
       c = TheCharacterStream.get();
     }
     if (c == '$') {
-      throw Exception::Analysis::TheMorphemes_empty(I18n(APER_I18N_DATA, "apertium").format("APER1101"));
+      throw Exception::Analysis::TheMorphemes_empty(I18n(APR_I18N_DATA, "apertium").format("APR81010"));
     } else if (TheStreamedType.TheLexicalUnit->TheSurfaceForm.empty()) {
-      throw Exception::Stream::UnexpectedCharacter(I18n(APER_I18N_DATA, "apertium").format("APER1102"));
+      throw Exception::Stream::UnexpectedCharacter(I18n(APR_I18N_DATA, "apertium").format("APR81020"));
     }
     c = TheCharacterStream.get();
     if (c == '$') {
-      throw Exception::Analysis::TheMorphemes_empty(I18n(APER_I18N_DATA, "apertium").format("APER1101"));
+      throw Exception::Analysis::TheMorphemes_empty(I18n(APR_I18N_DATA, "apertium").format("APR81010"));
     } else if (c == '*') {
       TheCharacterStream.readBlock(c, '$');
     } else {
@@ -66,7 +66,7 @@ StreamedType Stream::get() {
         c = TheCharacterStream.get();
       } while (c == '/');
       if (c != '$') {
-        throw Exception::Stream::UnexpectedEndOfFile(I18n(APER_I18N_DATA, "apertium").format("APER1103"));
+        throw Exception::Stream::UnexpectedEndOfFile(I18n(APR_I18N_DATA, "apertium").format("APR81030"));
       }
     }
   }

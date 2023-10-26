@@ -25,7 +25,7 @@
 #include <iomanip>
 #include <iostream>
 #include <limits>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 namespace Apertium {
 
@@ -65,7 +65,7 @@ UnigramTagger::serialise(std::ostream& o) const
       break;
     default:
       throw Exception::apertium_tagger::InvalidArgument(
-          I18n(APER_I18N_DATA, "apertium").format("APER1148"));
+          I18n(APR_I18N_DATA, "apertium").format("APR81480"));
   }
 }
 
@@ -87,7 +87,7 @@ UnigramTagger::deserialise(std::istream& s)
       break;
     default:
       throw Exception::apertium_tagger::InvalidArgument(
-          I18n(APER_I18N_DATA, "apertium").format("APER1149"));
+          I18n(APR_I18N_DATA, "apertium").format("APR81490"));
   }
 }
 
@@ -147,7 +147,7 @@ UnigramTagger::score(const Analysis& Analysis_) {
       break;
     default:
       throw Exception::apertium_tagger::InvalidArgument(
-          I18n(APER_I18N_DATA, "apertium").format("APER1150"));
+          I18n(APR_I18N_DATA, "apertium").format("APR81500"));
   }
 }
 
@@ -332,7 +332,7 @@ UnigramTagger::train_Analysis(const Analysis &Analysis_, const std::size_t &Coef
       break;
     default:
       throw Exception::apertium_tagger::InvalidArgument(
-          I18n(APER_I18N_DATA, "apertium").format("APER1151"));
+          I18n(APR_I18N_DATA, "apertium").format("APR81510"));
   }
 }
 
@@ -383,7 +383,7 @@ UnigramTagger::multiplyModel(const std::size_t &OccurrenceCoefficientMultiplier)
       break;
     default:
       throw Exception::apertium_tagger::InvalidArgument(
-          I18n(APER_I18N_DATA, "apertium").format("APER1152"));
+          I18n(APR_I18N_DATA, "apertium").format("APR81520"));
   }
 }
 
@@ -397,7 +397,7 @@ UnigramTagger::train(Stream &TaggedCorpus) {
 
     if (StreamedType_.TheLexicalUnit->TheAnalyses.empty())
       throw Exception::LexicalUnit::TheAnalyses_empty(
-          I18n(APER_I18N_DATA, "apertium").format("APER1153"));
+          I18n(APR_I18N_DATA, "apertium").format("APR81530"));
 
     std::size_t analysis_count = StreamedType_.TheLexicalUnit->TheAnalyses.size();
 

@@ -29,7 +29,7 @@
 #include <sstream>
 #include <string>
 #include <unistd.h>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 #include <unicode/ustream.h>
 
 int main(int argc, char **argv) {
@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
   try {
     Apertium::apertium_tagger(argc, argv);
   } catch (const Apertium::Exception::apertium_tagger::err_Exception &err_Exception_) {
-    std::cerr << I18n(APER_I18N_DATA, "apertium").format("tagger_note") << std::endl;
+    std::cerr << I18n(APR_I18N_DATA, "apertium").format("tagger_note") << std::endl;
     return 1;
   } catch (...) {
     throw;

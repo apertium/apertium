@@ -132,7 +132,7 @@ CapsCompiler::compile_node(xmlNode* node, int32_t state)
   else if (inner_name == CAPS_COMPILER_BEGIN_ELEM)
     return trans.insertSingleTransduction(alpha(null_boundary, 0), state);
   else {
-    I18n(APER_I18N_DATA, "apertium").error("APER1012", {"file_name", "line_number", "tag"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80120", {"file_name", "line_number", "tag"},
       {(char*) node->doc->URL,
        std::to_string(node->line).c_str(), icu::UnicodeString(inner_name.data())}, false);
     return 0;
@@ -177,11 +177,11 @@ CapsCompiler::compile_match(xmlNode* node, int32_t state)
   UString select = getattr(node, CAPS_COMPILER_SELECT_ATTR);
 
   if (lemma != "*"_u && tlcaps != "*"_u) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1029", {"file_name", "line_number"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80290", {"file_name", "line_number"},
                                                        {(char*)node->doc->URL, node->line}, true);
   }
   if (surf != "*"_u && tscaps != "*"_u) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1030", {"file_name", "line_number"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80300", {"file_name", "line_number"},
                                                        {(char*)node->doc->URL, node->line}, true);
   }
 
@@ -242,7 +242,7 @@ CapsCompiler::compile_match(xmlNode* node, int32_t state)
   } else if (select == CAPS_COMPILER_DIX_VAL) {
     state = trans.insertSingleTransduction(dix_sym, state);
   } else {
-    I18n(APER_I18N_DATA, "apertium").error("APER1031", {"file_name", "line_number", "select"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80310", {"file_name", "line_number", "select"},
                                                        {(char*)node->doc->URL, node->line, (char*)select.c_str()}, true);
   }
 
@@ -270,10 +270,10 @@ CapsCompiler::compile_repeat(xmlNode* node, int32_t start_state)
   int from = StringUtils::stoi(xfrom);
   int upto = StringUtils::stoi(xupto);
   if(from < 0 || upto < 0) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1032", {"file_name", "line_number"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80320", {"file_name", "line_number"},
                                                        {(char*)node->doc->URL, node->line}, true);
   } else if(from > upto) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1033", {"file_name", "line_number"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80330", {"file_name", "line_number"},
                                                        {(char*)node->doc->URL, node->line}, true);
   }
   int count = upto - from;

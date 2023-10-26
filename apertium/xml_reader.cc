@@ -1,5 +1,5 @@
 #include <apertium/xml_reader.h>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 
 XMLReader::XmlTextReaderResource::XmlTextReaderResource(
@@ -8,7 +8,7 @@ XMLReader::XmlTextReaderResource::XmlTextReaderResource(
 {
   reader = xmlReaderForFile(filename.c_str(), NULL, 0);
   if (reader == NULL) {
-		I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {filename.c_str()}, true);
+		I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {filename.c_str()}, true);
   }
 }
 
@@ -36,7 +36,7 @@ XMLReader::step()
   int retval = xmlTextReaderRead(reader);
   if (retval != 1)
   {
-    I18n(APER_I18N_DATA, "apertium").error("APER1157", {"line", "column"},
+    I18n(APR_I18N_DATA, "apertium").error("APR81570", {"line", "column"},
       {xmlTextReaderGetParserLineNumber(reader),
        xmlTextReaderGetParserColumnNumber(reader)}, true);
   }
@@ -105,7 +105,7 @@ XMLReader::warnAtLoc()
 void
 XMLReader::unexpectedTag()
 {
-  I18n(APER_I18N_DATA, "apertium").error("APER1146", {"line", "column", "tag"},
+  I18n(APR_I18N_DATA, "apertium").error("APR81460", {"line", "column", "tag"},
     {xmlTextReaderGetParserLineNumber(reader),
      xmlTextReaderGetParserColumnNumber(reader), icu::UnicodeString(name.data())}, true);
 }

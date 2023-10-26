@@ -32,14 +32,14 @@
 
 #include <utf8.h>
 #include "unicode/uchar.h"
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 #include <unicode/ustream.h>
 
 using namespace std;
 
 void endProgram(char *name)
 {
-	I18n i18n {APER_I18N_DATA, "apertium"};
+	I18n i18n {APR_I18N_DATA, "apertium"};
 	cout << basename(name) << ": " << i18n.format("adapt_docx_desc") << endl;
 	cout << i18n.format("usage") << ": " << basename(name) << " [-n] [-p] [-f filename]" << endl;
 	cout << i18n.format("options") << ":" << endl;
@@ -234,7 +234,7 @@ Paragraph::Paragraph(xmlNode *_root)
 void showParagraphs(xmlNode *root)
 {
 	vector<xmlNode*> pp = Walker::findAll(root, "p", true);
-	cout << I18n(APER_I18N_DATA, "apertium").format("paragraphs_found", {"num"}, {to_string(pp.size()).c_str()}) << endl;
+	cout << I18n(APR_I18N_DATA, "apertium").format("paragraphs_found", {"num"}, {to_string(pp.size()).c_str()}) << endl;
 	for (auto it1 = pp.begin(); it1 != pp.end(); it1++) {
 		Paragraph p(*it1);
 		bool first = true;
@@ -404,7 +404,7 @@ void process(string fileName, bool outputsName, bool pretty)
 {
 	xmlDoc *document = xmlReadFile(fileName.c_str(), NULL, XML_PARSE_NOENT);
 	if (document == NULL) {
-		I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {fileName.c_str()}, false);
+		I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {fileName.c_str()}, false);
 		return;
 	}
 	process(xmlDocGetRootElement(document));

@@ -23,7 +23,7 @@
 #include <cctype>
 #include <iostream>
 #include <stack>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 using namespace std;
 
@@ -121,7 +121,7 @@ TransferMult::readBil(string const &fstfile)
   FILE *in = fopen(fstfile.c_str(), "r");
   if(!in)
   {
-    I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {fstfile.c_str()}, true);
+    I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {fstfile.c_str()}, true);
   }
   fstp.load(in);
   fstp.initBiltrans();
@@ -135,7 +135,7 @@ TransferMult::read(string const &datafile, string const &fstfile)
   FILE *in = fopen(datafile.c_str(), "r");
   if(!in)
   {
-    I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {datafile.c_str()}, true);
+    I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {datafile.c_str()}, true);
   }
   readData(in);
   fclose(in);

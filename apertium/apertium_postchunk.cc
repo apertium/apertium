@@ -18,11 +18,11 @@
 #include <lttoolbox/lt_locale.h>
 #include <lttoolbox/cli.h>
 #include <lttoolbox/file_utils.h>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 int main(int argc, char *argv[])
 {
-  I18n i18n {APER_I18N_DATA, "apertium"};
+  I18n i18n {APR_I18N_DATA, "apertium"};
   LtLocale::tryToSetLocale();
   CLI cli(i18n.format("postchunck_desc"));
   cli.add_file_arg("t3x", false);

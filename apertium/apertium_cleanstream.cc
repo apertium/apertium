@@ -29,7 +29,7 @@
 #ifdef __MINGW32__
 #include <windows.h>
 #endif
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 using namespace std;
 
@@ -64,7 +64,7 @@ main (int argc, char** argv)
     c = input.get();
     if (c == '^') {
       if (intoken) {
-        I18n(APER_I18N_DATA, "apertium").error("APER1001", {"buf"}, {icu::UnicodeString(buf.data())}, false);
+        I18n(APR_I18N_DATA, "apertium").error("APR80010", {"buf"}, {icu::UnicodeString(buf.data())}, false);
         buf += "\\^"_u;
       } else {
         intoken = true;
@@ -80,7 +80,7 @@ main (int argc, char** argv)
         write(buf, output);
         buf.clear();
       } else {
-        I18n(APER_I18N_DATA, "apertium").error("APER1002", {}, {}, false);
+        I18n(APR_I18N_DATA, "apertium").error("APR80020", {}, {}, false);
       }
     } else if(c == '\\') {
       c = input.get();

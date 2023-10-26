@@ -18,7 +18,7 @@ locale_utf8 ()
   LC_CTYPE=$(locale -a|grep -i "utf[.]*8"|head -1)
   export LC_CTYPE
   if [ "$LC_CTYPE" = "" ]
-  then icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1158";
+  then icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81580";
        exit 1;
   fi
 }
@@ -26,12 +26,12 @@ locale_utf8 ()
 test_zip ()
 {
   if ! command -v zip &>/dev/null; then
-    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1161" "command" "zip";
+    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81610" "command" "zip";
     exit 1;
   fi
 
   if ! command -v unzip &>/dev/null; then
-    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1161" "command" "unzip";
+    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81610" "command" "unzip";
     exit 1;
   fi
 }
@@ -39,7 +39,7 @@ test_zip ()
 test_gawk ()
 {
   if ! command -v gawk &>/dev/null; then
-    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1161" "command" "gawk"
+    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81610" "command" "gawk"
     exit 1
   fi
 }
@@ -143,8 +143,8 @@ unformat_xlsx ()
 while getopts "f:" opt; do
     case "$opt" in
         f) FORMAT=$OPTARG ;;
-        \?) icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1108" "opt" "$OPTARG" >&2; message >&2 ;;
-        :) icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1162" "opt" "$OPTARG" >&2; message >&2 ;;
+        \?) icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81080" "opt" "$OPTARG" >&2; message >&2 ;;
+        :) icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81620" "opt" "$OPTARG" >&2; message >&2 ;;
     esac
 done
 
@@ -155,14 +155,14 @@ case "$#" in
        OUTPUT_FILE=$2;
        INPUT_FILE=$1;
        if [ ! -e "$INPUT_FILE" ];
-       then icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1000" "file_name" "$INPUT_FILE"
+       then icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR80000" "file_name" "$INPUT_FILE"
             message;
        fi
        ;;
      1)
        INPUT_FILE=$1;
        if [ ! -e "$INPUT_FILE" ];
-       then icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1000" "file_name" "$INPUT_FILE"
+       then icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR80000" "file_name" "$INPUT_FILE"
             message;
        fi
        ;;
@@ -184,7 +184,7 @@ case "$FORMATADOR" in
         rtf)
                 MILOCALE=$(locale -a | grep -E -i -v -m1 'utf|^C|^POSIX$')
 		if [ "$MILOCALE" = "" ]
-		then icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APER1166";
+		then icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81660";
 	             exit 1;
 	        fi
 	        export LC_CTYPE=$MILOCALE

@@ -37,7 +37,7 @@ ApertiumRE::read(FILE *input)
 {
   unsigned int size = Compression::multibyte_read(input);
   if (fseek(input, size, SEEK_CUR) != 0) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1017", {}, {}, true);
+    I18n(APR_I18N_DATA, "apertium").error("APR80170", {}, {}, true);
   }
 }
 
@@ -51,7 +51,7 @@ ApertiumRE::compile(UString const &str)
   UErrorCode err = U_ZERO_ERROR;
   re = RegexPattern::compile(s, UREGEX_DOTALL|UREGEX_CASE_INSENSITIVE, err);
   if(U_FAILURE(err)) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1018", {"exp", "error"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80180", {"exp", "error"},
                                                        {icu::UnicodeString(str.data()), u_errorName(err)}, true);
   }
 }
@@ -60,7 +60,7 @@ void
 ApertiumRE::write(FILE *output) const
 {
   if (re == nullptr) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1019", {}, {}, true);
+    I18n(APR_I18N_DATA, "apertium").error("APR80190", {}, {}, true);
   }
   // for backwards compatibility, write empty binary form
   Compression::multibyte_write(0, output);
@@ -78,7 +78,7 @@ ApertiumRE::match(UString const &str) const
   RegexMatcher* m = re->matcher(s, err);
 
   if (U_FAILURE(err)) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1020", {"error"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80200", {"error"},
                                                        {u_errorName(err)}, true);
   }
 
@@ -89,7 +89,7 @@ ApertiumRE::match(UString const &str) const
 
   UString ret = m->group(err).getTerminatedBuffer();
   if (U_FAILURE(err)) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1021", {"error"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80210", {"error"},
                                                        {u_errorName(err)}, true);
   }
 
@@ -111,7 +111,7 @@ ApertiumRE::replace(UString &str, UString const &value) const
   RegexMatcher* m = re->matcher(s, err);
 
   if (U_FAILURE(err)) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1020", {"error"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80200", {"error"},
                                                        {u_errorName(err)}, true);
   }
 

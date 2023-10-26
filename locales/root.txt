@@ -252,198 +252,198 @@ There are various postprocessors which remove implausible rungs based on various
                   " -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx, pptx\n"
                   " in               input file (stdin by default)\n"
                   " out              output file (stdout by default)"}
-    APER1000{"ERROR APER1000: Unable to access file \"{file_name}\"."}
-    APER1001{"ERROR APER1001: Unescaped \"^\": {buf}^"}
-    APER1002{"ERROR APER1002: Stray \"$\""}
-    APER1012{"ERROR APER1012: In {file_name} on line {line_number}: Unexpected tag <{tag}>."}
-    APER1013{"ERROR APER1013: Can't convert const Analysis & comprising empty Morpheme std::vector to {letter}."}
-    APER1014{"ERROR APER1014: Can't convert const Analysis & comprising Morpheme comprising empty Tag std::vector to {letter}."}
-    APER1015{"ERROR APER1015: Can't convert Analysis comprising empty Morpheme std::vector to UString."}
-    APER1016{"ERROR APER1016: Unterminated lexical unit."}
-    APER1017{"ERROR APER1017: Reading regexp."}
-    APER1018{"ERROR APER1018: Unable to compile regular expression \"{exp}\".\n"
+    APR80000{"ERROR APR80000: Unable to access file \"{file_name}\"."}
+    APR80010{"ERROR APR80010: Unescaped \"^\": {buf}^"}
+    APR80020{"ERROR APR80020: Stray \"$\""}
+    APR80120{"ERROR APR80120: In {file_name} on line {line_number}: Unexpected tag <{tag}>."}
+    APR80130{"ERROR APR80130: Can't convert const Analysis & comprising empty Morpheme std::vector to {letter}."}
+    APR80140{"ERROR APR80140: Can't convert const Analysis & comprising Morpheme comprising empty Tag std::vector to {letter}."}
+    APR80150{"ERROR APR80150: Can't convert Analysis comprising empty Morpheme std::vector to UString."}
+    APR80160{"ERROR APR80160: Unterminated lexical unit."}
+    APR80170{"ERROR APR80170: Reading regexp."}
+    APR80180{"ERROR APR80180: Unable to compile regular expression \"{exp}\".\n"
              "Error code: {error}"}
-    APER1019{"ERROR APER1019: Cannot write empty regexp."}
-    APER1020{"ERROR APER1020: Unable to apply regexp.\n"
+    APR80190{"ERROR APR80190: Cannot write empty regexp."}
+    APR80200{"ERROR APR80200: Unable to apply regexp.\n"
              "Error code: {error}"}
-    APER1021{"ERROR APER1021: Unable to extract substring from regexp match.\n"
+    APR80210{"ERROR APR80210: Unable to extract substring from regexp match.\n"
              "Error code: {error}"}
-    APER1022{"ERROR APER1022: You did not provide an input file (.prob). Use --filein to do that."}
-    APER1023{"ERROR APER1023: You did not provide an output file (.prob). Use --fileout to do that."}
-    APER1024{"ERROR APER1024: You did not provide a tagger definition file (.tsx). Use --filetsx to do that."}
-    APER1025{"ERROR APER1025: Ambiguity class number out of range: {number}\n"
+    APR80220{"ERROR APR80220: You did not provide an input file (.prob). Use --filein to do that."}
+    APR80230{"ERROR APR80230: You did not provide an output file (.prob). Use --fileout to do that."}
+    APR80240{"ERROR APR80240: You did not provide a tagger definition file (.tsx). Use --filetsx to do that."}
+    APR80250{"ERROR APR80250: Ambiguity class number out of range: {number}\n"
              "Word: {word}\n"
              "Ambiguity class: {class}"}
-    APER1026{"ERROR APER1026: Corpus length provided with --clength must be a positive integer."}
-    APER1027{"ERROR APER1027: You have provided neither a tagger specification file (.tsx) nor a tagger probability file (.prob). Use --tsxfile or --probfile to provide one of them."}
-    APER1028{"ERROR APER1028: You provided a tagger specification file and a tagger probability file. Only one of them can be provided, not both."}
-    APER1029{"ERROR APER1029: In {file_name} on line {line_number}: Attribute lemma conflicts with attribute trglem."}
-    APER1030{"ERROR APER1030: In {file_name} on line {line_number}: Attribute surface conflicts with attribute trgsurf."}
-    APER1031{"ERROR APER1031: In {file_name} on line {line_number}: Unknown select value \"{select}\"."}
-    APER1032{"ERROR APER1032: In {file_name} on line {line_number}: Number of repetitions cannot be negative."}
-    APER1033{"ERROR APER1033: In {file_name} on line {line_number}: Lower bound on number of repetitions cannot be larger than upper bound."}
-    APER1034{"WARNING APER1034: There is not coarse tag for the fine tag \"{substr}\" of \"{str}\"\n"
+    APR80260{"ERROR APR80260: Corpus length provided with --clength must be a positive integer."}
+    APR80270{"ERROR APR80270: You have provided neither a tagger specification file (.tsx) nor a tagger probability file (.prob). Use --tsxfile or --probfile to provide one of them."}
+    APR80280{"ERROR APR80280: You provided a tagger specification file and a tagger probability file. Only one of them can be provided, not both."}
+    APR80290{"ERROR APR80290: In {file_name} on line {line_number}: Attribute lemma conflicts with attribute trglem."}
+    APR80300{"ERROR APR80300: In {file_name} on line {line_number}: Attribute surface conflicts with attribute trgsurf."}
+    APR80310{"ERROR APR80310: In {file_name} on line {line_number}: Unknown select value \"{select}\"."}
+    APR80320{"ERROR APR80320: In {file_name} on line {line_number}: Number of repetitions cannot be negative."}
+    APR80330{"ERROR APR80330: In {file_name} on line {line_number}: Lower bound on number of repetitions cannot be larger than upper bound."}
+    APR60340{"WARNING APR60340: There is not coarse tag for the fine tag \"{substr}\" of \"{str}\"\n"
              "                  This is because of an incomplete tagset definition or a dictionary error"}
-    APER1035{"WARNING APER1035: kIGNORE was returned while reading a word.\n"
+    APR60350{"WARNING APR60350: kIGNORE was returned while reading a word.\n"
              "                  Word being read: {word}\n"
              "                  Debug: {str}"}
-    APER1036{"WARNING APER1036: Debug mode name {debug_name} generated multiple times, disregarding result from {mode_name} step {step_num}."}
-    APER1037{"ERROR APER1037: {program}:Installation prefix is the same directory as modes.xml; give a different INSTALLDIR."}
-    APER1038{"ERROR APER1038: Tagged text (.tagged) and analyzed text (.untagged) streams are not aligned.\n"
+    APR60360{"WARNING APR60360: Debug mode name {debug_name} generated multiple times, disregarding result from {mode_name} step {step_num}."}
+    APR80370{"ERROR APR80370: {program}:Installation prefix is the same directory as modes.xml; give a different INSTALLDIR."}
+    APR80380{"ERROR APR80380: Tagged text (.tagged) and analyzed text (.untagged) streams are not aligned.\n"
              "Take a look at tagged text (.tagged).\n"
              "Perhaps this is caused by a multiword unit that is not a multiword unit in one of the two files.\n"
              "{word_tagged} -- {word_untagged}"}
-    APER1039{"ERROR APER1039: word_untagged==NULL"}
-    APER1040{"ERROR APER1040: Error in tagged text. An ambiguous word was found: {word}"}
-    APER1041{"WARNING APER1041: The last tag is not the end-of-sentence-tag but rather {tag}. Line: {line}. Pending: {pending}."}
-    APER1042{"WARNING APER1042: gamma[{index}]=0"}
-    APER1043{"WARNING APER1043: Problem with word \"{word}\" {tags}"}
-    APER1044{"WARNING APER1044: The text to disambiguate has finished, but there are ambiguous words that has not been disambiguated.\n"
+    APR80390{"ERROR APR80390: word_untagged==NULL"}
+    APR80400{"ERROR APR80400: Error in tagged text. An ambiguous word was found: {word}"}
+    APR60410{"WARNING APR60410: The last tag is not the end-of-sentence-tag but rather {tag}. Line: {line}. Pending: {pending}."}
+    APR60420{"WARNING APR60420: gamma[{index}]=0"}
+    APR60430{"WARNING APR60430: Problem with word \"{word}\" {tags}"}
+    APR60440{"WARNING APR60440: The text to disambiguate has finished, but there are ambiguous words that has not been disambiguated.\n"
              "This message should never appears. If you are reading this ..... these are very bad news."}
-    APER1045{"ERROR APER1045: Can't convert const Morpheme & comprising empty Tag std::vector to {letter}."}
-    APER1046{"ERROR APER1046: Can't convert const Analysis & comprising Morpheme comprising empty Tag std::vector to {letter}."}
-    APER1047{"ERROR APER1047: In {file_name} on line {line_number}: index >= limit"}
-    APER1048{"ERROR APER1048: In {file_name} on line {line_number}: index < 0"}
-    APER1049{"ERROR APER1049: In {file_name} on line {line_number}: Null access at word[index]"}
-    APER1050{"ERROR APER1050: Unexpected expression: \"{expression}\""}
-    APER1051{"ERROR APER1051: Unknown input token."}
-    APER1053{"WARNING APER1053: apertium-interchunck: on line {line_number}: {tag} sometimes discards its value."}
-    APER1054{"ERROR APER1054: Can't convert const Analysis & comprising Morpheme comprising empty Lemma UString to Lemma."}
-    APER1055{"ERROR APER1055: Can't convert const Morpheme & comprising empty Lemma UString to Lemma."}
-    APER1056{"ERROR APER1056: Can't convert Morpheme comprising empty Tag std::vector to UString."}
-    APER1057{"ERROR APER1057: Can't convert Morpheme comprising empty TheLemma UString to UString."}
-    APER1058{"ERROR APER1058: Unterminted lexical unit."}
-    APER1059{"ERROR APER1059: empty lemma."}
-    APER1060{"ERROR APER1060: invalid tag <>."}
-    APER1061{"ERROR APER1061: morpheme has no tags."}
-    APER1062{"ERROR APER1062: trailing backslash."}
-    APER1063{"ERROR APER1063: unexpected < after lemma queue."}
-    APER1064{"ERROR APER1064: On line {line}, column {column}: Expected set-member."}
-    APER1065{"ERROR APER1065: On line {line}, column {column}: Expected an integer expression."}
-    APER1066{"ERROR APER1066: On line {line}, column {column}: Expected a string list expression."}
-    APER1067{"ERROR APER1067: On line {line}, column {column}: No such argument {var}."}
-    APER1068{"ERROR APER1068: On line {line}, column {column}: Variable {var} has the wrong type."}
-    APER1069{"ERROR APER1069: On line {line}, column {column}: Variable {var} has not been set."}
-    APER1070{"ERROR APER1070: On line {line}, column {column}: No such macro {var}."}
-    APER1071{"ERROR APER1071: On line {line}, column {column}: Macro {var} returns the wrong type."}
-    APER1072{"ERROR APER1072: On line {line}, column {column}: Expected a string expression."}
-    APER1073{"ERROR APER1073: On line {line}, column {column}: Expected an address expression."}
-    APER1074{"ERROR APER1074: On line {line}, column {column}: Expected a wordoid array expression."}
-    APER1075{"ERROR APER1075: On line {line}, column {column}: Expected a wordoid expression."}
-    APER1076{"ERROR APER1076: On line {line}, column {column}: Set required."}
-    APER1077{"ERROR APER1077: On line {line}, column {column}: String required."}
-    APER1078{"ERROR APER1078: On line {line}, column {column}: No {what} named {name}."}
-    APER1079{"ERROR APER1079: On line {line}, column {column}: {what} required."}
-    APER1080{"ERROR APER1080: On line {line}, column {column}: Opcodes can have at most one operand."}
-    APER1081{"ERROR APER1081: On line {line}, column {column}: Expected a string, bool or int expression."}
-    APER1082{"ERROR APER1082: On line {line}, column {column}: \"as\" attribute required for for-each."}
-    APER1083{"ERROR APER1083: On line {line}, column {column}: Expected a string array or wordoid array expression."}
-    APER1084{"ERROR APER1084: On line {line}, column {column}: Expected a void expression."}
-    APER1085{"ERROR APER1085: On line {line}, column {column}: \"as\" attribute required for def-macro."}
-    APER1086{"ERROR APER1086: On line {line}, column {column}: Expected a non-void expression."}
-    APER1087{"ERROR APER1087: On line {line}, column {column}: expected <metatag> tag."}
-    APER1088{"ERROR APER1088: Unimplemented opcode: {opstr} at {feature} #{feat_idx} address #{bytecode_idx}"}
-    APER1089{"ERROR APER1089: Tagged analysis unavailable in untagged/ambigous input.\n"
+    APR80450{"ERROR APR80450: Can't convert const Morpheme & comprising empty Tag std::vector to {letter}."}
+    APR80460{"ERROR APR80460: Can't convert const Analysis & comprising Morpheme comprising empty Tag std::vector to {letter}."}
+    APR80470{"ERROR APR80470: In {file_name} on line {line_number}: index >= limit"}
+    APR80480{"ERROR APR80480: In {file_name} on line {line_number}: index < 0"}
+    APR80490{"ERROR APR80490: In {file_name} on line {line_number}: Null access at word[index]"}
+    APR80500{"ERROR APR80500: Unexpected expression: \"{expression}\""}
+    APR80510{"ERROR APR80510: Unknown input token."}
+    APR60530{"WARNING APR60530: apertium-interchunck: on line {line_number}: {tag} sometimes discards its value."}
+    APR80540{"ERROR APR80540: Can't convert const Analysis & comprising Morpheme comprising empty Lemma UString to Lemma."}
+    APR80550{"ERROR APR80550: Can't convert const Morpheme & comprising empty Lemma UString to Lemma."}
+    APR80560{"ERROR APR80560: Can't convert Morpheme comprising empty Tag std::vector to UString."}
+    APR80570{"ERROR APR80570: Can't convert Morpheme comprising empty TheLemma UString to UString."}
+    APR80580{"ERROR APR80580: Unterminted lexical unit."}
+    APR80590{"ERROR APR80590: empty lemma."}
+    APR80600{"ERROR APR80600: invalid tag <>."}
+    APR80610{"ERROR APR80610: morpheme has no tags."}
+    APR80620{"ERROR APR80620: trailing backslash."}
+    APR80630{"ERROR APR80630: unexpected < after lemma queue."}
+    APR80640{"ERROR APR80640: On line {line}, column {column}: Expected set-member."}
+    APR80650{"ERROR APR80650: On line {line}, column {column}: Expected an integer expression."}
+    APR80660{"ERROR APR80660: On line {line}, column {column}: Expected a string list expression."}
+    APR80670{"ERROR APR80670: On line {line}, column {column}: No such argument {var}."}
+    APR80680{"ERROR APR80680: On line {line}, column {column}: Variable {var} has the wrong type."}
+    APR80690{"ERROR APR80690: On line {line}, column {column}: Variable {var} has not been set."}
+    APR80700{"ERROR APR80700: On line {line}, column {column}: No such macro {var}."}
+    APR80710{"ERROR APR80710: On line {line}, column {column}: Macro {var} returns the wrong type."}
+    APR80720{"ERROR APR80720: On line {line}, column {column}: Expected a string expression."}
+    APR80730{"ERROR APR80730: On line {line}, column {column}: Expected an address expression."}
+    APR80740{"ERROR APR80740: On line {line}, column {column}: Expected a wordoid array expression."}
+    APR80750{"ERROR APR80750: On line {line}, column {column}: Expected a wordoid expression."}
+    APR80760{"ERROR APR80760: On line {line}, column {column}: Set required."}
+    APR80770{"ERROR APR80770: On line {line}, column {column}: String required."}
+    APR80780{"ERROR APR80780: On line {line}, column {column}: No {what} named {name}."}
+    APR80790{"ERROR APR80790: On line {line}, column {column}: {what} required."}
+    APR80800{"ERROR APR80800: On line {line}, column {column}: Opcodes can have at most one operand."}
+    APR80810{"ERROR APR80810: On line {line}, column {column}: Expected a string, bool or int expression."}
+    APR80820{"ERROR APR80820: On line {line}, column {column}: \"as\" attribute required for for-each."}
+    APR80830{"ERROR APR80830: On line {line}, column {column}: Expected a string array or wordoid array expression."}
+    APR80840{"ERROR APR80840: On line {line}, column {column}: Expected a void expression."}
+    APR80850{"ERROR APR80850: On line {line}, column {column}: \"as\" attribute required for def-macro."}
+    APR80860{"ERROR APR80860: On line {line}, column {column}: Expected a non-void expression."}
+    APR80870{"ERROR APR80870: On line {line}, column {column}: expected <metatag> tag."}
+    APR80880{"ERROR APR80880: Unimplemented opcode: {opstr} at {feature} #{feat_idx} address #{bytecode_idx}"}
+    APR80890{"ERROR APR80890: Tagged analysis unavailable in untagged/ambigous input.\n"
              "Available:\n"
              "{available}"
              "Required: {required}\n"
              "Rerun with --skip-on-error to skip this sentence.\n"}
-    APER1090{"ERROR APER1090: Skipped {skipped} sentences due to token misalignment and {avail_skipped} sentences due to tagged token being unavailable in untagged file out of {total} total sentences."}
-    APER1091{"ERROR APER1091: In {file_name} on line {line_number}: index > limit"}
-    APER1092{"WARNING APER1092: apertium-postchunk: on line {line_number}: {tag} sometimes discards its value."}
-    APER1093{"ERROR APER1093: Postchunk::processCallMacro() assumes npar > 0, but got npar <= 0"}
-    APER1094{"WARNING APER1094: Not calling macro \"{macro}\" from line {line} (empty word?)"}
-    APER1095{"ERROR APER1095: Unexpected EOF"}
-    APER1096{"ERROR APER1096: Wordbound blank isn't immediately followed by the Lexical Unit."}
-    APER1097{"WARNING APER1097: Streams diverged at line {tagged_line}\n"
+    APR80900{"ERROR APR80900: Skipped {skipped} sentences due to token misalignment and {avail_skipped} sentences due to tagged token being unavailable in untagged file out of {total} total sentences."}
+    APR80910{"ERROR APR80910: In {file_name} on line {line_number}: index > limit"}
+    APR60920{"WARNING APR60920: apertium-postchunk: on line {line_number}: {tag} sometimes discards its value."}
+    APR80930{"ERROR APR80930: Postchunk::processCallMacro() assumes npar > 0, but got npar <= 0"}
+    APR60940{"WARNING APR60940: Not calling macro \"{macro}\" from line {line} (empty word?)"}
+    APR80950{"ERROR APR80950: Unexpected EOF"}
+    APR80960{"ERROR APR80960: Wordbound blank isn't immediately followed by the Lexical Unit."}
+    APR60970{"WARNING APR60970: Streams diverged at line {tagged_line}\n"
              "Untagged token: {untagged_token}\n"
              "Tagged token: {tagged_token}\n"
              "Rerun with --skip-on-error to skip this sentence."}
-    APER1098{"ERROR APER1098: One stream has ended prematurely.\n"
+    APR80980{"ERROR APR80980: One stream has ended prematurely.\n"
              "Please check if they are aligned.\n"}
-    APER1099{"ERROR APER1099: Expected one of this file arguments {expected}, got {actual}"}
-    APER1100{"ERROR APER1100: Failed operation in {metavar} file \"{filename}\""}
-    APER1101{"ERROR APER1101: lexical unit has no analyses"}
-    APER1102{"ERROR APER1102: unexpected /, surface form is empty"}
-    APER1103{"ERROR APER1103: unterminated lexical unit"}
-    APER1104{"ERROR APER1104: A new ambiguity class was found. I cannot continue.\n"
+    APR80990{"ERROR APR80990: Expected one of this file arguments {expected}, got {actual}"}
+    APR81000{"ERROR APR81000: Failed operation in {metavar} file \"{filename}\""}
+    APR81010{"ERROR APR81010: lexical unit has no analyses"}
+    APR81020{"ERROR APR81020: unexpected /, surface form is empty"}
+    APR81030{"ERROR APR81030: unterminated lexical unit"}
+    APR81040{"ERROR APR81040: A new ambiguity class was found. I cannot continue.\n"
              "Word \"{word}\" not found in the dictionary.\n"
              "New ambiguity class: {class}\n"
              "Line Number: {line}\n"
              "Take a look at the dictionary, then retrain."}
-    APER1105{"WARNING APER1105: A new ambiguity class was found. \n"
+    APR61050{"WARNING APR61050: A new ambiguity class was found. \n"
              "Retraining the tagger is necessary so as to take it into account.\n"
              "Word \"{word}\".\n"
              "New ambiguity class: {class}"}
-    APER1106{"ERROR APER1106: reading map"}
-    APER1107{"ERROR APER1107: invalid argument \"{optarg}\" for \"--unigram\"\n"
+    APR81060{"ERROR APR81060: reading map"}
+    APR81070{"ERROR APR81070: invalid argument \"{optarg}\" for \"--unigram\"\n"
              "Valid arguments are:\n"
              "  - \"1\"\n"
              "  - \"2\"\n"
              "  - \"3\""}
-    APER1108{"ERROR APER1108: invalid option -- \"{opt}\""}
-    APER1109{"ERROR APER1109: unexpected \"{opt1}\" following \"{opt2}\""}
-    APER1110{"ERROR APER1110: invalid argument \"{arg}\" for \"{opt}\""}
-    APER1111{"ERROR APER1111: can't convert {metavar} \"{val}\" to unsigned long"}
-    APER1112{"ERROR APER1112: can't convert {metavar} of size 1 to unsigned long"}
-    APER1113{"ERROR APER1113: can't convert {metavar} \"{val}\" to unsigned long, not in unsigned long range"}
-    APER1114{"ERROR APER1114: can't deserialise SERIALISED_TAGGER file \"{file}\" Reason: {what}"}
-    APER1115{"ERROR APER1115: no space in line"}
-    APER1116{"ERROR APER1116: too much data in line"}
-    APER1117{"ERROR APER1117: Batch mode requires exactly two file arguments."}
-    APER1118{"ERROR APER1118: -batch and -{arg} are incompatible switches."}
-    APER1119{"ERROR APER1119: -{arg} switch requires a filename value."}
-    APER1120{"ERROR APER1120: Nonbatch mode requires exactly three file arguments."}
-    APER1121{"ERROR APER1121: Batch file has incorrect format."}
-    APER1122{"ERROR APER1122: data error."}
-    APER1123{"ERROR APER1123: unimplemented."}
-    APER1124{"ERROR APER1124: argument error."}
-    APER1125{"ERROR APER1125: hopelessly bad trail."}
-    APER1126{"ERROR APER1126: unable to parse argument \"{arg}\"."}
-    APER1127{"ERROR APER1127: Empty argument"}
-    APER1128{"ERROR APER1128: Argument -{arg}: integer expected."}
-    APER1129{"ERROR APER1129: Argument -{arg}: value is not allowed."}
-    APER1130{"ERROR APER1130: No value is allowed for argument -{arg}."}
-    APER1131{"ERROR APER1131: Invalid argument: "}
-    APER1132{"WARNING APER1132: conflict in tree"}
-    APER1133{"ERROR APER1133: Incorrect bicorpus file: {records} records in line {line}"}
-    APER1134{"ERROR APER1134: evalString() was called on a NULL element"}
-    APER1135{"ERROR APER1135: You must specify either \"name\" or \"'namefrom\" for the \"chunk\" element"}
-    APER1136{"WARNING APER1136: apertium-transfer: on line {line_number}: {tag} sometimes discards its value."}
-    APER1137{"ERROR APER1137: Transfer::processLet() bad access on pos >= lword"}
-    APER1138{"ERROR APER1138: Transfer::processLet() null access on word[pos]"}
-    APER1139{"ERROR APER1139: On line {line}: processCallMacro() number of arguments >= npar"}
-    APER1140{"ERROR APER1140: On line {line}, column {column}: <clip> missing attribute part."}
-    APER1141{"ERROR APER1141: On line {line}, column {column}: Undefined attr-item {part}."}
-    APER1142{"ERROR APER1142: On line {line}, column {column}: Undefined cat-item {attrib}."}
-    APER1143{"WARNING APER1143: On line {line}: assignment to 'sl' side has no effect."}
-    APER1144{"ERROR APER1144: On line {line}, column {column}: Macro \"{macro}\" defined at least twice"}
-    APER1145{"ERROR APER1145: On line {line}, column {column}: \"{tag}\" already defined."}
-    APER1146{"ERROR APER1146: On line {line}, column {column}: Unexpected \"{tag}\" tag."}
-    APER1147{"ERROR APER1147: On line {line}, column {column}: <label-item> tag expected."}
-    APER1148{"ERROR APER1148: can't serialise without first selecting a model."}
-    APER1149{"ERROR APER1149: can't read tagger without first selecting a model."}
-    APER1150{"ERROR APER1150: can't score analysis without first selecting a model."}
-    APER1151{"ERROR APER1151: can't train model without first selecting a model."}
-    APER1152{"ERROR APER1152: can't multiplyModel() without first selecting a model."}
-    APER1153{"ERROR APER1153: can't train LexicalUnit comprising empty Analysis std::vector."}
-    APER1154{"WARNING APER1154: tf-apertium-spread: Null-flush found, but had open word-bound blanks on line {line}:"}
-    APER1155{"WARNING APER1155: tf-apertium-spread: Too many [[/]] on line  {line}:"}
-    APER1156{"WARNING APER1156: tf-apertium-spread: End of input reached, but had an open blank."}
-    APER1157{"ERROR APER1157: On line {line}, column {column}: unexpected EOF."}
-    APER1158{"ERROR APER1158: Install an UTF-8 locale in your system."}
-    APER1159{"ERROR APER1159: Input seems to be non-UTF-8, please convert to UTF-8 (e.g. with \"iconv -f {encoding} -t utf-8\")."}
-    APER1160{"ERROR APER1160: APERTIUM_TRANSFUSE={APERTIUM_TRANSFUSE} but couldn't find Transfuse's tf-extract in PATH."}
-    APER1161{"ERROR APER1161: Install \"{command}\" command in your system."}
-    APER1162{"ERROR APER1162: {opt} requires an argument."}
-    APER1163{"ERROR APER1163: Cannot compile TM {file}\n"
+    APR81080{"ERROR APR81080: invalid option -- \"{opt}\""}
+    APR81090{"ERROR APR81090: unexpected \"{opt1}\" following \"{opt2}\""}
+    APR81100{"ERROR APR81100: invalid argument \"{arg}\" for \"{opt}\""}
+    APR81110{"ERROR APR81110: can't convert {metavar} \"{val}\" to unsigned long"}
+    APR81120{"ERROR APR81120: can't convert {metavar} of size 1 to unsigned long"}
+    APR81130{"ERROR APR81130: can't convert {metavar} \"{val}\" to unsigned long, not in unsigned long range"}
+    APR81140{"ERROR APR81140: can't deserialise SERIALISED_TAGGER file \"{file}\" Reason: {what}"}
+    APR81150{"ERROR APR81150: no space in line"}
+    APR81160{"ERROR APR81160: too much data in line"}
+    APR81170{"ERROR APR81170: Batch mode requires exactly two file arguments."}
+    APR81180{"ERROR APR81180: -batch and -{arg} are incompatible switches."}
+    APR81190{"ERROR APR81190: -{arg} switch requires a filename value."}
+    APR81200{"ERROR APR81200: Nonbatch mode requires exactly three file arguments."}
+    APR81210{"ERROR APR81210: Batch file has incorrect format."}
+    APR81220{"ERROR APR81220: data error."}
+    APR81230{"ERROR APR81230: unimplemented."}
+    APR81240{"ERROR APR81240: argument error."}
+    APR81250{"ERROR APR81250: hopelessly bad trail."}
+    APR81260{"ERROR APR81260: unable to parse argument \"{arg}\"."}
+    APR81270{"ERROR APR81270: Empty argument"}
+    APR81280{"ERROR APR81280: Argument -{arg}: integer expected."}
+    APR81290{"ERROR APR81290: Argument -{arg}: value is not allowed."}
+    APR81300{"ERROR APR81300: No value is allowed for argument -{arg}."}
+    APR81310{"ERROR APR81310: Invalid argument: "}
+    APR61320{"WARNING APR61320: conflict in tree"}
+    APR81330{"ERROR APR81330: Incorrect bicorpus file: {records} records in line {line}"}
+    APR81340{"ERROR APR81340: evalString() was called on a NULL element"}
+    APR81350{"ERROR APR81350: You must specify either \"name\" or \"'namefrom\" for the \"chunk\" element"}
+    APR61360{"WARNING APR61360: apertium-transfer: on line {line_number}: {tag} sometimes discards its value."}
+    APR81370{"ERROR APR81370: Transfer::processLet() bad access on pos >= lword"}
+    APR81380{"ERROR APR81380: Transfer::processLet() null access on word[pos]"}
+    APR81390{"ERROR APR81390: On line {line}: processCallMacro() number of arguments >= npar"}
+    APR81400{"ERROR APR81400: On line {line}, column {column}: <clip> missing attribute part."}
+    APR81410{"ERROR APR81410: On line {line}, column {column}: Undefined attr-item {part}."}
+    APR81420{"ERROR APR81420: On line {line}, column {column}: Undefined cat-item {attrib}."}
+    APR61430{"WARNING APR61430: On line {line}: assignment to 'sl' side has no effect."}
+    APR81440{"ERROR APR81440: On line {line}, column {column}: Macro \"{macro}\" defined at least twice"}
+    APR81450{"ERROR APR81450: On line {line}, column {column}: \"{tag}\" already defined."}
+    APR81460{"ERROR APR81460: On line {line}, column {column}: Unexpected \"{tag}\" tag."}
+    APR81470{"ERROR APR81470: On line {line}, column {column}: <label-item> tag expected."}
+    APR81480{"ERROR APR81480: can't serialise without first selecting a model."}
+    APR81490{"ERROR APR81490: can't read tagger without first selecting a model."}
+    APR81500{"ERROR APR81500: can't score analysis without first selecting a model."}
+    APR81510{"ERROR APR81510: can't train model without first selecting a model."}
+    APR81520{"ERROR APR81520: can't multiplyModel() without first selecting a model."}
+    APR81530{"ERROR APR81530: can't train LexicalUnit comprising empty Analysis std::vector."}
+    APR61540{"WARNING APR61540: tf-apertium-spread: Null-flush found, but had open word-bound blanks on line {line}:"}
+    APR61550{"WARNING APR61550: tf-apertium-spread: Too many [[/]] on line  {line}:"}
+    APR61560{"WARNING APR61560: tf-apertium-spread: End of input reached, but had an open blank."}
+    APR81570{"ERROR APR81570: On line {line}, column {column}: unexpected EOF."}
+    APR81580{"ERROR APR81580: Install an UTF-8 locale in your system."}
+    APR81590{"ERROR APR81590: Input seems to be non-UTF-8, please convert to UTF-8 (e.g. with \"iconv -f {encoding} -t utf-8\")."}
+    APR81600{"ERROR APR81600: APERTIUM_TRANSFUSE={APERTIUM_TRANSFUSE} but couldn't find Transfuse's tf-extract in PATH."}
+    APR81610{"ERROR APR81610: Install \"{command}\" command in your system."}
+    APR81620{"ERROR APR81620: {opt} requires an argument."}
+    APR81630{"ERROR APR81630: Cannot compile TM {file}\n"
              "   hint: use -o parameter"}
-    APER1164{"ERROR APER1164: Directory \"{directory}\" does not exist."}
-    APER1165{"ERROR APER1165: Mode {mode} does not exist."}
-    APER1166{"ERROR APER1166: Install a ISO-8859-1 compatible locale in your system."}
-    APER1167{"WARNING APER1167: {arg}: Unknown format {format}, treating as \"txt\"."}
-    APER1168{"ERROR APER1168: some unknown failed assertion..."}
-    APER1169{"ERROR APER1169: Align failed for {file}"}
-    APER1170{"ERROR APER1170: On line {line}, column {column}: Expected a boolean expression."}
-    APER1171{"WARNING APER1171: tf-apertium-spread: Null-flush found, but had an open blank on line {line}:"}
+    APR81640{"ERROR APR81640: Directory \"{directory}\" does not exist."}
+    APR81650{"ERROR APR81650: Mode {mode} does not exist."}
+    APR81660{"ERROR APR81660: Install a ISO-8859-1 compatible locale in your system."}
+    APR61670{"WARNING APR61670: {arg}: Unknown format {format}, treating as \"txt\"."}
+    APR81680{"ERROR APR81680: some unknown failed assertion..."}
+    APR81690{"ERROR APR81690: Align failed for {file}"}
+    APR81700{"ERROR APR81700: On line {line}, column {column}: Expected a boolean expression."}
+    APR61710{"WARNING APR61710: tf-apertium-spread: Null-flush found, but had an open blank on line {line}:"}
 }

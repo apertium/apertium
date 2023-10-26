@@ -25,7 +25,7 @@
 
 #include <cstdlib>
 #include <lttoolbox/string_utils.h>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 #include <unicode/ustream.h>
 
 
@@ -37,7 +37,7 @@ bool check_ambclasses;
 
 void check_file(FILE *f, const string& path) {
   if (!f) {
-		I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {path.c_str()}, true);
+		I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {path.c_str()}, true);
   }
 }
 
@@ -56,7 +56,7 @@ void readwords (int corpus_length) {
       int k=tagger_data_hmm.getOutput()[word->get_tags()];
 
       if ((k>=tagger_data_hmm.getM())||(k<0)) {
-		    I18n(APER_I18N_DATA, "apertium").error("APER1025", {"number", "word", "class"},
+		    I18n(APR_I18N_DATA, "apertium").error("APR80250", {"number", "word", "class"},
                                                            {k, icu::UnicodeString(word->get_superficial_form().data()),
                                                            icu::UnicodeString(word->get_string_tags().data())}, false);
       }
@@ -69,12 +69,12 @@ void readwords (int corpus_length) {
 
     word=lexmorfo.get_next_word();
   }
-  cerr << I18n(APER_I18N_DATA, "apertium").format("readed_words", {"number_of_words"}, {nwords}) << "\n";
+  cerr << I18n(APR_I18N_DATA, "apertium").format("readed_words", {"number_of_words"}, {nwords}) << "\n";
 }
 
 
 void help(char *name) {
-  I18n i18n {APER_I18N_DATA, "apertium"};
+  I18n i18n {APR_I18N_DATA, "apertium"};
   cerr<< i18n.format("usage") << ":\n";
   cerr<<name<<" {--tsxfile file.tsx | --probfile file.prob} [--clength <corpus_length>] < file.crp \n\n";
 
@@ -94,7 +94,7 @@ int main(int argc, char* argv[]) {
   int c;
   int option_index=0;
 
-  I18n i18n {APER_I18N_DATA, "apertium"};
+  I18n i18n {APR_I18N_DATA, "apertium"};
   cerr << i18n.format("locale") << ": " << setlocale(LC_ALL,"") << "\n";
 
   cerr << i18n.format("command_line") << ": ";
@@ -122,7 +122,7 @@ int main(int argc, char* argv[]) {
       corpus_length=atoi(optarg);
       if(corpus_length<=0) {
 	      help(argv[0]);
-        I18n(APER_I18N_DATA, "apertium").error("APER1026", {}, {}, true);
+        I18n(APR_I18N_DATA, "apertium").error("APR80260", {}, {}, true);
       }
       break;
     case 'x':
@@ -161,12 +161,12 @@ int main(int argc, char* argv[]) {
 
   if((tsxfile=="") && (probfile=="")) {
     help(argv[0]);
-    I18n(APER_I18N_DATA, "apertium").error("APER1027", {}, {}, true);
+    I18n(APR_I18N_DATA, "apertium").error("APR80270", {}, {}, true);
   }
 
   if((tsxfile!="") && (probfile!="")) {
     help(argv[0]);
-    I18n(APER_I18N_DATA, "apertium").error("APER1028", {}, {}, true);
+    I18n(APR_I18N_DATA, "apertium").error("APR80280", {}, {}, true);
   }
 
   if (tsxfile!="") {

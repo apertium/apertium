@@ -3,7 +3,7 @@
 #include <apertium/exception.h>
 #include <iostream>
 #include <algorithm>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 namespace Apertium {
 namespace SentenceStream {
@@ -112,7 +112,7 @@ TrainingCorpus::TrainingCorpus(Stream &tagged, Stream &untagged,
     //std::cerr << tagged_token.TheLexicalUnit->TheSurfaceForm << " || " << untagged_token.TheLexicalUnit->TheSurfaceForm << "\n";
     if (untagged_token.TheLexicalUnit->TheSurfaceForm != tagged_token.TheLexicalUnit->TheSurfaceForm) {
       if (!skip_on_error) {
-        icu::UnicodeString msg = I18n(APER_I18N_DATA, "apertium").format("APER1097",
+        icu::UnicodeString msg = I18n(APR_I18N_DATA, "apertium").format("APR60970",
           {"tagged_line", "untagged_token", "tagged_token"},
           {std::to_string(tagged_line).c_str(), 
            icu::UnicodeString(untagged_token.TheLexicalUnit->TheSurfaceForm.data()),
@@ -174,7 +174,7 @@ bool TrainingCorpus::contToEndOfSent(Stream &stream, StreamedType token,
 
 void TrainingCorpus::prematureEnd()
 {
-  throw Exception::UnalignedStreams(I18n(APER_I18N_DATA, "apertium").format("APER1098", {}, {}));
+  throw Exception::UnalignedStreams(I18n(APR_I18N_DATA, "apertium").format("APR80980", {}, {}));
 }
 
 void TrainingCorpus::shuffle()

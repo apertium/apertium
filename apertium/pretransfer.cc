@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <string>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 UString storeAndWriteWblank(InputFile& input, UFILE* output)
 {
@@ -19,7 +19,7 @@ UString storeAndWriteWblank(InputFile& input, UFILE* output)
     mychar = input.get();
     if(input.eof())
     {
-      I18n(APER_I18N_DATA, "apertium").error("APER1095", {}, {}, true);
+      I18n(APR_I18N_DATA, "apertium").error("APR80950", {}, {}, true);
     }
 
     content += mychar;
@@ -55,7 +55,7 @@ void readAndWriteUntil(InputFile& input, UFILE* output, int const charcode)
   {
     if(input.eof())
     {
-      I18n(APER_I18N_DATA, "apertium").error("APER1095", {}, {}, true);
+      I18n(APR_I18N_DATA, "apertium").error("APR80950", {}, {}, true);
     }
     u_fputc(mychar, output);
     if(mychar == '\\')
@@ -84,7 +84,7 @@ void procWord(InputFile& input, UFILE* output, bool surface_forms, bool compound
   {
     if(input.eof())
     {
-      I18n(APER_I18N_DATA, "apertium").error("APER1095", {}, {}, true);
+      I18n(APR_I18N_DATA, "apertium").error("APR80950", {}, {}, true);
     }
 
     switch(mychar)
@@ -178,7 +178,7 @@ void processStream(InputFile& input, UFILE* output, bool null_flush, bool surfac
           }
           else
           {
-            I18n(APER_I18N_DATA, "apertium").error("APER1096", {}, {}, true);
+            I18n(APR_I18N_DATA, "apertium").error("APR80960", {}, {}, true);
           }
         }
         else

@@ -28,7 +28,7 @@
 #include <apertium/tsx_reader.h>
 #include <lttoolbox/string_utils.h>
 #include <lttoolbox/lt_locale.h>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 #include <unicode/ustream.h>
 
 using namespace Apertium;
@@ -41,12 +41,12 @@ TTag eos; //End-of-sentence tag
 
 void check_file(FILE *f, const string& path) {
   if (!f) {
-		I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {path.c_str()}, true);
+		I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {path.c_str()}, true);
   }
 }
 
 void help(char *name) {
-	I18n i18n {APER_I18N_DATA, "apertium"};
+	I18n i18n {APR_I18N_DATA, "apertium"};
   cerr<< i18n.format("tagger_apply_new_rules_desc") << "\n\n";
   cerr<< i18n.format("usage") << ":\n";
   cerr<<name<<" --filein filein.prob --fileout fileout.prob --tsxfile file.tsx\n\n";
@@ -124,17 +124,17 @@ int main(int argc, char* argv[]) {
   //Now we check the command line arguments
   if (filein=="") {
     help(argv[0]);
-		I18n(APER_I18N_DATA, "apertium").error("APER1022", {}, {}, true);
+		I18n(APR_I18N_DATA, "apertium").error("APR80220", {}, {}, true);
   }
 
   if (fileout=="") {
     help(argv[0]);
-		I18n(APER_I18N_DATA, "apertium").error("APER1023", {}, {}, true);
+		I18n(APR_I18N_DATA, "apertium").error("APR80230", {}, {}, true);
   }
 
   if (filetsx=="") {
     help(argv[0]);
-		I18n(APER_I18N_DATA, "apertium").error("APER1024", {}, {}, true);
+		I18n(APR_I18N_DATA, "apertium").error("APR80240", {}, {}, true);
   }
 
   FILE *fin, *fout;
@@ -142,7 +142,7 @@ int main(int argc, char* argv[]) {
   fin=fopen(filein.c_str(), "rb");
   check_file(fin, filein);
 
-	I18n i18n {APER_I18N_DATA, "apertium"};
+	I18n i18n {APR_I18N_DATA, "apertium"};
   cerr << i18n.format("reading_from_file", {"file_name"}, {filein.c_str()}) << flush;
   tagger_data_hmm.read(fin);
   fclose(fin);

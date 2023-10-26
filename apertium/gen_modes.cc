@@ -28,7 +28,7 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 using namespace std;
 
@@ -223,7 +223,7 @@ void gen_debug_modes(map<string, pipeline>& modes)
           set_trace_opt(debug);
           modes[debug.name] = debug;
         } else {
-          I18n(APER_I18N_DATA, "apertium").error("APER1036", {"debug_name", "mode_name", "step_num"},
+          I18n(APR_I18N_DATA, "apertium").error("APR60360", {"debug_name", "mode_name", "step_num"},
                                                              {debug.name.c_str(), mode_name.c_str(),
                                                              to_string(i+1).c_str()}, false);
           continue;
@@ -258,7 +258,7 @@ void gen_mode(pipeline& mode, fs::path& file_dir, fs::path& write_dir)
   ofstream f(modefile, std::ios::binary);
 
   if (!f) {
-		I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {modefile.c_str()}, true);
+		I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {modefile.c_str()}, true);
   }
 
   for (size_t i = 0; i < mode.steps.size(); ++i) {
@@ -299,7 +299,7 @@ void gen_modes(map<string, pipeline>& modes, fs::path& install_dir, fs::path& de
 
 int main(int argc, char* argv[])
 {
-  I18n i18n {APER_I18N_DATA, "apertium"};
+  I18n i18n {APR_I18N_DATA, "apertium"};
   LtLocale::tryToSetLocale();
   CLI cli(i18n.format("gen_modes_desc"));
   cli.add_bool_arg('f', "full", i18n.format("full_desc"));
@@ -322,7 +322,7 @@ int main(int argc, char* argv[])
     if (!output_path.empty()) {
       install_dir = output_path;
       if (install_dir == dev_dir) {
-        I18n(APER_I18N_DATA, "apertium").error("APER1037", {"program"}, {basename(argv[0])}, true);
+        I18n(APR_I18N_DATA, "apertium").error("APR80370", {"program"}, {basename(argv[0])}, true);
       }
     }
   }

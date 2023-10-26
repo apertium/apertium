@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <map>
 #include <set>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 namespace Apertium {
 
@@ -187,7 +187,7 @@ bool PerceptronTagger::trainSentence(
         for (analys_it = analyses.begin(); analys_it != analyses.end(); analys_it++) {
           what_ << *analys_it << "\n";
         }
-        icu::UnicodeString msg = I18n(APER_I18N_DATA, "apertium").format("APER1089",
+        icu::UnicodeString msg = I18n(APR_I18N_DATA, "apertium").format("APR80890",
         {"available", "required"}, {what_.str().c_str(),
         icu::UnicodeString(static_cast<UString>(*tagged_tok).data())});
         throw Apertium::Exception::PerceptronTagger::CorrectAnalysisUnavailable(msg);
@@ -259,7 +259,7 @@ void PerceptronTagger::train(
   }
   avg_weights.average();
   if (avail_skipped) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1090",
+    I18n(APR_I18N_DATA, "apertium").error("APR80900",
       {"skipped", "avail_skipped", "total"},
       {to_string(tc.skipped).c_str(), to_string(avail_skipped).c_str(),
        to_string(tc.sentences.size()).c_str()}, false);

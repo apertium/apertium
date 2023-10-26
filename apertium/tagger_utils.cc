@@ -23,7 +23,7 @@
 #include <algorithm>
 #include <climits>
 #include <lttoolbox/string_utils.h>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 
 void tagger_utils::fatal_error (UString const &s) {
@@ -173,7 +173,7 @@ tagger_utils::require_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWor
     else 
       ws << "N/A";
     
-    I18n(APER_I18N_DATA, "apertium").error("APER1104",
+    I18n(APR_I18N_DATA, "apertium").error("APR81040",
       {"word", "class", "line"},
       {icu::UnicodeString(word.get_superficial_form().data()),
        icu::UnicodeString(word.get_string_tags().data()),
@@ -182,7 +182,7 @@ tagger_utils::require_ambiguity_class(TaggerData &td, set<TTag> &tags, TaggerWor
 }
 
 static void _warn_absent_ambiguity_class(TaggerWord &word) {
-  I18n(APER_I18N_DATA, "apertium").error("APER1105",
+  I18n(APR_I18N_DATA, "apertium").error("APR61050",
     {"word", "class"},
     {icu::UnicodeString(word.get_superficial_form().data()),
      icu::UnicodeString(word.get_string_tags().data())}, false);
@@ -232,7 +232,7 @@ istream& operator>> (istream& is, map <int, T> & f) {
     is>>i;     // warning: does not work if both
     is>>f[i];  // lines merged in a single one
   }
-  if (is.bad()) I18n(APER_I18N_DATA, "apertium").error("APER1106", {}, {}, true);
+  if (is.bad()) I18n(APR_I18N_DATA, "apertium").error("APR81060", {}, {}, true);
   return is;
 }
 

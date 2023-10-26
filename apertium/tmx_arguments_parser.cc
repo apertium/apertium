@@ -13,7 +13,7 @@
 #include <lttoolbox/string_utils.h>
 #include <iostream>
 #include <stdlib.h>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 // Could be better.
 bool alphabetic( char c)
@@ -28,16 +28,16 @@ bool Arguments::read( int argc, char **argv )
     std::string p = argv[i];
     if (p.empty() || p[0]!='-')
     {
-      I18n(APER_I18N_DATA, "apertium").error("APER1126", {"arg"}, {p.c_str()}, false);
-      throw I18n(APER_I18N_DATA, "apertium").format("APER1124");
+      I18n(APR_I18N_DATA, "apertium").error("APR81260", {"arg"}, {p.c_str()}, false);
+      throw I18n(APR_I18N_DATA, "apertium").format("APR81240");
       return false;
     }
     p.erase(0,1);
 
     if (p.empty())
     {
-      I18n(APER_I18N_DATA, "apertium").error("APER1127", {}, {}, false);
-      throw I18n(APER_I18N_DATA, "apertium").format("APER1124");
+      I18n(APR_I18N_DATA, "apertium").error("APR81270", {}, {}, false);
+      throw I18n(APR_I18N_DATA, "apertium").format("APR81240");
       return false;
     }
 
@@ -87,8 +87,8 @@ bool Arguments::read( int argc, char **argv, std::vector<const char*>& remains )
 
     if (p.empty())
     {
-      I18n(APER_I18N_DATA, "apertium").error("APER1127", {}, {}, false);
-      throw I18n(APER_I18N_DATA, "apertium").format("APER1124");
+      I18n(APR_I18N_DATA, "apertium").error("APR81270", {}, {}, false);
+      throw I18n(APR_I18N_DATA, "apertium").format("APR81240");
       return false;
     }
 
@@ -131,8 +131,8 @@ bool Arguments::getNumericParam( const std::string& name, int& num )
 
   if (it->second.kind != AnyData::Int)
   {
-    I18n(APER_I18N_DATA, "apertium").error("APER1128", {"arg"}, {name.c_str()}, false);
-    throw I18n(APER_I18N_DATA, "apertium").format("APER1124");
+    I18n(APR_I18N_DATA, "apertium").error("APR81280", {"arg"}, {name.c_str()}, false);
+    throw I18n(APR_I18N_DATA, "apertium").format("APR81240");
   }
 
   num = it->second.dInt;
@@ -150,7 +150,7 @@ bool Arguments::getSwitchConst( const ArgName& name, bool& sw ) const
   }
   else if (! it->second.dString.empty())
   {
-    I18n(APER_I18N_DATA, "apertium").error("APER1129", {"arg"}, {name.c_str()}, false);
+    I18n(APR_I18N_DATA, "apertium").error("APR81290", {"arg"}, {name.c_str()}, false);
     return false;
   }
   else
@@ -180,8 +180,8 @@ bool Arguments::getSwitchCompact( const ArgName& name )
   }
   else
   {
-    I18n(APER_I18N_DATA, "apertium").error("APER1130", {"arg"}, {name.c_str()}, false);
-    throw I18n(APER_I18N_DATA, "apertium").format("APER1124");
+    I18n(APR_I18N_DATA, "apertium").error("APR81300", {"arg"}, {name.c_str()}, false);
+    throw I18n(APR_I18N_DATA, "apertium").format("APR81240");
   }
 }
 
@@ -189,7 +189,7 @@ void Arguments::checkEmptyArgs() const
 {
   if (!empty())
   {
-    I18n(APER_I18N_DATA, "apertium").error("APER1131", {}, {}, false);
+    I18n(APR_I18N_DATA, "apertium").error("APR81310", {}, {}, false);
 
     for ( Arguments::const_iterator it=begin(); it!=end(); ++it )
     {
@@ -200,6 +200,6 @@ void Arguments::checkEmptyArgs() const
     }
     std::cerr << std::endl;
 
-    throw I18n(APER_I18N_DATA, "apertium").format("APER1124");
+    throw I18n(APR_I18N_DATA, "apertium").format("APR81240");
   }
 }

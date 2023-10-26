@@ -26,7 +26,7 @@
 #include <iostream>
 #include <sstream>
 #include <iterator>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 // XML parsing function guideline
 // When control is pass to you, you might need to stepToTag
@@ -113,7 +113,7 @@ void MTXReader::procSetDef()
       std::string str = attrib_str("str"_u);
       vm_set.insert(tag.empty() ? str : tag);
     } else {
-      I18n(APER_I18N_DATA, "apertium").error("APER1064", {"line", "column"},
+      I18n(APR_I18N_DATA, "apertium").error("APR80640", {"line", "column"},
         {xmlTextReaderGetParserLineNumber(reader), xmlTextReaderGetParserColumnNumber(reader)}, true);
     }
     stepToNextTag();
@@ -247,7 +247,7 @@ MTXReader::procIntExpr(bool allow_fail)
       if (allow_fail) {
         return false;
       }
-      I18n(APER_I18N_DATA, "apertium").error("APER1065", {"line", "column"},
+      I18n(APR_I18N_DATA, "apertium").error("APR80650", {"line", "column"},
         {xmlTextReaderGetParserLineNumber(reader), xmlTextReaderGetParserColumnNumber(reader)}, true);
     }
   }
@@ -276,7 +276,7 @@ MTXReader::procStrArrExpr(bool allow_fail)
       if (allow_fail) {
         return false;
       }
-      I18n(APER_I18N_DATA, "apertium").error("APER1066", {"line", "column"},
+      I18n(APR_I18N_DATA, "apertium").error("APR80660", {"line", "column"},
         {xmlTextReaderGetParserLineNumber(reader), xmlTextReaderGetParserColumnNumber(reader)}, true);
     }
     stepToNextTag();
@@ -337,7 +337,7 @@ bool MTXReader::tryProcArg(ExprType expr_type, bool allow_fail)
         return true;
       }
       if (!allow_fail) {
-      I18n(APER_I18N_DATA, "apertium").error("APER1067", {"line", "column", "var"},
+      I18n(APR_I18N_DATA, "apertium").error("APR80670", {"line", "column", "var"},
         {xmlTextReaderGetParserLineNumber(reader),
          xmlTextReaderGetParserColumnNumber(reader), var_name.c_str()}, true);
       }
@@ -354,7 +354,7 @@ bool MTXReader::tryProcVar(VM::StackValueType svt)
     VarNVMap::const_iterator slot_names_it = slot_names.find(var_name);
     if (slot_names_it != slot_names.end()) {
       if (slot_types[slot_names_it->second] != svt) {
-        I18n(APER_I18N_DATA, "apertium").error("APER1068", {"line", "column", "var"},
+        I18n(APR_I18N_DATA, "apertium").error("APR80680", {"line", "column", "var"},
           {xmlTextReaderGetParserLineNumber(reader),
            xmlTextReaderGetParserColumnNumber(reader), var_name.c_str()}, true);
       }
@@ -364,7 +364,7 @@ bool MTXReader::tryProcVar(VM::StackValueType svt)
       return true;
     }
 
-        I18n(APER_I18N_DATA, "apertium").error("APER1069", {"line", "column", "var"},
+        I18n(APR_I18N_DATA, "apertium").error("APR80690", {"line", "column", "var"},
           {xmlTextReaderGetParserLineNumber(reader),
            xmlTextReaderGetParserColumnNumber(reader), var_name.c_str()}, true);
   } else if (!in_global_defn && name == "macro"_u) {
@@ -372,13 +372,13 @@ bool MTXReader::tryProcVar(VM::StackValueType svt)
     std::string var_name = attrib_str("name"_u);
     VarNVMap::const_iterator template_name_it = template_slot_names.find(var_name);
     if (template_name_it == template_slot_names.end()) {
-        I18n(APER_I18N_DATA, "apertium").error("APER1070", {"line", "column", "var"},
+        I18n(APR_I18N_DATA, "apertium").error("APR80700", {"line", "column", "var"},
           {xmlTextReaderGetParserLineNumber(reader),
            xmlTextReaderGetParserColumnNumber(reader), var_name.c_str()}, true);
     }
     size_t templ_idx = template_name_it->second;
     if (template_slot_types[templ_idx] != svt) {
-        I18n(APER_I18N_DATA, "apertium").error("APER1071", {"line", "column", "var"},
+        I18n(APR_I18N_DATA, "apertium").error("APR80710", {"line", "column", "var"},
           {xmlTextReaderGetParserLineNumber(reader),
            xmlTextReaderGetParserColumnNumber(reader), var_name.c_str()}, true);
     }
@@ -471,7 +471,7 @@ MTXReader::procStrExpr(bool allow_fail)
       if (allow_fail) {
         return false;
       }
-      I18n(APER_I18N_DATA, "apertium").error("APER1072", {"line", "column"},
+      I18n(APR_I18N_DATA, "apertium").error("APR80720", {"line", "column"},
         {xmlTextReaderGetParserLineNumber(reader),
          xmlTextReaderGetParserColumnNumber(reader)}, true);
     }
@@ -574,7 +574,7 @@ MTXReader::procBoolExpr(bool allow_fail)
       if (allow_fail) {
         return false;
       }
-      I18n(APER_I18N_DATA, "apertium").error("APER1170", {"line", "column"},
+      I18n(APR_I18N_DATA, "apertium").error("APR81700", {"line", "column"},
         {xmlTextReaderGetParserLineNumber(reader),
          xmlTextReaderGetParserColumnNumber(reader)}, true);
     }
@@ -618,7 +618,7 @@ MTXReader::procAddrExpr()
       emitOpcode(VM::CLAMPADDR);
       stepToNextTag();
     } else {
-      I18n(APER_I18N_DATA, "apertium").error("APER1073", {"line", "column"},
+      I18n(APR_I18N_DATA, "apertium").error("APR80730", {"line", "column"},
         {xmlTextReaderGetParserLineNumber(reader),
          xmlTextReaderGetParserColumnNumber(reader)}, true);
     }
@@ -642,7 +642,7 @@ MTXReader::procWordoidArrExpr(bool allow_fail)
       if (allow_fail) {
         return false;
       }
-      I18n(APER_I18N_DATA, "apertium").error("APER1074", {"line", "column"},
+      I18n(APR_I18N_DATA, "apertium").error("APR80740", {"line", "column"},
         {xmlTextReaderGetParserLineNumber(reader),
          xmlTextReaderGetParserColumnNumber(reader)}, true);
     }
@@ -666,7 +666,7 @@ MTXReader::procWordoidExpr(bool allow_fail)
       if (allow_fail) {
         return false;
       }
-      I18n(APER_I18N_DATA, "apertium").error("APER1075", {"line", "column"},
+      I18n(APR_I18N_DATA, "apertium").error("APR80750", {"line", "column"},
         {xmlTextReaderGetParserLineNumber(reader),
          xmlTextReaderGetParserColumnNumber(reader)}, true);
     }
@@ -700,7 +700,7 @@ MTXReader::getConstRef(
     exists = true;
     VarNVMap::iterator sit = const_map.find(const_name);
     if (sit == const_map.end()) {
-        I18n(APER_I18N_DATA, "apertium").error("APER1078", {"line", "column", "what", "name"},
+        I18n(APR_I18N_DATA, "apertium").error("APR80780", {"line", "column", "what", "name"},
           {xmlTextReaderGetParserLineNumber(reader),
            xmlTextReaderGetParserColumnNumber(reader), icu::UnicodeString(what.data()), const_name.c_str()}, true);
     }
@@ -727,7 +727,7 @@ MTXReader::getSetRef()
   bool has_attr;
   size_t set_ref = getSetRef(has_attr);
   if (!has_attr) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1076", {"line", "column"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80760", {"line", "column"},
       {xmlTextReaderGetParserLineNumber(reader),
        xmlTextReaderGetParserColumnNumber(reader)}, true);
   }
@@ -746,7 +746,7 @@ MTXReader::getStrRef()
   bool has_attr;
   size_t str_ref = getStrRef(has_attr);
   if (!has_attr) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1077", {"line", "column"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80770", {"line", "column"},
       {xmlTextReaderGetParserLineNumber(reader),
        xmlTextReaderGetParserColumnNumber(reader)}, true);
   }
@@ -780,7 +780,7 @@ MTXReader::getInt(const UString& attr_name)
   bool has_attr;
   int i = getInt(attr_name, has_attr);
   if (!has_attr) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1077", {"line", "column"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80770", {"line", "column"},
       {xmlTextReaderGetParserLineNumber(reader),
        xmlTextReaderGetParserColumnNumber(reader)}, true);
   }
@@ -801,7 +801,7 @@ MTXReader::emitAttr(
   bool has_attr = false;
   GetT val = (this->*getter)(has_attr);
   if (!has_attr) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1079", {"line", "column", "what"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80790", {"line", "column", "what"},
       {xmlTextReaderGetParserLineNumber(reader),
        xmlTextReaderGetParserColumnNumber(reader), icu::UnicodeString(what.data())}, true);
   }
@@ -843,7 +843,7 @@ MTXReader::procInst()
   val = getInt(has_int_lit);
   int num_operands = has_set_ref + has_str_ref + has_int_lit;
   if (num_operands > 1) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1080", {"line", "column"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80800", {"line", "column"},
       {xmlTextReaderGetParserLineNumber(reader),
        xmlTextReaderGetParserColumnNumber(reader)}, true);
   } else if (num_operands == 1) {
@@ -873,7 +873,7 @@ MTXReader::procOut()
     has_expr = true;
   }
   if (!has_expr) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1081", {"line", "column"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80810", {"line", "column"},
       {xmlTextReaderGetParserLineNumber(reader),
        xmlTextReaderGetParserColumnNumber(reader)}, true);
   }
@@ -1006,7 +1006,7 @@ MTXReader::procForEach(ExprType expr_type)
 {
   std::string var_name = attrib_str("as"_u);
   if (var_name.empty()) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1082", {"line", "column"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80820", {"line", "column"},
       {xmlTextReaderGetParserLineNumber(reader),
        xmlTextReaderGetParserColumnNumber(reader)}, true);
   }
@@ -1023,7 +1023,7 @@ MTXReader::procForEach(ExprType expr_type)
     has_expr = true;
   }
   if (!has_expr) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1083", {"line", "column"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80830", {"line", "column"},
       {xmlTextReaderGetParserLineNumber(reader),
        xmlTextReaderGetParserColumnNumber(reader)}, true);
   }
@@ -1077,7 +1077,7 @@ MTXReader::procVoidExpr(bool allow_fail)
     if (allow_fail) {
       return false;
     }
-    I18n(APER_I18N_DATA, "apertium").error("APER1084", {"line", "column"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80840", {"line", "column"},
       {xmlTextReaderGetParserLineNumber(reader),
        xmlTextReaderGetParserColumnNumber(reader)}, true);
   }
@@ -1095,7 +1095,7 @@ MTXReader::procDefMacro()
 
   std::string var_name = attrib_str("as"_u);
   if (var_name.empty()) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1085", {"line", "column"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80850", {"line", "column"},
       {xmlTextReaderGetParserLineNumber(reader),
        xmlTextReaderGetParserColumnNumber(reader)}, true);
   }
@@ -1141,7 +1141,7 @@ MTXReader::procDefMacro()
     has_expr = true;
   }
   if (!has_expr) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1086", {"line", "column"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80860", {"line", "column"},
       {xmlTextReaderGetParserLineNumber(reader),
        xmlTextReaderGetParserColumnNumber(reader)}, true);
   }
@@ -1200,7 +1200,7 @@ MTXReader::parse()
     stepToNextTag();
   }
   if (name != "metatag"_u) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1087", {"line", "column"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80870", {"line", "column"},
       {xmlTextReaderGetParserLineNumber(reader),
        xmlTextReaderGetParserColumnNumber(reader)}, true);
   }

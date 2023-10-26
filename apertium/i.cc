@@ -16,7 +16,7 @@
 #include "i.h"
 
 #include "exception.h"
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 #include <unicode/ustring.h>
 
 namespace Apertium {
@@ -28,17 +28,17 @@ i::i() {}
 
 i::i(const Analysis &Analysis_) : TheTags() {
   if (Analysis_.TheMorphemes.empty())
-    throw Exception::Analysis::TheMorphemes_empty(I18n(APER_I18N_DATA, "apertium").format("APER1013", {"letter"}, {"i"}));
+    throw Exception::Analysis::TheMorphemes_empty(I18n(APR_I18N_DATA, "apertium").format("APR80130", {"letter"}, {"i"}));
 
   if (Analysis_.TheMorphemes.front().TheTags.empty())
-    throw Exception::Morpheme::TheTags_empty(I18n(APER_I18N_DATA, "apertium").format("APER1046", {"letter"}, {"i"}));
+    throw Exception::Morpheme::TheTags_empty(I18n(APR_I18N_DATA, "apertium").format("APR80460", {"letter"}, {"i"}));
 
   TheTags = Analysis_.TheMorphemes.front().TheTags;
 }
 
 i::i(const Morpheme &Morpheme_) : TheTags() {
   if (Morpheme_.TheTags.empty())
-    throw Exception::Morpheme::TheTags_empty(I18n(APER_I18N_DATA, "apertium").format("APER1045", {"letter"}, {"i"}));
+    throw Exception::Morpheme::TheTags_empty(I18n(APR_I18N_DATA, "apertium").format("APR80450", {"letter"}, {"i"}));
 
   TheTags = Morpheme_.TheTags;
 }

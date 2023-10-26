@@ -16,7 +16,7 @@
 #include <vector>
 #include <set>
 #include <iostream>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 namespace TMXAligner
 {
@@ -166,7 +166,7 @@ void SubsetLookup<Atom, Identifier>::add( const Atoms& words, const Identifier& 
   else
   {
     if (DicTree<Atom, Identifier>::WarnOnConflict)
-      I18n(APER_I18N_DATA, "apertium").error("APER1132", {}, {}, false);
+      I18n(APR_I18N_DATA, "apertium").error("APR61320", {}, {}, false);
   }
 }
 

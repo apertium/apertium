@@ -19,11 +19,11 @@
 #include <lttoolbox/cli.h>
 #include <lttoolbox/file_utils.h>
 #include <lttoolbox/lt_locale.h>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 int main(int argc, char** argv)
 {
-  I18n i18n {APER_I18N_DATA, "apertium"};
+  I18n i18n {APR_I18N_DATA, "apertium"};
   LtLocale::tryToSetLocale();
   CLI cli(i18n.format("compile_caps_desc"));
   cli.add_bool_arg('h', "help", i18n.format("help_desc"));

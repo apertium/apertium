@@ -29,7 +29,7 @@
 #include <unistd.h>
 #include "apertium_config.h"
 #include <apertium/unlocked_cstdio.h>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 #ifdef _MSC_VER
 #include <io.h>
@@ -134,18 +134,18 @@ TMXBuilder::check(string const &file1, string const &file2, bool lazy)
   bool bf2 = f2.open(file2.c_str());
   if(!bf1 && !bf2)
   {
-		I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {file1.c_str()}, false);
-		I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {file2.c_str()}, false);
+		I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {file1.c_str()}, false);
+		I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {file2.c_str()}, false);
     return false;
   }
   else if(!bf1)
   {
-		I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {file1.c_str()}, false);
+		I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {file1.c_str()}, false);
     return false;
   }
   else if(!bf2)
   {
-		I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {file2.c_str()}, false);
+		I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {file2.c_str()}, false);
     return false;
   }
 
@@ -329,7 +329,7 @@ TMXBuilder::generate(string const &file1, string const &file2,
     output = u_fopen(outfile.c_str(), "w", NULL, NULL);
     if(!output)
     {
-		  I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {outfile.c_str()}, true);
+		  I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {outfile.c_str()}, true);
     }
   }
 
@@ -925,7 +925,7 @@ TMXBuilder::setTranslation(string const &filename)
   freference = fopen(filename.c_str(), "r");
   if(!freference)
   {
-		I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {filename.c_str()}, false);
+		I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {filename.c_str()}, false);
     freference = NULL;
   }
 

@@ -16,7 +16,7 @@
 #include "lemma.h"
 
 #include "exception.h"
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 namespace Apertium {
 bool operator==(const Lemma &a_, const Lemma &b_) {
@@ -32,18 +32,18 @@ Lemma::Lemma() : TheLemma() {}
 Lemma::Lemma(const Analysis &Analysis_) : TheLemma() {
   if (Analysis_.TheMorphemes.empty())
     throw Exception::Analysis::TheMorphemes_empty(
-        I18n(APER_I18N_DATA, "apertium").format("APER1013", {"letter"}, {"Lemma"}));
+        I18n(APR_I18N_DATA, "apertium").format("APR80130", {"letter"}, {"Lemma"}));
 
   if (Analysis_.TheMorphemes.front().TheLemma.empty())
     throw Exception::Morpheme::TheLemma_empty(
-        I18n(APER_I18N_DATA, "apertium").format("APER1054"));
+        I18n(APR_I18N_DATA, "apertium").format("APR80540"));
 
   TheLemma = Analysis_.TheMorphemes.front().TheLemma;
 }
 
 Lemma::Lemma(const Morpheme &Morpheme_) : TheLemma() {
   if (Morpheme_.TheLemma.empty())
-    throw Exception::Morpheme::TheLemma_empty(I18n(APER_I18N_DATA, "apertium").format("APER1055"));
+    throw Exception::Morpheme::TheLemma_empty(I18n(APR_I18N_DATA, "apertium").format("APR80550"));
 
   TheLemma = Morpheme_.TheLemma;
 }

@@ -28,14 +28,14 @@
 #include <apertium/pretransfer.h>
 #include <lttoolbox/string_utils.h>
 #include <lttoolbox/lt_locale.h>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 #include <unicode/ustream.h>
 
 using namespace std;
 
 void usage(char *progname)
 {
-  I18n i18n {APER_I18N_DATA, "apertium"};
+  I18n i18n {APR_I18N_DATA, "apertium"};
   cerr << i18n.format("usage") << ": " << basename(progname) << " [input_file [output_file]]" << endl;
   cerr << "  -n         " << i18n.format("no_surface_forms_desc") << endl;
   cerr << "  -e         " << i18n.format("compounds_desc") << endl;
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 
   if(input.eof())
   {
-    I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {argv[1]}, true);
+    I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {argv[1]}, true);
   }
 
   processStream(input, output, null_flush, surface_forms, compound_sep);

@@ -43,7 +43,7 @@
 #include <sstream>
 #include <string>
 #include <unistd.h>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 namespace Apertium {
 using namespace ShellUtils;
@@ -119,7 +119,7 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
 
         {
           throw Exception::apertium_tagger::InvalidArgument(
-            I18n(APER_I18N_DATA, "apertium").format("APER1107", {"optarg"}, {optarg}));
+            I18n(APR_I18N_DATA, "apertium").format("APR81070", {"optarg"}, {optarg}));
         }
         break;
       case 'w':
@@ -210,7 +210,7 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
       switch (*TheFunctionTypeType) {
       case Unigram: {
         throw Exception::apertium_tagger::InvalidOption(
-          I18n(APER_I18N_DATA, "apertium").format("APER1108", {"opt"}, {"u"}));
+          I18n(APR_I18N_DATA, "apertium").format("APR81080", {"opt"}, {"u"}));
       }
       case SlidingWindow: {
         LSWPoST SlidingWindowTagger_(TheFlags);
@@ -248,7 +248,7 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
       } break;
       case SlidingWindow: {
         throw Exception::apertium_tagger::InvalidOption(
-          I18n(APER_I18N_DATA, "apertium").format("APER1108", {"opt"}, {"w"}));
+          I18n(APR_I18N_DATA, "apertium").format("APR81080", {"opt"}, {"w"}));
       } break;
       case Perceptron: {
         PerceptronTagger perceptron(TheFlags);
@@ -269,7 +269,7 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
       switch (*TheFunctionTypeType) {
       case Unigram: {
         throw Exception::apertium_tagger::InvalidOption(
-          I18n(APER_I18N_DATA, "apertium").format("APER1108", {"opt"}, {"u"}));
+          I18n(APR_I18N_DATA, "apertium").format("APR81080", {"opt"}, {"u"}));
       }
       case SlidingWindow: {
         LSWPoST SlidingWindowTagger_(TheFlags);
@@ -292,7 +292,7 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
 apertium_tagger::~apertium_tagger() {}
 
 void apertium_tagger::help() {
-  I18n i18n {APER_I18N_DATA, "apertium"};
+  I18n i18n {APR_I18N_DATA, "apertium"};
 
   std::cerr <<
 "Usage: apertium-tagger [OPTION]... -g SERIALISED_TAGGER                        \\\n"
@@ -446,7 +446,7 @@ void apertium_tagger::flagOptionCase(
     void (TaggerFlags::*SetFlag)(const bool &)) {
   if ((TheFlags.*GetFlag)()) {
     throw Exception::apertium_tagger::UnexpectedFlagOption(
-      I18n(APER_I18N_DATA, "apertium").format("APER1109", {"opt1", "opt2"}, 
+      I18n(APR_I18N_DATA, "apertium").format("APR81090", {"opt1", "opt2"}, 
         {option_string().c_str(), option_string().c_str()}));
   }
 
@@ -461,7 +461,7 @@ void apertium_tagger::functionTypeTypeOptionCase(
     const FunctionTypeType &FunctionTypeType_) {
   if (FunctionTypeTypeOption_indexptr) {
     throw Exception::apertium_tagger::UnexpectedFunctionTypeTypeOption(
-      I18n(APER_I18N_DATA, "apertium").format("APER1109", {"opt1", "opt2"}, 
+      I18n(APR_I18N_DATA, "apertium").format("APR81090", {"opt1", "opt2"}, 
         {option_string().c_str(), option_string(*FunctionTypeTypeOption_indexptr).c_str()}));
   }
 
@@ -473,7 +473,7 @@ void apertium_tagger::functionTypeOptionCase(
     const FunctionType &FunctionType_) {
   if (FunctionTypeOption_indexptr) {
     throw Exception::apertium_tagger::UnexpectedFunctionTypeOption(
-      I18n(APER_I18N_DATA, "apertium").format("APER1109", {"opt1", "opt2"}, 
+      I18n(APR_I18N_DATA, "apertium").format("APR81090", {"opt1", "opt2"}, 
         {option_string().c_str(), option_string(*FunctionTypeOption_indexptr).c_str()}));
   }
 
@@ -486,7 +486,7 @@ void apertium_tagger::getIterationsArgument() {
     TheFunctionTypeOptionArgument = optarg_unsigned_long("ITERATIONS");
   } catch (const ExceptionType &ExceptionType_) {
     throw Exception::apertium_tagger::InvalidArgument(
-      I18n(APER_I18N_DATA, "apertium").format("APER1110", {"arg", "opt"},
+      I18n(APR_I18N_DATA, "apertium").format("APR81100", {"arg", "opt"},
         {optarg, option_string().c_str()}));
   }
 }
@@ -498,17 +498,17 @@ static unsigned long parse_unsigned_long(const char *metavar, const char *val) {
 
   if (*str_end != '\0') {
     throw Exception::apertium_tagger::str_end_not_eq_NULL(
-      I18n(APER_I18N_DATA, "apertium").format("APER1111", {"metavar", "val"}, {metavar, val}));
+      I18n(APR_I18N_DATA, "apertium").format("APR81110", {"metavar", "val"}, {metavar, val}));
   }
 
   if (*val == '\0') {
     throw Exception::apertium_tagger::optarg_eq_NULL(
-      I18n(APER_I18N_DATA, "apertium").format("APER1112", {"metavar"}, {metavar}));
+      I18n(APR_I18N_DATA, "apertium").format("APR81120", {"metavar"}, {metavar}));
   }
 
   if (errno == ERANGE) {
     throw Exception::apertium_tagger::ERANGE_(
-      I18n(APER_I18N_DATA, "apertium").format("APER1113", {"metavar", "val"}, {metavar, val}));
+      I18n(APR_I18N_DATA, "apertium").format("APR81130", {"metavar", "val"}, {metavar, val}));
   }
 
   return N_0;
@@ -577,7 +577,7 @@ void apertium_tagger::g_StreamTagger(StreamTagger &StreamTagger_) {
     StreamTagger_.deserialise(SerialisedAnalysisFrequencies);
   } catch (const ExceptionType &ExceptionType_) {
     throw Exception::apertium_tagger::deserialise(
-      I18n(APER_I18N_DATA, "apertium").format("APER1114", {"file", "what"},
+      I18n(APR_I18N_DATA, "apertium").format("APR81140", {"file", "what"},
         {argv[optind], ExceptionType_.what()}));
   }
 
@@ -606,7 +606,7 @@ void apertium_tagger::s_StreamTaggerTrainer(
 
   if (TheFunctionTypeOptionArgument != 0 && *TheFunctionTypeType != Perceptron) {
     throw Exception::apertium_tagger::InvalidArgument(
-      I18n(APER_I18N_DATA, "apertium").format("APER1110", {"arg", "opt"},
+      I18n(APR_I18N_DATA, "apertium").format("APR81100", {"arg", "opt"},
         {to_string(TheFunctionTypeOptionArgument).c_str(), "--supervised"}));
   }
 

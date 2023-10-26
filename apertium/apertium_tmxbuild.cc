@@ -27,14 +27,14 @@
 #include <lttoolbox/string_utils.h>
 #include "apertium_config.h"
 #include <apertium/unlocked_cstdio.h>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 #include <unicode/ustream.h>
 
 using namespace std;
 
 void usage(char *progname)
 {
-  I18n i18n {APER_I18N_DATA, "apertium"};
+  I18n i18n {APR_I18N_DATA, "apertium"};
   cerr << i18n.format("usage") << ": " << basename(progname)
        << " [options] code1 code2 doc1 doc2 [output_file]" << endl;
   cerr << i18n.format("options") << ":" << endl;

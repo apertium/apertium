@@ -20,7 +20,7 @@
 #include <lttoolbox/string_utils.h>
 
 #include <iostream>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 using namespace std;
 
@@ -32,18 +32,18 @@ Interchunk::checkIndex(xmlNode *element, int index, int limit)
 {
   if(index >= limit)
   {
-    I18n(APER_I18N_DATA, "apertium").error("APER1047", {"file_name", "line_number"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80470", {"file_name", "line_number"},
                                                        {(char *) doc->URL, element->line}, false);
     return false;
   }
   if(index < 0) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1048", {"file_name", "line_number"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80480", {"file_name", "line_number"},
                                                        {(char *) doc->URL, element->line}, false);
     return false;
   }
   if(word[index] == 0)
   {
-    I18n(APER_I18N_DATA, "apertium").error("APER1049", {"file_name", "line_number"},
+    I18n(APR_I18N_DATA, "apertium").error("APR80490", {"file_name", "line_number"},
                                                        {(char *) doc->URL, element->line}, false);
     return false;
   }
@@ -133,20 +133,20 @@ Interchunk::processBlank(xmlNode* element)
 void
 Interchunk::processLuCount(xmlNode* element)
 {
-  I18n(APER_I18N_DATA, "apertium").error("APER1050", {"expression"}, {(char*)element->name}, true);
+  I18n(APR_I18N_DATA, "apertium").error("APR80500", {"expression"}, {(char*)element->name}, true);
 }
 
 UString
 Interchunk::processLu(xmlNode* element)
 {
-  I18n(APER_I18N_DATA, "apertium").error("APER1050", {"expression"}, {(char*)element->name}, true);
+  I18n(APR_I18N_DATA, "apertium").error("APR80500", {"expression"}, {(char*)element->name}, true);
   return ""_u; // make the type checker happy
 }
 
 UString
 Interchunk::processMlu(xmlNode* element)
 {
-  I18n(APER_I18N_DATA, "apertium").error("APER1050", {"expression"}, {(char*)element->name}, true);
+  I18n(APR_I18N_DATA, "apertium").error("APR80500", {"expression"}, {(char*)element->name}, true);
   return ""_u; // make the type checker happy
 }
 
@@ -224,7 +224,7 @@ Interchunk::processLet(xmlNode *localroot)
         bool match = word[ti.getPos()]->setChunkPart(attr_items[ti.getContent()], evalString(rightSide));
         if(!match && trace)
         {
-          I18n(APER_I18N_DATA, "apertium").error("APER1053", {"line", "tag"}, {localroot->line, "<let>"}, false);
+          I18n(APR_I18N_DATA, "apertium").error("APR60530", {"line", "tag"}, {localroot->line, "<let>"}, false);
         }
       }
         return;
@@ -261,7 +261,7 @@ Interchunk::processLet(xmlNode *localroot)
 					 evalString(rightSide));
     if(!match && trace)
     {
-      I18n(APER_I18N_DATA, "apertium").error("APER1053", {"line", "tag"}, {localroot->line, "<let>"}, false);
+      I18n(APR_I18N_DATA, "apertium").error("APR60530", {"line", "tag"}, {localroot->line, "<let>"}, false);
     }
     evalStringCache[leftSide] = TransferInstr(ti_clip_tl,
 					      part,
@@ -306,7 +306,7 @@ Interchunk::processModifyCase(xmlNode *localroot)
     bool match = word[pos]->setChunkPart(attr_items[part], result);
     if(!match && trace)
     {
-      I18n(APER_I18N_DATA, "apertium").error("APER1053", {"tag", "line"}, {"<modify-case>", localroot->line}, false);
+      I18n(APR_I18N_DATA, "apertium").error("APR60530", {"tag", "line"}, {"<modify-case>", localroot->line}, false);
     }
   }
   else if(!xmlStrcmp(leftSide->name, (const xmlChar *) "var"))
@@ -533,7 +533,7 @@ Interchunk::interchunk(InputFile& in, UFILE* out)
       {
         
         cerr << endl
-             << I18n(APER_I18N_DATA, "apertium").format("interchunk_rule_line", {"value", "line"},
+             << I18n(APR_I18N_DATA, "apertium").format("interchunk_rule_line", {"value", "line"},
                                                                               {val, to_string(lastrule_line).c_str()});
         for (auto& it : tmpword) {
           cerr << " " << *it;
@@ -569,7 +569,7 @@ Interchunk::interchunk(InputFile& in, UFILE* out)
       break;
 
     default:
-      I18n(APER_I18N_DATA, "apertium").error("APER1051", {}, {}, false);
+      I18n(APR_I18N_DATA, "apertium").error("APR80510", {}, {}, false);
       return;
     }
   }

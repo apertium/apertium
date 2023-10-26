@@ -19,7 +19,7 @@
 #include <map>
 #include <set>
 #include <algorithm>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 // Copypaste-elve. TODO Elhelyezni.
 #define massert(e) if (!(e)) { std::cerr << #e << " failed" << std::endl; throw "assert"; }
@@ -315,7 +315,7 @@ void trelliToLadder( const TrelliMatrix& trellis, Trail& bestTrail )
     bestTrail.clear();
     bestTrail.push_back(std::make_pair(huBookSize,enBookSize));
     bestTrail.push_back(std::make_pair(0,0));
-    I18n(APER_I18N_DATA, "apertium").error("APER1125", {}, {}, false);
+    I18n(APR_I18N_DATA, "apertium").error("APR81250", {}, {}, false);
   }
 
   std::reverse(bestTrail.begin(),  bestTrail.end()  );

@@ -11,7 +11,7 @@
 *************************************************************************/
 #include <apertium/tmx_aligner_tool.h>
 #include <lttoolbox/string_utils.h>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 #include <unicode/ustream.h>
 
 namespace TMXAligner
@@ -30,16 +30,16 @@ void readTrailOrBisentenceList( std::istream& is, Trail& trail )
     is >> huPos;
     if (is.peek()!=' ')
     {
-      I18n(APER_I18N_DATA, "apertium").error("APER1115", {}, {}, false);
-      throw I18n(APER_I18N_DATA, "apertium").format("APER1122");
+      I18n(APR_I18N_DATA, "apertium").error("APR81150", {}, {}, false);
+      throw I18n(APR_I18N_DATA, "apertium").format("APR81220");
     }
     is.ignore();
 
     is >> enPos;
     if (is.peek()!='\n')
     {
-      I18n(APER_I18N_DATA, "apertium").error("APER1116", {}, {}, false);
-      throw I18n(APER_I18N_DATA, "apertium").format("APER1122");
+      I18n(APR_I18N_DATA, "apertium").error("APR81160", {}, {}, false);
+      throw I18n(APR_I18N_DATA, "apertium").format("APR81220");
     }
     is.ignore();
 
@@ -238,7 +238,7 @@ double alignerToolWithObjects( const DictionaryItems& dictionary,
 
           SentenceList huBisentences,enBisentences;
 
-          throw I18n(APER_I18N_DATA, "apertium").format("APER1123");
+          throw I18n(APR_I18N_DATA, "apertium").format("APR81230");
 //          std::cerr << "Plausible bisentences filtered." << std::endl;
 
           modelOne.build(huBisentences,enBisentences);
@@ -476,7 +476,7 @@ void fillPercentParameter( Arguments& args, const std::string& argName, double& 
 
 void main_alignerToolUsage()
 {
-  std::cerr << I18n(APER_I18N_DATA, "apertium").format("tmx_aligner_tool_desc");
+  std::cerr << I18n(APR_I18N_DATA, "apertium").format("tmx_aligner_tool_desc");
 }
 
 int main_alignerTool(int argC, char* argV[])
@@ -526,11 +526,11 @@ int main_alignerTool(int argC, char* argV[])
 
     if (batchMode && (remains.size()!=2) )
     {
-      I18n(APER_I18N_DATA, "apertium").error("APER1117", {}, {}, false);
+      I18n(APR_I18N_DATA, "apertium").error("APR81170", {}, {}, false);
       std::cerr << std::endl;
 
       main_alignerToolUsage();
-      throw I18n(APER_I18N_DATA, "apertium").format("APER1124");
+      throw I18n(APR_I18N_DATA, "apertium").format("APR81240");
     }
 
     std::string handArgumentname = "hand";
@@ -538,8 +538,8 @@ int main_alignerTool(int argC, char* argV[])
     {
       if (batchMode)
       {
-      I18n(APER_I18N_DATA, "apertium").error("APER1118", {"arg"}, {handArgumentname.c_str()}, false);
-        throw I18n(APER_I18N_DATA, "apertium").format("APER1124");
+      I18n(APR_I18N_DATA, "apertium").error("APR81180", {"arg"}, {handArgumentname.c_str()}, false);
+        throw I18n(APR_I18N_DATA, "apertium").format("APR81240");
       }
       else
       {
@@ -548,8 +548,8 @@ int main_alignerTool(int argC, char* argV[])
 
         if (alignParameters.handAlignFilename.empty())
         {
-          I18n(APER_I18N_DATA, "apertium").error("APER1119", {"arg"}, {handArgumentname.c_str()}, false);
-          throw I18n(APER_I18N_DATA, "apertium").format("APER1124");
+          I18n(APR_I18N_DATA, "apertium").error("APR81190", {"arg"}, {handArgumentname.c_str()}, false);
+          throw I18n(APR_I18N_DATA, "apertium").format("APR81240");
         }
       }
     }
@@ -559,8 +559,8 @@ int main_alignerTool(int argC, char* argV[])
     {
       if (batchMode)
       {
-        I18n(APER_I18N_DATA, "apertium").error("APER1118", {"arg"}, {autoDictDumpArgumentname.c_str()}, false);
-        throw I18n(APER_I18N_DATA, "apertium").format("APER1124");
+        I18n(APR_I18N_DATA, "apertium").error("APR81180", {"arg"}, {autoDictDumpArgumentname.c_str()}, false);
+        throw I18n(APR_I18N_DATA, "apertium").format("APR81240");
       }
       else
       {
@@ -569,19 +569,19 @@ int main_alignerTool(int argC, char* argV[])
 
         if (alignParameters.autoDictionaryDumpFilename.empty())
         {
-          I18n(APER_I18N_DATA, "apertium").error("APER1119", {"arg"}, {autoDictDumpArgumentname.c_str()}, false);
-          throw I18n(APER_I18N_DATA, "apertium").format("APER1124");
+          I18n(APR_I18N_DATA, "apertium").error("APR81190", {"arg"}, {autoDictDumpArgumentname.c_str()}, false);
+          throw I18n(APR_I18N_DATA, "apertium").format("APR81240");
         }
       }
     }
 
     if (!batchMode && (remains.size()!=3) )
     {
-      I18n(APER_I18N_DATA, "apertium").error("APER1120", {}, {}, false);
+      I18n(APR_I18N_DATA, "apertium").error("APR81200", {}, {}, false);
       std::cerr << std::endl;
 
       main_alignerToolUsage();
-      throw I18n(APER_I18N_DATA, "apertium").format("APER1124");
+      throw I18n(APR_I18N_DATA, "apertium").format("APR81240");
     }
 
     try
@@ -593,7 +593,7 @@ int main_alignerTool(int argC, char* argV[])
       std::cerr << std::endl;
 
       main_alignerToolUsage();
-      throw I18n(APER_I18N_DATA, "apertium").format("APER1124");
+      throw I18n(APR_I18N_DATA, "apertium").format("APR81240");
     }
 
 //    std::cerr << "Reading dictionary..." << std::endl;
@@ -617,8 +617,8 @@ int main_alignerTool(int argC, char* argV[])
 
         if (words.size()!=3)
         {
-          I18n(APER_I18N_DATA, "apertium").error("APER1121", {}, {}, false);
-          throw I18n(APER_I18N_DATA, "apertium").format("APER1122");
+          I18n(APR_I18N_DATA, "apertium").error("APR81210", {}, {}, false);
+          throw I18n(APR_I18N_DATA, "apertium").format("APR81220");
         }
 
         std::string huFilename, enFilename, outFilename;
@@ -639,18 +639,18 @@ int main_alignerTool(int argC, char* argV[])
         }
         catch ( std::exception& e )
         {
-          I18n(APER_I18N_DATA, "apertium").error("some_failed_assertion", {"what"}, {e.what()}, false);
+          I18n(APR_I18N_DATA, "apertium").error("some_failed_assertion", {"what"}, {e.what()}, false);
           failed = true;
         }
         catch ( ... )
         {
-          I18n(APER_I18N_DATA, "apertium").error("APER1168", {}, {}, false);
+          I18n(APR_I18N_DATA, "apertium").error("APR81680", {}, {}, false);
           failed = true;
         }
 
         if (failed)
         {
-          I18n(APER_I18N_DATA, "apertium").error("APER1169", {"file"}, {outFilename.c_str()}, false);
+          I18n(APR_I18N_DATA, "apertium").error("APR81690", {"file"}, {outFilename.c_str()}, false);
         }
       }
     }
@@ -670,12 +670,12 @@ int main_alignerTool(int argC, char* argV[])
   }
   catch ( std::exception& e )
   {
-    I18n(APER_I18N_DATA, "apertium").error("some_failed_assertion", {"what"}, {e.what()}, false);
+    I18n(APR_I18N_DATA, "apertium").error("some_failed_assertion", {"what"}, {e.what()}, false);
     return -1;
   }
   catch ( ... )
   {
-    I18n(APER_I18N_DATA, "apertium").error("APER1168", {}, {}, false);
+    I18n(APR_I18N_DATA, "apertium").error("APR81680", {}, {}, false);
     return -1;
   }
 #endif

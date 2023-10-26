@@ -21,7 +21,7 @@
 #include <vector>
 #include <algorithm>
 #include <array>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 #include <unicode/ustream.h>
 
 void trim_wb(std::string& wb) {
@@ -37,7 +37,7 @@ void trim_wb(std::string& wb) {
 int main(int argc, char* argv[]) {
 	// Ignore -z, but anything else just show what this tool does
 	if (argc > 1 && argv[1][1] != 'z') {
-		std::cout << I18n(APER_I18N_DATA, "apertium").format("wblank_attach_desc");
+		std::cout << I18n(APR_I18N_DATA, "apertium").format("wblank_attach_desc");
 		return 0;
 	}
 
@@ -80,7 +80,7 @@ int main(int argc, char* argv[]) {
 		if (c == '\0') {
 			in_token = in_blank = false;
 			if (!wbs.empty()) {
-				I18n(APER_I18N_DATA, "apertium").error("APER1154", {"line"}, {std::to_string(line).c_str()}, false);
+				I18n(APR_I18N_DATA, "apertium").error("APR61540", {"line"}, {std::to_string(line).c_str()}, false);
 				for (auto& wb : wbs) {
 					std::cerr << ' ' << wb;
 				}
@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
 				wbs.clear();
 			}
 			if (!blank.empty()) {
-				I18n(APER_I18N_DATA, "apertium").error("APER1171", {"line"}, {std::to_string(line).c_str()}, false);
+				I18n(APR_I18N_DATA, "apertium").error("APR61710", {"line"}, {std::to_string(line).c_str()}, false);
 				std::cout << blank;
 				blank.clear();
 				unesc.clear();
@@ -142,7 +142,7 @@ int main(int argc, char* argv[]) {
 			in_blank = false;
 			if (blank[0] == '[' && blank[1] == '[' && blank[2] == '/' && blank[3] == ']' && blank[4] == ']') {
 				if (wb_stack.empty()) {
-					I18n(APER_I18N_DATA, "apertium").error("APER1155", {"line"}, {std::to_string(line).c_str()}, false);
+					I18n(APR_I18N_DATA, "apertium").error("APR61550", {"line"}, {std::to_string(line).c_str()}, false);
 				}
 				else {
 					for (size_t i = 0 ; i < wb_stack.back() ; ++i) {
@@ -177,14 +177,14 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (!wbs.empty()) {
-		I18n(APER_I18N_DATA, "apertium").error("APER1154", {"line"}, {"NULL"}, false);
+		I18n(APR_I18N_DATA, "apertium").error("APR61540", {"line"}, {"NULL"}, false);
 		for (auto& wb : wbs) {
 			std::cerr << ' ' << wb;
 		}
 		std::cerr << std::endl;
 	}
 	if (!blank.empty()) {
-		I18n(APER_I18N_DATA, "apertium").error("APER1156", {}, {}, false);
+		I18n(APR_I18N_DATA, "apertium").error("APR61560", {}, {}, false);
 		std::cout << blank;
 	}
 }

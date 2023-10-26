@@ -32,7 +32,7 @@
 #include <algorithm>
 #include <lttoolbox/string_utils.h>
 #include <apertium/file_morpho_stream.h>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 #include <unicode/ustream.h>
 
 inline bool p_isnan(double v) {
@@ -298,7 +298,7 @@ HMM::init_probabilities_from_tagged_text(MorphoStream &stream_tagged,
 
     if (word_tagged->get_superficial_form()!=word_untagged->get_superficial_form()) {
       cerr << "\n";
-      I18n(APER_I18N_DATA, "apertium").error("APER1038", {"word_tagged", "word_untagged"},
+      I18n(APR_I18N_DATA, "apertium").error("APR80380", {"word_tagged", "word_untagged"},
                           {icu::UnicodeString(word_tagged->get_superficial_form().data()),
                            icu::UnicodeString(word_untagged->get_superficial_form().data())}, true);
     }
@@ -308,13 +308,13 @@ HMM::init_probabilities_from_tagged_text(MorphoStream &stream_tagged,
     tag2 = tag1;
 
     if (word_untagged==NULL) {
-      I18n(APER_I18N_DATA, "apertium").error("APER1039", {}, {}, true);
+      I18n(APR_I18N_DATA, "apertium").error("APR80390", {}, {}, true);
     }
 
     if (word_tagged->get_tags().size()==0) // Unknown word
       tag1 = -1;
     else if (word_tagged->get_tags().size()>1) // Ambiguous word
-      I18n(APER_I18N_DATA, "apertium").error("APER1040", {"word"},
+      I18n(APR_I18N_DATA, "apertium").error("APR80400", {"word"},
                                             {icu::UnicodeString(word_tagged->get_superficial_form().data())}, false);
     else
       tag1 = *(word_tagged->get_tags()).begin();
@@ -417,7 +417,7 @@ void
 HMM::post_ambg_class_scan() {
   int N = (tdhmm.getTagIndex()).size();
   int M = (tdhmm.getOutput()).size();
-  cerr << I18n(APER_I18N_DATA, "apertium").format("num_of_states_and_ambiguity_classes",
+  cerr << I18n(APR_I18N_DATA, "apertium").format("num_of_states_and_ambiguity_classes",
                                                  {"states", "classes"}, {N, M}) << endl;
 
   tdhmm.setProbabilities(N, M);
@@ -575,7 +575,7 @@ HMM::train(MorphoStream &morpho_stream) {
   }
 
   if ((pending.size()>1) || ((tag!=eos)&&(tag != (tdhmm.getTagIndex())["TAG_kEOF"_u]))) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1041", {"tag", "line", "pending"},
+    I18n(APR_I18N_DATA, "apertium").error("APR60410", {"tag", "line", "pending"},
                                                        {icu::UnicodeString(tdhmm.getArrayTags()[tag].data()),
                                                         nw, to_string(pending.size()).c_str()}, false);
   }
@@ -598,7 +598,7 @@ HMM::train(MorphoStream &morpho_stream) {
       j = jt->first;
       if (xsi[i][j]>0) {
         if (gamma[i]==0) {
-          I18n(APER_I18N_DATA, "apertium").error("APER1042", {"index"}, {i}, false);
+          I18n(APR_I18N_DATA, "apertium").error("APR60420", {"index"}, {i}, false);
           gamma[i]=DBL_MIN;
         }
 
@@ -741,7 +741,7 @@ HMM::tagger(MorphoStream &morpho_stream, UFILE* Output) {
 	loli -= log(prob);
       else {
         if (TheFlags.getDebug())
-          I18n(APER_I18N_DATA, "apertium").error("APER1043", {"word", "tags"},
+          I18n(APR_I18N_DATA, "apertium").error("APR60430", {"word", "tags"},
                                                 {icu::UnicodeString(word->get_superficial_form().data()),
                                                  icu::UnicodeString(word->get_string_tags().data())}, false);
       }
@@ -781,7 +781,7 @@ HMM::tagger(MorphoStream &morpho_stream, UFILE* Output) {
   }
 
   if ((tags.size()>1)&&(TheFlags.getDebug())) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1044", {}, {}, false);
+    I18n(APR_I18N_DATA, "apertium").error("APR60440", {}, {}, false);
   }
 }
 

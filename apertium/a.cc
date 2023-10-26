@@ -16,7 +16,7 @@
 #include "a.h"
 
 #include "exception.h"
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 #include <unicode/ustring.h>
 
 namespace Apertium {
@@ -35,10 +35,10 @@ a::a() : TheTags(), TheMorphemes() {}
 
 a::a(const Analysis &Analysis_) : TheTags(), TheMorphemes() {
   if (Analysis_.TheMorphemes.empty())
-    throw Exception::Analysis::TheMorphemes_empty(I18n(APER_I18N_DATA, "apertium").format("APER1013", {"letter"}, {"a"}));
+    throw Exception::Analysis::TheMorphemes_empty(I18n(APR_I18N_DATA, "apertium").format("APR80130", {"letter"}, {"a"}));
 
   if (Analysis_.TheMorphemes.front().TheTags.empty())
-    throw Exception::Morpheme::TheTags_empty(I18n(APER_I18N_DATA, "apertium").format("APER1014", {"letter"}, {"a"}));
+    throw Exception::Morpheme::TheTags_empty(I18n(APR_I18N_DATA, "apertium").format("APR80140", {"letter"}, {"a"}));
 
   TheTags = Analysis_.TheMorphemes.front().TheTags;
   TheMorphemes = std::vector<Morpheme>(Analysis_.TheMorphemes.begin() + 1,

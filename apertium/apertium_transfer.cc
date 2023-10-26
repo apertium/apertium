@@ -29,14 +29,14 @@
 #include <io.h>
 #include <fcntl.h>
 #endif
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 #include <unicode/ustream.h>
 
 using namespace std;
 
 void message(char *progname)
 {
-  I18n i18n {APER_I18N_DATA, "apertium"};
+  I18n i18n {APR_I18N_DATA, "apertium"};
   cerr << i18n.format("usage") << ": "
        << basename(progname) << " trules preproc biltrans [input [output]]" << endl;
   cerr << "       " << basename(progname) << " -b trules preproc [input [output]]" << endl;
@@ -68,14 +68,14 @@ void testfile(string const &filename)
   struct stat mybuf;
   if(stat(filename.c_str(), &mybuf) == -1)
   {
-		I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {filename.c_str()}, true);
+		I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {filename.c_str()}, true);
   }
 }
 
 void open_input(InputFile& input, const char* filename)
 {
   if (!input.open(filename)) {
-		I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {filename}, true);
+		I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {filename}, true);
   }
 }
 
@@ -83,7 +83,7 @@ UFILE* open_output(const char* filename)
 {
   UFILE* output = u_fopen(filename, "w", NULL, NULL);
   if(!output) {
-		I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {filename}, true);
+		I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {filename}, true);
   }
   return output;
 }

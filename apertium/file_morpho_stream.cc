@@ -24,7 +24,7 @@
 #include <lttoolbox/string_utils.h>
 #include "apertium_config.h"
 #include <apertium/unlocked_cstdio.h>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 FileMorphoStream::FileMorphoStream(const char* ftxt, bool d, TaggerData *t) :
     ms() {
@@ -224,7 +224,7 @@ FileMorphoStream::lrlmClassify(UString const &str, int &ivwords)
       {
         if (debug)
         {
-          I18n(APER_I18N_DATA, "apertium").error("APER1034", {"substr", "str"},
+          I18n(APR_I18N_DATA, "apertium").error("APR60340", {"substr", "str"},
                                                              {icu::UnicodeString(str.substr(floor).data()),
                                                               icu::UnicodeString(str.data())}, false);
 	}
@@ -257,7 +257,7 @@ FileMorphoStream::lrlmClassify(UString const &str, int &ivwords)
         {
           if (debug)
           {
-          I18n(APER_I18N_DATA, "apertium").error("APER1034", {"substr", "str"},
+          I18n(APR_I18N_DATA, "apertium").error("APR60340", {"substr", "str"},
                                                              {icu::UnicodeString(str.substr(floor).data()),
                                                               icu::UnicodeString(str.data())}, false);
 	  }
@@ -274,7 +274,7 @@ FileMorphoStream::lrlmClassify(UString const &str, int &ivwords)
     val = ca_tag_kundef;
     if (debug)
     {
-          I18n(APER_I18N_DATA, "apertium").error("APER1034", {"substr", "str"},
+          I18n(APR_I18N_DATA, "apertium").error("APR60340", {"substr", "str"},
                                                              {icu::UnicodeString(str.substr(floor).data()),
                                                               icu::UnicodeString(str.data())}, false);
     }
@@ -309,7 +309,7 @@ FileMorphoStream::readRestOfWord(int &ivwords)
       if(str.size() > 0)
       {
         vwords[ivwords]->add_ignored_string(str);
-        I18n(APER_I18N_DATA, "apertium").error("APER1035", {"word", "str"},
+        I18n(APR_I18N_DATA, "apertium").error("APR60350", {"word", "str"},
                                               {icu::UnicodeString(vwords[ivwords]->get_superficial_form().data()),
                                                icu::UnicodeString(str.data())}, false);
       }
@@ -351,7 +351,7 @@ FileMorphoStream::readRestOfWord(int &ivwords)
       if(str.size() > 0)
       {
         vwords[ivwords]->add_ignored_string(str);
-        I18n(APER_I18N_DATA, "apertium").error("APER1035", {"word", "str"},
+        I18n(APR_I18N_DATA, "apertium").error("APR60350", {"word", "str"},
                                               {icu::UnicodeString(vwords[ivwords]->get_superficial_form().data()),
                                                icu::UnicodeString(str.data())}, false);
       }

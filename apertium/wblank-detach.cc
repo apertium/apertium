@@ -19,13 +19,13 @@
 #include <iostream>
 #include <string>
 #include <array>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 #include <unicode/ustream.h>
 
 int main(int argc, char* argv[]) {
 	// Ignore -z, but anything else just show what this tool does
 	if (argc > 1 && argv[1][1] != 'z') {
-		std::cout << I18n(APER_I18N_DATA, "apertium").format("wblank_detach_desc");
+		std::cout << I18n(APR_I18N_DATA, "apertium").format("wblank_detach_desc");
 		return 0;
 	}
 

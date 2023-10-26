@@ -6,7 +6,7 @@
 #include <apertium/shell_utils.h>
 #include <apertium/stream_tagger.h>
 #include <lttoolbox/lt_locale.h>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 #include <unicode/ustream.h>
 
 namespace Apertium {
@@ -90,7 +90,7 @@ int perceptron_trace(int argc, char* argv[])
   }
   else
   {
-    std::cout << I18n(APER_I18N_DATA, "apertium").format("perceptron_trace_desc", {"program_name"}, {argv[0]});
+    std::cout << I18n(APR_I18N_DATA, "apertium").format("perceptron_trace_desc", {"program_name"}, {argv[0]});
   }
   return 0;
 }

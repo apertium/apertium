@@ -28,14 +28,14 @@
 #include <io.h>
 #include <fcntl.h>
 #endif
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 #include <unicode/ustream.h>
 
 using namespace std;
 
 void message(char *progname)
 {
-  I18n i18n {APER_I18N_DATA, "apertium"};
+  I18n i18n {APR_I18N_DATA, "apertium"};
   cerr << i18n.format("usage") << ": " << basename(progname) << " preproc biltrans [input [output]]" << endl;
   cerr << "  preproc    " <<  i18n.format("preproc_desc") << endl;
   cerr << "  biltrans   " <<  i18n.format("biltrans_desc") << endl;
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     struct stat mybuf;
     if(stat(argv[i], &mybuf) == -1)
     {
-		  I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {argv[i]}, true);
+		  I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {argv[i]}, true);
     }
   }
 
@@ -67,14 +67,14 @@ int main(int argc, char *argv[])
   if(argc >= 4)
   {
     if (!input.open(argv[3])) {
-		  I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {argv[3]}, true);
+		  I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {argv[3]}, true);
     }
     if(argc == 5)
     {
       output = u_fopen(argv[4], "w", NULL, NULL);
       if(!output)
       {
-		    I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {argv[4]}, true);
+		    I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {argv[4]}, true);
       }
     }
   }

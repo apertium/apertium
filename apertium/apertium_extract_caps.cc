@@ -23,7 +23,7 @@
 #include <lttoolbox/string_utils.h>
 #include <lttoolbox/file_utils.h>
 #include <lttoolbox/cli.h>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 #ifdef __MINGW32__
 #include <windows.h>
@@ -65,7 +65,7 @@ std::pair<UString, UString> read_lu(InputFile& input)
 
 int main(int argc, char* argv[])
 {
-  I18n i18n {APER_I18N_DATA, "apertium"};
+  I18n i18n {APR_I18N_DATA, "apertium"};
   LtLocale::tryToSetLocale();
   CLI cli(i18n.format("extract_caps_desc"));
   cli.add_file_arg("input_file");

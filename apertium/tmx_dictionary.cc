@@ -21,7 +21,7 @@
 #include <sstream>
 
 #include <cmath>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 
 #define massert(e) if (!(e)) { std::cerr << #e << " failed" << std::endl; throw "assert"; }
 
@@ -152,9 +152,9 @@ void readBicorpus( std::istream& is, SentenceList& huSentenceList, SentenceList&
     split( line, halfs );
     if (halfs.size()!=2)
     {
-      I18n(APER_I18N_DATA, "apertium").error("APER1133", {"records", "line"},
+      I18n(APR_I18N_DATA, "apertium").error("APR81330", {"records", "line"},
         {std::to_string(halfs.size()).c_str(), std::to_string(huSentenceList.size()).c_str()}, false);
-      throw I18n(APER_I18N_DATA, "apertium").format("APER1122");
+      throw I18n(APR_I18N_DATA, "apertium").format("APR81220");
     }
 
     {
@@ -262,17 +262,17 @@ void DictionaryItems::read( std::istream& is )
 
 void Dictionary::read( const char* dictionaryFile )
 {
-  throw I18n(APER_I18N_DATA, "apertium").format("APER1123");
+  throw I18n(APR_I18N_DATA, "apertium").format("APR81230");
 }
 
 void Dictionary::build( const DictionaryItems& dictionaryItems )
 {
-  throw I18n(APER_I18N_DATA, "apertium").format("APER1123");
+  throw I18n(APR_I18N_DATA, "apertium").format("APR81230");
 }
 
 void Dictionary::reverse( const Dictionary& dic )
 {
-  throw I18n(APER_I18N_DATA, "apertium").format("APER1123");
+  throw I18n(APR_I18N_DATA, "apertium").format("APR81230");
 }
 
 bool Dictionary::lookupWord( const Word& word, DictionaryItems& results ) const
@@ -644,7 +644,7 @@ void IBMModelOne::build( const SentenceList& huSentenceList, const SentenceList&
 
 void IBMModelOne::reestimate( const SentenceList& huSentenceList, const SentenceList& enSentenceList )
 {
-  throw I18n(APER_I18N_DATA, "apertium").format("APER1123");
+  throw I18n(APR_I18N_DATA, "apertium").format("APR81230");
 }
 
 //
@@ -667,7 +667,7 @@ double IBMModelOne::distance( const Phrase& hu, const Phrase& en ) const
     val -= log(sum);
   }
 
-  throw I18n(APER_I18N_DATA, "apertium").format("APER1123");
+  throw I18n(APR_I18N_DATA, "apertium").format("APR81230");
 }
 
 } // namespace TMXAligner

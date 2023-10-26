@@ -22,7 +22,7 @@
 #include <iostream>
 #include <apertium/transfer_regex.h>
 #include <apertium/apertium_re.h>
-#include <i18n.h>
+#include <lttoolbox/i18n.h>
 #include <lttoolbox/string_utils.h>
 
 UString const TRXReader::ANY_TAG         = "<ANY_TAG>"_u;
@@ -128,11 +128,11 @@ TRXReader::checkClip()
   UString part = attrib("part"_u);
   auto& attrs = td.getAttrItems();
   if (part.empty()) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1140", {"line", "column"},
+    I18n(APR_I18N_DATA, "apertium").error("APR81400", {"line", "column"},
       {xmlTextReaderGetParserLineNumber(reader),
        xmlTextReaderGetParserColumnNumber(reader)}, true);
   } else if (attrs.find(part) == attrs.end()) {
-    I18n(APER_I18N_DATA, "apertium").error("APER1141", {"line", "column", "part"},
+    I18n(APR_I18N_DATA, "apertium").error("APR81410", {"line", "column", "part"},
       {xmlTextReaderGetParserLineNumber(reader),
        xmlTextReaderGetParserColumnNumber(reader), icu::UnicodeString(part.data())}, true);
   }
@@ -187,7 +187,7 @@ TRXReader::procRules()
         } else {
           auto tloc = defcats.find(catname);
           if (tloc == defcats.end()) {
-            I18n(APER_I18N_DATA, "apertium").error("APER1142", {"line", "column", "attrib"},
+            I18n(APR_I18N_DATA, "apertium").error("APR81420", {"line", "column", "attrib"},
               {xmlTextReaderGetParserLineNumber(reader),
                xmlTextReaderGetParserColumnNumber(reader), icu::UnicodeString(catname.data())}, true);
           }
@@ -215,7 +215,7 @@ TRXReader::procRules()
           if(name == "clip"_u) {
             checkClip();
             if (attrib("side"_u) == "sl"_u) {
-              I18n(APER_I18N_DATA, "apertium").error("APER1143", {"line"}, {lineno}, false);
+              I18n(APR_I18N_DATA, "apertium").error("APR61430", {"line"}, {lineno}, false);
             }
           }
           break;
@@ -235,7 +235,7 @@ TRXReader::write(string const &filename)
   FILE *out = fopen(filename.c_str(), "wb");
   if(!out)
   {
-		I18n(APER_I18N_DATA, "apertium").error("APER1000", {"file_name"}, {filename.c_str()}, true);
+		I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {filename.c_str()}, true);
   }
 
   td.write(out);
@@ -422,7 +422,7 @@ TRXReader::createMacro(UString const &name, int const value)
 {
   if(td.getMacros().find(name) != td.getMacros().end())
   {
-    I18n(APER_I18N_DATA, "apertium").error("APER1144", {"line", "column", "macro"},
+    I18n(APR_I18N_DATA, "apertium").error("APR81440", {"line", "column", "macro"},
         {xmlTextReaderGetParserLineNumber(reader),
          xmlTextReaderGetParserColumnNumber(reader),
          icu::UnicodeString(name.data())}, true);
