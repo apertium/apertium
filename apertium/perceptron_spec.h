@@ -475,7 +475,7 @@ private:
       int token_idx,
       int wordoid_idx);
   };
-  struct In : public std::unary_function<const std::string&, bool> {
+  struct In {
     const VMSet& haystack;
     In(const VMSet &haystack);
     bool operator() (const std::string &needle) const;
