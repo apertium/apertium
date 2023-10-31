@@ -23,7 +23,7 @@ case $# in
     SALIDA=$5
     ;;
   *)
-    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "trans_desc" "basename" "$(basename "$0")"
+    formatmsg "$APERTIUM_DATADIR"/apertium.dat "apertium" "trans_desc" "basename" "$(basename "$0")"
     exit 1;
 esac
 

@@ -18,7 +18,7 @@
 
 message () {
   # -z option is wrong and should be deprecated, but until all tools consider \0 flush without -z then this helps to have
-  icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "apertium_desc" "basename" "$(basename "$0")"
+  formatmsg "$APERTIUM_DATADIR"/apertium.dat "apertium" "apertium_desc" "basename" "$(basename "$0")"
   exit 1
 }
 
@@ -32,7 +32,7 @@ locale_utf8 () {
   export LC_CTYPE
   LC_CTYPE=$(locale -a|grep -i "utf[.-]*8"|head -1)
   if [[ -z ${LC_CTYPE} ]]; then
-    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81580"
+    formatmsg "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81580"
     exit 1
   fi
 }
@@ -42,7 +42,7 @@ check_encoding () {
   local encoding
   encoding=$(file -b --mime-encoding "${file}")
   if [[ "${encoding}" != utf-8 && "${encoding}" != us-ascii ]]; then
-    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81590" "encoding" "$encoding" >&2
+    formatmsg "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81590" "encoding" "$encoding" >&2
     exit 1
   fi
 }
@@ -52,7 +52,7 @@ check_transfuse () {
   has_tf=$(command -v tf-extract)
   if [[ "$APERTIUM_TRANSFUSE" = "1" || "$APERTIUM_TRANSFUSE" = "yes" ]]; then
     if [[ -z "$has_tf" ]]; then
-      icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81600" "APERTIUM_TRANSFUSE" "$APERTIUM_TRANSFUSE"
+      formatmsg "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81600" "APERTIUM_TRANSFUSE" "$APERTIUM_TRANSFUSE"
       exit 1
     fi
   fi
@@ -96,19 +96,19 @@ run_mode_wblank_force_flush () {
 
 test_zip () {
   if ! command -v zip &>/dev/null; then
-    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81610" "command" "zip"
+    formatmsg "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81610" "command" "zip"
     exit 1;
   fi
 
   if ! command -v unzip &>/dev/null; then
-    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81610" "command" "unzip"
+    formatmsg "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81610" "command" "unzip"
     exit 1;
   fi
 }
 
 test_gawk () {
   if ! command -v gawk &>/dev/null; then
-    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81610" "command" "gawk"
+    formatmsg "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81610" "command" "gawk"
     exit 1
   fi
 }
@@ -452,8 +452,8 @@ while getopts ":uahlVzf:d:m:o:nH" opt; do
 	V) echo "${apertium_version}" && exit 0 ;;
     z) NULL_FLUSH+=(-z) ;;
     h) message ;;
-    \?) icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81080" "opt" "$OPTARG" >&2; message >&2 ;;
-    *) icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81620" "opt" "$OPTARG" >&2; message >&2 ;;
+    \?) formatmsg "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81080" "opt" "$OPTARG" >&2; message >&2 ;;
+    *) formatmsg "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81620" "opt" "$OPTARG" >&2; message >&2 ;;
   esac
 done
 shift $(( OPTIND-1 ))
@@ -483,28 +483,28 @@ case "$#" in
 esac
 
 if [[ ! -e "$INFILE" ]]; then
-  icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR80000" "file_name" "$INFILE" >&2
+  formatmsg "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR80000" "file_name" "$INFILE" >&2
   message >&2
 elif [[ ! -r "$INFILE" ]]; then
-  icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR80000" "file_name" "$INFILE" >&2
+  formatmsg "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR80000" "file_name" "$INFILE" >&2
   message >&2
 fi
 
 if [[ -n $TRANSLATION_MEMORY_FILE ]]; then
   if ! lt-tmxcomp "$TRANSLATION_MEMORY_DIRECTION" "$TRANSLATION_MEMORY_FILE" "$TMCOMPFILE" >/dev/null; then
-    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81630" "file" "$TRANSLATION_MEMORY_FILE" >&2
+    formatmsg "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81630" "file" "$TRANSLATION_MEMORY_FILE" >&2
     message >&2
   fi
 fi
 
 if [[ ! -d "$DATADIR/modes" ]]; then
-  icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81640" "directory" "$DATADIR/modes" >&2
+  formatmsg "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81640" "directory" "$DATADIR/modes" >&2
   message >&2
 fi
 
 if [[ ! -e "$DATADIR/modes/$PAIR.mode" ]]; then
   {
-    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81650" "mode" "$PAIR"
+    formatmsg "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81650" "mode" "$PAIR"
     c=$(find "$DATADIR/modes" -name '*.mode' | wc -l)
     if [[ "$c" -le 1 ]]; then
       echo "."
@@ -626,7 +626,7 @@ case "$FORMAT" in
     OPTION="-n";
     MILOCALE=$(locale -a | grep -E -i -v -m1 'utf|^C|^POSIX$')
     if [[ -z "$MILOCALE" ]]; then
-      icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81660";
+      formatmsg "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR81660";
       exit 1;
     fi
     export LC_CTYPE=$MILOCALE
@@ -663,7 +663,7 @@ case "$FORMAT" in
 
 
   *) # Por defecto asumimos txt
-    icuformat "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR61670" "arg" "format" "$0" "${FORMAT}" >&2
+    formatmsg "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR61670" "arg" "format" "$0" "${FORMAT}" >&2
     FORMAT="txt"
     OPTION="-g"
     ;;
