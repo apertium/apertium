@@ -80,7 +80,7 @@ main (int argc, char** argv)
         write(buf, output);
         buf.clear();
       } else {
-        I18n(APR_I18N_DATA, "apertium").error("APR80020", {}, {}, false);
+        I18n(APR_I18N_DATA, "apertium").error("APR80020", false);
       }
     } else if(c == '\\') {
       c = input.get();

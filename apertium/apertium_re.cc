@@ -37,7 +37,7 @@ ApertiumRE::read(FILE *input)
 {
   unsigned int size = Compression::multibyte_read(input);
   if (fseek(input, size, SEEK_CUR) != 0) {
-    I18n(APR_I18N_DATA, "apertium").error("APR80170", {}, {}, true);
+    I18n(APR_I18N_DATA, "apertium").error("APR80170", true);
   }
 }
 
@@ -60,7 +60,7 @@ void
 ApertiumRE::write(FILE *output) const
 {
   if (re == nullptr) {
-    I18n(APR_I18N_DATA, "apertium").error("APR80190", {}, {}, true);
+    I18n(APR_I18N_DATA, "apertium").error("APR80190", true);
   }
   // for backwards compatibility, write empty binary form
   Compression::multibyte_write(0, output);

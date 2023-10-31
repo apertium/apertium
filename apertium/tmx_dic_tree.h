@@ -166,7 +166,7 @@ void SubsetLookup<Atom, Identifier>::add( const Atoms& words, const Identifier& 
   else
   {
     if (DicTree<Atom, Identifier>::WarnOnConflict)
-      I18n(APR_I18N_DATA, "apertium").error("APR61320", {}, {}, false);
+      I18n(APR_I18N_DATA, "apertium").error("APR61320", false);
   }
 }
 

@@ -184,7 +184,7 @@ int main(int argc, char* argv[]) {
 		std::cerr << std::endl;
 	}
 	if (!blank.empty()) {
-		I18n(APR_I18N_DATA, "apertium").error("APR61560", {}, {}, false);
+		I18n(APR_I18N_DATA, "apertium").error("APR61560", false);
 		std::cout << blank;
 	}
 }

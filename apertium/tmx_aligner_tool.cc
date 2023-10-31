@@ -30,7 +30,7 @@ void readTrailOrBisentenceList( std::istream& is, Trail& trail )
     is >> huPos;
     if (is.peek()!=' ')
     {
-      I18n(APR_I18N_DATA, "apertium").error("APR81150", {}, {}, false);
+      I18n(APR_I18N_DATA, "apertium").error("APR81150", false);
       throw I18n(APR_I18N_DATA, "apertium").format("APR81220");
     }
     is.ignore();
@@ -38,7 +38,7 @@ void readTrailOrBisentenceList( std::istream& is, Trail& trail )
     is >> enPos;
     if (is.peek()!='\n')
     {
-      I18n(APR_I18N_DATA, "apertium").error("APR81160", {}, {}, false);
+      I18n(APR_I18N_DATA, "apertium").error("APR81160", false);
       throw I18n(APR_I18N_DATA, "apertium").format("APR81220");
     }
     is.ignore();
@@ -526,7 +526,7 @@ int main_alignerTool(int argC, char* argV[])
 
     if (batchMode && (remains.size()!=2) )
     {
-      I18n(APR_I18N_DATA, "apertium").error("APR81170", {}, {}, false);
+      I18n(APR_I18N_DATA, "apertium").error("APR81170", false);
       std::cerr << std::endl;
 
       main_alignerToolUsage();
@@ -577,7 +577,7 @@ int main_alignerTool(int argC, char* argV[])
 
     if (!batchMode && (remains.size()!=3) )
     {
-      I18n(APR_I18N_DATA, "apertium").error("APR81200", {}, {}, false);
+      I18n(APR_I18N_DATA, "apertium").error("APR81200", false);
       std::cerr << std::endl;
 
       main_alignerToolUsage();
@@ -617,7 +617,7 @@ int main_alignerTool(int argC, char* argV[])
 
         if (words.size()!=3)
         {
-          I18n(APR_I18N_DATA, "apertium").error("APR81210", {}, {}, false);
+          I18n(APR_I18N_DATA, "apertium").error("APR81210", false);
           throw I18n(APR_I18N_DATA, "apertium").format("APR81220");
         }
 
@@ -644,7 +644,7 @@ int main_alignerTool(int argC, char* argV[])
         }
         catch ( ... )
         {
-          I18n(APR_I18N_DATA, "apertium").error("APR81680", {}, {}, false);
+          I18n(APR_I18N_DATA, "apertium").error("APR81680", false);
           failed = true;
         }
 
@@ -675,7 +675,7 @@ int main_alignerTool(int argC, char* argV[])
   }
   catch ( ... )
   {
-    I18n(APR_I18N_DATA, "apertium").error("APR81680", {}, {}, false);
+    I18n(APR_I18N_DATA, "apertium").error("APR81680", false);
     return -1;
   }
 #endif

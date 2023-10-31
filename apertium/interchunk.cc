@@ -569,7 +569,7 @@ Interchunk::interchunk(InputFile& in, UFILE* out)
       break;
 
     default:
-      I18n(APR_I18N_DATA, "apertium").error("APR80510", {}, {}, false);
+      I18n(APR_I18N_DATA, "apertium").error("APR80510", false);
       return;
     }
   }

@@ -232,7 +232,7 @@ istream& operator>> (istream& is, map <int, T> & f) {
     is>>i;     // warning: does not work if both
     is>>f[i];  // lines merged in a single one
   }
-  if (is.bad()) I18n(APR_I18N_DATA, "apertium").error("APR81060", {}, {}, true);
+  if (is.bad()) I18n(APR_I18N_DATA, "apertium").error("APR81060", true);
   return is;
 }
 

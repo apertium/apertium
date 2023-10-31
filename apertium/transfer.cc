@@ -446,7 +446,7 @@ Transfer::processChunk(xmlNode *localroot)
     }
     else
     {
-      I18n(APR_I18N_DATA, "apertium").error("APR81350", {}, {}, true);
+      I18n(APR_I18N_DATA, "apertium").error("APR81350", true);
     }
   }
   else
@@ -461,7 +461,7 @@ Transfer::processChunk(xmlNode *localroot)
     }
     else
     {
-      I18n(APR_I18N_DATA, "apertium").error("APR81350", {}, {}, true);
+      I18n(APR_I18N_DATA, "apertium").error("APR81350", true);
     }
   }
 
@@ -614,11 +614,11 @@ Transfer::processLet(xmlNode *localroot)
     }
 
     if (pos >= lword) {
-      I18n(APR_I18N_DATA, "apertium").error("APR81370", {}, {}, false);
+      I18n(APR_I18N_DATA, "apertium").error("APR81370", false);
       return;
     }
     if (word[pos] == 0) {
-      I18n(APR_I18N_DATA, "apertium").error("APR81380", {}, {}, false);
+      I18n(APR_I18N_DATA, "apertium").error("APR81380", false);
       return;
     }
 
@@ -1236,7 +1236,7 @@ Transfer::transfer(InputFile& in, UFILE* out)
 	break;
 
       default:
-        I18n(APR_I18N_DATA, "apertium").error("APR80510", {}, {}, false);
+        I18n(APR_I18N_DATA, "apertium").error("APR80510", false);
 	return;
     }
   }

@@ -308,7 +308,7 @@ HMM::init_probabilities_from_tagged_text(MorphoStream &stream_tagged,
     tag2 = tag1;
 
     if (word_untagged==NULL) {
-      I18n(APR_I18N_DATA, "apertium").error("APR80390", {}, {}, true);
+      I18n(APR_I18N_DATA, "apertium").error("APR80390", true);
     }
 
     if (word_tagged->get_tags().size()==0) // Unknown word
@@ -781,7 +781,7 @@ HMM::tagger(MorphoStream &morpho_stream, UFILE* Output) {
   }
 
   if ((tags.size()>1)&&(TheFlags.getDebug())) {
-    I18n(APR_I18N_DATA, "apertium").error("APR60440", {}, {}, false);
+    I18n(APR_I18N_DATA, "apertium").error("APR60440", false);
   }
 }
 

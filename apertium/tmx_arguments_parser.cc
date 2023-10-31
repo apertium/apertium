@@ -36,7 +36,7 @@ bool Arguments::read( int argc, char **argv )
 
     if (p.empty())
     {
-      I18n(APR_I18N_DATA, "apertium").error("APR81270", {}, {}, false);
+      I18n(APR_I18N_DATA, "apertium").error("APR81270", false);
       throw I18n(APR_I18N_DATA, "apertium").format("APR81240");
       return false;
     }
@@ -87,7 +87,7 @@ bool Arguments::read( int argc, char **argv, std::vector<const char*>& remains )
 
     if (p.empty())
     {
-      I18n(APR_I18N_DATA, "apertium").error("APR81270", {}, {}, false);
+      I18n(APR_I18N_DATA, "apertium").error("APR81270", false);
       throw I18n(APR_I18N_DATA, "apertium").format("APR81240");
       return false;
     }
@@ -189,7 +189,7 @@ void Arguments::checkEmptyArgs() const
 {
   if (!empty())
   {
-    I18n(APR_I18N_DATA, "apertium").error("APR81310", {}, {}, false);
+    I18n(APR_I18N_DATA, "apertium").error("APR81310", false);
 
     for ( Arguments::const_iterator it=begin(); it!=end(); ++it )
     {

@@ -122,7 +122,7 @@ int main(int argc, char* argv[]) {
       corpus_length=atoi(optarg);
       if(corpus_length<=0) {
 	      help(argv[0]);
-        I18n(APR_I18N_DATA, "apertium").error("APR80260", {}, {}, true);
+        I18n(APR_I18N_DATA, "apertium").error("APR80260", true);
       }
       break;
     case 'x':
@@ -161,12 +161,12 @@ int main(int argc, char* argv[]) {
 
   if((tsxfile=="") && (probfile=="")) {
     help(argv[0]);
-    I18n(APR_I18N_DATA, "apertium").error("APR80270", {}, {}, true);
+    I18n(APR_I18N_DATA, "apertium").error("APR80270", true);
   }
 
   if((tsxfile!="") && (probfile!="")) {
     help(argv[0]);
-    I18n(APR_I18N_DATA, "apertium").error("APR80280", {}, {}, true);
+    I18n(APR_I18N_DATA, "apertium").error("APR80280", true);
   }
 
   if (tsxfile!="") {

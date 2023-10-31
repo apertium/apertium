@@ -124,17 +124,17 @@ int main(int argc, char* argv[]) {
   //Now we check the command line arguments
   if (filein=="") {
     help(argv[0]);
-		I18n(APR_I18N_DATA, "apertium").error("APR80220", {}, {}, true);
+		I18n(APR_I18N_DATA, "apertium").error("APR80220", true);
   }
 
   if (fileout=="") {
     help(argv[0]);
-		I18n(APR_I18N_DATA, "apertium").error("APR80230", {}, {}, true);
+		I18n(APR_I18N_DATA, "apertium").error("APR80230", true);
   }
 
   if (filetsx=="") {
     help(argv[0]);
-		I18n(APR_I18N_DATA, "apertium").error("APR80240", {}, {}, true);
+		I18n(APR_I18N_DATA, "apertium").error("APR80240", true);
   }
 
   FILE *fin, *fout;
