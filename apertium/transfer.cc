@@ -997,7 +997,7 @@ Transfer::transfer(InputFile& in, UFILE* out)
             input_buffer.setPos(prev_last+1);
           }
           int num_consumed_words = 0;
-          while(num_consumed_words < num_words_to_consume)
+          while(num_consumed_words < num_words_to_consume && !input_buffer.isEmpty())
           {
             TransferToken& local_tt = input_buffer.next();
             if (local_tt.getType() == tt_word)
