@@ -310,8 +310,15 @@ TransferBase::processInstruction(xmlNode* localroot)
 int
 TransferBase::processRejectCurrentRule(xmlNode* localroot)
 {
-  bool shifting = (getattr(localroot, "shifting") == "yes"_u);
-  return shifting ? 1 : 0;
+  UString shifting_value = getattr(localroot, "shifting");
+  if(shifting_value == "yes"_u) {
+    // Be backwards compatible:
+    return 1;
+  }
+  else {
+    // A value of "no" will also give 0 which is what we want:
+    return StringUtils::stoi(shifting_value);
+  }
 }
 
 int

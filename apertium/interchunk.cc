@@ -472,24 +472,39 @@ Interchunk::interchunk(InputFile& in, UFILE* out)
     {
       if(lastrule != NULL)
       {
-        int words_to_consume = applyRule();
-        if (words_to_consume == -1) {
+        int num_words_to_consume = applyRule();
+
+        //Consume all the words from the input which matched the rule.
+        //This piece of code is executed unless the rule contains a "reject-current-rule" instruction
+        if(num_words_to_consume < 0)
+        {
           banned_rules.clear();
           input_buffer.setPos(last);
-        } else if (words_to_consume == 1) {
+        }
+        else if(num_words_to_consume > 0)
+        {
           banned_rules.clear();
-          if (prev_last >= input_buffer.getSize()) {
+          if(prev_last >= input_buffer.getSize())
+          {
             input_buffer.setPos(0);
-          } else {
+          }
+          else
+          {
             input_buffer.setPos(prev_last+1);
           }
-          while (true) {
-            TransferToken& tt = input_buffer.next();
-            if (tt.getType() == tt_word) {
-              break;
+          int num_consumed_words = 0;
+          while(num_consumed_words < num_words_to_consume)
+          {
+            TransferToken& local_tt = input_buffer.next();
+            if (local_tt.getType() == tt_word)
+            {
+              num_consumed_words++;
             }
           }
-        } else {
+        }
+        else
+        {
+          //Add rule to banned rules
           banned_rules.insert(lastrule_id);
           input_buffer.setPos(prev_last);
           input_buffer.next();
@@ -499,7 +514,8 @@ Interchunk::interchunk(InputFile& in, UFILE* out)
       }
       else
       {
-        if(tmpword.size() != 0) {
+        if(tmpword.size() != 0)
+        {
           u_fprintf(output, "^%S$", tmpword[0]->c_str());
           tmpword.clear();
           input_buffer.setPos(last);
