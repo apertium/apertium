@@ -79,6 +79,53 @@ check_transfuse () {
   fi
 }
 
+
+invert_setvar () {
+  # For a single key value pref pair, where value is a colon-separated list of options, return
+  # the inverted set of options (colon-separated) by looking up the entire set in prefsxml
+  prefsxml=$1
+  key=$2
+  val=$3 # should not include initial minus
+  xmllint --xpath "//preference[@id='${key}']//option/@id" "${prefsxml}" \
+    | grep -o '\<id="[^"]*' \
+    | awk -v val="${val}" '
+BEGIN         { split(val,ar,":"); for(s in ar) { skip[ar[s]]++ } }
+              { sub(/ *id="/,"") }
+!($0 in skip) { if(keep) keep=keep":"; keep=keep $0 }
+END           { print keep }' || true
+}
+
+apply_invert_setvars () {
+  # Create an updated value for AP_SETVARS where `key=-value` is treated as negation, ie. key
+  # is true except for value. Use options from prefsxml to find the inverted set of possible
+  # values, e.g. if prefs options contains "agonise", "idolise", "exorcise" and "lionise" and
+  # user supplies an AP_SETVAR value of "ise_ize=-agonise:idolise,color_colour", then this
+  # function will return "ise_ize=exorcise:lionise,color_colour"
+  prefsxml=""
+  for f in "$DATADIR/prefs/${PAIR}.xml" "$DATADIR/prefs/${PAIR%-*}.xml"; do
+    [[ -r "${f}" ]] && prefsxml="$f" && break
+  done
+  if [[ -z ${prefsxml} ]]; then
+    # No prefs file – no changes:
+    echo "${AP_SETVAR}"
+    return
+  fi
+  local setvar_old="${AP_SETVAR}," # ensure trailing comma for read-loop
+  local setvar_new=''
+  while IFS='=' read -r -d',' key value; do
+    [[ -z "${key}" ]] && continue
+    [[ -n "${setvar_new}" ]] && setvar_new="${setvar_new},"
+    setvar_new="${setvar_new}${key}"
+    case "${value}" in
+        '') ;;
+        -*) inverted=$(invert_setvar "${prefsxml}" "${key}" "${value#-}")
+            setvar_new="${setvar_new}=${inverted}" ;;
+        *)  setvar_new="${setvar_new}=${value}" ;;
+    esac
+  done <<<"${setvar_old}"
+  echo "$setvar_new"
+}
+
 setvar_wrap () {
     gawk -v var="${AP_SETVAR}" '
 BEGIN           { RS="\0|\n"; }
@@ -97,11 +144,13 @@ RT=="\0"        { fflush() }'
 }
 
 run_mode_wblank () {
-    setvar_wrap \
-        | bash <(apertium-wblank-mode "${NULL_FLUSH[@]}" "$DATADIR/modes/$PAIR.mode") \
-               "$OPTION" \
-               "$OPTION_TAGGER" \
-        | setvar_unwrap
+  AP_SETVAR="$(apply_invert_setvars)"
+  export AP_SETVAR
+  setvar_wrap \
+    | bash <(apertium-wblank-mode "${NULL_FLUSH[@]}" "$DATADIR/modes/$PAIR.mode") \
+           "$OPTION" \
+           "$OPTION_TAGGER" \
+    | setvar_unwrap
 }
 
 run_mode_wblank_force_flush () {
