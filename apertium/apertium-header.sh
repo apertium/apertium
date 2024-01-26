@@ -216,7 +216,7 @@ translate_latex_raw() {
 translate_odt () {
   check_transfuse
   if [[ $USE_TRANSFUSE = "yes" ]]; then
-    tf-extract -f odt "$INFILE" | run_mode_wblank_force_flush | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
+    tf-extract "${TF_EXTRACT_OPTIONS[@]}" -f odt "$INFILE" | run_mode_wblank_force_flush | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
     return
   fi
 
@@ -260,7 +260,7 @@ translate_odt () {
 translate_docx () {
   check_transfuse
   if [[ $USE_TRANSFUSE = "yes" ]]; then
-    tf-extract -f docx "$INFILE" | run_mode_wblank_force_flush | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
+    tf-extract "${TF_EXTRACT_OPTIONS[@]}" -f docx "$INFILE" | run_mode_wblank_force_flush | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
     return
   fi
 
@@ -317,7 +317,7 @@ translate_docx () {
 translate_pptx () {
   check_transfuse
   if [[ $USE_TRANSFUSE = "yes" ]]; then
-    tf-extract -f pptx "$INFILE" | run_mode_wblank_force_flush | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
+    tf-extract "${TF_EXTRACT_OPTIONS[@]}" -f pptx "$INFILE" | run_mode_wblank_force_flush | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
     return
   fi
 
@@ -411,7 +411,7 @@ translate_xlsx () {
 translate_html () {
   check_transfuse
   if [[ $USE_TRANSFUSE = "yes" ]]; then
-    tf-extract -f html "$INFILE" | run_mode_wblank_force_flush | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
+    tf-extract "${TF_EXTRACT_OPTIONS[@]}" -f html "$INFILE" | run_mode_wblank_force_flush | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
     return
   fi
 
@@ -425,7 +425,7 @@ translate_html () {
 translate_htmlnoent () {
   check_transfuse
   if [[ $USE_TRANSFUSE = "yes" ]]; then
-    tf-extract -f html "$INFILE" | run_mode_wblank_force_flush | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
+    tf-extract "${TF_EXTRACT_OPTIONS[@]}" -f html "$INFILE" | run_mode_wblank_force_flush | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
     return
   fi
 
@@ -447,7 +447,7 @@ translate_htmlalt () {
 translate_line () {
   check_transfuse
   if [[ $USE_TRANSFUSE = "yes" ]]; then
-	tf-extract -f line "$INFILE" | run_mode_wblank_force_flush | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
+	tf-extract "${TF_EXTRACT_OPTIONS[@]}" -f line "$INFILE" | run_mode_wblank_force_flush | if [[ -z "$REDIR" ]]; then tf-inject; else tf-inject > "$OUT_FILE"; fi
 	return
   fi
   # TODO: lt-proc inserts spaces before parts of mwe's that cross
@@ -487,6 +487,7 @@ DATADIR=$APERTIUM_DATADIR
 TRANSLATION_MEMORY_DIRECTION=$PAIR
 LIST_MODES_AND_EXIT=false
 FORMAT_OPTIONS=()
+TF_EXTRACT_OPTIONS=()
 NULL_FLUSH=()
 
 # Skip (but store) non-option arguments that come before options:
@@ -509,11 +510,11 @@ while getopts ":uahlVzf:d:m:o:nH" opt; do
     m) TRANSLATION_MEMORY_FILE=$OPTARG ;;
     o) TRANSLATION_MEMORY_DIRECTION=$OPTARG ;;
     u) UWORDS="no" ;;
-    n) FORMAT_OPTIONS+=(-n) ;;
-    H) FORMAT_OPTIONS+=(-o) ;;
+    n) FORMAT_OPTIONS+=(-n) ;; # TODO: TF_EXTRACT_OPTIONS+=(--something) when https://github.com/TinoDidriksen/Transfuse/issues/9 implemented
+    H) FORMAT_OPTIONS+=(-o); TF_EXTRACT_OPTIONS+=(-H) ;;
     a) OPTION_TAGGER="-m" ;;
     l) LIST_MODES_AND_EXIT=true ;;
-	V) echo "${apertium_version}" && exit 0 ;;
+    V) echo "${apertium_version}" && exit 0 ;;
     z) NULL_FLUSH+=(-z) ;;
     h) message ;;
     \?) echo "ERROR: Unknown option $OPTARG" >&2; message >&2 ;;
