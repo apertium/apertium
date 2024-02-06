@@ -290,7 +290,7 @@ translate_docx () {
   done;
 
   find "$INPUT_TMPDIR" -name "*.xml" |\
-  grep -E -v -i '(settings|theme|styles|font|rels|docProps|Content_Types)' |\
+  grep -E -v -i '(settings|theme|styles|font|rels|docProps|Content_Types|customXml)' |\
   apertium-adapt-docx -n |\
   apertium-deswxml "${FORMAT_OPTIONS[@]}" |\
   if [[ -z "$TRANSLATION_MEMORY_FILE" ]];
