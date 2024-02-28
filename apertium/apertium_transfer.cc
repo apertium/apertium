@@ -29,31 +29,35 @@
 #include <io.h>
 #include <fcntl.h>
 #endif
+#include <lttoolbox/i18n.h>
+#include <unicode/ustream.h>
 
 using namespace std;
 
 void message(char *progname)
 {
-  cerr << "USAGE: " << basename(progname) << " trules preproc biltrans [input [output]]" << endl;
+  I18n i18n {APR_I18N_DATA, "apertium"};
+  cerr << i18n.format("usage") << ": "
+       << basename(progname) << " trules preproc biltrans [input [output]]" << endl;
   cerr << "       " << basename(progname) << " -b trules preproc [input [output]]" << endl;
   cerr << "       " << basename(progname) << " -n trules preproc [input [output]]" << endl;
   cerr << "       " << basename(progname) << " -x extended trules preproc biltrans [input [output]]" << endl;
   cerr << "       " << basename(progname) << " -c trules preproc biltrans [input [output]]" << endl;
   cerr << "       " << basename(progname) << " -t trules preproc biltrans [input [output]]" << endl;
-  cerr << "  trules     transfer rules file" << endl;
-  cerr << "  preproc    result of preprocess trules file" << endl;
-  cerr << "  biltrans   bilingual letter transducer file" << endl;
-  cerr << "  input      input file, standard input by default" << endl;
-  cerr << "  output     output file, standard output by default" << endl;
-  cerr << "  -b         input from lexical transfer" << endl;
-  cerr << "  -n         don't use bilingual dictionary" << endl;
-  cerr << "  -x bindix  extended mode with user dictionary" << endl;
-  cerr << "  -c         case-sensitiveness while accessing bilingual dictionary" << endl;
-  cerr << "  -t         trace (show rule numbers and patterns matched)" << endl;
-  cerr << "  -T         trace, for apertium-transfer-tools (also sets -t)" << endl;
-  cerr << "  -w         ignore capitalization manipulation instructions" << endl;
-  cerr << "  -z         null-flushing output on '\0'" << endl;
-  cerr << "  -h         shows this message" << endl;
+  cerr << "  trules     " <<  i18n.format("trules_desc") << endl;
+  cerr << "  preproc    " <<  i18n.format("preproc_desc") << endl;
+  cerr << "  biltrans   " <<  i18n.format("biltrans_desc") << endl;
+  cerr << "  input      " <<  i18n.format("input_desc") << endl;
+  cerr << "  output     " <<  i18n.format("output_desc") << endl;
+  cerr << "  -b         " <<  i18n.format("from_bilingual_desc") << endl;
+  cerr << "  -n         " <<  i18n.format("no_bilingual_desc") << endl;
+  cerr << "  -x bindix  " <<  i18n.format("extended_desc") << endl;
+  cerr << "  -c         " <<  i18n.format("case_sensitive_desc") << endl;
+  cerr << "  -t         " <<  i18n.format("trace_desc") << endl;
+  cerr << "  -T         " <<  i18n.format("trace_att_desc") << endl;
+  cerr << "  -w         " <<  i18n.format("dictionary_case_desc") << endl;
+  cerr << "  -z         " <<  i18n.format("null_flush_desc") << endl;
+  cerr << "  -h         " <<  i18n.format("help_desc") << endl;
 
 
   exit(EXIT_FAILURE);
@@ -64,18 +68,14 @@ void testfile(string const &filename)
   struct stat mybuf;
   if(stat(filename.c_str(), &mybuf) == -1)
   {
-    cerr << "Error: can't stat file '";
-    cerr << filename << "'." << endl;
-    exit(EXIT_FAILURE);
+		I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {filename.c_str()}, true);
   }
 }
 
 void open_input(InputFile& input, const char* filename)
 {
   if (!input.open(filename)) {
-    cerr << "Error: can't open input file '";
-    cerr << filename << "'." << endl;
-    exit(EXIT_FAILURE);
+		I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {filename}, true);
   }
 }
 
@@ -83,9 +83,7 @@ UFILE* open_output(const char* filename)
 {
   UFILE* output = u_fopen(filename, "w", NULL, NULL);
   if(!output) {
-    cerr << "Error: can't open output file '";
-    cerr << filename << "'." << endl;
-    exit(EXIT_FAILURE);
+		I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {filename}, true);
   }
   return output;
 }

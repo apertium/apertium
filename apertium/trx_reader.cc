@@ -22,6 +22,7 @@
 #include <iostream>
 #include <apertium/transfer_regex.h>
 #include <apertium/apertium_re.h>
+#include <lttoolbox/i18n.h>
 #include <lttoolbox/string_utils.h>
 
 UString const TRXReader::ANY_TAG         = "<ANY_TAG>"_u;
@@ -127,9 +128,13 @@ TRXReader::checkClip()
   UString part = attrib("part"_u);
   auto& attrs = td.getAttrItems();
   if (part.empty()) {
-    parseError("<clip> missing attribute part"_u);
+    I18n(APR_I18N_DATA, "apertium").error("APR81400", {"line", "column"},
+      {xmlTextReaderGetParserLineNumber(reader),
+       xmlTextReaderGetParserColumnNumber(reader)}, true);
   } else if (attrs.find(part) == attrs.end()) {
-    parseError("Undefined attr-item "_u + part);
+    I18n(APR_I18N_DATA, "apertium").error("APR81410", {"line", "column", "part"},
+      {xmlTextReaderGetParserLineNumber(reader),
+       xmlTextReaderGetParserColumnNumber(reader), icu::UnicodeString(part.data())}, true);
   }
 }
 
@@ -182,7 +187,9 @@ TRXReader::procRules()
         } else {
           auto tloc = defcats.find(catname);
           if (tloc == defcats.end()) {
-            parseError("Undefined cat-item '"_u + catname + "'"_u);
+            I18n(APR_I18N_DATA, "apertium").error("APR81420", {"line", "column", "attrib"},
+              {xmlTextReaderGetParserLineNumber(reader),
+               xmlTextReaderGetParserColumnNumber(reader), icu::UnicodeString(catname.data())}, true);
           }
           // mark of begin of word
           int tmp = td.getTransducer().insertSingleTransduction('^', state);
@@ -208,8 +215,7 @@ TRXReader::procRules()
           if(name == "clip"_u) {
             checkClip();
             if (attrib("side"_u) == "sl"_u) {
-              cerr << "Warning (" << lineno;
-              cerr << "): assignment to 'sl' side has no effect." << endl;
+              I18n(APR_I18N_DATA, "apertium").error("APR61430", {"line"}, {lineno}, false);
             }
           }
           break;
@@ -229,9 +235,7 @@ TRXReader::write(string const &filename)
   FILE *out = fopen(filename.c_str(), "wb");
   if(!out)
   {
-    cerr << "Error: cannot open '" << filename;
-    cerr << "' for writing" << endl;
-    exit(EXIT_FAILURE);
+		I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {filename.c_str()}, true);
   }
 
   td.write(out);
@@ -418,7 +422,10 @@ TRXReader::createMacro(UString const &name, int const value)
 {
   if(td.getMacros().find(name) != td.getMacros().end())
   {
-    parseError("Macro '"_u + name + "' defined at least twice"_u);
+    I18n(APR_I18N_DATA, "apertium").error("APR81440", {"line", "column", "macro"},
+        {xmlTextReaderGetParserLineNumber(reader),
+         xmlTextReaderGetParserColumnNumber(reader),
+         icu::UnicodeString(name.data())}, true);
   }
   td.getMacros()[name] = value;
 }

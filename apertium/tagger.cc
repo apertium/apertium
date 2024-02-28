@@ -43,6 +43,7 @@
 #include <sstream>
 #include <string>
 #include <unistd.h>
+#include <lttoolbox/i18n.h>
 
 namespace Apertium {
 using namespace ShellUtils;
@@ -117,13 +118,8 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
         }
 
         {
-          std::stringstream what_;
-          what_ << "invalid argument '" << optarg << "' for '--unigram'\n"
-                                                     "Valid arguments are:\n"
-                                                     "  - '1'\n"
-                                                     "  - '2'\n"
-                                                     "  - '3'";
-          throw Exception::apertium_tagger::InvalidArgument(what_);
+          throw Exception::apertium_tagger::InvalidArgument(
+            I18n(APR_I18N_DATA, "apertium").format("APR81070", {"optarg"}, {optarg}));
         }
         break;
       case 'w':
@@ -213,9 +209,8 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
 
       switch (*TheFunctionTypeType) {
       case Unigram: {
-        std::stringstream what_;
-        what_ << "invalid option -- 'u'";
-        throw Exception::apertium_tagger::InvalidOption(what_);
+        throw Exception::apertium_tagger::InvalidOption(
+          I18n(APR_I18N_DATA, "apertium").format("APR81080", {"opt"}, {"u"}));
       }
       case SlidingWindow: {
         LSWPoST SlidingWindowTagger_(TheFlags);
@@ -252,9 +247,8 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
         s_StreamTaggerTrainer(UnigramTagger_);
       } break;
       case SlidingWindow: {
-        std::stringstream what_;
-        what_ << "invalid option -- 'w'";
-        throw Exception::apertium_tagger::InvalidOption(what_);
+        throw Exception::apertium_tagger::InvalidOption(
+          I18n(APR_I18N_DATA, "apertium").format("APR81080", {"opt"}, {"w"}));
       } break;
       case Perceptron: {
         PerceptronTagger perceptron(TheFlags);
@@ -274,9 +268,8 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
 
       switch (*TheFunctionTypeType) {
       case Unigram: {
-        std::stringstream what_;
-        what_ << "invalid option -- 'u'";
-        throw Exception::apertium_tagger::InvalidOption(what_);
+        throw Exception::apertium_tagger::InvalidOption(
+          I18n(APR_I18N_DATA, "apertium").format("APR81080", {"opt"}, {"u"}));
       }
       case SlidingWindow: {
         LSWPoST SlidingWindowTagger_(TheFlags);
@@ -299,6 +292,7 @@ apertium_tagger::apertium_tagger(int &argc, char **&argv)
 apertium_tagger::~apertium_tagger() {}
 
 void apertium_tagger::help() {
+  I18n i18n {APR_I18N_DATA, "apertium"};
 
   std::cerr <<
 "Usage: apertium-tagger [OPTION]... -g SERIALISED_TAGGER                        \\\n"
@@ -335,40 +329,54 @@ void apertium_tagger::help() {
 "                                      TAGGER_SPECIFICATION                     \\\n"
 "                                      SERIALISED_TAGGER\n"
 "\n"
-"Mandatory arguments to long options are mandatory for short options too.\n"
-"\n";
-
-  std::vector<std::pair<std::string, std::string> > options_description_;
-  options_description_.push_back(std::make_pair("-d, --debug",            "with -g, print error messages about the input"));
-  options_description_.push_back(std::make_pair("-f, --first",            "with -g, reorder each lexical unit's analyses so that the chosen one is first"));
-  options_description_.push_back(std::make_pair("-m, --mark",             "with -g, mark disambiguated lexical units"));
-  options_description_.push_back(std::make_pair("-p, --show-superficial", "with -g, output each lexical unit's surface form"));
-  options_description_.push_back(std::make_pair("-z, --null-flush",       "with -g, flush the output after getting each null character"));
+<< i18n.format("tagger_cc_note")
+<< "\n\n"
+<< i18n.format("apertium_tagger_desc");
+/*
+  std::vector<std::pair<std::string, icu::UnicodeString> > options_description_;
+  options_description_.push_back(std::make_pair("-d, --debug",            
+    i18n.format("tagger_debug_desc")));
+  options_description_.push_back(std::make_pair("-f, --first",            
+    i18n.format("tagger_first_desc")));
+  options_description_.push_back(std::make_pair("-m, --mark",             
+    i18n.format("tagger_mark_desc")));
+  options_description_.push_back(std::make_pair("-p, --show-superficial",
+    i18n.format("tagger_show_superficial_desc")));
+  options_description_.push_back(std::make_pair("-z, --null-flush",       
+    i18n.format("tagger_null_flush_desc")));
   align::align_(options_description_);
   std::cerr << '\n';
   options_description_.clear();
-  options_description_.push_back(std::make_pair("-u, --unigram=MODEL", "use unigram algorithm MODEL from <https://coltekin.net/cagri/papers/trmorph-tools.pdf>"));
+  options_description_.push_back(std::make_pair("-u, --unigram=MODEL",
+    i18n.format("tagger_unigram_desc")));
   align::align_(options_description_);
   std::cerr << '\n';
   options_description_.clear();
-  options_description_.push_back(std::make_pair("-w, --sliding-window", "use the Light Sliding Window algorithm"));
-  options_description_.push_back(std::make_pair("-x, --perceptron", "use the averaged perceptron algorithm"));
-  options_description_.push_back(std::make_pair("-e, --skip-on-error", "with -xs, ignore certain types of errors with the training corpus"));
+  options_description_.push_back(std::make_pair("-w, --sliding-window",
+    i18n.format("tagger_sliding_window_desc")));
+  options_description_.push_back(std::make_pair("-x, --perceptron",
+    i18n.format("perceptron_desc")));
+  options_description_.push_back(std::make_pair("-e, --skip-on-error",
+    i18n.format("tagger_skip_on_error_desc")));
   align::align_(options_description_);
   std::cerr << '\n';
   options_description_.clear();
-  options_description_.push_back(std::make_pair("-g, --tagger", "disambiguate the input"));
+  options_description_.push_back(std::make_pair("-g, --tagger", 
+    i18n.format("tagger_desc")));
   align::align_(options_description_);
   std::cerr << '\n';
   options_description_.clear();
-  options_description_.push_back(std::make_pair("-r, --retrain=ITERATIONS", "with -u: exit;\notherwise: retrain the tagger with ITERATIONS unsupervised iterations"));
-  options_description_.push_back(std::make_pair("-s, --supervised=ITERATIONS", "with -u: train the tagger with a hand-tagged corpus;\nwith -w: exit;\notherwise: initialise the tagger with a hand-tagged corpus and retrain it with ITERATIONS unsupervised iterations"));
-  options_description_.push_back(std::make_pair("-t, --train=ITERATIONS", "with -u: exit;\notherwise: train the tagger with ITERATIONS unsupervised iterations"));
+  options_description_.push_back(std::make_pair("-r, --retrain=ITERATIONS",
+    i18n.format("tagger_retrain_desc")));
+  options_description_.push_back(std::make_pair("-s, --supervised=ITERATIONS",
+    i18n.format("tagger_supervised_desc")));
+  options_description_.push_back(std::make_pair("-t, --train=ITERATIONS",
+    i18n.format("tagger_train_desc")));
   align::align_(options_description_);
   std::cerr << '\n';
   options_description_.clear();
-  options_description_.push_back(std::make_pair("-h, --help", "display this help and exit"));
-  align::align_(options_description_);
+  options_description_.push_back(std::make_pair("-h, --help", i18n.format("help_desc")));
+  align::align_(options_description_);*/
 }
 
 const struct option apertium_tagger::longopts[] = {
@@ -437,10 +445,9 @@ void apertium_tagger::flagOptionCase(
     bool (TaggerFlags::*GetFlag)(),
     void (TaggerFlags::*SetFlag)(const bool &)) {
   if ((TheFlags.*GetFlag)()) {
-    std::stringstream what_;
-    what_ << "unexpected '" << option_string() << "' following '"
-          << option_string() << '\'';
-    throw Exception::apertium_tagger::UnexpectedFlagOption(what_);
+    throw Exception::apertium_tagger::UnexpectedFlagOption(
+      I18n(APR_I18N_DATA, "apertium").format("APR81090", {"opt1", "opt2"}, 
+        {option_string().c_str(), option_string().c_str()}));
   }
 
   (TheFlags.*SetFlag)(true);
@@ -453,11 +460,9 @@ std::string apertium_tagger::option_string() {
 void apertium_tagger::functionTypeTypeOptionCase(
     const FunctionTypeType &FunctionTypeType_) {
   if (FunctionTypeTypeOption_indexptr) {
-    std::stringstream what_;
-    what_ << "unexpected '" << option_string() << "' following '"
-          << option_string(*FunctionTypeTypeOption_indexptr)
-          << '\'';
-    throw Exception::apertium_tagger::UnexpectedFunctionTypeTypeOption(what_);
+    throw Exception::apertium_tagger::UnexpectedFunctionTypeTypeOption(
+      I18n(APR_I18N_DATA, "apertium").format("APR81090", {"opt1", "opt2"}, 
+        {option_string().c_str(), option_string(*FunctionTypeTypeOption_indexptr).c_str()}));
   }
 
   TheFunctionTypeType = FunctionTypeType_;
@@ -467,11 +472,9 @@ void apertium_tagger::functionTypeTypeOptionCase(
 void apertium_tagger::functionTypeOptionCase(
     const FunctionType &FunctionType_) {
   if (FunctionTypeOption_indexptr) {
-    std::stringstream what_;
-    what_ << "unexpected '" << option_string() << "' following '"
-          << option_string(*FunctionTypeOption_indexptr)
-          << '\'';
-    throw Exception::apertium_tagger::UnexpectedFunctionTypeOption(what_);
+    throw Exception::apertium_tagger::UnexpectedFunctionTypeOption(
+      I18n(APR_I18N_DATA, "apertium").format("APR81090", {"opt1", "opt2"}, 
+        {option_string().c_str(), option_string(*FunctionTypeOption_indexptr).c_str()}));
   }
 
   TheFunctionType = FunctionType_;
@@ -482,10 +485,9 @@ void apertium_tagger::getIterationsArgument() {
   try {
     TheFunctionTypeOptionArgument = optarg_unsigned_long("ITERATIONS");
   } catch (const ExceptionType &ExceptionType_) {
-    std::stringstream what_;
-    what_ << "invalid argument '" << optarg << "' for '" << option_string()
-          << '\'';
-    throw Exception::apertium_tagger::InvalidArgument(what_);
+    throw Exception::apertium_tagger::InvalidArgument(
+      I18n(APR_I18N_DATA, "apertium").format("APR81100", {"arg", "opt"},
+        {optarg, option_string().c_str()}));
   }
 }
 
@@ -495,22 +497,18 @@ static unsigned long parse_unsigned_long(const char *metavar, const char *val) {
   unsigned long N_0 = std::strtoul(val, &str_end, 10);
 
   if (*str_end != '\0') {
-    std::stringstream what_;
-    what_ << "can't convert " << metavar << " \"" << val << "\" to unsigned long";
-    throw Exception::apertium_tagger::str_end_not_eq_NULL(what_);
+    throw Exception::apertium_tagger::str_end_not_eq_NULL(
+      I18n(APR_I18N_DATA, "apertium").format("APR81110", {"metavar", "val"}, {metavar, val}));
   }
 
   if (*val == '\0') {
-    std::stringstream what_;
-    what_ << "can't convert " << metavar << " of size 1 \"\" to unsigned long";
-    throw Exception::apertium_tagger::optarg_eq_NULL(what_);
+    throw Exception::apertium_tagger::optarg_eq_NULL(
+      I18n(APR_I18N_DATA, "apertium").format("APR81120", {"metavar"}, {metavar}));
   }
 
   if (errno == ERANGE) {
-    std::stringstream what_;
-    what_ << "can't convert " << metavar << " \"" << val
-          << "\" to unsigned long, not in unsigned long range";
-    throw Exception::apertium_tagger::ERANGE_(what_);
+    throw Exception::apertium_tagger::ERANGE_(
+      I18n(APR_I18N_DATA, "apertium").format("APR81130", {"metavar", "val"}, {metavar, val}));
   }
 
   return N_0;
@@ -578,10 +576,9 @@ void apertium_tagger::g_StreamTagger(StreamTagger &StreamTagger_) {
   try {
     StreamTagger_.deserialise(SerialisedAnalysisFrequencies);
   } catch (const ExceptionType &ExceptionType_) {
-    std::stringstream what_;
-    what_ << "can't deserialise SERIALISED_TAGGER file \"" << argv[optind]
-          << "\" Reason: " << ExceptionType_.what();
-    throw Exception::apertium_tagger::deserialise(what_);
+    throw Exception::apertium_tagger::deserialise(
+      I18n(APR_I18N_DATA, "apertium").format("APR81140", {"file", "what"},
+        {argv[optind], ExceptionType_.what()}));
   }
 
   if (nonoptarg < 2) {
@@ -608,10 +605,9 @@ void apertium_tagger::s_StreamTaggerTrainer(
   locale_global_();
 
   if (TheFunctionTypeOptionArgument != 0 && *TheFunctionTypeType != Perceptron) {
-    std::stringstream what_;
-    what_ << "invalid argument '" << TheFunctionTypeOptionArgument
-          << "' for '--supervised'";
-    throw Exception::apertium_tagger::InvalidArgument(what_);
+    throw Exception::apertium_tagger::InvalidArgument(
+      I18n(APR_I18N_DATA, "apertium").format("APR81100", {"arg", "opt"},
+        {to_string(TheFunctionTypeOptionArgument).c_str(), "--supervised"}));
   }
 
   if (*TheFunctionTypeType == Perceptron) {

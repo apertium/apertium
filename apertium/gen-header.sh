@@ -1,9 +1,13 @@
+PATH="${APERTIUM_PATH}:${PATH}"
+
 if [ $# != 2 ]
 then if [ $# != 3 ]
-     then echo "USAGE: $(basename "$0") [-O] <input_file> <output_file>";
+     then formatmsg "$APERTIUM_DATADIR"/apertium.dat "apertium" \
+          "gen_desc" "first_line" "$(basename "$0") [-O] <input_file> <output_file>";
           exit 1;
      elif [ "$1" != "-O" ]
-     then echo "USAGE: $(basename "$0") [-O] <input file> <output_file>";
+     then formatmsg "$APERTIUM_DATADIR"/apertium.dat "apertium" \
+          "gen_desc" "first_line" "$(basename "$0") [-O] <input file> <output_file>";
           exit 1;
      fi
 fi
@@ -14,14 +18,14 @@ FILE2=$2;
 
 if [ $# = 2 ]
 then if [ ! -e "$1" ]
-     then echo "ERROR: '$1' file not found";
+     then echo formatmsg "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR80000" "file_name" "$1";
           exit 1;
      fi
 fi
 
 if [ $# = 3 ]
 then if [ ! -e "$2" ]
-     then echo "ERROR: '$2' file not found";
+     then echo formatmsg "$APERTIUM_DATADIR"/apertium.dat "apertium" "APR80000" "file_name" "$2";
           exit 1;
      fi
      FLEXOPTS="-Cfer";

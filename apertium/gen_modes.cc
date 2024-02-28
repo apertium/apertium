@@ -28,6 +28,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <lttoolbox/i18n.h>
 
 using namespace std;
 
@@ -222,7 +223,9 @@ void gen_debug_modes(map<string, pipeline>& modes)
           set_trace_opt(debug);
           modes[debug.name] = debug;
         } else {
-          cerr << "Debug mode name " << debug.name << " generated multiple times, disregarding result from " << mode_name << " step " << (i+1) << endl;
+          I18n(APR_I18N_DATA, "apertium").error("APR60360", {"debug_name", "mode_name", "step_num"},
+                                                             {debug.name.c_str(), mode_name.c_str(),
+                                                             to_string(i+1).c_str()}, false);
           continue;
         }
 
@@ -255,8 +258,7 @@ void gen_mode(pipeline& mode, fs::path& file_dir, fs::path& write_dir)
   ofstream f(modefile, std::ios::binary);
 
   if (!f) {
-    cerr << "ERROR: Could not write to " << modefile << endl;
-    exit(EXIT_FAILURE);
+		I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {modefile.c_str()}, true);
   }
 
   for (size_t i = 0; i < mode.steps.size(); ++i) {
@@ -297,12 +299,13 @@ void gen_modes(map<string, pipeline>& modes, fs::path& install_dir, fs::path& de
 
 int main(int argc, char* argv[])
 {
+  I18n i18n {APR_I18N_DATA, "apertium"};
   LtLocale::tryToSetLocale();
-  CLI cli("Generate mode command files from XML");
-  cli.add_bool_arg('f', "full", "expect absolute installation path");
-  cli.add_bool_arg('l', "local", "output to current directory rather than directory of modes.xml");
-  cli.add_bool_arg('v', "verbose", "print more detailed messages");
-  cli.add_bool_arg('h', "help", "print this message and exit");
+  CLI cli(i18n.format("gen_modes_desc"));
+  cli.add_bool_arg('f', "full", i18n.format("full_desc"));
+  cli.add_bool_arg('l', "local", i18n.format("local_desc"));
+  cli.add_bool_arg('v', "verbose", i18n.format("verbose_desc"));
+  cli.add_bool_arg('h', "help", i18n.format("help_desc"));
   cli.add_file_arg("modes.xml", false);
   cli.add_file_arg("install_path", true);
   cli.parse_args(argc, argv);
@@ -319,8 +322,7 @@ int main(int argc, char* argv[])
     if (!output_path.empty()) {
       install_dir = output_path;
       if (install_dir == dev_dir) {
-        cerr << basename(argv[0]) << " ERROR: Installation prefix is the same directory as modes.xml; give a different INSTALLDIR." << endl;
-        exit(EXIT_FAILURE);
+        I18n(APR_I18N_DATA, "apertium").error("APR80370", {"program"}, {basename(argv[0])}, true);
       }
     }
   }

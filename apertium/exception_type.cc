@@ -25,18 +25,21 @@ std::string res;
 
 namespace Apertium {
 ExceptionType::ExceptionType(const char *const what_)
-  : what_(to_ustring(what_)) {}
+  : what_(to_ustring(what_).data()) {}
 
 ExceptionType::ExceptionType(const std::string &what_)
-  : what_(to_ustring(what_.c_str())) {}
+  : what_(to_ustring(what_.c_str()).data()) {}
 
 ExceptionType::ExceptionType(const std::stringstream &what_)
-  : what_(to_ustring(what_.str().c_str())) {}
+  : what_(to_ustring(what_.str().c_str()).data()) {}
 
 ExceptionType::ExceptionType(const UChar *const what_)
   : what_(what_) {}
 
 ExceptionType::ExceptionType(const UString &what_)
+  : what_(what_.data()) {}
+  
+ExceptionType::ExceptionType(const icu::UnicodeString &what_)
   : what_(what_) {}
 
 ExceptionType::~ExceptionType() throw() {}
@@ -44,7 +47,7 @@ ExceptionType::~ExceptionType() throw() {}
 const char *ExceptionType::what() const throw()
 {
   res.clear();
-  utf8::utf16to8(what_.begin(), what_.end(), std::back_inserter(res));
+  what_.toUTF8String(res);
   return res.c_str();
 }
 }

@@ -37,8 +37,7 @@ ApertiumRE::read(FILE *input)
 {
   unsigned int size = Compression::multibyte_read(input);
   if (fseek(input, size, SEEK_CUR) != 0) {
-    cerr << "Error reading regexp" << endl;
-    exit(EXIT_FAILURE);
+    I18n(APR_I18N_DATA, "apertium").error("APR80170", true);
   }
 }
 
@@ -52,9 +51,8 @@ ApertiumRE::compile(UString const &str)
   UErrorCode err = U_ZERO_ERROR;
   re = RegexPattern::compile(s, UREGEX_DOTALL|UREGEX_CASE_INSENSITIVE, err);
   if(U_FAILURE(err)) {
-    cerr << "Error: unable to compile regular expression '" << str << "'." << endl;
-    cerr << "error code: " << u_errorName(err) << endl;
-    exit(EXIT_FAILURE);
+    I18n(APR_I18N_DATA, "apertium").error("APR80180", {"exp", "error"},
+                                                       {icu::UnicodeString(str.data()), u_errorName(err)}, true);
   }
 }
 
@@ -62,8 +60,7 @@ void
 ApertiumRE::write(FILE *output) const
 {
   if (re == nullptr) {
-    cerr << "Error, cannot write empty regexp" << endl;
-    exit(EXIT_FAILURE);
+    I18n(APR_I18N_DATA, "apertium").error("APR80190", true);
   }
   // for backwards compatibility, write empty binary form
   Compression::multibyte_write(0, output);
@@ -81,9 +78,8 @@ ApertiumRE::match(UString const &str) const
   RegexMatcher* m = re->matcher(s, err);
 
   if (U_FAILURE(err)) {
-    cerr << "Error: Unable to apply regexp" << endl;
-    cerr << "error code: " << u_errorName(err) << endl;
-    exit(EXIT_FAILURE);
+    I18n(APR_I18N_DATA, "apertium").error("APR80200", {"error"},
+                                                       {u_errorName(err)}, true);
   }
 
   if (!m->find()) {
@@ -93,9 +89,8 @@ ApertiumRE::match(UString const &str) const
 
   UString ret = m->group(err).getTerminatedBuffer();
   if (U_FAILURE(err)) {
-    cerr << "Error: Unable to extract substring from regexp match" << endl;
-    cerr << "error code: " << u_errorName(err) << endl;
-    exit(EXIT_FAILURE);
+    I18n(APR_I18N_DATA, "apertium").error("APR80210", {"error"},
+                                                       {u_errorName(err)}, true);
   }
 
   delete m;
@@ -116,9 +111,8 @@ ApertiumRE::replace(UString &str, UString const &value) const
   RegexMatcher* m = re->matcher(s, err);
 
   if (U_FAILURE(err)) {
-    cerr << "Error: Unable to apply regexp" << endl;
-    cerr << "error code: " << u_errorName(err) << endl;
-    exit(EXIT_FAILURE);
+    I18n(APR_I18N_DATA, "apertium").error("APR80200", {"error"},
+                                                       {u_errorName(err)}, true);
   }
 
   // do this manually rather than call m->replaceFirst()

@@ -19,12 +19,13 @@
 #include <iostream>
 #include <string>
 #include <array>
+#include <lttoolbox/i18n.h>
+#include <unicode/ustream.h>
 
 int main(int argc, char* argv[]) {
 	// Ignore -z, but anything else just show what this tool does
 	if (argc > 1 && argv[1][1] != 'z') {
-		std::cout << "Closes all word-bound blanks, turning [[...]]^...$ into [[...]]^...$[[/]]\n";
-		std::cout << "This tool does not merge across whitespace or do any other heuristics wrt. which word-bound blanks should have their spans combined.\n";
+		std::cout << I18n(APR_I18N_DATA, "apertium").format("wblank_detach_desc");
 		return 0;
 	}
 
