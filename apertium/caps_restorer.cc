@@ -185,7 +185,6 @@ CapsRestorer::read_word(InputFile& input)
       }
     }
     if (delete_wblanks) {
-      std::cerr << "WBLANKS!\n";
       UString new_wblank = StringUtils::join(new_pieces, "; "_u);
       if (!new_wblank.empty()) {
         cur.wblank = "[["_u;
