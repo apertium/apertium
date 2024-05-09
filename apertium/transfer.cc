@@ -1257,20 +1257,18 @@ Transfer::applyRule()
       }
     }
 
-    pair<UString, int> tr;
-    if(useBilingual && preBilingual == false)
-    {
-      tr = fstp.biltransWithQueue(*tmpword[i], false);
+    if(useBilingual && preBilingual == false) {
+      auto tr = fstp.biltransWithQueue(*tmpword[i], false);
       word[i] = new TransferWord(*tmpword[i], tr.first, ""_u, ""_u, tr.second);
     }
-    else if(preBilingual)
-    {
+    else if(preBilingual) {
       UString sl;
       UString tl;
       UString ref;
       UString wblank;
 
       int seenSlash = 0;
+      bool inTag = false;
       for(UString::const_iterator it = tmpword[i]->begin(); it != tmpword[i]->end(); it++)
       {
         if(*it == '\\')
@@ -1299,71 +1297,53 @@ Transfer::applyRule()
         {
           if(*(it+1) == '[') //wordbound blank
           {
-            while(true)
-            {
-              if(*it == '\\')
-              {
+            while(true) {
+              if(*it == '\\') {
                 wblank.push_back(*it);
                 it++;
                 wblank.push_back(*it);
               }
-              else if(*it == '^' && *(it-1) == ']' && *(it-2) == ']')
-              {
+              else if(*it == '^' && *(it-1) == ']' && *(it-2) == ']') {
                 break;
               }
-              else
-              {
+              else {
                 wblank.push_back(*it);
               }
 
               it++;
             }
           }
-          else
-          {
-            if(seenSlash == 0)
-            {
-              sl.push_back(*it);
-            }
-            else if(seenSlash == 1)
-            {
-              tl.push_back(*it);
-            }
-            else
-            {
-              ref.push_back(*it);
-            }
+          else {
+            if(seenSlash == 0)      sl.push_back(*it);
+            else if(seenSlash == 1) tl.push_back(*it);
+            else                   ref.push_back(*it);
           }
           continue;
         }
 
-        if(*it == '/')
-        {
+        if(*it == '/' && !inTag) {
           seenSlash++;
 
           ref.clear(); //word after last slash is ref
           continue;
         }
-        if(seenSlash == 0)
-        {
-          sl.push_back(*it);
+        // slashes in tags are accepted elsewhere in the pipe,
+        // so don't split readings on them here
+        else if (*it == '<') {
+          inTag = true;
         }
-        else if(seenSlash == 1)
-        {
-          tl.push_back(*it);
+        else if (*it == '>') {
+          inTag = false;
         }
-        else
-        {
-          ref.push_back(*it);
-        }
+        if(seenSlash == 0)      sl.push_back(*it);
+        else if(seenSlash == 1) tl.push_back(*it);
+        else                   ref.push_back(*it);
       }
-      tr = pair<UString, int>(tl, false);
-      word[i] = new TransferWord(sl, tr.first, ref, wblank, tr.second);
+      word[i] = new TransferWord(sl, tl, ref, wblank, false);
     }
     else // neither useBilingual nor preBilingual (sl==tl)
     {
-      tr = pair<UString, int>(*tmpword[i], false);
-      word[i] = new TransferWord(*tmpword[i], tr.first, ""_u, ""_u, tr.second);
+      word[i] = new TransferWord(*tmpword[i], *tmpword[i], ""_u, ""_u, false);
     }
   }
 

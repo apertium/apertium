@@ -95,6 +95,9 @@ class BasicTransferTest(TransferTest):
     inputs =          ["^hun<prn><f>/ho<prn><f>$"]
     expectedOutputs = ["^prn<prn><f>{^ho<prn><f>$}$"]
 
+class SlashTagTest(TransferTest):
+    inputs =          ['^hun<prn><m/f>/ho<prn><m/f>$']
+    expectedOutputs = ['^prn<prn><m/f>{^ho<prn><m/f>$}$']
 
 class SlLemqTest(TransferTest):
     inputs =          ["^skyldes<vblex><pstv><pres>/komme# av<vblex><pres>$"]
