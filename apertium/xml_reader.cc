@@ -38,8 +38,14 @@ XMLReader::step()
   {
     parseError("unexpected EOF"_u);
   }
-  name = XMLParseUtil::readName(reader);
   type = xmlTextReaderNodeType(reader);
+  if (type == XML_READER_TYPE_DOCUMENT_TYPE) {
+    // Some users have DOCTYPE declarations for the benefit of particular editors
+    // but we always want to skip those
+    step();
+    return;
+  }
+  name = XMLParseUtil::readName(reader);
   //std::cerr << name << ": " << type << "\n";
 }
 
