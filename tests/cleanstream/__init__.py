@@ -3,7 +3,7 @@
 
 import unittest
 
-from subprocess import Popen, PIPE
+from subprocess import run
 
 
 class CleanstreamTest(unittest.TestCase):
@@ -16,30 +16,18 @@ stuff) to create new cleanstream tests."""
     expectedRetCodeFail = False
 
     def runTest(self):
-        try:
-            for inp, exp in zip(self.inputs, self.expectedOutputs):
-                self.proc = Popen(
+        for inp, exp in zip(self.inputs, self.expectedOutputs):
+            with self.subTest(input_line=inp):
+                proc = run(
                     ["../apertium/apertium-cleanstream"] + self.flags,
-                    stdin=PIPE,
-                    stdout=PIPE,
-                    stderr=PIPE)
-
-                (got, goterr) = self.proc.communicate(inp.encode('utf-8'))
-                self.assertEqual(goterr.decode('utf-8'), "")
-                self.assertEqual(got.decode('utf-8'), exp)
-
-                self.proc.stdin.close()
-                self.proc.stdout.close()
-                self.proc.stderr.close()
-                retCode = self.proc.poll()
+                    input=inp.encode('utf-8'), capture_output=True, check=False,
+                )
+                self.assertEqual(proc.stderr.decode('utf-8'), "")
+                self.assertEqual(proc.stdout.decode('utf-8'), exp)
                 if self.expectedRetCodeFail:
-                    self.assertNotEqual(retCode, 0)
+                    self.assertNotEqual(0, proc.returncode)
                 else:
-                    self.assertEqual(retCode, 0)
-
-        finally:
-            pass
-
+                    self.assertEqual(0, proc.returncode)
 
 class BasicCleanstream(CleanstreamTest):
     inputs =          ["^a<n>$ ^a<n>$", "^a<n>+c<po>$", "^a<vblex><pres># b$", "[<div>]^x<n>$", "[<div>]\\^^a<vblex><pres># b$"]

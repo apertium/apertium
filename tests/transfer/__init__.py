@@ -1,18 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from base_test import IOTest
 import unittest
 
-from subprocess import Popen, PIPE, call
+from subprocess import call
 
-import signal
-
-
-class Alarm(Exception):
-    pass
-
-
-class TransferTest(unittest.TestCase):
+class TransferTest(IOTest, unittest.TestCase):
     """Subclass and override inputs/expectedOutputs (and possibly other
 stuff) to create new postchunk tests."""
 
@@ -21,38 +15,7 @@ stuff) to create new postchunk tests."""
     flags = ["-b", "-z"]
     inputs = [""]
     expectedOutputs = [""]
-    expectedRetCodeFail = False
     expectedCompRetCodeFail = False
-
-    def alarmHandler(self, signum, frame):
-        raise Alarm
-
-    def withTimeout(self, seconds, cmd, *args, **kwds):
-        signal.signal(signal.SIGALRM, self.alarmHandler)
-        signal.alarm(seconds)
-        ret = cmd(*args, **kwds)
-        signal.alarm(0)         # reset the alarm
-        return ret
-
-    def communicateFlush(self, string):
-        self.proc.stdin.write(string.encode('utf-8'))
-        self.proc.stdin.write(b'\0')
-        self.proc.stdin.flush()
-
-        output = []
-        char = None
-        try:
-            char = self.withTimeout(2, self.proc.stdout.read, 1)
-        except Alarm:
-            pass
-        while char and char != b'\0':
-            output.append(char)
-            try:
-                char = self.withTimeout(2, self.proc.stdout.read, 1)
-            except Alarm:
-                break           # send what we got up till now
-
-        return b"".join(output).decode('utf-8')
 
     def compile(self):
         retCode = call(["../apertium/apertium-preprocess-transfer",
@@ -67,29 +30,10 @@ stuff) to create new postchunk tests."""
     def runTest(self):
         if not self.compile():
             return
-        try:
-            cmd = ["../apertium/apertium-transfer"] \
-                + self.flags                        \
-                + [self.t1xdata, self.bindata]
-            self.proc = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-
-            for inp, exp in zip(self.inputs, self.expectedOutputs):
-                self.assertEqual(self.communicateFlush(inp+"[][\n]"),
-                                 exp+"[][\n]")
-
-            self.proc.communicate()  # let it terminate
-            self.proc.stdin.close()
-            self.proc.stdout.close()
-            self.proc.stderr.close()
-            retCode = self.proc.poll()
-            if self.expectedRetCodeFail:
-                self.assertNotEqual(retCode, 0)
-            else:
-                self.assertEqual(retCode, 0)
-
-        finally:
-            pass
-
+        cmd = ["../apertium/apertium-transfer"] \
+            + self.flags                        \
+            + [self.t1xdata, self.bindata]
+        self.runCommand(cmd, zip(self.inputs, self.expectedOutputs))
 
 class BasicTransferTest(TransferTest):
     inputs =          ["^hun<prn><f>/ho<prn><f>$"]
@@ -127,7 +71,7 @@ class BincompatTest(BasicTransferTest):
     bindata = "data/bincompat.t1x.bin"
 
     def compile(self):
-        pass
+        return True
 
 
 class EmptyTransferTest(TransferTest):

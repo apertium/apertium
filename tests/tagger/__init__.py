@@ -445,7 +445,8 @@ class PerceptronNullFlushTest(unittest.TestCase):
 
             for inp, exp in zip(self.inputs, self.outputs):
                 output = self.communicateFlush(inp+"[][\n]", proc)
-                self.assertEqual(output, exp+"[][\n]")
+                with self.subTest(input_line=inp):
+                    self.assertEqual(output, exp+"[][\n]")
 
             proc.communicate() # let it terminate
             proc.stdin.close()
