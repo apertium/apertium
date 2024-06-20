@@ -39,7 +39,6 @@ def process_node(node):
 		if 'v' in ch.attrib:
 			node_langs = set(ch.attrib['v'].split())
 			del ch.attrib['v']
-			print(node_langs, Langs, node_langs <= Langs)
 			if Langs <= node_langs:
 				process_node(ch)
 			else:
