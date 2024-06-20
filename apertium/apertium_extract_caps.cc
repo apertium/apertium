@@ -62,6 +62,14 @@ std::pair<UString, UString> read_lu(InputFile& input)
   return std::make_pair(surf, reading1);
 }
 
+UString lemma_case(UStringView lu)
+{
+  auto last_lem = lu.rfind(">+"_u);
+  if (last_lem == UStringView::npos) last_lem = 0;
+  auto lem_end = lu.find('<', last_lem);
+  return StringUtils::getcase(lu.substr(0, lem_end));
+}
+
 int main(int argc, char* argv[])
 {
   LtLocale::tryToSetLocale();
@@ -103,12 +111,10 @@ int main(int argc, char* argv[])
     }
     auto lu = read_lu(input);
     UString surf_case = StringUtils::getcase(lu.first);
-    UString::size_type loc = lu.second.find('<');
-    UString lemma_case = StringUtils::getcase(lu.second.substr(0, loc));
     UString new_wblank = "[[c:"_u;
     new_wblank += surf_case;
     new_wblank += '/';
-    new_wblank += lemma_case;
+    new_wblank += lemma_case(lu.second);
     new_wblank += "]]"_u;
     write(StringUtils::merge_wblanks(wblank, new_wblank), output);
     u_fputc('^', output);
