@@ -19,14 +19,16 @@
 #include <lttoolbox/cli.h>
 #include <lttoolbox/file_utils.h>
 #include <lttoolbox/lt_locale.h>
+#include <lttoolbox/i18n.h>
 
 int main(int argc, char** argv)
 {
   LtLocale::tryToSetLocale();
-  CLI cli("compile capitalization restoration rules");
-  cli.add_bool_arg('k', "keep", "retain all wblanks");
-  cli.add_bool_arg('z', "null-flush", "flush output on null character");
-  cli.add_bool_arg('h', "help", "print this message and exit");
+  I18n i18n {APR_I18N_DATA, "apertium"};
+  CLI cli(i18n.format("restore_caps_desc"));
+  cli.add_bool_arg('k', "keep", i18n.format("keep_desc"));
+  cli.add_bool_arg('z', "null-flush", i18n.format("null_flush_desc"));
+  cli.add_bool_arg('h', "help", i18n.format("help_desc"));
   cli.add_file_arg("rule_file", false);
   cli.add_file_arg("input_file", true);
   cli.add_file_arg("output_file", true);

@@ -18,6 +18,7 @@
 #include <lttoolbox/xml_parse_util.h>
 #include <lttoolbox/compression.h>
 #include <lttoolbox/string_utils.h>
+#include <lttoolbox/i18n.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -85,7 +86,9 @@ TSXReader::newTagIndex(UString const &tag)
 {
   if(tag_index->find("TAG_"_u + tag) != tag_index->end())
   {
-    parseError("'"_u + tag + "' already defined"_u);
+    I18n(APR_I18N_DATA, "apertium").error("APR81450", {"line", "column", "tag"},
+      {xmlTextReaderGetParserLineNumber(reader),
+       xmlTextReaderGetParserColumnNumber(reader), icu::UnicodeString(tag.data())}, true);
   }
 
   array_tags->push_back("TAG_"_u + tag);
@@ -97,7 +100,9 @@ TSXReader::newDefTag(UString const &tag)
 {
   if(tag_index->find("TAG_"_u + tag) != tag_index->end())
   {
-    parseError("'"_u + tag + "' already defined"_u);
+    I18n(APR_I18N_DATA, "apertium").error("APR81450", {"line", "column", "tag"},
+      {xmlTextReaderGetParserLineNumber(reader),
+       xmlTextReaderGetParserColumnNumber(reader), icu::UnicodeString(tag.data())}, true);
   }
 
   array_tags->push_back(tag);
@@ -141,7 +146,9 @@ TSXReader::procDiscardOnAmbiguity()
       }
       else
       {
-	parseError("Unexpected 'discard-on-ambiguity' open tag"_u);
+        I18n(APR_I18N_DATA, "apertium").error("APR81460", {"line", "column", "tag"},
+          {xmlTextReaderGetParserLineNumber(reader),
+           xmlTextReaderGetParserColumnNumber(reader), "discard-on-ambiguity"}, true);
       }
     }
     else
@@ -328,7 +335,9 @@ TSXReader::procLabelSequence()
   }
   if(name != "label-item"_u)
   {
-    parseError("<label-item> tag expected"_u);
+    I18n(APR_I18N_DATA, "apertium").error("APR81470", {"line", "column"},
+      {xmlTextReaderGetParserLineNumber(reader),
+       xmlTextReaderGetParserColumnNumber(reader)}, true);
   }
 
   forbid_rule.tagi = (*tag_index)["TAG_"_u + attrib("label"_u)];
@@ -340,7 +349,9 @@ TSXReader::procLabelSequence()
   }
   if(name != "label-item"_u)
   {
-    parseError("<label-item> tag expected"_u);
+    I18n(APR_I18N_DATA, "apertium").error("APR81470", {"line", "column"},
+      {xmlTextReaderGetParserLineNumber(reader),
+       xmlTextReaderGetParserColumnNumber(reader)}, true);
   }
   forbid_rule.tagj = (*tag_index)["TAG_"_u + attrib("label"_u)];
 
@@ -376,12 +387,16 @@ TSXReader::procForbid()
       }
       else
       {
-	parseError("Unexpected '"_u + name + "' open tag"_u);
+        I18n(APR_I18N_DATA, "apertium").error("APR81460", {"line", "column", "tag"},
+          {xmlTextReaderGetParserLineNumber(reader),
+           xmlTextReaderGetParserColumnNumber(reader), icu::UnicodeString(name.data())}, true);
       }
     }
     else
     {
-      parseError("Unexpected '"_u + name + "' tag"_u);
+      I18n(APR_I18N_DATA, "apertium").error("APR81460", {"line", "column", "tag"},
+        {xmlTextReaderGetParserLineNumber(reader),
+         xmlTextReaderGetParserColumnNumber(reader), icu::UnicodeString(name.data())}, true);
     }
   }
 }
@@ -432,12 +447,16 @@ TSXReader::procEnforce()
       }
       else
       {
-	parseError("Unexpected 'enforce-rules' open tag"_u);
+        I18n(APR_I18N_DATA, "apertium").error("APR81460", {"line", "column", "tag"},
+          {xmlTextReaderGetParserLineNumber(reader),
+           xmlTextReaderGetParserColumnNumber(reader), "enforce-rules"}, true);
       }
     }
     else
     {
-      parseError("Unexpected '"_u + name + "' tag"_u);
+      I18n(APR_I18N_DATA, "apertium").error("APR81460", {"line", "column", "tag"},
+        {xmlTextReaderGetParserLineNumber(reader),
+         xmlTextReaderGetParserColumnNumber(reader), icu::UnicodeString(name.data())}, true);
     }
   }
 }
@@ -472,12 +491,16 @@ TSXReader::procPreferences()
       }
       else
       {
-	parseError("Unexpected 'preferences' open tag"_u);
+        I18n(APR_I18N_DATA, "apertium").error("APR81460", {"line", "column", "tag"},
+          {xmlTextReaderGetParserLineNumber(reader),
+           xmlTextReaderGetParserColumnNumber(reader), "preferences"}, true);
       }
     }
     else
     {
-      parseError("Unexpected '"_u + name + "' tag"_u);
+      I18n(APR_I18N_DATA, "apertium").error("APR81460", {"line", "column", "tag"},
+        {xmlTextReaderGetParserLineNumber(reader),
+         xmlTextReaderGetParserColumnNumber(reader), icu::UnicodeString(name.data())}, true);
     }
   }
 }

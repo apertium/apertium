@@ -24,6 +24,7 @@
 #include <lttoolbox/string_utils.h>
 #include "apertium_config.h"
 #include <apertium/unlocked_cstdio.h>
+#include <lttoolbox/i18n.h>
 
 FileMorphoStream::FileMorphoStream(const char* ftxt, bool d, TaggerData *t) :
     ms() {
@@ -223,8 +224,9 @@ FileMorphoStream::lrlmClassify(UString const &str, int &ivwords)
       {
         if (debug)
         {
-          cerr<<"Warning: There is not coarse tag for the fine tag '"<< str.substr(floor) <<"' of '" << str << "'\n";
-          cerr<<"         This is because of an incomplete tagset definition or a dictionary error\n";
+          I18n(APR_I18N_DATA, "apertium").error("APR60340", {"substr", "str"},
+                                                             {icu::UnicodeString(str.substr(floor).data()),
+                                                              icu::UnicodeString(str.data())}, false);
 	}
         vwords[ivwords]->add_tag(ca_tag_kundef, str.substr(floor) , td->getPreferRules());
 	return;
@@ -255,8 +257,9 @@ FileMorphoStream::lrlmClassify(UString const &str, int &ivwords)
         {
           if (debug)
           {
-	    cerr<<"Warning: There is not coarse tag for the fine tag '"<< str.substr(floor) <<"' of '" << str << "'\n";
-            cerr<<"         This is because of an incomplete tagset definition or a dictionary error\n";
+          I18n(APR_I18N_DATA, "apertium").error("APR60340", {"substr", "str"},
+                                                             {icu::UnicodeString(str.substr(floor).data()),
+                                                              icu::UnicodeString(str.data())}, false);
 	  }
           vwords[ivwords]->add_tag(ca_tag_kundef, str.substr(floor) , td->getPreferRules());
 	  return;
@@ -271,8 +274,9 @@ FileMorphoStream::lrlmClassify(UString const &str, int &ivwords)
     val = ca_tag_kundef;
     if (debug)
     {
-      cerr<<"Warning: There is not coarse tag for the fine tag '"<< str.substr(floor) <<"' of '" << str << "'\n";
-      cerr<<"         This is because of an incomplete tagset definition or a dictionary error\n";
+          I18n(APR_I18N_DATA, "apertium").error("APR60340", {"substr", "str"},
+                                                             {icu::UnicodeString(str.substr(floor).data()),
+                                                              icu::UnicodeString(str.data())}, false);
     }
     if(ivwords > initial_iv) {
       // We've partially added a multiword -- undo the previous add to avoid outputting a partial (chopped off) lexical form:
@@ -305,9 +309,9 @@ FileMorphoStream::readRestOfWord(int &ivwords)
       if(str.size() > 0)
       {
         vwords[ivwords]->add_ignored_string(str);
-        cerr<<"Warning (internal): kIGNORE was returned while reading a word\n";
-        cerr<<"Word being read: "<<vwords[ivwords]->get_superficial_form()<<"\n";
-        cerr<<"Debug: "<< str <<"\n";
+        I18n(APR_I18N_DATA, "apertium").error("APR60350", {"word", "str"},
+                                              {icu::UnicodeString(vwords[ivwords]->get_superficial_form().data()),
+                                               icu::UnicodeString(str.data())}, false);
       }
       vwords[ivwords]->add_tag(ca_tag_keof, ""_u, td->getPreferRules());
       return;
@@ -347,9 +351,9 @@ FileMorphoStream::readRestOfWord(int &ivwords)
       if(str.size() > 0)
       {
         vwords[ivwords]->add_ignored_string(str);
-        cerr<<"Warning (internal): kIGNORE was returned while reading a word\n";
-        cerr<<"Word being read: "<<vwords[ivwords]->get_superficial_form()<<"\n";
-        cerr<<"Debug: "<< str <<"\n";
+        I18n(APR_I18N_DATA, "apertium").error("APR60350", {"word", "str"},
+                                              {icu::UnicodeString(vwords[ivwords]->get_superficial_form().data()),
+                                               icu::UnicodeString(str.data())}, false);
       }
       vwords[ivwords]->add_tag(ca_tag_keof, ""_u, td->getPreferRules());
       return;

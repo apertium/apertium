@@ -3,6 +3,7 @@
 #include <apertium/exception.h>
 #include <iostream>
 #include <algorithm>
+#include <lttoolbox/i18n.h>
 
 namespace Apertium {
 namespace SentenceStream {
@@ -111,14 +112,12 @@ TrainingCorpus::TrainingCorpus(Stream &tagged, Stream &untagged,
     //std::cerr << tagged_token.TheLexicalUnit->TheSurfaceForm << " || " << untagged_token.TheLexicalUnit->TheSurfaceForm << "\n";
     if (untagged_token.TheLexicalUnit->TheSurfaceForm != tagged_token.TheLexicalUnit->TheSurfaceForm) {
       if (!skip_on_error) {
-        std::stringstream what_;
-        what_ << "Streams diverged at line " << tagged_line << "\n";
-        what_ << "Untagged token: "
-              << untagged_token.TheLexicalUnit->TheSurfaceForm << "\n";
-        what_ << "Tagged token: "
-              << tagged_token.TheLexicalUnit->TheSurfaceForm << "\n";
-        what_ << "Rerun with --skip-on-error to skip this sentence.";
-        throw Exception::UnalignedStreams(what_);
+        icu::UnicodeString msg = I18n(APR_I18N_DATA, "apertium").format("APR60970",
+          {"tagged_line", "untagged_token", "tagged_token"},
+          {std::to_string(tagged_line).c_str(), 
+           icu::UnicodeString(untagged_token.TheLexicalUnit->TheSurfaceForm.data()),
+           icu::UnicodeString(tagged_token.TheLexicalUnit->TheSurfaceForm.data())});
+        throw Exception::UnalignedStreams(msg);
       }
 
       skipped++;
@@ -175,10 +174,7 @@ bool TrainingCorpus::contToEndOfSent(Stream &stream, StreamedType token,
 
 void TrainingCorpus::prematureEnd()
 {
-  std::stringstream what_;
-  what_ << "One stream has ended prematurely. "
-        << "Please check if they are aligned.\n";
-  throw Exception::UnalignedStreams(what_);
+  throw Exception::UnalignedStreams(I18n(APR_I18N_DATA, "apertium").format("APR80980", {}, {}));
 }
 
 void TrainingCorpus::shuffle()

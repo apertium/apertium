@@ -28,16 +28,19 @@
 #include <io.h>
 #include <fcntl.h>
 #endif
+#include <lttoolbox/i18n.h>
+#include <unicode/ustream.h>
 
 using namespace std;
 
 void message(char *progname)
 {
-  cerr << "USAGE: " << basename(progname) << " preproc biltrans [input [output]]" << endl;
-  cerr << "  preproc    result of preprocess trules file" << endl;
-  cerr << "  biltrans   bilingual letter transducer file" << endl;
-  cerr << "  input      input file, standard input by default" << endl;
-  cerr << "  output     output file, standard output by default" << endl;
+  I18n i18n {APR_I18N_DATA, "apertium"};
+  cerr << i18n.format("usage") << ": " << basename(progname) << " preproc biltrans [input [output]]" << endl;
+  cerr << "  preproc    " <<  i18n.format("preproc_desc") << endl;
+  cerr << "  biltrans   " <<  i18n.format("biltrans_desc") << endl;
+  cerr << "  input      " <<  i18n.format("input_desc") << endl;
+  cerr << "  output     " <<  i18n.format("output_desc") << endl;
   exit(EXIT_FAILURE);
 }
 
@@ -55,9 +58,7 @@ int main(int argc, char *argv[])
     struct stat mybuf;
     if(stat(argv[i], &mybuf) == -1)
     {
-      cerr << "Error: can't stat file '";
-      cerr << argv[i] << "'." << endl;
-      exit(EXIT_FAILURE);
+		  I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {argv[i]}, true);
     }
   }
 
@@ -66,17 +67,14 @@ int main(int argc, char *argv[])
   if(argc >= 4)
   {
     if (!input.open(argv[3])) {
-      cerr << "Error: can't open input file '" << argv[3] << "'." << endl;
-      exit(EXIT_FAILURE);
+		  I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {argv[3]}, true);
     }
     if(argc == 5)
     {
       output = u_fopen(argv[4], "w", NULL, NULL);
       if(!output)
       {
-        cerr << "Error: can't open output file '";
-        cerr << argv[4] << "'." << endl;
-        exit(EXIT_FAILURE);
+		    I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {argv[4]}, true);
       }
     }
   }

@@ -16,6 +16,8 @@
 #include "i.h"
 
 #include "exception.h"
+#include <lttoolbox/i18n.h>
+#include <unicode/ustring.h>
 
 namespace Apertium {
 bool operator==(const i &a_, const i &b_) { return a_.TheTags == b_.TheTags; }
@@ -26,22 +28,17 @@ i::i() {}
 
 i::i(const Analysis &Analysis_) : TheTags() {
   if (Analysis_.TheMorphemes.empty())
-    throw Exception::Analysis::TheMorphemes_empty("can't convert const "
-                                                  "Analysis & comprising empty "
-                                                  "Morpheme std::vector to i");
+    throw Exception::Analysis::TheMorphemes_empty(I18n(APR_I18N_DATA, "apertium").format("APR80130", {"letter"}, {"i"}));
 
   if (Analysis_.TheMorphemes.front().TheTags.empty())
-    throw Exception::Morpheme::TheTags_empty("can't convert const Analysis & "
-                                             "comprising Morpheme comprising "
-                                             "empty Tag std::vector to i");
+    throw Exception::Morpheme::TheTags_empty(I18n(APR_I18N_DATA, "apertium").format("APR80460", {"letter"}, {"i"}));
 
   TheTags = Analysis_.TheMorphemes.front().TheTags;
 }
 
 i::i(const Morpheme &Morpheme_) : TheTags() {
   if (Morpheme_.TheTags.empty())
-    throw Exception::Morpheme::TheTags_empty(
-        "can't convert const Morpheme & comprising empty Tag std::vector to i");
+    throw Exception::Morpheme::TheTags_empty(I18n(APR_I18N_DATA, "apertium").format("APR80450", {"letter"}, {"i"}));
 
   TheTags = Morpheme_.TheTags;
 }

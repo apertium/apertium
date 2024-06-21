@@ -23,6 +23,7 @@
 #include <lttoolbox/string_utils.h>
 #include <lttoolbox/file_utils.h>
 #include <lttoolbox/cli.h>
+#include <lttoolbox/i18n.h>
 
 #ifdef __MINGW32__
 #include <windows.h>
@@ -72,13 +73,14 @@ UString lemma_case(UStringView lu)
 
 int main(int argc, char* argv[])
 {
+  I18n i18n {APR_I18N_DATA, "apertium"};
   LtLocale::tryToSetLocale();
-  CLI cli("Transfer capitalization information to word-bound blanks");
+  CLI cli(i18n.format("extract_caps_desc"));
   cli.add_file_arg("input_file");
   cli.add_file_arg("output_file");
-  cli.add_bool_arg('s', "surface", "keep surface forms");
-  cli.add_bool_arg('z', "null-flush", "flush output on the null character");
-  cli.add_bool_arg('h', "help", "print this message and exit");
+  cli.add_bool_arg('s', "surface", i18n.format("surface_desc"));
+  cli.add_bool_arg('z', "null-flush", i18n.format("null_flush_desc"));
+  cli.add_bool_arg('h', "help", i18n.format("help_desc"));
   cli.parse_args(argc, argv);
 
   bool keep_surf = cli.get_bools()["surface"];

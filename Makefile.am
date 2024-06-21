@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS=-I m4
 
-SUBDIRS = $(PACKAGE_NAME) scripts tests
+SUBDIRS = $(PACKAGE_NAME) scripts tests locales
 DIST_SUBDIRS = $(PACKAGE_NAME) scripts tests
 
 modesdir=$(prefix)/share/apertium/modes
@@ -23,3 +23,8 @@ install-data-local:
 
 # just a synonym:
 test: check
+
+
+export ALT_I18N_DATA=$(datadir)/lttoolbox/lttoolbox.dat
+export LOCALES_DIR=$(datadir)/$(PACKAGE_NAME)
+export APR_I18N_DATA=$(LOCALES_DIR)/apertium.dat

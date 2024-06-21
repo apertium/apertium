@@ -25,6 +25,7 @@
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <lttoolbox/i18n.h>
 
 namespace Apertium {
 
@@ -64,7 +65,7 @@ UnigramTagger::serialise(std::ostream& o) const
       break;
     default:
       throw Exception::apertium_tagger::InvalidArgument(
-          "can't serialise without first selecting a model");
+          I18n(APR_I18N_DATA, "apertium").format("APR81480"));
   }
 }
 
@@ -86,7 +87,7 @@ UnigramTagger::deserialise(std::istream& s)
       break;
     default:
       throw Exception::apertium_tagger::InvalidArgument(
-          "can't read tagger without first selecting a model");
+          I18n(APR_I18N_DATA, "apertium").format("APR81490"));
   }
 }
 
@@ -146,7 +147,7 @@ UnigramTagger::score(const Analysis& Analysis_) {
       break;
     default:
       throw Exception::apertium_tagger::InvalidArgument(
-          "can't score analysis without first selecting a model");
+          I18n(APR_I18N_DATA, "apertium").format("APR81500"));
   }
 }
 
@@ -331,7 +332,7 @@ UnigramTagger::train_Analysis(const Analysis &Analysis_, const std::size_t &Coef
       break;
     default:
       throw Exception::apertium_tagger::InvalidArgument(
-          "can't train model without first selecting a model");
+          I18n(APR_I18N_DATA, "apertium").format("APR81510"));
   }
 }
 
@@ -382,7 +383,7 @@ UnigramTagger::multiplyModel(const std::size_t &OccurrenceCoefficientMultiplier)
       break;
     default:
       throw Exception::apertium_tagger::InvalidArgument(
-          "can't multiplyModel() without first selecting a model");
+          I18n(APR_I18N_DATA, "apertium").format("APR81520"));
   }
 }
 
@@ -396,7 +397,7 @@ UnigramTagger::train(Stream &TaggedCorpus) {
 
     if (StreamedType_.TheLexicalUnit->TheAnalyses.empty())
       throw Exception::LexicalUnit::TheAnalyses_empty(
-          "can't train LexicalUnit comprising empty Analysis std::vector");
+          I18n(APR_I18N_DATA, "apertium").format("APR81530"));
 
     std::size_t analysis_count = StreamedType_.TheLexicalUnit->TheAnalyses.size();
 

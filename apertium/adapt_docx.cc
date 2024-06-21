@@ -32,24 +32,25 @@
 
 #include <utf8.h>
 #include "unicode/uchar.h"
+#include <lttoolbox/i18n.h>
+#include <unicode/ustream.h>
 
 using namespace std;
 
 void endProgram(char *name)
 {
-	cout << basename(name) << ": makes some changes to .xml files from .docx components" << endl;
-	cout << "- moves word boundaries to 'legal' positions" << endl;
-	cout << "Gets input file name from stdin (or from -f), writes to stdout" << endl;
-	cout << "USAGE: " << basename(name) << " [-n] [-p] [-f filename]" << endl;
-	cout << "Options:" << endl;
+	I18n i18n {APR_I18N_DATA, "apertium"};
+	cout << basename(name) << ": " << i18n.format("adapt_docx_desc") << endl;
+	cout << i18n.format("usage") << ": " << basename(name) << " [-n] [-p] [-f filename]" << endl;
+	cout << i18n.format("options") << ":" << endl;
 #if HAVE_GETOPT_LONG
-	cout << "  -n, --name:    writes \"< file name=\"filename\">\" to output" << endl;
-	cout << "  -f, --file:    gets file name as parameter" << endl;
-	cout << "  -p, --pretty:  outputs xml with a pretty format" << endl;
+	cout << "  -n, --name:    " << i18n.format("name_desc") << endl;
+	cout << "  -f, --file:    " << i18n.format("file_desc") << endl;
+	cout << "  -p, --pretty:  " << i18n.format("pretty_desc") << endl;
 #else
-	cout << "  -n:    writes \"< file name=\"filename\">\" to output" << endl;
-	cout << "  -f:    gets file name as parameter" << endl;
-	cout << "  -p:    outputs xml with a pretty format" << endl;
+	cout << "  -n:    " << i18n.format("name_desc") << endl;
+	cout << "  -f:    " << i18n.format("file_desc") << endl;
+	cout << "  -p:    " << i18n.format("pretty_desc") << endl;
 #endif
 	exit(EXIT_FAILURE);
 }
@@ -233,7 +234,7 @@ Paragraph::Paragraph(xmlNode *_root)
 void showParagraphs(xmlNode *root)
 {
 	vector<xmlNode*> pp = Walker::findAll(root, "p", true);
-	cout << pp.size() << " paragraphs found" << endl;
+	cout << I18n(APR_I18N_DATA, "apertium").format("paragraphs_found", {"num"}, {to_string(pp.size()).c_str()}) << endl;
 	for (auto it1 = pp.begin(); it1 != pp.end(); it1++) {
 		Paragraph p(*it1);
 		bool first = true;
@@ -403,7 +404,7 @@ void process(string fileName, bool outputsName, bool pretty)
 {
 	xmlDoc *document = xmlReadFile(fileName.c_str(), NULL, XML_PARSE_NOENT);
 	if (document == NULL) {
-		cerr << "error: could not parse file \"" << fileName << "\"" << endl;
+		I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {fileName.c_str()}, false);
 		return;
 	}
 	process(xmlDocGetRootElement(document));

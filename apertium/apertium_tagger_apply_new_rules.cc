@@ -28,6 +28,8 @@
 #include <apertium/tsx_reader.h>
 #include <lttoolbox/string_utils.h>
 #include <lttoolbox/lt_locale.h>
+#include <lttoolbox/i18n.h>
+#include <unicode/ustream.h>
 
 using namespace Apertium;
 
@@ -39,21 +41,21 @@ TTag eos; //End-of-sentence tag
 
 void check_file(FILE *f, const string& path) {
   if (!f) {
-    cerr<<"Error: cannot open file '"<<path.c_str()<<"'\n";
-    exit(EXIT_FAILURE);
+		I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {path.c_str()}, true);
   }
 }
 
 void help(char *name) {
-  cerr<<"Forbid and enforce rules are applied to the given HMM parameters\n\n";
-  cerr<<"USAGE:\n";
+	I18n i18n {APR_I18N_DATA, "apertium"};
+  cerr<< i18n.format("tagger_apply_new_rules_desc") << "\n\n";
+  cerr<< i18n.format("usage") << ":\n";
   cerr<<name<<" --filein filein.prob --fileout fileout.prob --tsxfile file.tsx\n\n";
 
-  cerr<<"ARGUMENTS: \n"
-      <<"   --filein|-i: To specify the file with the HMM parameter to process\n\n"
-      <<"   --fileout|-o: To specify the file to which the HMM will be written\n\n"
-      <<"   --tsxfile|-x: File containing the rules to apply\n\n"
-      <<"NOTE: Parameters are read from and written to the files provided\n";
+  cerr<< i18n.format("arguments") << ": \n"
+      <<"   --filein|-i: " <<  i18n.format("hmm_filein_desc") << "\n\n"
+      <<"   --fileout|-o: " <<  i18n.format("hmm_fileout_desc") << "\n\n"
+      <<"   --tsxfile|-x: " <<  i18n.format("hmm_tsxfile_desc") << "\n\n"
+      << i18n.format("tagger_apply_new_rules_note") << "\n";
 }
 
 int main(int argc, char* argv[]) {
@@ -121,21 +123,18 @@ int main(int argc, char* argv[]) {
 
   //Now we check the command line arguments
   if (filein=="") {
-    cerr<<"Error: You did not provide an input file (.prob). Use --filein to do that\n";
     help(argv[0]);
-    exit(EXIT_FAILURE);
+		I18n(APR_I18N_DATA, "apertium").error("APR80220", true);
   }
 
   if (fileout=="") {
-    cerr<<"Error: You did not provide an output file (.prob). Use --fileout to do that\n";
     help(argv[0]);
-    exit(EXIT_FAILURE);
+		I18n(APR_I18N_DATA, "apertium").error("APR80230", true);
   }
 
   if (filetsx=="") {
-    cerr<<"Error: You did not provide a tagger definition file (.tsx). Use --filetsx to do that\n";
     help(argv[0]);
-    exit(EXIT_FAILURE);
+		I18n(APR_I18N_DATA, "apertium").error("APR80240", true);
   }
 
   FILE *fin, *fout;
@@ -143,15 +142,16 @@ int main(int argc, char* argv[]) {
   fin=fopen(filein.c_str(), "rb");
   check_file(fin, filein);
 
-  cerr<<"Reading apertium-tagger data from file '"<<filein<<"' ... "<<flush;
+	I18n i18n {APR_I18N_DATA, "apertium"};
+  cerr << i18n.format("reading_from_file", {"file_name"}, {filein.c_str()}) << flush;
   tagger_data_hmm.read(fin);
   fclose(fin);
-  cerr<<"done.\n";
+  cerr <<i18n.format("done") << "\n";
 
-  cerr<<"Reading apertium-tagger definition from file '"<<filetsx<<"' ... "<<flush;
+  cerr << i18n.format("reading_from_file", {"file_name"}, {filetsx.c_str()}) << flush;
   TSXReader treader;
   treader.read(filetsx);
-  cerr<<"done.\n";
+  cerr <<i18n.format("done") << "\n";
 
   tagger_data_hmm.setForbidRules(treader.getTaggerData().getForbidRules());
   tagger_data_hmm.setEnforceRules(treader.getTaggerData().getEnforceRules());
@@ -162,8 +162,8 @@ int main(int argc, char* argv[]) {
 
   fout=fopen(fileout.c_str(), "wb");
   check_file(fout, fileout);
-  cerr<<"Writing apertium-tagger data to file '"<<fileout<<"' ... "<<flush;
+  cerr << i18n.format("writing_to_file", {"file_name"}, {fileout.c_str()}) << flush;
   hmm.serialise(fout);
   fclose(fout);
-  cerr<<"done.\n";
+  cerr <<i18n.format("done") << "\n";
 }

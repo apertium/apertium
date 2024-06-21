@@ -136,4 +136,5 @@ AC_OUTPUT([
 	scripts/Makefile
 	tests/Makefile tests/tagger/Makefile
 	python/Makefile
+  locales/Makefile
 	])

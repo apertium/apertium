@@ -20,6 +20,7 @@
 #include <lttoolbox/xml_walk_util.h>
 
 #include <iostream>
+#include <lttoolbox/i18n.h>
 
 using namespace std;
 
@@ -32,8 +33,7 @@ Transfer::readBil(string const &fstfile)
   FILE *in = fopen(fstfile.c_str(), "rb");
   if(!in)
   {
-    cerr << "Error: Could not open file '" << fstfile << "'." << endl;
-    exit(EXIT_FAILURE);
+    I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {fstfile.c_str()}, true);
   }
   fstp.load(in);
   fstp.initBiltrans();
@@ -46,8 +46,7 @@ Transfer::setExtendedDictionary(string const &fstfile)
   FILE *in = fopen(fstfile.c_str(), "rb");
   if(!in)
   {
-    cerr << "Error: Could not open extended dictionary file '" << fstfile << "'." << endl;
-    exit(EXIT_FAILURE);
+    I18n(APR_I18N_DATA, "apertium").error("APR80000", {"file_name"}, {fstfile.c_str()}, true);
   }
   extended.load(in);
   extended.initBiltrans();
@@ -75,16 +74,19 @@ Transfer::checkIndex(xmlNode *element, int index, int limit)
 {
   if(index >= limit)
   {
-    cerr << "Error in " << (char *) doc->URL << ": line " << element->line << ": index >= limit" << endl;
+    I18n(APR_I18N_DATA, "apertium").error("APR80470", {"file_name", "line_number"},
+                                                       {(char *) doc->URL, element->line}, false);
     return false;
   }
   if(index < 0) {
-    cerr << "Error in " << (char *) doc->URL << ": line " << element->line << ": index < 0" << endl;
+    I18n(APR_I18N_DATA, "apertium").error("APR80480", {"file_name", "line_number"},
+                                                       {(char *) doc->URL, element->line}, false);
     return false;
   }
   if(word[index] == 0)
   {
-    cerr << "Error in " << (char *) doc->URL << ": line " << element->line << ": Null access at word[index]" << endl;
+    I18n(APR_I18N_DATA, "apertium").error("APR80490", {"file_name", "line_number"},
+                                                       {(char *) doc->URL, element->line}, false);
     return false;
   }
   return true;
@@ -380,8 +382,7 @@ Transfer::processMlu(xmlNode* element)
 void
 Transfer::processLuCount(xmlNode* element)
 {
-  cerr << "Error: unexpected expression: '" << element->name << "'" << endl;
-  exit(EXIT_FAILURE);
+  I18n(APR_I18N_DATA, "apertium").error("APR80500", {"expression"}, {(char*)element->name}, true);
 }
 
 void
@@ -445,8 +446,7 @@ Transfer::processChunk(xmlNode *localroot)
     }
     else
     {
-      cerr << "Error: you must specify either 'name' or 'namefrom' for the 'chunk' element" << endl;
-      exit(EXIT_FAILURE);
+      I18n(APR_I18N_DATA, "apertium").error("APR81350", true);
     }
   }
   else
@@ -461,8 +461,7 @@ Transfer::processChunk(xmlNode *localroot)
     }
     else
     {
-      cerr << "Error: you must specify either 'name' or 'namefrom' for the 'chunk' element" << endl;
-      exit(EXIT_FAILURE);
+      I18n(APR_I18N_DATA, "apertium").error("APR81350", true);
     }
   }
 
@@ -534,7 +533,8 @@ Transfer::processLet(xmlNode *localroot)
           bool match = word[ti.getPos()]->setSource(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
           if (!match && trace)
           {
-            cerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+            I18n(APR_I18N_DATA, "apertium").error("APR61360", {"tag", "line"},
+              {"<let>", localroot->line}, false);
           }
         }
         return;
@@ -544,7 +544,8 @@ Transfer::processLet(xmlNode *localroot)
           bool match = word[ti.getPos()]->setTarget(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
           if (!match && trace)
           {
-            cerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+            I18n(APR_I18N_DATA, "apertium").error("APR61360", {"tag", "line"},
+              {"<let>", localroot->line}, false);
           }
         }
         return;
@@ -554,7 +555,8 @@ Transfer::processLet(xmlNode *localroot)
           bool match = word[ti.getPos()]->setReference(attr_items[ti.getContent()], evalString(rightSide), ti.getCondition());
           if (!match && trace)
           {
-            cerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+            I18n(APR_I18N_DATA, "apertium").error("APR61360", {"tag", "line"},
+              {"<let>", localroot->line}, false);
           }
         }
         return;
@@ -612,11 +614,11 @@ Transfer::processLet(xmlNode *localroot)
     }
 
     if (pos >= lword) {
-      cerr << "Error: Transfer::processLet() bad access on pos >= lword" << endl;
+      I18n(APR_I18N_DATA, "apertium").error("APR81370", false);
       return;
     }
     if (word[pos] == 0) {
-      cerr << "Error: Transfer::processLet() null access on word[pos]" << endl;
+      I18n(APR_I18N_DATA, "apertium").error("APR81380", false);
       return;
     }
 
@@ -625,7 +627,8 @@ Transfer::processLet(xmlNode *localroot)
       bool match = word[pos]->setTarget(attr_items[part], evalString(rightSide), queue);
       if(!match && trace)
       {
-        cerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+        I18n(APR_I18N_DATA, "apertium").error("APR61360", {"tag", "line"},
+          {"<let>", localroot->line}, false);
       }
       evalStringCache[leftSide] = TransferInstr(ti_clip_tl, part, pos, NULL, queue);
     }
@@ -634,7 +637,8 @@ Transfer::processLet(xmlNode *localroot)
       bool match = word[pos]->setReference(attr_items[part], evalString(rightSide), queue);
       if(!match && trace)
       {
-        cerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+        I18n(APR_I18N_DATA, "apertium").error("APR61360", {"tag", "line"},
+          {"<let>", localroot->line}, false);
       }
       evalStringCache[leftSide] = TransferInstr(ti_clip_ref, part, pos, NULL, queue);
     }
@@ -643,7 +647,8 @@ Transfer::processLet(xmlNode *localroot)
       bool match = word[pos]->setSource(attr_items[part], evalString(rightSide), queue);
       if(!match && trace)
       {
-        cerr << "apertium-transfer warning: <let> on line " << localroot->line << " sometimes discards its value." << endl;
+        I18n(APR_I18N_DATA, "apertium").error("APR61360", {"tag", "line"},
+          {"<let>", localroot->line}, false);
       }
       evalStringCache[leftSide] = TransferInstr(ti_clip_sl, part, pos, NULL, queue);
     }
@@ -706,7 +711,8 @@ Transfer::processModifyCase(xmlNode *localroot)
       bool match = word[pos]->setSource(attr_items[part], result);
       if(!match && trace)
       {
-        cerr << "apertium-transfer warning: <modify-case> on line " << localroot->line << " sometimes discards its value." << endl;
+        I18n(APR_I18N_DATA, "apertium").error("APR61360", {"tag", "line"},
+          {"<modify-case>", localroot->line}, false);
       }
     }
     else if(!xmlStrcmp(side, (const xmlChar *) "ref"))
@@ -716,7 +722,8 @@ Transfer::processModifyCase(xmlNode *localroot)
       bool match = word[pos]->setReference(attr_items[part], result);
       if(!match && trace)
       {
-        cerr << "apertium-transfer warning: <modify-case> on line " << localroot->line << " sometimes discards its value." << endl;
+        I18n(APR_I18N_DATA, "apertium").error("APR61360", {"tag", "line"},
+          {"<modify-case>", localroot->line}, false);
       }
     }
     else
@@ -726,7 +733,8 @@ Transfer::processModifyCase(xmlNode *localroot)
       bool match = word[pos]->setTarget(attr_items[part], result);
       if(!match && trace)
       {
-        cerr << "apertium-transfer warning: <modify-case> on line " << localroot->line << " sometimes discards its value." << endl;
+        I18n(APR_I18N_DATA, "apertium").error("APR61360", {"tag", "line"},
+          {"<modify-case>", localroot->line}, false);
       }
     }
   }
@@ -764,7 +772,7 @@ Transfer::processCallMacro(xmlNode *localroot)
     std::fill(myword, myword+npar, (TransferWord *)(0));
     for (auto i : children(localroot)) {
       if (idx >= npar) {
-        cerr << "Error: processCallMacro() number of arguments >= npar at line " << i->line << endl;
+        I18n(APR_I18N_DATA, "apertium").error("APR81390", {"line"}, {i->line}, false);
         return;
       }
       int pos = atoi((const char *) i->properties->children->content)-1;
@@ -1228,7 +1236,7 @@ Transfer::transfer(InputFile& in, UFILE* out)
 	break;
 
       default:
-	cerr << "Error: Unknown input token." << endl;
+        I18n(APR_I18N_DATA, "apertium").error("APR80510", false);
 	return;
     }
   }

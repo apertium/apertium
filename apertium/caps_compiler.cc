@@ -132,7 +132,9 @@ CapsCompiler::compile_node(xmlNode* node, int32_t state)
   else if (inner_name == CAPS_COMPILER_BEGIN_ELEM)
     return trans.insertSingleTransduction(alpha(null_boundary, 0), state);
   else {
-    error_and_die(node, "Unexpected tag <%S>", inner_name.c_str());
+    I18n(APR_I18N_DATA, "apertium").error("APR80120", {"file_name", "line_number", "tag"},
+      {(char*) node->doc->URL,
+       std::to_string(node->line).c_str(), icu::UnicodeString(inner_name.data())}, false);
     return 0;
   }
 }
@@ -175,10 +177,12 @@ CapsCompiler::compile_match(xmlNode* node, int32_t state)
   UString select = getattr(node, CAPS_COMPILER_SELECT_ATTR);
 
   if (lemma != "*"_u && tlcaps != "*"_u) {
-    error_and_die(node, "Attribute lemma conflicts with attribute trglem");
+    I18n(APR_I18N_DATA, "apertium").error("APR80290", {"file_name", "line_number"},
+                                                       {(char*)node->doc->URL, node->line}, true);
   }
   if (surf != "*"_u && tscaps != "*"_u) {
-    error_and_die(node, "Attribute surface conflicts with attribute trgsurf");
+    I18n(APR_I18N_DATA, "apertium").error("APR80300", {"file_name", "line_number"},
+                                                       {(char*)node->doc->URL, node->line}, true);
   }
 
   state = compile_caps_specifier(sscaps, state);
@@ -238,7 +242,8 @@ CapsCompiler::compile_match(xmlNode* node, int32_t state)
   } else if (select == CAPS_COMPILER_DIX_VAL) {
     state = trans.insertSingleTransduction(dix_sym, state);
   } else {
-    error_and_die(node, "Unknown select value '%S'", select.c_str());
+    I18n(APR_I18N_DATA, "apertium").error("APR80310", {"file_name", "line_number", "select"},
+                                                       {(char*)node->doc->URL, node->line, (char*)select.c_str()}, true);
   }
 
   return state;
@@ -265,9 +270,11 @@ CapsCompiler::compile_repeat(xmlNode* node, int32_t start_state)
   int from = StringUtils::stoi(xfrom);
   int upto = StringUtils::stoi(xupto);
   if(from < 0 || upto < 0) {
-    error_and_die(node, "Number of repetitions cannot be negative.");
+    I18n(APR_I18N_DATA, "apertium").error("APR80320", {"file_name", "line_number"},
+                                                       {(char*)node->doc->URL, node->line}, true);
   } else if(from > upto) {
-    error_and_die(node, "Lower bound on number of repetitions cannot be larger than upper bound.");
+    I18n(APR_I18N_DATA, "apertium").error("APR80330", {"file_name", "line_number"},
+                                                       {(char*)node->doc->URL, node->line}, true);
   }
   int count = upto - from;
   Transducer temp = trans;
