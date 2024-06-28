@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+#
+# Copyright (C) 2024 Apertium
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <https://www.gnu.org/licenses/>.
+#
+
+import argparse
+import sys
+import xml.etree.ElementTree as ET
+
+parser = argparse.ArgumentParser('Filter out language-specific rules from Apertium XML files')
+parser.add_argument('lang', nargs='+', action='store')
+parser.add_argument('infile', action='store')
+parser.add_argument('outfile', action='store', default='-', nargs='?')
+args = parser.parse_args()
+
+Langs = set(args.lang)
+
+SKIP_TAGS = [
+	'with-param', 'param', 'list-item', 'lit', 'lit-tag', 'attr-item', 'def-var'
+]
+
+def process_node(node):
+	to_remove = []
+	for ch in node:
+		if ch.tag in SKIP_TAGS:
+			continue
+		if 'v' in ch.attrib:
+			node_langs = set(ch.attrib['v'].split())
+			del ch.attrib['v']
+			if Langs <= node_langs:
+				process_node(ch)
+			else:
+				to_remove.append(ch)
+		else:
+			process_node(ch)
+	for ch in to_remove:
+		node.remove(ch)
+
+infile = sys.stdin if args.infile == '-' else args.infile
+outfile = sys.stdout.buffer if args.outfile == '-' else args.outfile
+
+parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
+tree = ET.parse(infile, parser=parser)
+process_node(tree.getroot())
+tree.write(outfile, encoding='utf-8')
