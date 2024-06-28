@@ -63,7 +63,10 @@ patterns used in rules
      sequence, such as "^casa<n><f><pl>$".
 
      In addition, an optional attribute, "lemma", may be used to
-     define lexical forms having a particular substring in their lemma
+     define lexical forms having a particular substring in their
+     lemma. As with tags, you can use * as a wildcard to match one or
+     more characters, e.g. lemma="*dog" will include "sheepdog" (but
+     not "dog")
 -->
 
 <!ELEMENT section-def-attrs (def-attr+)>
