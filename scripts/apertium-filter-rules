@@ -33,6 +33,7 @@ SKIP_TAGS = [
 ]
 
 def process_node(node):
+	to_remove = []
 	for ch in node:
 		if ch.tag in SKIP_TAGS:
 			continue
@@ -42,9 +43,11 @@ def process_node(node):
 			if Langs <= node_langs:
 				process_node(ch)
 			else:
-				node.remove(ch)
+				to_remove.append(ch)
 		else:
 			process_node(ch)
+	for ch in to_remove:
+		node.remove(ch)
 
 infile = sys.stdin if args.infile == '-' else args.infile
 outfile = sys.stdout.buffer if args.infile == '-' else args.outfile
@@ -52,4 +55,4 @@ outfile = sys.stdout.buffer if args.infile == '-' else args.outfile
 parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
 tree = ET.parse(infile, parser=parser)
 process_node(tree.getroot())
-tree.write(outfile)
+tree.write(outfile, encoding='utf-8')
