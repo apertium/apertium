@@ -23,7 +23,7 @@ import xml.etree.ElementTree as ET
 parser = argparse.ArgumentParser('Filter out language-specific rules from Apertium XML files')
 parser.add_argument('lang', nargs='+', action='store')
 parser.add_argument('infile', action='store')
-parser.add_argument('outfile', action='store')
+parser.add_argument('outfile', action='store', default='-', nargs='?')
 args = parser.parse_args()
 
 Langs = set(args.lang)
@@ -50,7 +50,7 @@ def process_node(node):
 		node.remove(ch)
 
 infile = sys.stdin if args.infile == '-' else args.infile
-outfile = sys.stdout.buffer if args.infile == '-' else args.outfile
+outfile = sys.stdout.buffer if args.outfile == '-' else args.outfile
 
 parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
 tree = ET.parse(infile, parser=parser)
