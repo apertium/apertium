@@ -157,7 +157,9 @@ TransferData::write(FILE *output)
       if(s.compare(0, rule_sym_pre.size(), rule_sym_pre) != 0) {
         continue;
       }
-      const int rule_num = StringUtils::stoi(s.substr(rule_sym_pre.size()));
+      size_t num_len = s.size() - rule_sym_pre.size() - 1;
+      const int rule_num = StringUtils::stoi(s.substr(rule_sym_pre.size(), num_len));
+
       transducer.setFinal(src, wgt);
       finals_rules[src] = rule_num;
     }
