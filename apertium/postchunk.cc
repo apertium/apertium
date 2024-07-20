@@ -1002,15 +1002,13 @@ Postchunk::splitWordsAndBlanks(UString const &chunk, vector<UString *> &words,
           if(u_isdigit(chunk[i+1]))
           {
             // replace tag
-            unsigned long value = StringUtils::stoi(chunk.c_str()+i+1) - 1;
-            // TODO
-            //unsigned long value = wcstoul(chunk.c_str()+i+1,
-            //                              NULL, 0) - 1;
+            int j = ++i;
+            while (chunk[++i] != '>');
+            unsigned long value = StringUtils::stoi(chunk.substr(j, i-j)) - 1;
             if(vectags.size() > value)
             {
               ref.append(vectags[value]);
             }
-            while(chunk[++i] != '>');
           }
           else
           {
@@ -1093,15 +1091,13 @@ Postchunk::splitWordsAndBlanks(UString const &chunk, vector<UString *> &words,
             if(u_isdigit(chunk[i+1]))
             {
               // replace tag
-              unsigned long value = StringUtils::stoi(chunk.c_str()+i+1) - 1;
-              //unsigned long value = wcstoul(chunk.c_str()+i+1,
-              //                              NULL, 0) - 1;
-              // TODO: make sure this is equivalent
+              int j = ++i;
+              while (chunk[++i] != '>');
+              unsigned long value = StringUtils::stoi(chunk.substr(j, i-j)) - 1;
               if(vectags.size() > value)
               {
                 ref.append(vectags[value]);
               }
-              while(chunk[++i] != '>');
             }
             else
             {
