@@ -315,6 +315,9 @@ TransferBase::processRejectCurrentRule(xmlNode* localroot)
     // Be backwards compatible:
     return 1;
   }
+  else if(shifting_value == "no"_u) {
+    return 0;
+  }
   else {
     // A value of "no" will also give 0 which is what we want:
     return StringUtils::stoi(shifting_value);
