@@ -160,6 +160,18 @@ void processStream(InputFile& input, UFILE* output, bool null_flush, bool surfac
     {
       break;
     }
+    
+    if (mychar == '\\') {
+      int nextchar = input.get();
+      if (nextchar == '/') {
+        u_fputc(nextchar, output); // Output the escaped forward slash
+      } else {
+        u_fputc(mychar, output); // Output the backslash if not followed by a slash
+        u_fputc(nextchar, output);
+      }
+      continue;
+    }
+
     switch(mychar)
     {
       case '[':
@@ -190,11 +202,6 @@ void processStream(InputFile& input, UFILE* output, bool null_flush, bool surfac
           readAndWriteUntil(input, output, ']');
           u_fputc(']', output);
         }
-        break;
-
-      case '\\':
-        u_fputc(mychar, output);
-        u_fputc(input.get(), output);
         break;
 
       case '^':
