@@ -78,7 +78,9 @@ void procWord(InputFile& input, UFILE* output, bool surface_forms, bool compound
 
   if(surface_forms)
   {
-    while((mychar = input.get()) != '/') ;
+    while((mychar = input.get()) != '/') {
+      if (mychar == '\\') input.get();
+    }
   }
 
   while((mychar = input.get()) != '$')

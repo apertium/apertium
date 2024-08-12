@@ -27,3 +27,24 @@ class JoinGroupPretransferTest(PretransferTest):
 class WordboundBlankTestPretransferTest(PretransferTest):
     inputs =          ["[[t:i:abc123]]^a<vblex><pres>+c<po># b$", "[[t:i:xyz456]]^a<vblex><pres>+c<po>+d<po># b$"]
     expectedOutputs = ["[[t:i:abc123]]^a# b<vblex><pres>$ [[t:i:abc123]]^c<po>$", "[[t:i:xyz456]]^a# b<vblex><pres>$ [[t:i:xyz456]]^c<po>$ [[t:i:xyz456]]^d<po>$"]
+
+class EscapingPretransferTest(PretransferTest):
+    inputs = [
+        r'^\//\/<slash>$',
+        r'^\$/\$<dollar>$',
+    ]
+    expectedOutputs = [
+        r'^\//\/<slash>$',
+        r'^\$/\$<dollar>$',
+    ]
+
+class NoSurfaceEscapingPretransferTest(PretransferTest):
+    flags = ['-z', '-n']
+    inputs = [
+        r'^\//\/<slash>$',
+        r'^\$/\$<dollar>$',
+    ]
+    expectedOutputs = [
+        r'^\/<slash>$',
+        r'^\$<dollar>$',
+    ]
