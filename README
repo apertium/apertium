@@ -1,60 +1,119 @@
 # Apertium
 
-Apertium is a rule-based machine translation toolchain and ecosystem, designed to facilitate the creation of machine translation systems. Many of our tools are based on finite-state transducers, enabling the processing of natural languages with high efficiency and accuracy.
+Apertium is an open-source rule-based machine translation toolchain and ecosystem. It facilitates the creation of consistent and transparent machine translation systems by relying on deterministic linguistic rules rather than statistical or neural models. Apertium's tools are designed to be language-agnostic and platform-independent, making them suitable for a wide range of languages and applications.
 
 ## Project Overview
 
-Apertium provides an open-source framework for building machine translation systems. Our primary focus is on creating deterministic, rule-based translation models that are both language-agnostic and platform-independent. Unlike statistical or neural translation models, Apertium's systems are entirely based on linguistic rules, ensuring that translations are consistent and easy to understand.
-
-Our language data is stored in a variety of formats, including XML and other human-editable text files. This data is organized into single-language packages, which handle the analysis and generation of individual languages, and translation pairs, which manage the transfer and transformation of data between languages. Single-language packages are shared among many translation pairs, enabling modularity and reuse.
+Apertium's framework is based on finite-state transducers, which enable efficient and accurate processing of natural languages. The language data used by Apertium is stored in XML and other human-readable text formats, organized into modular single-language packages and translation pairs. This modularity allows for the reuse of language data across multiple translation systems.
 
 ## Features
 
-- *Rule-Based Translation:* Apertium relies on deterministic rules, providing consistent and transparent translations.
-- *Finite-State Transducers:* Many tools are built using finite-state transducers, offering efficient language processing.
-- *Language-Agnostic Tools:* Core tools are designed to work across multiple languages, enabling broad applicability.
-- *Modular Design:* Language data is organized into reusable packages, simplifying the development of new translation pairs.
+- **Rule-Based Translation:** Consistent and understandable translations based on deterministic rules.
+- **Finite-State Transducers:** Efficient language processing using advanced computational models.
+- **Language-Agnostic Tools:** Broad applicability across multiple languages.
+- **Modular Design:** Reusable language packages simplify the development of new translation pairs.
+
+## Requirements
+
+To build and run Apertium, ensure that the following dependencies are installed:
+
+- **lttoolbox 3.5** (required): Available at [lttoolbox GitHub repository][1].
+- **libxml2**
+- **libpcre**
+
+For detailed installation instructions, visit [Apertium](https://apertium.org) and the [Apertium Wiki](https://wiki.apertium.org).
 
 ## Installation
 
-To install Apertium on your local machine, follow these steps:
+Apertium provides binaries for several platforms, including Debian, Ubuntu, Fedora, CentOS, OpenSUSE, Windows, and macOS. Both nightly builds and official releases are available. If you are on a supported platform, it is recommended to use the pre-built binaries.
 
-### Prerequisites
+For more information, see the [Apertium Installation Guide](https://wiki.apertium.org/wiki/Installation).
 
-- *C++ Compiler:* Required for compiling the native tools.
-- *Python:* Necessary for running various development helpers.
+### Building from Source
 
-### Installation Steps
+If you need to modify Apertium’s behavior or are on a platform that is not officially supported, follow these steps to build from source:
 
-1. *Clone the Repository:*
+1. **Download the Source Packages:**
 
-    bash
-    git clone https://github.com/apertium/apertium.git
-    cd apertium
-    
+    Download `lttoolbox-VERSION.tar.gz`, `apertium-VERSION.tar.gz`, and the relevant linguistic data packages.
 
-2. *Build the Tools:*
+2. **Build lttoolbox:**
 
-    bash
+    ```bash
+    cd lttoolbox-VERSION
     ./configure
     make
     sudo make install
-    
+    ```
 
-3. *Verify the Installation:*
+3. **Build Apertium:**
 
-    Run the following command to verify that Apertium is installed correctly:
+    ```bash
+    cd apertium-VERSION
+    ./configure
+    make
+    sudo make install
+    ```
 
-    bash
+4. **Set Up Linguistic Data:**
+
+    ```bash
+    cd LING_DATA_DIR
+    ./configure
+    make
+    ```
+
+    This step may take a few minutes.
+
+5. **Verify the Installation:**
+
+    Run the following command to check if Apertium is installed correctly:
+
+    ```bash
     apertium -h
-    
+    ```
 
-    You should see the help message for Apertium.
+    You should see the Apertium help message.
 
 ## Usage
 
-To use Apertium for translating text, you can run the following command:
+Apertium can be used to translate text between supported languages. The following example demonstrates how to translate a text file from Spanish to Catalan:
 
 ```bash
-echo "Hello, world!" | apertium en-es# Apertium
+apertium -f txt es-ca <input.txt >output.txt
 
+### Command Options
+
+*   \-d datadir: Specifies the directory containing linguistic data.
+    
+*   \-f format: Specifies the input format (e.g., txt, html, rtf).
+    
+*   \-a: Displays ambiguity in the translation.
+    
+*   \-u: Suppresses marks for unknown words.
+    
+*   \-n: Prevents insertion of a period before potential sentence ends.
+    
+*   \-m memory.tmx: Uses a translation memory to improve translation accuracy.
+    
+*   \-o direction: Specifies the translation direction using the translation memory.
+    
+*   \-l: Lists available translation directions.
+    
+
+Additional Tools
+----------------
+
+Apertium includes various deformatters and reformatters for processing different document formats:
+
+*   **Deformatters:** apertium-deshtml, apertium-desrtf, apertium-destxt
+    
+*   **Reformatters:** apertium-rehtml, apertium-rertf, apertium-retxt
+    
+
+License
+-------
+
+This project is licensed under the GNU General Public License v2.0. See the LICENSE file for details.
+
+For more information, visit [Apertium](https://apertium.org) or the [Apertium Wiki](https://wiki.apertium.org).
