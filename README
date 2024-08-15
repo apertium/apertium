@@ -1,86 +1,117 @@
-Apertium
-===============================================================================
+# Apertium
 
-Requirements
--------------------------------------------------------------------------------
+Apertium is a rule-based machine translation toolchain and ecosystem, designed to facilitate the creation of machine translation systems. Many of our tools are based on finite-state transducers, enabling the processing of natural languages with high efficiency and accuracy.
 
-* This package needs the package [lttoolbox-3.5][1] installed in the
-system, as well as `libxml` and `libpcre`.
+## Project Overview
 
-See https://apertium.org and https://wiki.apertium.org for more information
-on installing.
+Apertium provides an open-source framework for building machine translation systems. Our primary focus is on creating deterministic, rule-based translation models that are both language-agnostic and platform-independent. Unlike statistical or neural translation models, Apertium's systems are entirely based on linguistic rules, ensuring that translations are consistent and easy to understand.
 
-Description
--------------------------------------------------------------------------------
+Our language data is stored in a variety of formats, including XML and other human-editable text files. This data is organized into single-language packages, which handle the analysis and generation of individual languages, and translation pairs, which manage the transfer and transformation of data between languages. Single-language packages are shared among many translation pairs, enabling modularity and reuse.
 
-When building, this package generates, among others, the following
-modules:
+## Features
 
-* `apertium-deshtml`, `apertium-desrtf`, `apertium-destxt`
-  Deformatters for html, rtf and txt document formats.
-* `apertium-rehtml`, `apertium-rertf`, `apertium-retxt`
-  Reformatters for html, rtf and txt document formats.
-* `apertium`
-  Translator program.  Execute without parameters to see the usage.
+- *Rule-Based Translation:* Apertium relies on deterministic rules, providing consistent and transparent translations.
+- *Finite-State Transducers:* Many tools are built using finite-state transducers, offering efficient language processing.
+- *Language-Agnostic Tools:* Core tools are designed to work across multiple languages, enabling broad applicability.
+- *Modular Design:* Language data is organized into reusable packages, simplifying the development of new translation pairs.
 
-Quick Start
--------------------------------------------------------------------------------
+## Installation
 
-There are binaries available for Debian, Ubuntu, Fedora, CentOS, OpenSUSE,
-Windows, and macOS. We package both nightly builds and releases.
-See https://wiki.apertium.org/wiki/Installation for more information.
-Only build from source if you either want to change this tool's behavior,
-or are on a platform we don't yet package for.
+To install Apertium on your local machine, follow these steps:
 
-1) Download the packages for `lttoolbox-VERSION.tar.gz` and
-   `apertium-VERSION.tar.gz` and linguistic data
+### Prerequisites
 
-   Note: If you are using the translator from GitHub, run `./autogen.sh` before
-         running `./configure` in all cases.
+- *C++ Compiler:* Required for compiling the native tools.
+- *Python:* Necessary for running various development helpers.
 
-2) Unpack lttoolbox and do ('#' means 'do that with root privileges'):
-```
-   $ cd lttoolbox-VERSION
-   $ ./configure
-   $ make
-   # make install
-```
-3) Unpack apertium and do:
-```
-   $ cd apertium-VERSION
-   $ ./configure
-   $ make
-   # make install
-```
-4) Unpack linguistic data (LING_DATA_DIR) and do:
-```
-   $ cd LING_DATA_DIR
-   $ ./configure
-   $ make
-   and wait for a while (minutes).
-```
-5) Use the translator
+### Installation Steps
 
-```
-   USAGE: apertium [-d datadir] [-f format] [-u] <direction> [in [out]]
-    -d datadir       directory of linguistic data
-    -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx, pptx,
-                     xpresstag, html-noent, latex, latex-raw
-    -a               display ambiguity
-    -u               don't display marks '*' for unknown words
-    -n               don't insert period before possible sentence-ends
-    -m memory.tmx    use a translation memory to recycle translations
-    -o direction     translation direction using the translation memory,
-                     by default 'direction' is used instead
-    -l               lists the available translation directions and exits
-    direction        typically, LANG1-LANG2, but see modes.xml in language data
-    in               input file (stdin by default)
-    out              output file (stdout by default)
+1. *Clone the Repository:*
 
+    bash
+    git clone https://github.com/apertium/apertium.git
+    cd apertium
+    
 
-   Sample:
+2. *Build the Tools:*
 
-   $ apertium -f txt es-ca <input >output
-```
+    bash
+    ./configure
+    make
+    sudo make install
+    
 
-[1]: https://github.com/apertium/lttoolbox
+3. *Verify the Installation:*
+
+    Run the following command to verify that Apertium is installed correctly:
+
+    bash
+    apertium -h
+    
+
+    You should see the help message for Apertium.
+
+## Usage
+
+To use Apertium for translating text, you can run the following command:
+
+```bash
+echo "Hello, world!" | apertium en-es# Apertium
+
+Apertium is a rule-based machine translation toolchain and ecosystem, designed to facilitate the creation of machine translation systems. Many of our tools are based on finite-state transducers, enabling the processing of natural languages with high efficiency and accuracy.
+
+## Project Overview
+
+Apertium provides an open-source framework for building machine translation systems. Our primary focus is on creating deterministic, rule-based translation models that are both language-agnostic and platform-independent. Unlike statistical or neural translation models, Apertium's systems are entirely based on linguistic rules, ensuring that translations are consistent and easy to understand.
+
+Our language data is stored in a variety of formats, including XML and other human-editable text files. This data is organized into single-language packages, which handle the analysis and generation of individual languages, and translation pairs, which manage the transfer and transformation of data between languages. Single-language packages are shared among many translation pairs, enabling modularity and reuse.
+
+## Features
+
+- *Rule-Based Translation:* Apertium relies on deterministic rules, providing consistent and transparent translations.
+- *Finite-State Transducers:* Many tools are built using finite-state transducers, offering efficient language processing.
+- *Language-Agnostic Tools:* Core tools are designed to work across multiple languages, enabling broad applicability.
+- *Modular Design:* Language data is organized into reusable packages, simplifying the development of new translation pairs.
+
+## Installation
+
+To install Apertium on your local machine, follow these steps:
+
+### Prerequisites
+
+- *C++ Compiler:* Required for compiling the native tools.
+- *Python:* Necessary for running various development helpers.
+
+### Installation Steps
+
+1. *Clone the Repository:*
+
+    bash
+    git clone https://github.com/apertium/apertium.git
+    cd apertium
+    
+
+2. *Build the Tools:*
+
+    bash
+    ./configure
+    make
+    sudo make install
+    
+
+3. *Verify the Installation:*
+
+    Run the following command to verify that Apertium is installed correctly:
+
+    bash
+    apertium -h
+    
+
+    You should see the help message for Apertium.
+
+## Usage
+
+To use Apertium for translating text, you can run the following command:
+
+```bash
+echo "Hello, world!" | apertium en-es
