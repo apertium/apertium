@@ -8,20 +8,10 @@ Apertium's framework is based on finite-state transducers, which enable efficien
 
 ## Features
 
-- **Rule-Based Translation:** Consistent and understandable translations based on deterministic rules.
-- **Finite-State Transducers:** Efficient language processing using advanced computational models.
-- **Language-Agnostic Tools:** Broad applicability across multiple languages.
-- **Modular Design:** Reusable language packages simplify the development of new translation pairs.
-
-## Requirements
-
-To build and run Apertium, ensure that the following dependencies are installed:
-
-- **lttoolbox 3.5** (required): Available at [lttoolbox GitHub repository][1].
-- **libxml2**
-- **libpcre**
-
-For detailed installation instructions, visit [Apertium](https://apertium.org) and the [Apertium Wiki](https://wiki.apertium.org).
+- **Rule-Based Translation**: Consistent and understandable translations based on deterministic rules.
+- **Finite-State Transducers**: Efficient language processing using advanced computational models.
+- **Language-Agnostic Tools**: Broad applicability across multiple languages.
+- **Modular Design**: Reusable language packages simplify the development of new translation pairs.
 
 ## Installation
 
@@ -29,91 +19,90 @@ Apertium provides binaries for several platforms, including Debian, Ubuntu, Fedo
 
 For more information, see the [Apertium Installation Guide](https://wiki.apertium.org/wiki/Installation).
 
-### Building from Source
+## Building from Source
 
-If you need to modify Apertium’s behavior or are on a platform that is not officially supported, follow these steps to build from source:
+If you need to modify Apertium’s behavior or are on a platform that is not officially supported, follow these steps to build from source.
 
-1. **Download the Source Packages:**
+### Requirements
 
-    Download `lttoolbox-VERSION.tar.gz`, `apertium-VERSION.tar.gz`, and the relevant linguistic data packages.
+- [lttoolbox](https://github.com/apertium/lttoolbox)
+- libxml2
+- ICU
 
-2. **Build lttoolbox:**
+### Compiling
 
-    ```bash
-    cd lttoolbox-VERSION
-    ./configure
-    make
-    sudo make install
-    ```
-
-3. **Build Apertium:**
-
-    ```bash
-    cd apertium-VERSION
-    ./configure
-    make
-    sudo make install
-    ```
-
-4. **Set Up Linguistic Data:**
-
-    ```bash
-    cd LING_DATA_DIR
-    ./configure
-    make
-    ```
-
-    This step may take a few minutes.
-
-5. **Verify the Installation:**
-
-    Run the following command to check if Apertium is installed correctly:
-
-    ```bash
-    apertium -h
-    ```
-
-    You should see the Apertium help message.
+```bash
+$ autoreconf -fvi
+$ ./configure
+$ make
+```
 
 ## Usage
 
-Apertium can be used to translate text between supported languages. The following example demonstrates how to translate a text file from Spanish to Catalan:
+Apertium can be used to translate text between supported languages.
+Assuming the relevant language data (here the Spanish-Catalan translator) has been installed, translation can be achieved with the following command:
 
 ```bash
-apertium -f txt es-ca <input.txt >output.txt
+$ apertium spa-cat input.txt output.txt
+```
 
-### Command Options
+The `apertium` executable can also use piped streams:
 
-*   \-d datadir: Specifies the directory containing linguistic data.
-    
-*   \-f format: Specifies the input format (e.g., txt, html, rtf).
-    
-*   \-a: Displays ambiguity in the translation.
-    
-*   \-u: Suppresses marks for unknown words.
-    
-*   \-n: Prevents insertion of a period before potential sentence ends.
-    
-*   \-m memory.tmx: Uses a translation memory to improve translation accuracy.
-    
-*   \-o direction: Specifies the translation direction using the translation memory.
-    
-*   \-l: Lists available translation directions.
-    
+```bash
+$ echo "La casa es roja." | apertium spa-cat
+```
 
-Additional Tools
-----------------
+Language data which has been compiled but not installed can be used with the `-d` flag:
 
-Apertium includes various deformatters and reformatters for processing different document formats:
+```bash
+$ echo "La casa es roja." | apertium -d ./apertium-spa-cat spa-cat
+```
 
-*   **Deformatters:** apertium-deshtml, apertium-desrtf, apertium-destxt
-    
-*   **Reformatters:** apertium-rehtml, apertium-rertf, apertium-retxt
-    
+Formats other than plaintext can be specified with the `-f` flag:
 
-License
--------
+```bash
+$ apertium -f html spa-cat input.html output.html
+```
 
-This project is licensed under the GNU General Public License v2.0. See the LICENSE file for details.
+Data packages may provide modes besides the main translation mode. Use the `-l` flag to list them.
+
+```bash
+$ apertium -l
+$ apertium -l -d ./apertium-spa-cat
+```
+
+## Additional Tools
+
+This repository also provides the following executables:
+
+### Pipeline Modules
+
+- `apertium-extract-caps`, `apertium-restore-caps`: Handle capitalization
+- `apertium-pretransfer`: Split compound analyses into separate words for processing by `apertium-transfer`
+- `apertium-posttransfer`: Clean up repeated spaces
+- `apertium-tagger`: Perform statistical part-of-speech tagging
+- `apertium-transfer`, `apertium-interchunk`, `apertium-postchunk`: Structural transfer modules ([documentation](https://wiki.apertium.org/wiki/A_long_introduction_to_transfer_rules))
+- `apertium-wblank-attach`, `apertium-wblank-detach`, `apertium-wblank-mode`: Handle word-bound blanks
+
+### Build Tools
+
+These programs are used in the process of compiling linguistic data packages.
+
+- `apertium-compile-caps`: Compile capitalization-handling rules for use by `apertium-restore-caps` ([documentation](https://wiki.apertium.org/wiki/Capitalization_restoration))
+- `apertium-gen-modes`: Process the `modes.xml` file, which specifies what translation and analysis modes a data package provides
+- `apertium-preprocess-transfer`: Process structural transfer rule files for use by `apertium-transfer`
+- `apertium-validate-acx`, `apertium-validate-crx`, `apertium-validate-dictionary`, `apertium-validate-interchunk`, `apertium-validate-modes`, `apertium-validate-postchunk`, `apertium-validate-tagger`, `apertium-validate-transfer`: Validators for various XML rule formats
+
+### Format Handlers
+
+For each supported file format, there is a deformatter named `apertium-des[NAME]` (e.g. `apertium-deshtml`) which reads formatted text from standard input and writes [Apertium stream format](https://wiki.apertium.org/wiki/Apertium_stream_format) to standard output.
+There is also a corresponding set of reformatters which do the reverse and are named `apertium-re[NAME]` (e.g. `apertium-rehtml`).
+These programs rarely need to be invoked directly, since they are handled by the `apertium` executable.
+
+Most of the format handlers are currently deprecated in favor of [Transfuse](https://github.com/TinoDidriksen/transfuse).
+
+## License
+
+This project is licensed under the GNU General Public License v2.0. See the [COPYING](COPYING) file for details.
 
 For more information, visit [Apertium](https://apertium.org) or the [Apertium Wiki](https://wiki.apertium.org).
