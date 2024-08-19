@@ -1,86 +1,119 @@
-Apertium
-===============================================================================
+# Apertium
 
-Requirements
--------------------------------------------------------------------------------
+Apertium is an open-source rule-based machine translation toolchain and ecosystem. It facilitates the creation of consistent and transparent machine translation systems by relying on deterministic linguistic rules rather than statistical or neural models. Apertium's tools are designed to be language-agnostic and platform-independent, making them suitable for a wide range of languages and applications.
 
-* This package needs the package [lttoolbox-3.5][1] installed in the
-system, as well as `libxml` and `libpcre`.
+## Project Overview
 
-See https://apertium.org and https://wiki.apertium.org for more information
-on installing.
+Apertium's framework is based on finite-state transducers, which enable efficient and accurate processing of natural languages. The language data used by Apertium is stored in XML and other human-readable text formats, organized into modular single-language packages and translation pairs. This modularity allows for the reuse of language data across multiple translation systems.
 
-Description
--------------------------------------------------------------------------------
+## Features
 
-When building, this package generates, among others, the following
-modules:
+- **Rule-Based Translation:** Consistent and understandable translations based on deterministic rules.
+- **Finite-State Transducers:** Efficient language processing using advanced computational models.
+- **Language-Agnostic Tools:** Broad applicability across multiple languages.
+- **Modular Design:** Reusable language packages simplify the development of new translation pairs.
 
-* `apertium-deshtml`, `apertium-desrtf`, `apertium-destxt`
-  Deformatters for html, rtf and txt document formats.
-* `apertium-rehtml`, `apertium-rertf`, `apertium-retxt`
-  Reformatters for html, rtf and txt document formats.
-* `apertium`
-  Translator program.  Execute without parameters to see the usage.
+## Requirements
 
-Quick Start
--------------------------------------------------------------------------------
+To build and run Apertium, ensure that the following dependencies are installed:
 
-There are binaries available for Debian, Ubuntu, Fedora, CentOS, OpenSUSE,
-Windows, and macOS. We package both nightly builds and releases.
-See https://wiki.apertium.org/wiki/Installation for more information.
-Only build from source if you either want to change this tool's behavior,
-or are on a platform we don't yet package for.
+- **lttoolbox 3.5** (required): Available at [lttoolbox GitHub repository][1].
+- **libxml2**
+- **libpcre**
 
-1) Download the packages for `lttoolbox-VERSION.tar.gz` and
-   `apertium-VERSION.tar.gz` and linguistic data
+For detailed installation instructions, visit [Apertium](https://apertium.org) and the [Apertium Wiki](https://wiki.apertium.org).
 
-   Note: If you are using the translator from GitHub, run `./autogen.sh` before
-         running `./configure` in all cases.
+## Installation
 
-2) Unpack lttoolbox and do ('#' means 'do that with root privileges'):
-```
-   $ cd lttoolbox-VERSION
-   $ ./configure
-   $ make
-   # make install
-```
-3) Unpack apertium and do:
-```
-   $ cd apertium-VERSION
-   $ ./configure
-   $ make
-   # make install
-```
-4) Unpack linguistic data (LING_DATA_DIR) and do:
-```
-   $ cd LING_DATA_DIR
-   $ ./configure
-   $ make
-   and wait for a while (minutes).
-```
-5) Use the translator
+Apertium provides binaries for several platforms, including Debian, Ubuntu, Fedora, CentOS, OpenSUSE, Windows, and macOS. Both nightly builds and official releases are available. If you are on a supported platform, it is recommended to use the pre-built binaries.
 
-```
-   USAGE: apertium [-d datadir] [-f format] [-u] <direction> [in [out]]
-    -d datadir       directory of linguistic data
-    -f format        one of: txt (default), html, rtf, odt, docx, wxml, xlsx, pptx,
-                     xpresstag, html-noent, latex, latex-raw
-    -a               display ambiguity
-    -u               don't display marks '*' for unknown words
-    -n               don't insert period before possible sentence-ends
-    -m memory.tmx    use a translation memory to recycle translations
-    -o direction     translation direction using the translation memory,
-                     by default 'direction' is used instead
-    -l               lists the available translation directions and exits
-    direction        typically, LANG1-LANG2, but see modes.xml in language data
-    in               input file (stdin by default)
-    out              output file (stdout by default)
+For more information, see the [Apertium Installation Guide](https://wiki.apertium.org/wiki/Installation).
 
+### Building from Source
 
-   Sample:
+If you need to modify Apertium’s behavior or are on a platform that is not officially supported, follow these steps to build from source:
 
-   $ apertium -f txt es-ca <input >output
-```
+1. **Download the Source Packages:**
 
-[1]: https://github.com/apertium/lttoolbox
+    Download `lttoolbox-VERSION.tar.gz`, `apertium-VERSION.tar.gz`, and the relevant linguistic data packages.
+
+2. **Build lttoolbox:**
+
+    ```bash
+    cd lttoolbox-VERSION
+    ./configure
+    make
+    sudo make install
+    ```
+
+3. **Build Apertium:**
+
+    ```bash
+    cd apertium-VERSION
+    ./configure
+    make
+    sudo make install
+    ```
+
+4. **Set Up Linguistic Data:**
+
+    ```bash
+    cd LING_DATA_DIR
+    ./configure
+    make
+    ```
+
+    This step may take a few minutes.
+
+5. **Verify the Installation:**
+
+    Run the following command to check if Apertium is installed correctly:
+
+    ```bash
+    apertium -h
+    ```
+
+    You should see the Apertium help message.
+
+## Usage
+
+Apertium can be used to translate text between supported languages. The following example demonstrates how to translate a text file from Spanish to Catalan:
+
+```bash
+apertium -f txt es-ca <input.txt >output.txt
+
+### Command Options
+
+*   \-d datadir: Specifies the directory containing linguistic data.
+    
+*   \-f format: Specifies the input format (e.g., txt, html, rtf).
+    
+*   \-a: Displays ambiguity in the translation.
+    
+*   \-u: Suppresses marks for unknown words.
+    
+*   \-n: Prevents insertion of a period before potential sentence ends.
+    
+*   \-m memory.tmx: Uses a translation memory to improve translation accuracy.
+    
+*   \-o direction: Specifies the translation direction using the translation memory.
+    
+*   \-l: Lists available translation directions.
+    
+
+Additional Tools
+----------------
+
+Apertium includes various deformatters and reformatters for processing different document formats:
+
+*   **Deformatters:** apertium-deshtml, apertium-desrtf, apertium-destxt
+    
+*   **Reformatters:** apertium-rehtml, apertium-rertf, apertium-retxt
+    
+
+License
+-------
+
+This project is licensed under the GNU General Public License v2.0. See the LICENSE file for details.
+
+For more information, visit [Apertium](https://apertium.org) or the [Apertium Wiki](https://wiki.apertium.org).
