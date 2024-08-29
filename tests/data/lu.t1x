@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<transfer default="lu">
+  <section-def-cats>
+    <def-cat n="prn">
+      <cat-item tags="prn.*"/>
+    </def-cat>
+  </section-def-cats>
+
+  <section-rules>
+	  <rule>
+		  <pattern>
+			  <pattern-item n="prn"/>
+		  </pattern>
+		  <action>
+			  <out>
+				  <lu>
+					  <clip pos="1" side="tl" part="whole"/>
+					  <lit-tag v="abc"/>
+					  <lit-tag v="1/2"/>
+				  </lu>
+			  </out>
+		  </action>
+	  </rule>
+  </section-rules>
+</transfer>

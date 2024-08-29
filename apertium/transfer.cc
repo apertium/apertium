@@ -1049,30 +1049,15 @@ Transfer::transfer(InputFile& in, UFILE* out)
             UString tl;
             UString ref;
             UString wblank;
+            UString cur;
 
             int seenSlash = 0;
             for(UString::const_iterator it = tmpword[0]->begin(); it != tmpword[0]->end(); it++)
             {
-              if(*it == '\\')
-              {
-                if(seenSlash == 0)
-                {
-                  sl.push_back(*it);
-                  it++;
-                  sl.push_back(*it);
-                }
-                else if(seenSlash == 1)
-                {
-                  tl.push_back(*it);
-                  it++;
-                  tl.push_back(*it);
-                }
-                else
-                {
-                  ref.push_back(*it);
-                  it++;
-                  ref.push_back(*it);
-                }
+              if(*it == '\\') {
+                cur.push_back(*it);
+                it++;
+                cur.push_back(*it);
                 continue;
               }
               else if(*it == '[')
@@ -1101,39 +1086,39 @@ Transfer::transfer(InputFile& in, UFILE* out)
                 }
                 else
                 {
-                  if(seenSlash == 0)
-                  {
-                    sl.push_back(*it);
-                  }
-                  else if(seenSlash == 1)
-                  {
-                    tl.push_back(*it);
-                  }
-                  else
-                  {
-                    ref.push_back(*it);
-                  }
+                  cur.push_back(*it);
                 }
                 continue;
               }
               else if(*it == '/')
               {
+                ref.clear();
+                switch (seenSlash) {
+                case 0: cur.swap(sl); break;
+                case 1: cur.swap(tl); break;
+                default: cur.swap(ref);
+                }
                 seenSlash++;
-
-                ref.clear(); //the word after the last slash is the ref
                 continue;
               }
-              if(seenSlash == 0)
-              {
-                sl.push_back(*it);
+              else if (*it == '<') {
+                while (*it != '>') {
+                  cur.push_back(*it);
+                  if (*it == '\\') {
+                    it++;
+                    cur.push_back(*it);
+                  }
+                  it++;
+                }
               }
-              else if(seenSlash == 1)
-              {
-                tl.push_back(*it);
-              }
-              else
-              {
-                ref.push_back(*it);
+              cur.push_back(*it);
+            }
+            if (!cur.empty()) {
+              ref.clear();
+              switch (seenSlash) {
+              case 0: cur.swap(sl); break;
+              case 1: cur.swap(tl); break;
+              default: cur.swap(ref);
               }
             }
             //tmpword[0]->assign(sl);

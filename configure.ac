@@ -2,7 +2,7 @@ AC_PREREQ(2.52)
 
 m4_define([PKG_VERSION_MAJOR], [3])
 m4_define([PKG_VERSION_MINOR], [9])
-m4_define([PKG_VERSION_PATCH], [10])
+m4_define([PKG_VERSION_PATCH], [11])
 
 # Bump if the ABI (not API) changed in a backwards-incompatible manner
 m4_define([PKG_VERSION_ABI], [3])

@@ -83,3 +83,10 @@ class EmptyTransferTest(TransferTest):
 class BadAttrTest(TransferTest):
     t1xdata = "data/bad-attr.t1x"
     expectedCompRetCodeFail = True
+
+class SlashLuTransferTest(TransferTest):
+    t1xdata =         "data/lu.t1x"
+    inputs =          ["^hun<prn><f/z>/ho<prn><f/z>$",
+                       '^a<n><2/3>/b<n><abc>$']
+    expectedOutputs = ["^ho<prn><f/z><abc><1/2>$",
+                       '^b<n><abc>$']
