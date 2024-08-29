@@ -23,6 +23,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <lttoolbox/file_utils.h>
 #include <lttoolbox/string_utils.h>
 #include "getopt_long.h"
 #ifdef _MSC_VER
@@ -68,26 +69,6 @@ void testfile(string const &filename)
     cerr << filename << "'." << endl;
     exit(EXIT_FAILURE);
   }
-}
-
-void open_input(InputFile& input, const char* filename)
-{
-  if (!input.open(filename)) {
-    cerr << "Error: can't open input file '";
-    cerr << filename << "'." << endl;
-    exit(EXIT_FAILURE);
-  }
-}
-
-UFILE* open_output(const char* filename)
-{
-  UFILE* output = u_fopen(filename, "w", NULL, NULL);
-  if(!output) {
-    cerr << "Error: can't open output file '";
-    cerr << filename << "'." << endl;
-    exit(EXIT_FAILURE);
-  }
-  return output;
 }
 
 int main(int argc, char *argv[])
@@ -166,8 +147,8 @@ int main(int argc, char *argv[])
   switch(argc - optind + 1)
   {
     case 6:
-      output = open_output(argv[argc-1]);
-      open_input(input, argv[argc-2]);
+      output = openOutTextFile(argv[argc-1]);
+      input.open_or_exit(argv[argc-2]);
       testfile(argv[argc-3]);
       testfile(argv[argc-4]);
       testfile(argv[argc-5]);
@@ -177,15 +158,15 @@ int main(int argc, char *argv[])
     case 5:
       if(t.getUseBilingual() == false || t.getPreBilingual() == true)
       {
-        output = open_output(argv[argc-1]);
-        open_input(input, argv[argc-2]);
+        output = openOutTextFile(argv[argc-1]);
+        input.open_or_exit(argv[argc-2]);
         testfile(argv[argc-3]);
         testfile(argv[argc-4]);
         t.read(argv[argc-4], argv[argc-3]);
       }
       else
       {
-        open_input(input, argv[argc-1]);
+        input.open_or_exit(argv[argc-1]);
         testfile(argv[argc-2]);
         testfile(argv[argc-3]);
         testfile(argv[argc-4]);
@@ -196,7 +177,7 @@ int main(int argc, char *argv[])
     case 4:
       if(t.getUseBilingual() == false || t.getPreBilingual() == true)
       {
-        open_input(input, argv[argc-1]);
+        input.open_or_exit(argv[argc-1]);
         testfile(argv[argc-2]);
         testfile(argv[argc-3]);
         t.read(argv[argc-3], argv[argc-2]);
