@@ -558,7 +558,7 @@ fi
 if [[ -n $TRANSLATION_MEMORY_FILE ]]; then
   if ! lt-tmxcomp "$TRANSLATION_MEMORY_DIRECTION" "$TRANSLATION_MEMORY_FILE" "$TMCOMPFILE" >/dev/null; then
     echo "Error: Cannot compile TM '$TRANSLATION_MEMORY_FILE'" >&2
-    echo"   hint: use -o parameter" >&2
+    echo "   hint: use -o parameter to specify translation memory source/target languages" >&2
     message >&2
   fi
 fi
