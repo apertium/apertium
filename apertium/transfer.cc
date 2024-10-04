@@ -861,6 +861,15 @@ Transfer::readToken(InputFile& in)
           content += ']';
           break;
         }
+        else if(val2 == U_EOF)
+        {
+          break;                // should not happen
+        }
+        else if(val2 == '\0')
+        {
+          in.unget(val2);
+          break;
+        }
         else
         {
           content += val2;
