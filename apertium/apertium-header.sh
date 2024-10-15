@@ -27,6 +27,8 @@ message () {
   echo " -m memory.tmx    use a translation memory to recycle translations"
   echo " -o direction     translation direction using the translation memory,"
   echo "                  by default 'direction' is used instead"
+  echo " -s               allow translation memory segments to match before space (as well as"
+  echo "                  before punctuation)"
   echo " -l               lists the available translation directions and exits"
   echo " -V               print Apertium version"
   # This is wrong and should be deprecated, but until all tools consider \0 flush without -z then this helps to have
@@ -193,7 +195,7 @@ translate_latex() {
     apertium-deslatex "${FORMAT_OPTIONS[@]}" | \
     if [[ -z "$TRANSLATION_MEMORY_FILE" ]];
     then cat;
-    else lt-tmxproc "$TMCOMPFILE";
+    else lt-tmxproc "${TMXPROC_OPTIONS[@]}" "$TMCOMPFILE";
     fi | \
       run_mode_wblank | \
       apertium-relatex| \
@@ -237,7 +239,7 @@ translate_odt () {
   apertium-desodt "${FORMAT_OPTIONS[@]}" |\
   if [[ -z "$TRANSLATION_MEMORY_FILE" ]];
   then cat;
-  else lt-tmxproc "$TMCOMPFILE";
+  else lt-tmxproc "${TMXPROC_OPTIONS[@]}" "$TMCOMPFILE";
   fi | \
     run_mode_wblank | \
     apertium-reodt|\
@@ -295,7 +297,7 @@ translate_docx () {
   apertium-deswxml "${FORMAT_OPTIONS[@]}" |\
   if [[ -z "$TRANSLATION_MEMORY_FILE" ]];
   then cat;
-  else lt-tmxproc "$TMCOMPFILE";
+  else lt-tmxproc "${TMXPROC_OPTIONS[@]}" "$TMCOMPFILE";
   fi | \
     run_mode_wblank | \
     apertium-rewxml|\
@@ -351,7 +353,7 @@ translate_pptx () {
   apertium-despptx "${FORMAT_OPTIONS[@]}" |\
   if [[ -z "$TRANSLATION_MEMORY_FILE" ]];
   then cat;
-  else lt-tmxproc "$TMCOMPFILE";
+  else lt-tmxproc "${TMXPROC_OPTIONS[@]}" "$TMCOMPFILE";
   fi | \
     run_mode_wblank | \
     apertium-repptx |\
@@ -389,7 +391,7 @@ translate_xlsx () {
   apertium-desxlsx "${FORMAT_OPTIONS[@]}" |\
   if [[ -z "$TRANSLATION_MEMORY_FILE" ]];
   then cat;
-  else lt-tmxproc "$TMCOMPFILE";
+  else lt-tmxproc "${TMXPROC_OPTIONS[@]}" "$TMCOMPFILE";
   fi | \
     run_mode_wblank | \
     apertium-rexlsx |\
@@ -418,7 +420,7 @@ translate_html () {
   apertium-deshtml "${FORMAT_OPTIONS[@]}" "$INFILE" | \
     if [[ -z "$TRANSLATION_MEMORY_FILE" ]]; then
       cat
-    else lt-tmxproc "$TMCOMPFILE";
+    else lt-tmxproc "${TMXPROC_OPTIONS[@]}" "$TMCOMPFILE";
     fi | run_mode_wblank | if [[ -z "$REDIR" ]]; then apertium-rehtml; else apertium-rehtml > "$OUT_FILE"; fi
 }
 
@@ -432,7 +434,7 @@ translate_htmlnoent () {
   apertium-deshtml "${FORMAT_OPTIONS[@]}" "$INFILE" | \
     if [[ -z "$TRANSLATION_MEMORY_FILE" ]]; then
       cat
-    else lt-tmxproc "$TMCOMPFILE";
+    else lt-tmxproc "${TMXPROC_OPTIONS[@]}" "$TMCOMPFILE";
     fi | run_mode_wblank | if [[ -z "$REDIR" ]]; then apertium-rehtml-noent; else apertium-rehtml-noent > "$OUT_FILE"; fi
 }
 
@@ -440,7 +442,7 @@ translate_htmlalt () {
   apertium-deshtml-alt "${FORMAT_OPTIONS[@]}" "$INFILE" | \
     if [[ -z "$TRANSLATION_MEMORY_FILE" ]]; then
       cat
-    else lt-tmxproc "$TMCOMPFILE";
+    else lt-tmxproc "${TMXPROC_OPTIONS[@]}" "$TMCOMPFILE";
     fi | run_mode_wblank | if [[ -z "$REDIR" ]]; then apertium-rehtml-noent; else apertium-rehtml-noent > "$OUT_FILE"; fi
 }
 
@@ -457,7 +459,7 @@ translate_line () {
       if [[ -z "$TRANSLATION_MEMORY_FILE" ]]; then
           cat
       else
-        lt-tmxproc "$TMCOMPFILE";
+        lt-tmxproc "${TMXPROC_OPTIONS[@]}" "$TMCOMPFILE";
       fi | \
           run_mode_wblank | \
               if [[ -z "$REDIR" ]]; then
@@ -486,6 +488,7 @@ FORMAT="txt"
 DATADIR=$APERTIUM_DATADIR
 TRANSLATION_MEMORY_DIRECTION=$PAIR
 LIST_MODES_AND_EXIT=false
+TMXPROC_OPTIONS=()
 FORMAT_OPTIONS=()
 TF_EXTRACT_OPTIONS=()
 NULL_FLUSH=()
@@ -503,12 +506,13 @@ while [[ $OPTIND -le $# ]]; do
 done
 
 
-while getopts ":uahlVzf:d:m:o:nH" opt; do
+while getopts ":uahlVzf:d:m:o:snH" opt; do
   case "$opt" in
     f) FORMAT=$OPTARG ;;
     d) DATADIR=$OPTARG ;;
     m) TRANSLATION_MEMORY_FILE=$OPTARG ;;
     o) TRANSLATION_MEMORY_DIRECTION=$OPTARG ;;
+    s) TMXPROC_OPTIONS+=(-s) ;;
     u) UWORDS="no" ;;
     n) FORMAT_OPTIONS+=(-n) ;; # TODO: TF_EXTRACT_OPTIONS+=(--something) when https://github.com/TinoDidriksen/Transfuse/issues/9 implemented
     H) FORMAT_OPTIONS+=(-o); TF_EXTRACT_OPTIONS+=(-H) ;;
@@ -749,7 +753,7 @@ fi | if [[ -z "$TRANSLATION_MEMORY_FILE" ]];
   then
     cat
   else
-    lt-tmxproc "$TMCOMPFILE"
+    lt-tmxproc "${TMXPROC_OPTIONS[@]}" "$TMCOMPFILE"
   fi | run_mode_wblank | if [[ "$FORMAT" = "none" ]]; then
     if [[ -z "$REDIR" ]]; then
       cat
