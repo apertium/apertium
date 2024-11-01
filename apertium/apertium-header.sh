@@ -157,7 +157,11 @@ run_mode_wblank () {
 
 run_mode_wblank_force_flush () {
     NULL_FLUSH=(-z)
-    run_mode_wblank
+    if [[ -z "$TRANSLATION_MEMORY_FILE" ]]; then
+      cat
+    else
+      lt-tmxproc "${NULL_FLUSH[@]}" "${TMXPROC_OPTIONS[@]}" "$TMCOMPFILE"
+    fi | run_mode_wblank
 }
 
 test_zip () {
