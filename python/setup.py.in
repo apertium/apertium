@@ -6,7 +6,7 @@ Setup for SWIG Python bindings for apertium
 from distutils.core import Extension, setup
 from sys import platform
 
-compile_args = '@CXXFLAGS@'.split() + '@LTTOOLBOX_CFLAGS@'.split() + '@ICU_CFLAGS@'.split()
+compile_args = '@CPPFLAGS@'.split() + '@CXXFLAGS@'.split() + '@LTTOOLBOX_CFLAGS@'.split() + '@ICU_CFLAGS@'.split()
 link_args = []
 if platform == 'darwin':
     compile_args += ['-stdlib=libc++', '-mmacosx-version-min=10.7']
