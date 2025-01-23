@@ -26,6 +26,8 @@
 
 using namespace Apertium::SentenceStream;
 
+class TaggerDataExe;
+
 namespace Apertium {
 typedef std::set<std::string> VMSet;
 class PerceptronSpec
@@ -376,6 +378,8 @@ public:
     signed char intbyte : 8;
   };
   Optional<TaggerDataPercepCoarseTags> coarse_tags;
+  TaggerDataExe* tde = nullptr;
+  std::map<uint64_t, int> coarse_word_match_finals;
   static std::string dot;
   std::vector<std::string> str_consts;
   std::vector<VMSet> set_consts;
@@ -496,6 +500,8 @@ private:
 public:
   void serialise(std::ostream &serialised) const;
   void deserialise(std::istream &serialised);
+  void read_compressed(FILE* in);
+  void set_tagger_data_exe(TaggerDataExe* t);
 };
 }
 
