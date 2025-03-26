@@ -518,7 +518,7 @@ while getopts ":uahlVzf:d:m:o:snH" opt; do
     o) TRANSLATION_MEMORY_DIRECTION=$OPTARG ;;
     s) TMXPROC_OPTIONS+=(-s) ;;
     u) UWORDS="no" ;;
-    n) FORMAT_OPTIONS+=(-n) ;; # TODO: TF_EXTRACT_OPTIONS+=(--something) when https://github.com/TinoDidriksen/Transfuse/issues/9 implemented
+    n) FORMAT_OPTIONS+=(-n); TF_EXTRACT_OPTIONS+=(--apertium-n) ;;
     H) FORMAT_OPTIONS+=(-o); TF_EXTRACT_OPTIONS+=(-H) ;;
     a) OPTION_TAGGER="-m" ;;
     l) LIST_MODES_AND_EXIT=true ;;
