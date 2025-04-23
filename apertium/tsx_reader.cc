@@ -273,7 +273,7 @@ TSXReader::procTagset()
   while(type == XML_READER_TYPE_END_ELEMENT || name != "tagset"_u)
   {
     step();
-    if(name != "#text"_u && name != "tagger"_u && name != "tagset"_u)
+    if(name != "#text"_u && name != "tagger"_u && name != "tagset"_u && name != "#comment"_u)
     {
       unexpectedTag();
     }
