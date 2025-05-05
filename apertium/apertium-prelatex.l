@@ -11,7 +11,6 @@
 #include <vector>
 #include <apertium/latex_accentsmap.h>
 #include <lttoolbox/string_utils.h>
-#include <apertium/string_to_wostream.h>
 
 extern "C" {
 #if !defined(__STDC__)
@@ -21,9 +20,6 @@ extern "C" {
 }
 
 #include <lttoolbox/lt_locale.h>
-#ifndef GENFORMAT
-#include "apertium_config.h"
-#endif
 #include <apertium/unlocked_cstdio.h>
 #ifdef _WIN32
 #include <io.h>

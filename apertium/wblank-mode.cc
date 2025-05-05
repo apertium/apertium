@@ -22,7 +22,6 @@
 #include <memory>
 #include <regex>
 #include <cctype>
-#include "apertium_config.h"
 
 void trim(std::string& str) {
 	while (!str.empty() && isspace(str.back())) {

@@ -15,8 +15,6 @@
 
 #include <apertium/tagger.h>
 
-#include "apertium_config.h"
-
 #include "align.h"
 #include <lttoolbox/exception.h>
 #include "exception.h"
