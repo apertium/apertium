@@ -980,6 +980,14 @@ Transfer::transfer(InputFile& in, UFILE* out)
     {
       if(lastrule != NULL)
       {
+        if (trace) {
+          cerr << endl << "apertium-transfer: Applied rule " << lastrule_id << " line " << rule_lines[lastrule_id-1];
+          for (auto& it : tmpword) {
+            cerr << " " << *it;
+          }
+          cerr << endl;
+        }
+
         int num_words_to_consume = applyRule();
 
         if(trace_att)
@@ -1186,7 +1194,7 @@ Transfer::transfer(InputFile& in, UFILE* out)
       last_lword = tmpword.size();
 
       if(trace) {
-        cerr << endl << "apertium-transfer: Rule " << val << " line " << lastrule_line;
+        cerr << endl << "apertium-transfer: Matched rule " << val << " line " << lastrule_line;
         for (auto& it : tmpword) {
           cerr << " " << *it;
         }
