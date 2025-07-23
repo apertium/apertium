@@ -66,6 +66,17 @@ then
   AC_MSG_ERROR([You don't have flex installed.])
 fi
 
+AC_PATH_PROG(ZIPCMP, zipcmp, no)
+if test x$ac_cv_path_ZIPCMP = x
+then
+  AC_MSG_WARN([You don't have zipcmp installed, which is needed for some tests.])
+fi
+if test x$ac_cv_path_ZIPCMP = xno
+then
+  AC_MSG_WARN([You don't have zipcmp installed, which is needed for some tests.])
+fi
+
+
 AC_CHECK_FUNCS(strcasecmp)
 
 PKG_CHECK_MODULES(LTTOOLBOX, [lttoolbox >= 3.7.2], CPPFLAGS="$CPPFLAGS $LTTOOLBOX_CFLAGS"; LIBS="$LIBS $LTTOOLBOX_LIBS")
