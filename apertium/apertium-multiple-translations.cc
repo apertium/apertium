@@ -16,7 +16,6 @@
  */
 #include <apertium/transfer_mult.h>
 #include <lttoolbox/lt_locale.h>
-#include <apertium/apertium_config.h>
 
 #include <cstdlib>
 #include <iostream>

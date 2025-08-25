@@ -162,9 +162,6 @@ extern "C" {
 
 #include &lt;lttoolbox/lt_locale.h&gt;
 #include &lt;lttoolbox/ustring.h&gt;
-#ifndef GENFORMAT
-#include "apertium_config.h"
-#endif
 #include &lt;utf8.h&gt;
 #include &lt;apertium/unlocked_cstdio.h&gt;
 

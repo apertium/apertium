@@ -18,7 +18,6 @@
 #include <cstdio>
 #include <iostream>
 #include <apertium/endian_double_util.h>
-#include <apertium/apertium_config.h>
 #include <apertium/unlocked_cstdio.h>
 
 using namespace std;

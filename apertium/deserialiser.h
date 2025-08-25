@@ -21,7 +21,6 @@
 #include "i.h"
 #include "lemma.h"
 #include "morpheme.h"
-#include "apertium_config.h"
 
 #include <lttoolbox/deserialiser.h>
 #include <stdint.h>

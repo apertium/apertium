@@ -2,9 +2,12 @@
 #include <apertium/deserialiser.h>
 #include <apertium/serialiser.h>
 #include <lttoolbox/match_state.h>
+#include <lttoolbox/match_state2.h>
 #include <iomanip>
 #include <lttoolbox/string_utils.h>
 #include <utf8.h>
+#include <apertium/tagger_data_exe.h>
+#include <lttoolbox/old_binary.h>
 
 
 namespace Apertium {
@@ -158,9 +161,22 @@ PerceptronSpec::coarsen(const Morpheme &wrd) const
 {
   std::map<const Morpheme, std::string>::const_iterator it = coarsen_cache.find(wrd);
   if (it == coarsen_cache.end()) {
-    UString coarse_tag = coarse_tags->coarsen(wrd);
     std::string result;
-    utf8::utf16to8(coarse_tag.begin(), coarse_tag.end(), std::back_inserter(result));
+    if (tde) {
+      MatchState2 state(&tde->trans);
+      state.step(static_cast<UString>(wrd), tde->alpha, true);
+      int val = state.classifyFinals(coarse_word_match_finals);
+      if (val == -1) {
+        uint64_t undef;
+        tde->search(tde->tag_index, tde->tag_index_count, "TAG_kUNDEF"_u, undef);
+        val = undef;
+      }
+      UString_view coarse = tde->str_write.get(tde->array_tags[val]);
+      utf8::utf16to8(coarse.begin(), coarse.end(), std::back_inserter(result));
+    } else {
+      UString coarse_tag = coarse_tags->coarsen(wrd);
+      utf8::utf16to8(coarse_tag.begin(), coarse_tag.end(), std::back_inserter(result));
+    }
     coarsen_cache[wrd] = result;
     return result;
   }
@@ -499,20 +515,13 @@ PerceptronSpec::Machine::execCommonOp(Opcode op)
     case EXAMBGSET: {
       assert(spec.coarse_tags);
       std::vector<std::string> ambgset;
-      const std::vector<Analysis> &analyses = get_token(untagged).TheAnalyses;
-      std::vector<Analysis>::const_iterator analy_it;
-      for (analy_it = analyses.begin(); analy_it != analyses.end(); analy_it++) {
+      for (auto& analy_it : get_token(untagged).TheAnalyses) {
         ambgset.push_back(std::string());
-        const std::vector<Morpheme> &wrds = analy_it->TheMorphemes;
-        std::vector<Morpheme>::const_iterator wrd_it = wrds.begin();
-        while (true) {
-          ambgset.back() += spec.coarsen(*wrd_it);
-          wrd_it++;
-          if (wrd_it == wrds.end()) {
-            break;
-          } else {
+        for (auto& wrd_it : analy_it.TheMorphemes) {
+          if (!ambgset.back().empty()) {
             ambgset.back() += '+';
           }
+          ambgset.back() += spec.coarsen(wrd_it);
         }
       }
       stack.push(ambgset);
@@ -781,18 +790,16 @@ void PerceptronSpec::deserialiseFeatDefn(
     std::istream &serialised, FeatureDefn &feat) {
   std::string feat_str = Deserialiser<std::string>::deserialise(serialised);
   feat.reserve(feat_str.size());
-  std::string::iterator feat_str_it;
-  for (feat_str_it = feat_str.begin(); feat_str_it != feat_str.end(); feat_str_it++) {
-    feat.push_back(*feat_str_it);
+  for (auto& it : feat_str) {
+    feat.push_back(it);
   }
 }
 
 void PerceptronSpec::serialiseFeatDefnVec(
     std::ostream &serialised, const std::vector<FeatureDefn> &defn_vec) const {
   Serialiser<size_t>::serialise(defn_vec.size(), serialised);
-  std::vector<FeatureDefn>::const_iterator feat_it;
-  for (feat_it = defn_vec.begin(); feat_it != defn_vec.end(); feat_it++) {
-    serialiseFeatDefn(serialised, *feat_it);
+  for (auto& it : defn_vec) {
+    serialiseFeatDefn(serialised, it);
   }
 }
 
@@ -835,6 +842,66 @@ void PerceptronSpec::deserialise(std::istream &serialised) {
   if (has_coarse_tags == 1) {
     coarse_tags = Optional<TaggerDataPercepCoarseTags>(TaggerDataPercepCoarseTags());
     coarse_tags->deserialise(serialised);
+  }
+}
+
+void PerceptronSpec::read_compressed(FILE* in)
+{
+  beam_width = OldBinary::read_int(in, false);
+  uint64_t count = OldBinary::read_int(in, false);
+  str_consts = std::vector<std::string>(count);
+  for (uint64_t i = 0; i < count; i++) {
+    uint64_t count2 = OldBinary::read_int(in, false);
+    for (uint64_t j = 0; j < count2; j++) {
+      str_consts[i] += static_cast<char>(OldBinary::read_int(in, false));
+    }
+  }
+  set_consts.clear();
+  count = OldBinary::read_int(in, false);
+  for (uint64_t i = 0; i < count; i++) {
+    VMSet cur;
+    uint64_t count2 = OldBinary::read_int(in, false);
+    for (uint64_t j = 0; j < count2; j++) {
+      std::string s;
+      uint64_t count3 = OldBinary::read_int(in, false);
+      for (uint64_t k = 0; k < count3; k++) {
+        s += static_cast<char>(OldBinary::read_int(in, false));
+      }
+      cur.insert(s);
+    }
+    set_consts.push_back(cur);
+  }
+  count = OldBinary::read_int(in, false);
+  features.clear();
+  for (uint64_t i = 0; i < count; i++) {
+    features.push_back(FeatureDefn());
+    uint64_t count2 = OldBinary::read_int(in, false);
+    for (uint64_t j = 0; j < count2; j++) {
+      features[i].push_back(static_cast<char>(OldBinary::read_int(in, false)));
+    }
+  }
+  count = OldBinary::read_int(in, false);
+  global_defns.clear();
+  for (uint64_t i = 0; i < count; i++) {
+    global_defns.push_back(FeatureDefn());
+    uint64_t count2 = OldBinary::read_int(in, false);
+    for (uint64_t j = 0; j < count2; j++) {
+      global_defns[i].push_back(static_cast<char>(OldBinary::read_int(in, false)));
+    }
+  }
+  global_pred.clear();
+  count = OldBinary::read_int(in, false);
+  for (uint64_t i = 0; i < count; i++) {
+    global_pred.push_back(static_cast<char>(OldBinary::read_int(in, false)));
+  }
+}
+
+void PerceptronSpec::set_tagger_data_exe(TaggerDataExe* t)
+{
+  tde = t;
+  coarse_word_match_finals.clear();
+  for (uint64_t i = 0; i < tde->finals_count; i++) {
+    coarse_word_match_finals[tde->finals[i].i1] = tde->finals[i].i2;
   }
 }
 
