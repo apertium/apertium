@@ -58,6 +58,7 @@ EXCEPTION(UnexpectedFlagOption)
 EXCEPTION(UnexpectedFunctionTypeOption)
 EXCEPTION(UnexpectedFunctionTypeTypeOption)
 EXCEPTION(UnimplementedOpcode)
+EXCEPTION(VMError)
 }
 
 namespace Deserialiser {

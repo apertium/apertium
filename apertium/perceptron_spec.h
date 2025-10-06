@@ -417,6 +417,8 @@ private:
       //std::cerr << "after push\n";
     }
     StackValue& top() {
+      if (!data.size())
+        throw Exception::apertium_tagger::VMError("popping empty stack");
       return data.back();
     }
     StackValue pop_off() {

@@ -121,7 +121,12 @@ PerceptronSpec::get_features(
     Machine machine(
       *this, global_pred, 0, false,
       tagged, untagged, token_idx, wordoid_idx);
-    StackValue result = machine.getValue();
+    StackValue result;
+    try {
+      result = machine.getValue();
+    } catch (Exception::apertium_tagger::VMError) {
+      return;
+    }
     assert(result.type == BVAL);
     if (!result.boolVal())
     {
