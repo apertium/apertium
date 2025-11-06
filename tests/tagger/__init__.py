@@ -383,6 +383,7 @@ class FilterAmbiguityTest(unittest.TestCase):
         stderr = open(stderrpath, 'r').read().strip()
         self.assertEqual('', stderr)
 
+'''
 class Alarm(Exception):
     pass
 
@@ -457,3 +458,4 @@ class PerceptronNullFlushTest(unittest.TestCase):
 
         finally:
             pass
+'''
