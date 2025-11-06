@@ -90,9 +90,18 @@ AC_LANG(C++)
 AC_HEADER_STDC
 AC_CHECK_HEADERS([stdlib.h string.h unistd.h stddef.h filesystem string_view])
 AC_CHECK_LIB([stdc++fs], [_ZNSt12experimental10filesystem2v112current_pathEv])
-AC_CHECK_HEADER([utf8cpp/utf8.h], [CPPFLAGS="-I/usr/include/utf8cpp/ $CPPFLAGS"], [
-  AC_CHECK_HEADER([utf8.h], [], [AC_MSG_ERROR([You don't have utfcpp installed.])])
-])
+_found_utf8=no
+for ipath in /usr /usr/local /opt /opt/local; do
+  for upath in utf8cpp utfcpp utf8; do
+    AC_CHECK_FILE("$ipath/include/$upath/utf8.h", [CPPFLAGS="-I$ipath/include/$upath $CPPFLAGS"; _found_utf8=yes])
+  done
+done
+if test $_found_utf8 = no
+then
+  AC_CHECK_HEADER([utf8cpp/utf8.h], [CPPFLAGS="-I/usr/include/utf8cpp/ $CPPFLAGS"], [
+    AC_CHECK_HEADER([utf8.h], [], [AC_MSG_ERROR([Could not find utf8.h from utf8cpp / utfcpp])])
+  ])
+fi
 
 AC_CHECK_DECLS([fread_unlocked, fwrite_unlocked, fgetc_unlocked, fputc_unlocked, fputs_unlocked, getopt, getopt_long])
 AC_CHECK_FUNCS([setlocale strdup getopt snprintf])
@@ -102,7 +111,7 @@ AM_CONDITIONAL([WINDOWS], [test x$version_type = xwindows])
 #AS_IF([test x$version_type = xwindows], [AC_DEFINE(HAVE_GETOPT_LONG,0)], [])
 
 # Checks for highest supported C++ standard
-for version in 23 2b 20 2a 17; do
+for version in 26 2c 23 2b 20 2a 17; do
   version_flag="-std=c++${version}"
   AX_CHECK_COMPILE_FLAG([${version_flag}], [break], [version_flag=none])
 done
