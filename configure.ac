@@ -93,7 +93,11 @@ AC_CHECK_LIB([stdc++fs], [_ZNSt12experimental10filesystem2v112current_pathEv])
 _found_utf8=no
 for ipath in /usr /usr/local /opt /opt/local; do
   for upath in utf8cpp utfcpp utf8; do
-    AC_CHECK_FILE("$ipath/include/$upath/utf8.h", [CPPFLAGS="-I$ipath/include/$upath $CPPFLAGS"; _found_utf8=yes])
+    if test -f "$ipath/include/$upath/utf8.h"; then
+      echo "found utfcpp at $ipath/include/$upath/utf8.h"
+      CPPFLAGS="-I$ipath/include/$upath $CPPFLAGS"
+      _found_utf8=yes
+    fi
   done
 done
 if test $_found_utf8 = no
