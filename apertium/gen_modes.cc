@@ -160,6 +160,15 @@ void set_debug_suffixes(pipeline& prog)
         cmd.debug_suffix.push_back("-pgen");
       } else {
         cmd.debug_suffix.push_back("-autoseq");
+        for (auto& arg : cmd.arguments) {
+          if (arg.first.find(".autoseq.") != string::npos) {
+            cmd.debug_suffix.push_back("-autoseq_trace");
+            break;
+          } else if (arg.first.find(".revautoseq") != string::npos) {
+            cmd.debug_suffix.push_back("-revautoseq");
+            break;
+          }
+        }
       }
     } else if (starts_with(c, "rtx-proc")) {
       cmd.debug_suffix.push_back("-transfer");
@@ -194,6 +203,13 @@ void set_trace_opt(pipeline& mode)
     size_t pos = cmd.find("$1");
     if (pos != string::npos) {
       cmd.replace(pos, 2, "-d");
+    }
+  } else if (mode.name.find("-autoseq_trace") != string::npos) {
+    for (auto& arg : mode.steps.back().arguments) {
+      size_t pos = arg.first.find(".autoseq.");
+      if (pos != string::npos) {
+        arg.first.replace(pos, 9, ".autoseq-trace.");
+      }
     }
   }
 }
