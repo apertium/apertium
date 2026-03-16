@@ -22,7 +22,6 @@
  */
 
 #include <apertium/hmm.h>
-#include "apertium_config.h"
 #include <apertium/unlocked_cstdio.h>
 #include <lttoolbox/compression.h>
 
@@ -224,16 +223,15 @@ HMM::init_probabilities_kupiec(MorphoStream &lexmorfo)
     }
   }
 
-  set<TTag> tags1, tags2;
-  set<TTag>::iterator itag1, itag2;
   for(k1=0; k1<M; k1++) {
-    tags1=output[k1];
+    const set<TTag>& tags1=output[k1];
     for(k2=0; k2<M; k2++) {
-      tags2=output[k2];
+      const set<TTag>& tags2=output[k2];
       double nocurrences=classes_pair_ocurrences[k1][k2]/((double)(tags1.size()*tags2.size()));
-      for (itag1=tags1.begin(); itag1!=tags1.end(); itag1++) {
-        for (itag2=tags2.begin(); itag2!=tags2.end(); itag2++)
-          tags_pair_estimate[*itag1][*itag2]+=nocurrences;
+      for (auto& itag1 : tags1) {
+        for (auto& itag2 : tags2) {
+          tags_pair_estimate[itag1][itag2]+=nocurrences;
+        }
       }
     }
   }
@@ -261,7 +259,7 @@ HMM::init_probabilities_kupiec(MorphoStream &lexmorfo)
         if (tags_estimate[i]>0)
           (tdhmm.getB())[i][k] = (classes_ocurrences[k]/output[k].size())/tags_estimate[i];
         else
-	  (tdhmm.getB())[i][k] = 0;
+          (tdhmm.getB())[i][k] = 0;
       }
     }
   }
@@ -497,15 +495,13 @@ HMM::train(MorphoStream &morpho_stream) {
     alpha[len].clear();
 
     //Forward probabilities
-    for (itag=tags.begin(); itag!=tags.end(); itag++) {
-      i=*itag;
-      for (jtag=pretags.begin(); jtag!=pretags.end(); jtag++) {
-         j=*jtag;
-         //cerr<<"previous alpha["<<len<<"]["<<i<<"]="<<alpha[len][i]<<"\n";
-	 //cerr<<"alpha["<<len-1<<"]["<<j<<"]="<<alpha[len-1][j]<<"\n";
-         //cerr<<"a["<<j<<"]["<<i<<"]="<<a[j][i]<<"\n";
-         //cerr<<"b["<<i<<"]["<<k<<"]="<<b[i][k]<<"\n";
-	 alpha[len][i] += alpha[len-1][j]*(tdhmm.getA())[j][i]*(tdhmm.getB())[i][k];
+    for (auto& i : tags) {
+      for (auto& j : pretags) {
+        //cerr<<"previous alpha["<<len<<"]["<<i<<"]="<<alpha[len][i]<<"\n";
+        //cerr<<"alpha["<<len-1<<"]["<<j<<"]="<<alpha[len-1][j]<<"\n";
+        //cerr<<"a["<<j<<"]["<<i<<"]="<<a[j][i]<<"\n";
+        //cerr<<"b["<<i<<"]["<<k<<"]="<<b[i][k]<<"\n";
+        alpha[len][i] += alpha[len-1][j]*(tdhmm.getA())[j][i]*(tdhmm.getB())[i][k];
       }
       if (alpha[len][i]==0)
         alpha[len][i]=DBL_MIN;
@@ -526,39 +522,37 @@ HMM::train(MorphoStream &morpho_stream) {
       loli -= log(prob);
 
       for (t=0; t<len; t++) {  // loop from T-1 to 0
-	  pretags = pending.back();
-	  pending.pop_back();
-   	  k = output[tags];
-	     beta[1-t%2].clear();
-	     for (itag=tags.begin(); itag!=tags.end(); itag++) {
-	       i=*itag;
-	       for (jtag=pretags.begin(); jtag!=pretags.end(); jtag++) {
-	         j = *jtag;
-	         beta[1-t%2][j] += (tdhmm.getA())[j][i]*(tdhmm.getB())[i][k]*beta[t%2][i];
-	         xsi[j][i] += alpha[len-t-1][j]*(tdhmm.getA())[j][i]*(tdhmm.getB())[i][k]*beta[t%2][i]/prob;
-	       }
-	       double previous_value = gamma[i];
+        pretags = pending.back();
+        pending.pop_back();
+        k = output[tags];
+        beta[1-t%2].clear();
+        for (auto& i : tags) {
+          for (auto& j : pretags) {
+            beta[1-t%2][j] += (tdhmm.getA())[j][i]*(tdhmm.getB())[i][k]*beta[t%2][i];
+            xsi[j][i] += alpha[len-t-1][j]*(tdhmm.getA())[j][i]*(tdhmm.getB())[i][k]*beta[t%2][i]/prob;
+          }
+          double previous_value = gamma[i];
 
-	       gamma[i] +=  alpha[len-t][i]*beta[t%2][i]/prob;
-	       if (p_isnan(gamma[i])) {
+          gamma[i] +=  alpha[len-t][i]*beta[t%2][i]/prob;
+          if (p_isnan(gamma[i])) {
 	          cerr<<"NAN(3) gamma["<<i<<"] = "<<gamma[i]<<" alpha["<<len-t<<"]["<<i<<"]= "<<alpha[len-t][i]
-	               <<" beta["<<t%2<<"]["<<i<<"] = "<<beta[t%2][i]<<" prob = "<<prob<<" previous gamma = "<<previous_value<<"\n";
+                <<" beta["<<t%2<<"]["<<i<<"] = "<<beta[t%2][i]<<" prob = "<<prob<<" previous gamma = "<<previous_value<<"\n";
 	          exit(1);
-	       }
-	       if (p_isinf(gamma[i])) {
+          }
+          if (p_isinf(gamma[i])) {
 	          cerr<<"INF(3) gamma["<<i<<"] = "<<gamma[i]<<" alpha["<<len-t<<"]["<<i<<"]= "<<alpha[len-t][i]
-	               <<" beta["<<t%2<<"]["<<i<<"] = "<<beta[t%2][i]<<" prob = "<<prob<<" previous gamma = "<<previous_value<<"\n";
+                <<" beta["<<t%2<<"]["<<i<<"] = "<<beta[t%2][i]<<" prob = "<<prob<<" previous gamma = "<<previous_value<<"\n";
 	          exit(1);
-	       }
-	       if (gamma[i]==0) {
+          }
+          if (gamma[i]==0) {
 	          //cout<<"ZERO(3) gamma["<<i<<"] = "<<gamma[i]<<" alpha["<<len-t<<"]["<<i<<"]= "<<alpha[len-t][i]
 	          //    <<" beta["<<t%2<<"]["<<i<<"] = "<<beta[t%2][i]<<" prob = "<<prob<<" previous gamma = "<<previous_value<<"\n";
 	          gamma[i]=DBL_MIN;
 	          //exit(1);
-	       }
+          }
 	        phi[i][k] += alpha[len-t][i]*beta[t%2][i]/prob;
-	     }
-	     tags=pretags;
+        }
+        tags=pretags;
       }
 
       tags.clear();
@@ -606,16 +600,16 @@ HMM::train(MorphoStream &morpho_stream) {
         if (p_isnan((tdhmm.getA())[i][j])) {
           cerr<<"NAN\n";
           cerr <<"Error: BW - NAN(1) a["<<i<<"]["<<j<<"]="<<(tdhmm.getA())[i][j]<<"\txsi["<<i<<"]["<<j<<"]="<<xsi[i][j]<<"\tgamma["<<i<<"]="<<gamma[i]<<"\n";
-	  exit(1);
+          exit(1);
         }
-	if (p_isinf((tdhmm.getA())[i][j])) {
-	  cerr<<"INF\n";
+        if (p_isinf((tdhmm.getA())[i][j])) {
+          cerr<<"INF\n";
           cerr <<"Error: BW - INF(1) a["<<i<<"]["<<j<<"]="<<(tdhmm.getA())[i][j]<<"\txsi["<<i<<"]["<<j<<"]="<<xsi[i][j]<<"\tgamma["<<i<<"]="<<gamma[i]<<"\n";
           exit(1);
         }
-	if ((tdhmm.getA())[i][j]==0) {
+        if ((tdhmm.getA())[i][j]==0) {
           //cerr <<"Error: BW - ZERO(1) a["<<i<<"]["<<j<<"]="<<(tdhmm.getA())[i][j]<<"\txsi["<<i<<"]["<<j<<"]="<<xsi[i][j]<<"\tgamma["<<i<<"]="<<gamma[i]<<"\n";
-	  //     exit(1);
+          //     exit(1);
         }
       }
     }
@@ -628,17 +622,17 @@ HMM::train(MorphoStream &morpho_stream) {
       if (phi[i][k]>0) {
         (tdhmm.getB())[i][k] = phi[i][k]/gamma[i];
 
-	if (p_isnan((tdhmm.getB())[i][k])) {
+        if (p_isnan((tdhmm.getB())[i][k])) {
           cerr<<"Error: BW - NAN(2) b["<<i<<"]["<<k<<"]="<<(tdhmm.getB())[i][k]<<"\tphi["<<i<<"]["<<k<<"]="<<phi[i][k]<<"\tgamma["<<i<<"]="<<gamma[i]<<"\n";
-	       exit(1);
+          exit(1);
         }
-	if (p_isinf((tdhmm.getB())[i][k])) {
+        if (p_isinf((tdhmm.getB())[i][k])) {
           cerr<<"Error: BW - INF(2) b["<<i<<"]["<<k<<"]="<<(tdhmm.getB())[i][k]<<"\tphi["<<i<<"]["<<k<<"]="<<phi[i][k]<<"\tgamma["<<i<<"]="<<gamma[i]<<"\n";
-	       exit(1);
+          exit(1);
         }
-	if ((tdhmm.getB())[i][k]==0) {
+        if ((tdhmm.getB())[i][k]==0) {
           //cerr <<"Error: BW - ZERO(2) b["<<i<<"]["<<k<<"]="<<(tdhmm.getB())[i][k]<<"\tphi["<<i<<"]["<<k<<"]="<<phi[i][k]<<"\tgamma["<<i<<"]="<<gamma[i]<<"\n";
-	  //     exit(1);
+          //     exit(1);
         }
       }
     }
@@ -720,14 +714,14 @@ HMM::tagger(MorphoStream &morpho_stream, UFILE* Output) {
     for (itag=tags.begin(); itag!=tags.end(); itag++) { //For all tag from the current word
       i=*itag;
       for (jtag=pretags.begin(); jtag!=pretags.end(); jtag++) {	//For all tags from the previous word
-	j=*jtag;
-	x = alpha[1-nwpend%2][j]*(tdhmm.getA())[j][i]*(tdhmm.getB())[i][k];
-	if (alpha[nwpend%2][i]<=x) {
-	  if (nwpend>1)
-	    best[nwpend%2][i] = best[1-nwpend%2][j];
-	  best[nwpend%2][i].push_back(i);
-	  alpha[nwpend%2][i] = x;
-	}
+        j=*jtag;
+        x = alpha[1-nwpend%2][j]*(tdhmm.getA())[j][i]*(tdhmm.getB())[i][k];
+        if (alpha[nwpend%2][i]<=x) {
+          if (nwpend>1)
+            best[nwpend%2][i] = best[1-nwpend%2][j];
+          best[nwpend%2][i].push_back(i);
+          alpha[nwpend%2][i] = x;
+        }
       }
     }
 
@@ -737,21 +731,21 @@ HMM::tagger(MorphoStream &morpho_stream, UFILE* Output) {
       prob = alpha[nwpend%2][tag];
 
       if (prob>0)
-	loli -= log(prob);
+        loli -= log(prob);
       else {
         if (TheFlags.getDebug())
-	  cerr<<"Problem with word '"<<word->get_superficial_form()<<"' "<<word->get_string_tags()<<"\n";
+          cerr<<"Problem with word '"<<word->get_superficial_form()<<"' "<<word->get_string_tags()<<"\n";
       }
       for (unsigned t=0; t<best[nwpend%2][tag].size(); t++) {
-	if (TheFlags.getFirst()) {
-	  UString const &micad = wpend[t].get_all_chosen_tag_first(best[nwpend%2][tag][t], (tdhmm.getTagIndex())["TAG_kEOF"_u]);
-	  write(micad, Output);
-	} else {
-	  // print Output
-	  wpend[t].set_show_sf(TheFlags.getShowSuperficial());
-	  UString const &micad = wpend[t].get_lexical_form(best[nwpend%2][tag][t], (tdhmm.getTagIndex())["TAG_kEOF"_u]);
-	  write(micad, Output);
-	}
+        if (TheFlags.getFirst()) {
+          UString const &micad = wpend[t].get_all_chosen_tag_first(best[nwpend%2][tag][t], (tdhmm.getTagIndex())["TAG_kEOF"_u]);
+          write(micad, Output);
+        } else {
+          // print Output
+          wpend[t].set_show_sf(TheFlags.getShowSuperficial());
+          UString const &micad = wpend[t].get_lexical_form(best[nwpend%2][tag][t], (tdhmm.getTagIndex())["TAG_kEOF"_u]);
+          write(micad, Output);
+        }
       }
 
       //Return to the initial state
@@ -761,10 +755,8 @@ HMM::tagger(MorphoStream &morpho_stream, UFILE* Output) {
 
     delete word;
 
-    if(morpho_stream.getEndOfFile())
-    {
-      if(TheFlags.getNullFlush())
-      {
+    if(morpho_stream.getEndOfFile()) {
+      if(TheFlags.getNullFlush()) {
         u_fputc('\0', Output);
         tags.clear();
         tags.insert(eos);
@@ -809,14 +801,11 @@ HMM::print_B() {
 }
 
 void HMM::print_ambiguity_classes() {
-  set<TTag> ambiguity_class;
-  set<TTag>::iterator itag;
   cout<<"AMBIGUITY CLASSES\n-------------------------------\n";
   for(int i=0; i != tdhmm.getM(); i++) {
-    ambiguity_class = (tdhmm.getOutput())[i];
     cout <<i<<": ";
-    for (itag=ambiguity_class.begin(); itag!=ambiguity_class.end(); itag++) {
-      cout << *itag <<" ";
+    for (auto& itag : (tdhmm.getOutput())[i]) {
+      cout << itag <<" ";
     }
     cout << "\n";
   }

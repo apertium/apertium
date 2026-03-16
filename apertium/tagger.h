@@ -16,8 +16,6 @@
 #ifndef TAGGER_H
 #define TAGGER_H
 
-#include "apertium_config.h"
-
 #include "tagger_flags.h"
 #include "stream_tagger.h"
 #include "file_tagger.h"

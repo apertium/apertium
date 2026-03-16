@@ -34,8 +34,6 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
    USA.  */
-
-#include "apertium_config.h"
 
 #ifndef HAVE_GETOPT_LONG
 /* We shouldn't be compiling this module in this case, but we clearly

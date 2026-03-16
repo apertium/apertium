@@ -9,13 +9,13 @@ from sys import platform
 compile_args = '@CPPFLAGS@'.split() + '@CXXFLAGS@'.split() + '@LTTOOLBOX_CFLAGS@'.split() + '@ICU_CFLAGS@'.split()
 link_args = []
 if platform == 'darwin':
-    compile_args += ['-stdlib=libc++', '-mmacosx-version-min=10.7']
-    link_args.append('-mmacosx-version-min=10.7')
+	compile_args += ['-stdlib=libc++', '-mmacosx-version-min=10.7']
+	link_args.append('-mmacosx-version-min=10.7')
 
 apertium_core_module = Extension(
     name='_apertium_core',
-    language='c++',
-    sources=['apertium_core.i'],
+	language = 'c++',
+    sources = ['apertium_core.i'],
     swig_opts=['-c++', '-I..', '-I@top_srcdir@/apertium', '-Wall'],
     include_dirs=['@top_srcdir@', '@top_srcdir@/apertium'] + '@LIBXML2_CFLAGS@'.replace('-I', '').split(),
     library_dirs=['@top_srcdir@/apertium/.libs'],

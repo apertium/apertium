@@ -413,7 +413,7 @@ UString
 Transfer::processChunk(xmlNode *localroot)
 {
   UString name, namefrom;
-  UString caseofchunk = "aa"_u;
+  UString caseofchunk;
   UString result;
 
   for(xmlAttr *i = localroot->properties; i != NULL; i = i->next)

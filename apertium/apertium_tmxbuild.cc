@@ -22,10 +22,8 @@
 #include <cstdio>
 #include <lttoolbox/lt_locale.h>
 
-#include <apertium/apertium_config.h>
 #include <apertium/tmx_builder.h>
 #include <lttoolbox/string_utils.h>
-#include "apertium_config.h"
 #include <apertium/unlocked_cstdio.h>
 
 using namespace std;

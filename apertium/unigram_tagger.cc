@@ -15,8 +15,6 @@
 
 #include "unigram_tagger.h"
 
-#include "apertium_config.h"
-
 #include "deserialiser.h"
 #include "serialiser.h"
 #include "lexical_unit.h"

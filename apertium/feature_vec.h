@@ -8,6 +8,8 @@
 #include <iostream>
 #include <lttoolbox/ustring.h>
 
+class TaggerDataExe;
+
 namespace Apertium {
 
 typedef std::vector<std::string> FeatureKey;
@@ -20,6 +22,7 @@ class FeatureVec
 {
   friend class FeatureVecAverager;
   friend class PerceptronTagger;
+  friend class ::TaggerDataExe;
 public:
   typedef std::map<FeatureKey, double, CompareFeatureKey> Map;
   typedef std::pair<FeatureKey, double> Pair;
