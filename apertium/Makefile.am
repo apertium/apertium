@@ -182,6 +182,7 @@ bin_PROGRAMS = apertium-cleanstream \
 	       apertium-gen-modes \
 	       apertium-interchunk \
 	       apertium-multiple-translations \
+	       apertium-normalize \
 	       apertium-perceptron-trace \
 	       apertium-postchunk \
 	       apertium-postlatex \
@@ -292,6 +293,8 @@ apertium_restore_caps_SOURCES = apertium_restore_caps.cc
 apertium_adapt_docx_SOURCES = adapt_docx.cc
 
 apertium_gen_modes_SOURCES = gen_modes.cc
+
+apertium_normalize_SOURCES = apertium_normalize.cc
 
 if WINDOWS
 AM_CPPFLAGS = -I$(top_srcdir)/apertium/win32 -I$(top_srcdir) $(APERTIUM_CFLAGS) $(ICU_CFLAGS)
