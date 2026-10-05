@@ -49,6 +49,9 @@ int main(int argc, char* argv[])
     UChar32 c = input.get();
     while (c != '\0' && c != '\\' && c != '[' && c != U_EOF) {
       buf += c;
+      if (norm->hasBoundaryAfter(c)) {
+	break;
+      }
       c = input.get();
     }
     if (!buf.empty()) {
