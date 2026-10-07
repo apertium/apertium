@@ -36,12 +36,14 @@ void trim(std::string& str) {
 
 int main(int argc, char* argv[]) {
 	bool add_z = false;
+  bool add_normalize = true;
 
 	if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 'z' && argv[1][2] == 0) {
 		add_z = true;
 		argv[1] = argv[2];
 		--argc;
 	}
+  // TODO: check argv for option to skip normalize
 
 	// Input can come either as a passed file or from stdin
 	std::unique_ptr<std::istream> _in;
@@ -64,6 +66,8 @@ int main(int argc, char* argv[]) {
   // apertium-restore-caps detaches wblanks
   bool has_restore_caps = (mode.find("apertium-restore-caps") != std::string::npos);
 
+  bool has_normalize = ((mode.find("apertium-normalize") != std::string::npos) || (mode.find("uconv") != std::string::npos));
+
 	// Convert old-style transfer to new-style
 	if (mode.find("lt-proc -b") == std::string::npos) {
 		mode = std::regex_replace(mode, std::regex(R"X(apertium-transfer\s+'([^']+)'\s+'([^']+)'\s+'([^']+autobil\.bin)')X"), "lt-proc -b '$3' | apertium-transfer -b '$1' '$2'");
@@ -72,6 +76,11 @@ int main(int argc, char* argv[]) {
 	std::string new_mode;
 	size_t b = 0;
 	size_t e = 0;
+  if (add_normalize && !has_normalize) {
+    new_mode += "apertium-normalize ";
+    new_mode += DATADIR;
+    new_mode += "/nfcn.nrm | ";
+  }
 	do {
 		b = mode.find('|', e);
 		auto l = mode.begin() + b;

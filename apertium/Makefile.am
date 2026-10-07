@@ -226,7 +226,8 @@ apertiumsysconf = $(prefix)/etc/apertium
 apertium_DATA = deformat.xsl reformat.xsl new2old.xsl lexchoice.xsl \
                 lexchoicebil.xsl \
 				tagger.dtd interchunk.dtd format.dtd  transfer.dtd postchunk.dtd modes.dtd crx.dtd \
-				tagger.rnc interchunk.rnc format.rnc  transfer.rnc postchunk.rnc modes.rnc
+				tagger.rnc interchunk.rnc format.rnc  transfer.rnc postchunk.rnc modes.rnc \
+				nfcn.txt nfcn.nrm
 
 LDADD = -lapertium $(lib_LTLIBRARIES)
 
@@ -553,6 +554,9 @@ apertium-unformat: Makefile.am apertium-unformat-header.sh
 	@echo "APERTIUM_PATH=\"$(prefix)/bin\"" >>$@
 	@cat apertium-unformat-header.sh >>$@
 	@chmod a+x $@
+
+nfcn.nrm: nfcn.txt
+	gennorm2 $^ -o $@
 
 man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
          apertium-deshtml-alt.1 \
