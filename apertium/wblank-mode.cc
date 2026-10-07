@@ -38,18 +38,22 @@ int main(int argc, char* argv[]) {
 	bool add_z = false;
   bool add_normalize = true;
 
-	if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 'z' && argv[1][2] == 0) {
-		add_z = true;
-		argv[1] = argv[2];
-		--argc;
-	}
-  // TODO: check argv for option to skip normalize
+  int argn = 1;
+  while (argc > argn && argv[argn][0] == '-') {
+    if (argv[argn][1] == 'z' && argv[argn][2] == 0) {
+      add_z = true;
+      argn++;
+    } else if (argv[argn][1] == 'n' && argv[argn][2] == 0) {
+      add_normalize = false;
+      argn++;
+    }
+  }
 
 	// Input can come either as a passed file or from stdin
 	std::unique_ptr<std::istream> _in;
 	std::istream *in = &std::cin;
-	if (argc > 1) {
-		_in.reset(new std::ifstream(argv[1], std::ios::binary));
+	if (argc > argn) {
+		_in.reset(new std::ifstream(argv[argn], std::ios::binary));
 		in = _in.get();
 	}
 
@@ -89,6 +93,12 @@ int main(int argc, char* argv[]) {
 		}
 		tmp.assign(mode.begin() + e, l);
 		trim(tmp);
+
+    if (!add_normalize && ((tmp.find("apertium-normalize") != std::string::npos) || (tmp.find("uconv") != std::string::npos))) {
+      // drop existing normalization
+      e = b + 1;
+      continue;
+    }
 
 		if (add_z && tmp.find(" -z") == std::string::npos) {
 			auto s = tmp.find_first_of(" \t\r\n");

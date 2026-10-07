@@ -139,7 +139,7 @@ AC_CONFIG_FILES([python/setup.py])
 AC_SUBST(APERTIUM_CFLAGS)
 AC_SUBST(LIBS)
 
-CPPFLAGS="-DDATADIR='\"$datadir\"' $CPPFLAGS"
+CPPFLAGS="-DDATADIR='\"$datadir/apertium\"' $CPPFLAGS"
 
 AM_PATH_PYTHON([3.4], [], [AC_MSG_WARN([Can't generate SWIG wrapper or run tests without Python])])
 
