@@ -23,6 +23,7 @@
 #include <regex>
 #include <cctype>
 #include "apertium_config.h"
+#include "filesystem.h"
 
 void trim(std::string& str) {
 	while (!str.empty() && isspace(str.back())) {
@@ -32,6 +33,14 @@ void trim(std::string& str) {
 	for (; h < str.size() && isspace(str[h]); ++h) {
 	}
 	str.erase(0, h);
+}
+
+void check_directory(std::filesystem::path dir, std::filesystem::path& pth) {
+  if (!pth.empty()) return;
+  pth = std::filesystem::absolute(dir) / "nfcn.nrm";
+  if (!std::filesystem::exists(pth)) {
+    pth.clear();
+  }
 }
 
 int main(int argc, char* argv[]) {
@@ -81,9 +90,24 @@ int main(int argc, char* argv[]) {
 	size_t b = 0;
 	size_t e = 0;
   if (add_normalize && !has_normalize) {
-    new_mode += "apertium-normalize ";
-    new_mode += DATADIR;
-    new_mode += "/nfcn.nrm | ";
+    std::filesystem::path pth;
+    std::filesystem::path dir;
+    // default install path
+    dir = DATADIR;
+    check_directory(dir, pth);
+    // build directory
+    dir = argv[0];
+    check_directory(dir.parent_path(), pth);
+    // parent of build directory (e.g. if this is in .libs)
+    check_directory(dir.parent_path().parent_path(), pth);
+    // working directory
+    dir = std::filesystem::current_path();
+    check_directory(dir, pth);
+    if (!pth.empty()) {
+      new_mode += "apertium-normalize ";
+      new_mode += pth.c_str();
+      new_mode += " | ";
+    }
   }
 	do {
 		b = mode.find('|', e);
