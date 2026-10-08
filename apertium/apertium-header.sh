@@ -512,7 +512,7 @@ while [[ $OPTIND -le $# ]]; do
 done
 
 
-while getopts ":uahlVzf:d:m:o:snH" opt; do
+while getopts ":uahlVNzf:d:m:o:snH" opt; do
   case "$opt" in
     f) FORMAT=$OPTARG ;;
     d) DATADIR=$OPTARG ;;
