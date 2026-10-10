@@ -33,6 +33,7 @@ message () {
   echo " -V               print Apertium version"
   # This is wrong and should be deprecated, but until all tools consider \0 flush without -z then this helps to have
   echo " -z               force null-flush mode on all parts of the pipe"
+  echo " -N               disable unicode normalization of the input stream"
   echo " direction        typically, LANG1-LANG2, but see modes.xml in language data"
   echo " in               input file (stdin by default)"
   echo " out              output file (stdout by default)"
@@ -149,7 +150,7 @@ run_mode_wblank () {
   AP_SETVAR="$(apply_invert_setvars)"
   export AP_SETVAR
   setvar_wrap \
-    | bash <(apertium-wblank-mode "${NULL_FLUSH[@]}" "$DATADIR/modes/$PAIR.mode") \
+    | bash <(apertium-wblank-mode "${NULL_FLUSH[@]}" "${DROP_NORMALIZATION[@]}" "$DATADIR/modes/$PAIR.mode") \
            "$OPTION" \
            "$OPTION_TAGGER" \
     | setvar_unwrap
@@ -496,6 +497,7 @@ TMXPROC_OPTIONS=()
 FORMAT_OPTIONS=()
 TF_EXTRACT_OPTIONS=()
 NULL_FLUSH=()
+DROP_NORMALIZATION=()
 
 # Skip (but store) non-option arguments that come before options:
 declare -a ARGS_PREOPT ARGS_ALL
@@ -510,7 +512,7 @@ while [[ $OPTIND -le $# ]]; do
 done
 
 
-while getopts ":uahlVzf:d:m:o:snH" opt; do
+while getopts ":uahlVNzf:d:m:o:snH" opt; do
   case "$opt" in
     f) FORMAT=$OPTARG ;;
     d) DATADIR=$OPTARG ;;
@@ -523,6 +525,7 @@ while getopts ":uahlVzf:d:m:o:snH" opt; do
     a) OPTION_TAGGER="-m" ;;
     l) LIST_MODES_AND_EXIT=true ;;
     V) echo "${apertium_version}" && exit 0 ;;
+	N) DROP_NORMALIZATION+=(-N) ;;
     z) NULL_FLUSH+=(-z) ;;
     h) message ;;
     \?) echo "ERROR: Unknown option $OPTARG" >&2; message >&2 ;;
