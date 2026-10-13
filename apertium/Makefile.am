@@ -39,13 +39,14 @@ h_sources = a.h \
 	    stream.h \
 	    stream_tagger.h \
 	    streamed_type.h \
-	    string_to_wostream.h \
 	    shell_utils.h \
 	    tagger.h \
 	    tagger_data.h \
+		tagger_data_exe.h \
 	    tagger_data_hmm.h \
 	    tagger_data_lsw.h \
 	    tagger_data_percep_coarse_tags.h \
+		tagger_exe.h \
 	    tagger_flags.h \
 	    tagger_utils.h \
 	    tagger_word.h \
@@ -114,9 +115,11 @@ cc_sources = a.cc \
 	     shell_utils.cc \
 	     tagger.cc \
 	     tagger_data.cc \
+		 tagger_data_exe.cc \
 	     tagger_data_hmm.cc \
 	     tagger_data_lsw.cc \
 	     tagger_data_percep_coarse_tags.cc \
+		 tagger_exe.cc \
 	     tagger_flags.cc \
 	     tagger_utils.cc \
 	     tagger_word.cc \
@@ -204,7 +207,9 @@ bin_PROGRAMS = apertium-cleanstream \
 	       apertium-rexpresstag \
 	       apertium-tagger \
 	       apertium-tagger-apply-new-rules \
+		   apertium-tagger-new \
 	       apertium-tagger-readwords \
+		   apertium-tagger2txt \
 	       apertium-perceptron-trace \
 	       apertium-tmxbuild \
 	       apertium-transfer \
@@ -262,6 +267,12 @@ apertium_postlatex_SOURCES = apertium_postlatex.cc
 apertium_postlatex_raw_SOURCES = apertium_postlatex_raw.cc
 
 apertium_tagger_SOURCES = apertium_tagger.cc
+
+apertium_tagger_new_SOURCES = apertium_tagger_new.cc
+apertium_tagger_new_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
+
+apertium_tagger2txt_SOURCES = tagger2txt.cc
+apertium_tagger2txt_LDADD = -lapertium$(VERSION_MAJOR) $(lib_LTLIBRARIES)
 
 apertium_perceptron_trace_SOURCES = apertium_perceptron_trace.cc
 

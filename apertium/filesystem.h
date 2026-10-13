@@ -19,8 +19,7 @@
 #ifndef APERTIUM_FILESYSTEM_HPP_
 #define APERTIUM_FILESYSTEM_HPP_
 
-#include "apertium_config.h"
-#include "string_view.h"
+#include <lttoolbox/string_view.h>
 
 #ifdef HAVE_FILESYSTEM
 	#include <filesystem>

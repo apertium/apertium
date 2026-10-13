@@ -27,7 +27,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include "apertium_config.h"
 #include <apertium/unlocked_cstdio.h>
 
 #ifdef _MSC_VER

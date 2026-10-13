@@ -47,7 +47,7 @@ using namespace std;
  */
 class FileMorphoStream : public MorphoStream {
 private:
-  bool foundEOF;
+  bool foundEOF = false;
   UString last_string_tag;
   bool debug;
   InputFile input;
@@ -71,8 +71,8 @@ private:
   Alphabet alphabet;
   MatchState ms;
 
-  bool null_flush;
-  bool end_of_file;
+  bool null_flush = false;
+  bool end_of_file = false;
 
   void readRestOfWord(int &ivwords);
   void lrlmClassify(UString const &str, int &ivwords);
