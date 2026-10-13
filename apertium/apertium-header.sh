@@ -290,7 +290,8 @@ translate_docx () {
 
   find "$INPUT_TMPDIR" -name "*.xlsx" -print0 | while read -r -d '' i; do
     LOCALTEMP=$(mktemp "$TMPDIR/apertium.XXXXXXXX");
-    apertium -f xlsx -d "$DATADIR" "$OPCIONU" "$PAIR" <"$i" >"$LOCALTEMP";
+    # NB: Keep $OPCIONU unquoted here, so we don't pass the empty string as pair when no -u:
+    apertium -f xlsx -d "$DATADIR" $OPCIONU "$PAIR" <"$i" >"$LOCALTEMP";
     cp "$LOCALTEMP" "$i";
     rm "$LOCALTEMP";
   done;
@@ -347,7 +348,8 @@ translate_pptx () {
 
   find "$INPUT_TMPDIR" -name "*.xlsx" -print0 | while read -r -d '' i; do
     LOCALTEMP=$(mktemp "$TMPDIR/apertium.XXXXXXXX")
-    apertium -f xlsx -d "$DATADIR" "$OPCIONU" "$PAIR" <"$i" >"$LOCALTEMP";
+    # NB: Keep $OPCIONU unquoted here, so we don't pass the empty string as pair when no -u:
+    apertium -f xlsx -d "$DATADIR" $OPCIONU "$PAIR" <"$i" >"$LOCALTEMP";
     cp "$LOCALTEMP" "$i"
     rm "$LOCALTEMP"
   done;
