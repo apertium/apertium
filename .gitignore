@@ -3,6 +3,7 @@
 *.o
 *.pyc
 *~
+*.nrm
 
 **/.deps/
 **/.dirstamp
