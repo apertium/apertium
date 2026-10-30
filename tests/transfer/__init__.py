@@ -90,3 +90,11 @@ class SlashLuTransferTest(TransferTest):
                        '^a<n><2/3>/b<n><abc>$']
     expectedOutputs = ["^ho<prn><f/z><abc><1/2>$",
                        '^b<n><abc>$']
+
+
+class FormattedTransferTest(TransferTest):
+    inputs =          ["^blah<nofmt>/blah<nofmt>$ [[a:b;]]^x<nofmt>/x<nofmt>$",
+                       "^blah<yesfmt>/blah<yesfmt>$ [[a:b;]]^y<yesfmt>/y<yesfmt>$"]
+    expectedOutputs = ["^x<nofmt>$ ^x$",
+                       "[[a:b;]]^y<yesfmt>$ [[a:b;]]^y$"]
+
