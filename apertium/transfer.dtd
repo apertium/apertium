@@ -371,6 +371,7 @@ representing a lexical form in the matched pattern
                part CDATA #REQUIRED
                queue CDATA #IMPLIED
                link-to CDATA #IMPLIED
+               formatted (yes|no) "yes"
                c CDATA #IMPLIED>
 <!--
       A 'clip' is a substring of a source-language or target-language
@@ -395,6 +396,11 @@ representing a lexical form in the matched pattern
         when using 'clip' as a right hand side element (as value), and
         returns its value.  When using as a left hand side (as reference),
         the value of the 'as' attribute is ignored.
+
+      * 'formatted' is used to decide whether to include word-bound
+        formatting blanks (e.g. bold, italic) when the 'part' includes
+        a lemma. The value may be 'no' or 'yes'. 'yes' is assumed by
+        default.
 -->
 
 <!ELEMENT lit EMPTY>

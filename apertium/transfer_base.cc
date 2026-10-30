@@ -131,12 +131,6 @@ TransferBase::collectMacros(xmlNode* localroot)
   }
 }
 
-bool
-TransferBase::gettingLemmaFromWord(const UString& attr)
-{
-  return attr == "lem"_u || attr == "lemh"_u || attr == "whole"_u;
-}
-
 UString
 TransferBase::combineWblanks(const UString& first, const UString& second)
 {

@@ -51,6 +51,7 @@ private:
   xmlNode* pointer;
   bool condition;
   UString strval;
+  bool include_formatting; // include word blanks in lemma/whole clips (default: true)
 
   void copy(TransferInstr const &o);
   void destroy();
@@ -59,10 +60,11 @@ public:
   type(ti_clip_sl),
   pos(0),
   pointer(0),
-  condition(false)
+  condition(false),
+  include_formatting(true)
   {}
   TransferInstr(TransferInstrType t, UString const &c, int const p,
-                xmlNode* ptr=NULL, bool cond = true, const UString& sv = ""_u);
+                xmlNode* ptr=NULL, bool cond = true, const UString& sv = ""_u, bool fmt = true);
   ~TransferInstr();
   TransferInstr(TransferInstr const &o);
   TransferInstr & operator =(TransferInstr const &o);
@@ -74,6 +76,7 @@ public:
   xmlNode* getPointer();
   bool getCondition();
   const UString& getStrval();
+  bool gettingFormattedLemmaFromWord();
 };
 
 #endif

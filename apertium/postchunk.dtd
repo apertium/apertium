@@ -347,6 +347,7 @@ representing a lexical form in the matched pattern
 <!ELEMENT clip EMPTY>
 <!ATTLIST clip pos CDATA #REQUIRED
                part CDATA #REQUIRED
+               formatted (yes|no) "yes"
                c CDATA #IMPLIED>
 <!--
       A 'clip' is a substring of a source-language or target-language
@@ -360,6 +361,11 @@ representing a lexical form in the matched pattern
         the lemma of the lexical unit), 'lemh' (lemma head), 'lemq'
         (lemma queue), 'whole' (referring to the whole lexical unit)
 	and 'tags' (referring to the whole lexical unit without the lemma).
+
+      * 'formatted' is used to decide whether to include word-bound
+        formatting blanks (e.g. bold, italic) when the 'part' includes
+        a lemma. The value may be 'no' or 'yes'. 'yes' is assumed by
+        default.
 
 -->
 

@@ -53,7 +53,7 @@ Postchunk::evalCachedString(xmlNode* element)
   switch (ti.getType()) {
   case ti_clip_tl:
     if (checkIndex(element, ti.getPos(), lword)) {
-      if (gettingLemmaFromWord(ti.getContent()) && lword > 1) {
+      if (ti.gettingFormattedLemmaFromWord() && lword > 1) {
         if (in_lu) {
           out_wblank = combineWblanks(out_wblank, word[ti.getPos()]->getWblank());
         } else if (in_let_var) {
@@ -114,14 +114,19 @@ Postchunk::processClip(xmlNode* element)
 {
   int pos = 0;
   UString part;
+  bool fmt = true;
   for(xmlAttr* i = element->properties; i != NULL; i = i->next) {
     if (!xmlStrcmp(i->name, (const xmlChar*) "part")) {
       part = to_ustring((const char*) i->children->content);
     } else if (!xmlStrcmp(i->name, (const xmlChar*) "pos")) {
       pos = atoi((const char *)i->children->content);
+    } else if (!xmlStrcmp(i->name, (const xmlChar *)"formatted")
+               &&
+               !xmlStrcmp(i->children->content, (const xmlChar *)"no")) {
+      fmt = false;
     }
   }
-  evalStringCache[element] = TransferInstr(ti_clip_tl, part, pos, NULL);
+  evalStringCache[element] = TransferInstr(ti_clip_tl, part, pos, NULL, true, ""_u, fmt);
 }
 
 void

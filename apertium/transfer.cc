@@ -97,7 +97,7 @@ Transfer::evalCachedString(xmlNode *element)
   switch (ti.getType()) {
   case ti_clip_sl:
     if (checkIndex(element, ti.getPos(), lword)) {
-      if (gettingLemmaFromWord(ti.getContent()) && last_lword > 1) {
+      if (ti.gettingFormattedLemmaFromWord() && last_lword > 1) {
         if(in_lu) {
           out_wblank = combineWblanks(out_wblank, word[ti.getPos()]->getWblank());
         } else if (in_let_var) {
@@ -111,7 +111,7 @@ Transfer::evalCachedString(xmlNode *element)
 
   case ti_clip_tl:
     if(checkIndex(element, ti.getPos(), lword)) {
-      if(gettingLemmaFromWord(ti.getContent()) && last_lword > 1) {
+      if(ti.gettingFormattedLemmaFromWord() && last_lword > 1) {
         if(in_lu) {
           out_wblank = combineWblanks(out_wblank, word[ti.getPos()]->getWblank());
         } else if(in_let_var) {
@@ -233,6 +233,7 @@ Transfer::processClip(xmlNode* element)
   UString as;
   UString part;
   bool queue = true;
+  bool fmt = true;
 
   for(xmlAttr *i = element->properties; i != NULL; i = i->next) {
     if(!xmlStrcmp(i->name, (const xmlChar *) "side")) {
@@ -247,6 +248,10 @@ Transfer::processClip(xmlNode* element)
       }
     } else if(!xmlStrcmp(i->name, (const xmlChar *) "link-to")) {
       as = to_ustring((const char*)i->children->content);
+    } else if (!xmlStrcmp(i->name, (const xmlChar *)"formatted")
+               &&
+               !xmlStrcmp(i->children->content, (const xmlChar *)"no")) {
+      fmt = false;
     }
   }
 
@@ -259,11 +264,11 @@ Transfer::processClip(xmlNode* element)
       evalStringCache[element] = TransferInstr(ti_linkto_tl, part, pos, NULL, queue, as);
     }
   } else if(!xmlStrcmp(side, (const xmlChar *) "sl")) {
-    evalStringCache[element] = TransferInstr(ti_clip_sl, part, pos, NULL, queue);
+    evalStringCache[element] = TransferInstr(ti_clip_sl, part, pos, NULL, queue, ""_u, fmt);
   } else if(!xmlStrcmp(side, (const xmlChar *) "ref")) {
-    evalStringCache[element] = TransferInstr(ti_clip_ref, part, pos, NULL, queue);
+    evalStringCache[element] = TransferInstr(ti_clip_ref, part, pos, NULL, queue, ""_u);
   } else {
-    evalStringCache[element] = TransferInstr(ti_clip_tl, part, pos, NULL, queue);
+    evalStringCache[element] = TransferInstr(ti_clip_tl, part, pos, NULL, queue, ""_u, fmt);
   }
 }
 

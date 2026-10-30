@@ -26,6 +26,7 @@ TransferInstr::copy(TransferInstr const &o)
   pointer = o.pointer;
   condition = o.condition;
   strval = o.strval;
+  include_formatting = o.include_formatting;
 }
 
 void
@@ -35,7 +36,7 @@ TransferInstr::destroy()
 
 TransferInstr::TransferInstr(TransferInstrType t, UString const &c,
                              int const p, xmlNode* ptr, bool cond,
-                             const UString& sv)
+                             const UString& sv, bool fmt)
 {
   type = t;
   content = c;
@@ -43,6 +44,7 @@ TransferInstr::TransferInstr(TransferInstrType t, UString const &c,
   pointer = ptr;
   condition = cond;
   strval = sv;
+  include_formatting = fmt;
 }
 
 TransferInstr::~TransferInstr()
@@ -100,4 +102,11 @@ const UString&
 TransferInstr::getStrval()
 {
   return strval;
+}
+
+bool
+TransferInstr::gettingFormattedLemmaFromWord()
+{
+  return include_formatting
+    && (content == "lem"_u || content == "lemh"_u || content == "whole"_u);
 }

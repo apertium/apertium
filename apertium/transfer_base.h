@@ -65,7 +65,6 @@ protected:
   void collectMacros(xmlNode *localroot);
   void collectRules(xmlNode *localroot);
 
-  bool gettingLemmaFromWord(const UString& attr);
   UString combineWblanks(const UString& first, const UString& second);
   UString copycase(const UString& src, const UString& dest);
 
