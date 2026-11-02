@@ -3,7 +3,6 @@
 
 * Unicode 18.0.0
 
-# Canonical_Combining_Class (ccc) values
 0300..0314:230
 0315:232
 0316..0319:220
@@ -427,7 +426,6 @@ FE2E..FE2F:230
 1E944..1E949:230
 1E94A:7
 
-# Canonical decomposition mappings
 00C0=0041 0300
 00C1=0041 0301
 00C2=0041 0302
