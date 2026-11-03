@@ -36,27 +36,27 @@ void trim(std::string& str) {
 }
 
 void check_directory(std::filesystem::path dir, std::filesystem::path& pth) {
-  if (!pth.empty()) return;
-  pth = std::filesystem::absolute(dir) / "nfcn.nrm";
-  if (!std::filesystem::exists(pth)) {
-    pth.clear();
-  }
+	if (!pth.empty()) return;
+	pth = std::filesystem::absolute(dir) / "nfcn.nrm";
+	if (!std::filesystem::exists(pth)) {
+		pth.clear();
+	}
 }
 
 int main(int argc, char* argv[]) {
 	bool add_z = false;
-  bool add_normalize = true;
+	bool add_normalize = true;
 
-  int argn = 1;
-  while (argc > argn && argv[argn][0] == '-') {
-    if (argv[argn][1] == 'z' && argv[argn][2] == 0) {
-      add_z = true;
-      argn++;
-    } else if (argv[argn][1] == 'n' && argv[argn][2] == 0) {
-      add_normalize = false;
-      argn++;
-    }
-  }
+	int argn = 1;
+	while (argc > argn && argv[argn][0] == '-') {
+		if (argv[argn][1] == 'z' && argv[argn][2] == 0) {
+			add_z = true;
+			argn++;
+		} else if (argv[argn][1] == 'n' && argv[argn][2] == 0) {
+			add_normalize = false;
+			argn++;
+		}
+	}
 
 	// Input can come either as a passed file or from stdin
 	std::unique_ptr<std::istream> _in;
@@ -76,10 +76,10 @@ int main(int argc, char* argv[]) {
 	// Don't change the mode twice
 	bool has_helpers = (mode.find("apertium-wblank-") != std::string::npos);
 
-  // apertium-restore-caps detaches wblanks
-  bool has_restore_caps = (mode.find("apertium-restore-caps") != std::string::npos);
+	// apertium-restore-caps detaches wblanks
+	bool has_restore_caps = (mode.find("apertium-restore-caps") != std::string::npos);
 
-  bool has_normalize = ((mode.find("apertium-normalize") != std::string::npos) || (mode.find("uconv") != std::string::npos));
+	bool has_normalize = ((mode.find("apertium-normalize") != std::string::npos) || (mode.find("uconv") != std::string::npos));
 
 	// Convert old-style transfer to new-style
 	if (mode.find("lt-proc -b") == std::string::npos) {
@@ -89,26 +89,26 @@ int main(int argc, char* argv[]) {
 	std::string new_mode;
 	size_t b = 0;
 	size_t e = 0;
-  if (add_normalize && !has_normalize) {
-    std::filesystem::path pth;
-    std::filesystem::path dir;
-    // default install path
-    dir = DATADIR;
-    check_directory(dir, pth);
-    // build directory
-    dir = argv[0];
-    check_directory(dir.parent_path(), pth);
-    // parent of build directory (e.g. if this is in .libs)
-    check_directory(dir.parent_path().parent_path(), pth);
-    // working directory
-    dir = std::filesystem::current_path();
-    check_directory(dir, pth);
-    if (!pth.empty()) {
-      new_mode += "apertium-normalize ";
-      new_mode += pth.c_str();
-      new_mode += " | ";
-    }
-  }
+	if (add_normalize && !has_normalize) {
+		std::filesystem::path pth;
+		std::filesystem::path dir;
+		// default install path
+		dir = DATADIR;
+		check_directory(dir, pth);
+		// build directory
+		dir = argv[0];
+		check_directory(dir.parent_path(), pth);
+		// parent of build directory (e.g. if this is in .libs)
+		check_directory(dir.parent_path().parent_path(), pth);
+		// working directory
+		dir = std::filesystem::current_path();
+		check_directory(dir, pth);
+		if (!pth.empty()) {
+			new_mode += "apertium-normalize ";
+			new_mode += pth.c_str();
+			new_mode += " | ";
+		}
+	}
 	do {
 		b = mode.find('|', e);
 		auto l = mode.begin() + b;
@@ -118,11 +118,11 @@ int main(int argc, char* argv[]) {
 		tmp.assign(mode.begin() + e, l);
 		trim(tmp);
 
-    if (!add_normalize && ((tmp.find("apertium-normalize") != std::string::npos) || (tmp.find("uconv") != std::string::npos))) {
-      // drop existing normalization
-      e = b + 1;
-      continue;
-    }
+		if (!add_normalize && ((tmp.find("apertium-normalize") != std::string::npos) || (tmp.find("uconv") != std::string::npos))) {
+			// drop existing normalization
+			e = b + 1;
+			continue;
+		}
 
 		if (add_z && tmp.find(" -z") == std::string::npos) {
 			auto s = tmp.find_first_of(" \t\r\n");
