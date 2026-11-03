@@ -75,9 +75,12 @@ int main(int argc, char* argv[])
     case U_EOF:
       break;
     case '[':
-      input.unget(c);
-      buf = input.readBlank(true);
-      write(buf, output);
+      if (input.peek() == '[') {
+        input.get();
+        write(input.finishWBlank(), output);
+      } else {
+        write(input.readBlock('[', ']'), output);
+      }
       break;
     }
   }
