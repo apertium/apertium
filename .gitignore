@@ -3,6 +3,7 @@
 *.o
 *.pyc
 *~
+*.nrm
 
 **/.deps/
 **/.dirstamp
@@ -128,3 +129,5 @@ Makefile.in
 *.egg
 /apertium/apertium_deshtml_noent.cc
 /apertium/apertium_rehtml_alt.cc
+
+/apertium/nfc.txt

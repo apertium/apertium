@@ -1,8 +1,8 @@
 AC_PREREQ(2.52)
 
 m4_define([PKG_VERSION_MAJOR], [3])
-m4_define([PKG_VERSION_MINOR], [9])
-m4_define([PKG_VERSION_PATCH], [12])
+m4_define([PKG_VERSION_MINOR], [10])
+m4_define([PKG_VERSION_PATCH], [0])
 
 # Bump if the ABI (not API) changed in a backwards-incompatible manner
 m4_define([PKG_VERSION_ABI], [3])
@@ -138,6 +138,8 @@ AC_CONFIG_FILES([python/setup.py])
 
 AC_SUBST(APERTIUM_CFLAGS)
 AC_SUBST(LIBS)
+
+CPPFLAGS="-DDATADIR='\"$datadir/apertium\"' $CPPFLAGS"
 
 AM_PATH_PYTHON([3.4], [], [AC_MSG_WARN([Can't generate SWIG wrapper or run tests without Python])])
 

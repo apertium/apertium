@@ -182,6 +182,7 @@ bin_PROGRAMS = apertium-cleanstream \
 	       apertium-gen-modes \
 	       apertium-interchunk \
 	       apertium-multiple-translations \
+	       apertium-normalize \
 	       apertium-perceptron-trace \
 	       apertium-postchunk \
 	       apertium-postlatex \
@@ -225,7 +226,8 @@ apertiumsysconf = $(prefix)/etc/apertium
 apertium_DATA = deformat.xsl reformat.xsl new2old.xsl lexchoice.xsl \
                 lexchoicebil.xsl \
 				tagger.dtd interchunk.dtd format.dtd  transfer.dtd postchunk.dtd modes.dtd crx.dtd \
-				tagger.rnc interchunk.rnc format.rnc  transfer.rnc postchunk.rnc modes.rnc
+				tagger.rnc interchunk.rnc format.rnc  transfer.rnc postchunk.rnc modes.rnc \
+				nfcn.txt nfcn.nrm
 
 LDADD = -lapertium $(lib_LTLIBRARIES)
 
@@ -292,6 +294,8 @@ apertium_restore_caps_SOURCES = apertium_restore_caps.cc
 apertium_adapt_docx_SOURCES = adapt_docx.cc
 
 apertium_gen_modes_SOURCES = gen_modes.cc
+
+apertium_normalize_SOURCES = apertium_normalize.cc
 
 if WINDOWS
 AM_CPPFLAGS = -I$(top_srcdir)/apertium/win32 -I$(top_srcdir) $(APERTIUM_CFLAGS) $(ICU_CFLAGS)
@@ -550,6 +554,9 @@ apertium-unformat: Makefile.am apertium-unformat-header.sh
 	@echo "APERTIUM_PATH=\"$(prefix)/bin\"" >>$@
 	@cat apertium-unformat-header.sh >>$@
 	@chmod a+x $@
+
+nfcn.nrm: nfcn.txt
+	gennorm2 $^ -o $@
 
 man_MANS=apertium.1 apertium-deshtml.1 apertium-desrtf.1 apertium-destxt.1 \
          apertium-deshtml-alt.1 \
