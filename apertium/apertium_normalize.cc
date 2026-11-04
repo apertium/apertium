@@ -9,10 +9,6 @@
 #include <unicode/errorcode.h>
 #include <unicode/putil.h>
 
-#ifdef __MINGW32__
-#include <windows.h>
-#endif
-
 int main(int argc, char* argv[])
 {
   LtLocale::tryToSetLocale();
@@ -27,9 +23,9 @@ int main(int argc, char* argv[])
   UErrorCode err = U_ZERO_ERROR;
   auto pth = fs::absolute(cli.get_files()[0]);
 
-  u_setDataDirectory(pth.parent_path().c_str());
+  u_setDataDirectory(pth.parent_path().system_encoded_string().c_str());
 
-  auto norm = icu::Normalizer2::getInstance("", pth.stem().c_str(),
+  auto norm = icu::Normalizer2::getInstance("", pth.stem().system_encoded_string().c_str(),
 					    UNORM2_COMPOSE, err);
 
   if (U_FAILURE(err)) {

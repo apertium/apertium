@@ -24,10 +24,6 @@
 #include <lttoolbox/file_utils.h>
 #include <lttoolbox/cli.h>
 
-#ifdef __MINGW32__
-#include <windows.h>
-#endif
-
 UString read_until_slash(InputFile& input)
 {
   UString ret;

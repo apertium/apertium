@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
 		check_directory(dir, pth);
 		if (!pth.empty()) {
 			new_mode += "apertium-normalize ";
-			new_mode += pth.c_str();
+			new_mode += pth.system_encoded_string();
 			new_mode += " | ";
 		}
 	}

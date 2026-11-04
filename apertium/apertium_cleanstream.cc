@@ -26,10 +26,6 @@
 #include <lttoolbox/lt_locale.h>
 #include <lttoolbox/input_file.h>
 
-#ifdef __MINGW32__
-#include <windows.h>
-#endif
-
 using namespace std;
 
 int

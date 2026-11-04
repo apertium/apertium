@@ -41,4 +41,8 @@ inline std::filesystem::path path(std::string_view sv) {
 
 namespace fs = ::std::filesystem;
 
+#if __cplusplus < 202603L
+  #define system_encoded_string string
+#endif
+
 #endif
