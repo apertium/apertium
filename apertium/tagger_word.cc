@@ -167,14 +167,14 @@ TaggerWord::get_lexical_form(TTag &t, int const TAG_kEOF) {
 
     if(get_show_sf()) {   // append the superficial form
       ret.append(superficial_form);
-      ret += '/';
+      if (!superficial_form.empty()) ret += '/';
     }
   }
 
   if (lexical_forms.size()==0) { // This is an UNKNOWN WORD
     ret += '*';
     ret.append(superficial_form);
-  } else if ((*lexical_forms.begin()).second[0]=='*') { //This is an
+  } else if (!(*lexical_forms.begin()).second.empty() && (*lexical_forms.begin()).second[0]=='*') { //This is an
 							//unknown word
 							//that has
 							//been guessed
@@ -235,7 +235,7 @@ TaggerWord::get_all_chosen_tag_first(TTag &t, int const TAG_kEOF) {
     if (lexical_forms.size()>1) {
       for (auto& it : tags) {
         if (it != t) {
-          ret += '/';
+          if (!superficial_form.empty()) ret += '/';
           ret.append(lexical_forms[it]);
         }
       }
@@ -265,7 +265,7 @@ TaggerWord::get_lexical_form_without_ignored_string(TTag &t, int const TAG_kEOF)
   if (lexical_forms.size()==0) { //This is an unknown word
     ret.append("*^"_u);
     ret.append(superficial_form);
-  } else if ((*lexical_forms.begin()).second[0]=='*') {  //This is an unknown word that has been guessed
+  } else if (!(*lexical_forms.begin()).second.empty() && (*lexical_forms.begin()).second[0]=='*') {  //This is an unknown word that has been guessed
     ret.append("*^"_u);
     ret.append(superficial_form);
   } else {
