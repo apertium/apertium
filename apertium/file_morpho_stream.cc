@@ -327,6 +327,10 @@ FileMorphoStream::readRestOfWord(int &ivwords)
     else if(symbol == '$')
     {
       vwords[ivwords]->set_superficial_form(str);
+      if (str.empty()) {
+        vwords[ivwords]->add_tag(ca_tag_kundef, ""_u, td->getPreferRules());
+        return;
+      }
       vwords[ivwords]->add_ignored_string("$"_u);
       break;
     }
